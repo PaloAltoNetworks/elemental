@@ -2,7 +2,7 @@
 
 package {{ package_name }}
 
-import "github.com/aporeto-inc/cid/materia/elemental"
+import "github.com/aporeto-inc/elemental"
 {% for imp in imports -%}
 import "{{imp}}"
 {% endfor -%}
