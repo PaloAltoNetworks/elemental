@@ -9,8 +9,7 @@ import "fmt"
 // IdentifiablesList is a list of objects implementing the Identifiable interface.
 type IdentifiablesList []Identifiable
 
-// Identifiable is the interface that object which have Identity
-// must implement.
+// Identifiable is the interface that object which have Identity must implement.
 type Identifiable interface {
 
 	// Identity returns the Identity of the of the receiver.
