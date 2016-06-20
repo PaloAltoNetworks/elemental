@@ -20,7 +20,6 @@ class APIVersionWriter(TemplateFileWriter):
         self.name = monolithe_config.get_option("name", "transformer")
 
         self.output_directory = "%s/elemental/%s" % (output, api_info["version"])
-        self.models_package_package = monolithe_config.get_option("models_package_package", "cid")
 
         with open("%s/elemental/__code_header" % output, "r") as f:
             self.header_content = f.read()
@@ -45,7 +44,6 @@ class APIVersionWriter(TemplateFileWriter):
         self.write(destination=self.output_directory, filename=filename, template_name="model.go.tpl",
                    specification=specification,
                    specification_set=specification_set,
-                   models_package_package=self.models_package_package,
                    package_name=self.name,
                    header=self.header_content,
                    constants=constants,
@@ -58,7 +56,6 @@ class APIVersionWriter(TemplateFileWriter):
         self.write(destination=self.output_directory, filename=filename, template_name="identities_registry.go.tpl",
                    specifications=specifications,
                    package_name=self.name,
-                   models_package_package=self.models_package_package,
                    header=self.header_content)
 
     def _format(self):

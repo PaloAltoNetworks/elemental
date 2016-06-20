@@ -1,17 +1,19 @@
 {{ header }}
-
+{% set glob = {'identifier': '', 'prefix': ''} -%}
 package {{ package_name }}
 
+{% if package_name != 'elemental' -%}
 import "github.com/aporeto-inc/elemental"
+{% set _ = glob.update({'prefix': 'elemental.'}) -%}
+{% endif %}
+
 {% for imp in imports -%}
 import "{{imp}}"
 {% endfor -%}
 
-// {{ specification.entity_name }}Attributes represents the various attributes name of {{ specification.entity_name }}.
-type {{ specification.entity_name }}Attributes int
 const (
 {% for attribute in specification.attributes -%}
-    {{ specification.entity_name }}Attribute{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}}{% if loop.index == 1 %}  {{ specification.entity_name }}Attributes = iota{% endif %}
+    {{ specification.entity_name }}AttributeName{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}} {{ glob.prefix }}AttributeSpecificationNameKey = "{{ specification.rest_name }}/{{ attribute.local_name }}"
 {% endfor -%}
 )
 
@@ -26,7 +28,7 @@ const (
 {% endfor -%}
 
 // {{specification.entity_name}}Identity represents the Identity of the object
-var {{specification.entity_name}}Identity = elemental.Identity {
+var {{specification.entity_name}}Identity = {{ glob.prefix }}Identity {
     Name:     "{{specification.rest_name}}",
     Category: "{{specification.resource_name}}",
 }
@@ -36,7 +38,6 @@ var {{specification.entity_name}}Identity = elemental.Identity {
 type {{specification.entity_name_plural}}List []*{{specification.entity_name}}
 {%- endif %}
 
-{% set glob = {'identifier': ''} -%}
 // {{specification.entity_name}} represents the model of a {{specification.rest_name}}
 type {{specification.entity_name}} struct {
     {% for attribute in specification.attributes -%}
@@ -79,7 +80,7 @@ func New{{specification.entity_name}}() *{{specification.entity_name}} {
 }
 
 // Identity returns the Identity of the object.
-func (o *{{specification.entity_name}}) Identity() elemental.Identity {
+func (o *{{specification.entity_name}}) Identity() {{ glob.prefix }}Identity {
 
     return {{specification.entity_name}}Identity
 }
@@ -97,37 +98,37 @@ func (o *{{specification.entity_name}}) SetIdentifier(ID string) {
 }
 
 // Validate valides the current information stored into the structure.
-func (o *{{specification.entity_name}}) Validate() elemental.Errors {
+func (o *{{specification.entity_name}}) Validate() {{ glob.prefix }}Errors {
 
-    errors := elemental.Errors{}
+    errors := {{ glob.prefix }}Errors{}
 
     {% for attribute in specification.attributes -%}
     {% set field_name = attribute.local_name[0:1].upper() + attribute.local_name[1:] -%}
     {% set attribute_name = attribute.local_name -%}
 
     {% if attribute.allowed_choices != None -%}
-    if err := elemental.ValidateStringInList("{{ attribute_name }}", string(o.{{ field_name }}), []string{"{{ attribute.allowed_choices|join('", "') }}"}); err != nil {
+    if err := {{ glob.prefix }}ValidateStringInList("{{ attribute_name }}", string(o.{{ field_name }}), []string{"{{ attribute.allowed_choices|join('", "') }}"}); err != nil {
         errors = append(errors, err)
     }
 
     {% endif -%}
 
     {% if attribute.allowed_chars != None -%}
-    if err := elemental.ValidatePattern("{{ attribute_name }}", o.{{ field_name }}, "{{ attribute.allowed_chars }}"); err != nil {
+    if err := {{ glob.prefix }}ValidatePattern("{{ attribute_name }}", o.{{ field_name }}, "{{ attribute.allowed_chars }}"); err != nil {
         errors = append(errors, err)
     }
 
     {% endif -%}
 
     {% if attribute.max_length != None -%}
-    if err := elemental.ValidateMaximumLength("{{ attribute_name }}", o.{{ field_name }}, {{ attribute.max_length }}, false); err != nil {
+    if err := {{ glob.prefix }}ValidateMaximumLength("{{ attribute_name }}", o.{{ field_name }}, {{ attribute.max_length }}, false); err != nil {
         errors = append(errors, err)
     }
 
     {% endif -%}
 
     {% if attribute.min_length != None -%}
-    if err := elemental.ValidateMinimumLength("{{ attribute_name }}", o.{{ field_name }}, {{ attribute.min_length }}, false); err != nil {
+    if err := {{ glob.prefix }}ValidateMinimumLength("{{ attribute_name }}", o.{{ field_name }}, {{ attribute.min_length }}, false); err != nil {
         errors = append(errors, err)
     }
 
@@ -135,12 +136,12 @@ func (o *{{specification.entity_name}}) Validate() elemental.Errors {
 
     {% if attribute.max_value != None -%}
     {% if attribute.type == "float" -%}
-    if err := elemental.ValidateMaximumFloat("{{ attribute_name }}", o.{{ field_name }}, {{ attribute.max_value }}, false); err != nil {
+    if err := {{ glob.prefix }}ValidateMaximumFloat("{{ attribute_name }}", o.{{ field_name }}, {{ attribute.max_value }}, false); err != nil {
         errors = append(errors, err)
     }
 
     {% else -%}
-    if err := elemental.ValidateMaximumInt("{{ attribute_name }}", o.{{ field_name }}, {{ attribute.max_value }}, false); err != nil {
+    if err := {{ glob.prefix }}ValidateMaximumInt("{{ attribute_name }}", o.{{ field_name }}, {{ attribute.max_value }}, false); err != nil {
         errors = append(errors, err)
     }
 
@@ -149,12 +150,12 @@ func (o *{{specification.entity_name}}) Validate() elemental.Errors {
 
     {% if attribute.min_value != None -%}
     {% if attribute.type == "float" -%}
-    if err := elemental.ValidateMinimumFloat("{{ attribute_name }}", o.{{ field_name }}, {{ attribute.min_value }}, false); err != nil {
+    if err := {{ glob.prefix }}ValidateMinimumFloat("{{ attribute_name }}", o.{{ field_name }}, {{ attribute.min_value }}, false); err != nil {
         errors = append(errors, err)
     }
 
     {% else -%}
-    if err := elemental.ValidateMinimumInt("{{ attribute_name }}", o.{{ field_name }}, {{ attribute.min_value }}, false); err != nil {
+    if err := {{ glob.prefix }}ValidateMinimumInt("{{ attribute_name }}", o.{{ field_name }}, {{ attribute.min_value }}, false); err != nil {
         errors = append(errors, err)
     }
 
@@ -163,7 +164,7 @@ func (o *{{specification.entity_name}}) Validate() elemental.Errors {
 
     {% if attribute.required -%}
     {% if attribute.type == "string" -%}
-    if err := elemental.ValidateRequiredString("{{ attribute_name }}", o.{{ field_name }}); err != nil {
+    if err := {{ glob.prefix }}ValidateRequiredString("{{ attribute_name }}", o.{{ field_name }}); err != nil {
         errors = append(errors, err)
     }
 
@@ -188,3 +189,105 @@ func (o *{{specification.entity_name}}) SetAPIKey(key string) {
 }
 
 {% endif -%}
+
+// SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
+func (o {{specification.entity_name}}) SpecificationForAttribute(name {{ glob.prefix }}AttributeSpecificationNameKey) {{ glob.prefix }}AttributeSpecification {
+
+  return {{ specification.entity_name }}AttributesMap[name]
+}
+
+var {{ specification.entity_name }}AttributesMap = map[{{ glob.prefix }}AttributeSpecificationNameKey]{{ glob.prefix }}AttributeSpecification{
+  {% for attribute in specification.attributes -%}
+    {{ specification.entity_name }}AttributeName{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}}: {{ glob.prefix }}AttributeSpecification{
+      {% if attribute.allowed_chars -%}
+      AllowedChars: "{{ attribute.allowed_chars}}",
+      {% endif -%}
+      {% if attribute.allowed_choices -%}
+      AllowedChoices: []string{"{{ attribute.allowed_choices|join('", "') }}"},
+      {% else -%}
+      AllowedChoices: []string{},
+      {% endif -%}
+      {% if attribute.autogenerated -%}
+      Autogenerated: true,
+      {% endif -%}
+      {% if attribute.availability -%}
+      Availability: "{{ attribute.availability }}",
+      {% endif -%}
+      {% if attribute.channel -%}
+      Channel: "{{ attribute.channel }}",
+      {% endif -%}
+      {% if attribute.creation_only -%}
+      CreationOnly: true,
+      {% endif -%}
+      {% if attribute.default_order -%}
+      DefaultOrder: true,
+      {% endif -%}
+      {% if attribute.deprecated -%}
+      Deprecated: true,
+      {% endif -%}
+      {% if attribute.exposed -%}
+      Exposed: true,
+      {% endif -%}
+      {% if attribute.filterable -%}
+      Filterable: true,
+      {% endif -%}
+      {% if attribute.foreign_key -%}
+      ForeignKey: true,
+      {% endif -%}
+      {% if attribute.format -%}
+      Format: "{{ attribute.format }}",
+      {% endif -%}
+      {% if attribute.identifier -%}
+      Identifier: true,
+      {% endif -%}
+      {% if attribute.index -%}
+      Index: true,
+      {% endif -%}
+      {% if attribute.max_length -%}
+      MaxLength: {{ attribute.max_length }},
+      {% endif -%}
+      {% if attribute.max_value -%}
+      MaxValue: {{ attribute.max_value }},
+      {% endif -%}
+      {% if attribute.min_length -%}
+      MinLength: {{ attribute.min_length }},
+      {% endif -%}
+      {% if attribute.min_value -%}
+      MinValue: {{ attribute.min_value }},
+      {% endif -%}
+      {% if attribute.local_name -%}
+      Name: "{{ attribute.local_name }}",
+      {% endif -%}
+      {% if attribute.orderable -%}
+      Orderable: true,
+      {% endif -%}
+      {% if attribute.primary_key -%}
+      PrimaryKey: true,
+      {% endif -%}
+      {% if attribute.read_only -%}
+      ReadOnly: true,
+      {% endif -%}
+      {% if attribute.required -%}
+      Required: true,
+      {% endif -%}
+      {% if attribute.stored -%}
+      Stored: true,
+      {% endif -%}
+      {% if attribute.subtype -%}
+      SubType: "{{ attribute.subtype }}",
+      {% endif -%}
+      {% if attribute.transient -%}
+      Transient: true,
+      {% endif -%}
+      {% if attribute.type -%}
+      Type: "{{ attribute.type }}",
+      {% endif -%}
+      {% if attribute.unique -%}
+      Unique: true,
+      {% endif -%}
+      {% if attribute.unique_scope -%}
+      UniqueScope: "{{ attribute.unique_scope }}",
+      {% endif -%}
+    },
+  {% endfor -%}
+}
