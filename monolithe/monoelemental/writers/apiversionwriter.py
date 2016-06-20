@@ -21,8 +21,12 @@ class APIVersionWriter(TemplateFileWriter):
 
         self.output_directory = "%s/elemental/%s" % (output, api_info["version"])
 
-        with open("%s/elemental/__code_header" % output, "r") as f:
-            self.header_content = f.read()
+        header_path = "%s/elemental/__code_header" % output
+        if os.path.exists(header_path):
+            with open(header_path, "r") as f:
+                self.header_content = f.read()
+        else:
+            self.header_content = ""
 
     def perform(self, specifications):
         """
