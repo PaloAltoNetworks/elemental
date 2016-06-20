@@ -7,15 +7,6 @@ import "github.com/aporeto-inc/elemental"
 import "{{imp}}"
 {% endfor -%}
 
-{% for attr, constant in constants.iteritems() -%}
-type {{ constant.type }} string
-const (
-{% for value in constant['values'] -%}
-    {{ value.name }} {{ constant.type }} = "{{ value.value }}"
-{% endfor -%}
-)
-{% endfor -%}
-
 // {{ specification.entity_name }}Attributes represents the various attributes name of {{ specification.entity_name }}.
 type {{ specification.entity_name }}Attributes int
 const (
@@ -23,6 +14,16 @@ const (
     {{ specification.entity_name }}Attribute{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}}{% if loop.index == 1 %}  {{ specification.entity_name }}Attributes = iota{% endif %}
 {% endfor -%}
 )
+
+{% for attr, constant in constants.iteritems() -%}
+// {{ constant.type }} represents the possible values for attribute "{{attr}}".
+type {{ constant.type }} string
+const (
+{% for value in constant['values'] -%}
+    {{ value.name }} {{ constant.type }} = "{{ value.value }}"
+{% endfor -%}
+)
+{% endfor -%}
 
 // {{specification.entity_name}}Identity represents the Identity of the object
 var {{specification.entity_name}}Identity = elemental.Identity {
