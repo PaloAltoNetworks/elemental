@@ -16,6 +16,14 @@ const (
 )
 {% endfor -%}
 
+// {{ specification.entity_name }}Attributes represents the various attributes name of {{ specification.entity_name }}.
+type {{ specification.entity_name }}Attributes int
+const (
+{% for attribute in specification.attributes -%}
+    {{ specification.entity_name }}Attribute{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}}{% if loop.index == 1 %}  {{ specification.entity_name }}Attributes = iota{% endif %}
+{% endfor -%}
+)
+
 // {{specification.entity_name}}Identity represents the Identity of the object
 var {{specification.entity_name}}Identity = elemental.Identity {
     Name:     "{{specification.rest_name}}",
