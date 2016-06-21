@@ -104,6 +104,7 @@ var ListAttributesMap = map[AttributeSpecificationNameKey]AttributeSpecification
 		Required:       true,
 		Stored:         true,
 		Type:           "string",
+		Unique:         true,
 	},
 	ListAttributeNameParentID: AttributeSpecification{
 		AllowedChoices: []string{},
