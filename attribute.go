@@ -9,7 +9,7 @@ type AttributeSpecificationNameKey string
 
 // AttributeSpecifiable is the interface of an object that can access specification of its attributes.
 type AttributeSpecifiable interface {
-	SpecificationForAttribute(AttributeSpecificationNameKey)
+	SpecificationForAttribute(AttributeSpecificationNameKey) AttributeSpecification
 }
 
 // UniqueScope is a the type used to define uniqueness.

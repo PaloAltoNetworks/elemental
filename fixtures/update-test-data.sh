@@ -33,6 +33,8 @@ func (o *UnmarshalableList) MarshalJSON() ([]byte, error) {
 func (o *UnmarshalableList) Validate() Errors { return nil }
 EOF
 
+gofmt -w ./data_test.go
+goimports -w ./data_test.go
 mv ./data_test.go ../
 
 rm -rf codegen
