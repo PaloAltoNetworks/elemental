@@ -285,9 +285,6 @@ var {{ specification.entity_name }}AttributesMap = map[{{ glob.prefix }}Attribut
       {% if attribute.unique -%}
       Unique: true,
       {% endif -%}
-      {% if attribute.unique_scope -%}
-      UniqueScope: "{{ attribute.unique_scope }}",
-      {% endif -%}
     },
   {% endfor -%}
 }
