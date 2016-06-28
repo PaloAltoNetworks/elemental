@@ -31,11 +31,10 @@ type UpdateMechanism string
 
 // Event represents one item of a Notification.
 type Event struct {
-	Entity    Identifiable `json:"entity"`
-	Data      []byte       `json:"-"`
-	Identity  string       `json:"identity"`
-	Type      EventType    `json:"type"`
-	Timestamp time.Time    `json:"timestamp"`
+	Entity    interface{} `json:"entity"`
+	Identity  string      `json:"identity"`
+	Type      EventType   `json:"type"`
+	Timestamp time.Time   `json:"timestamp"`
 }
 
 // NewEvent returns a new *Notification.
