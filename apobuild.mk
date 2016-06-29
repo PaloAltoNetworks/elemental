@@ -88,6 +88,10 @@ apoclean_apomock:
 
 
 ## Docker Test Container
+PROJECT_OWNER?=github.com/aporeto-inc
+PROJECT_NAME?=my-super-project
+BUILD_NUMBER?=latest
+GITHUB_TOKEN?=
 
 define DOCKER_FILE
 FROM golang:1.6
@@ -96,20 +100,17 @@ MAINTAINER Antoine Mercadal <antoine@aporeto.com>
 
 ARG GITHUB_TOKEN
 
-ADD . /go/src/github.com/aporeto-inc/manipulate
+ADD . /go/src/$(PROJECT_OWNER)/$(PROJECT_NAME)
 
 RUN wget https://github.com/Masterminds/glide/releases/download/0.10.2/glide-0.10.2-linux-amd64.tar.gz > /dev/null 2>&1
 RUN tar -xzf glide-*.tar.gz && cp linux-amd64/glide /go/bin/ && rm -rf linux-amd64 glide-*-.tar.gz
 RUN git config --global url."https://$$GITHUB_TOKEN:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 
-WORKDIR /go/src/github.com/aporeto-inc/manipulate
+WORKDIR /go/src/$(PROJECT_OWNER)/$(PROJECT_NAME)
 CMD make init && make test && make release
 endef
 export DOCKER_FILE
 
-PROJECT_NAME?=my-super-project
-BUILD_NUMBER?=latest
-GITHUB_TOKEN?=
 
 create_test_container:
 	echo "$$DOCKER_FILE" > .dockerfile-test
