@@ -11,7 +11,7 @@
 MAKEFLAGS += --warn-undefined-variables
 SHELL := /bin/bash
 
-APOMOCK_FOLDER := .domingomock
+APOMOCK_FOLDER := .apomock
 APOMOCK_PACKAGES := $(shell if [ -f .apo.mock ]; then cat .apo.mock; fi)
 NOVENDOR := $(shell glide novendor)
 
@@ -37,7 +37,7 @@ GITHUB_TOKEN?=
 domingoupdate:
 	@echo "# Running domingoupdate in" $(PWD)
 	@echo "REMINDER: you need to export GITHUB_TOKEN for this to work"
-	@curl -o domingo.mk -H "Cache-Control: no-cache" -H "Authorization: token $(GITHUB_TOKEN)" https://raw.githubusercontent.com/aporeto-inc/domingo/master/domingo.mk
+	@curl --fail -o domingo.mk -H "Cache-Control: no-cache" -H "Authorization: token $(GITHUB_TOKEN)" https://raw.githubusercontent.com/aporeto-inc/domingo/master/domingo.mk
 	@echo "domingo.mk updated!"
 
 ## Dependencies
