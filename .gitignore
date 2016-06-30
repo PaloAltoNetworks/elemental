@@ -5,6 +5,5 @@
 codegen
 *.pyc
 *.egg-info
-vendor/
-*.apomock
-test
+vendor
+testresults.xml
