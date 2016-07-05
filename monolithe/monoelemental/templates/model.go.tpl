@@ -107,8 +107,8 @@ func (o *{{specification.entity_name}}) SetIdentifier(ID string) {
 {%- endif -%}
 
 {% if attribute.getter -%}
-// {{ field_name }} returns the {{ attribute_name }} of the receiver
-func (o *{{ specification.entity_name }}) {{ field_name }}() {{ type }}{
+// Get{{ field_name }} returns the {{ attribute_name }} of the receiver
+func (o *{{ specification.entity_name }}) Get{{ field_name }}() {{ type }}{
   return o.{{ attribute_name }}
 }
 
