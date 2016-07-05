@@ -97,6 +97,33 @@ func (o *{{specification.entity_name}}) SetIdentifier(ID string) {
     o.{{ glob.identifier }} = ID
 }
 
+{% for attribute in specification.attributes -%}
+{% set field_name = attribute.local_name[0:1].upper() + attribute.local_name[1:] -%}
+{% set attribute_name = attribute.local_name -%}
+
+{% set type = attribute.local_type.split(';')[0] -%}
+{% if attribute.name in constants -%}
+{% set type = constants[attribute.name]['type'] -%}
+{%- endif -%}
+
+{% if attribute.getter -%}
+// {{ field_name }} returns the {{ attribute_name }} of the receiver
+func (o *{{ specification.entity_name }}) {{ field_name }}() {{ type }}{
+  return o.{{ attribute_name }}
+}
+
+{% endif -%}
+
+{% if attribute.setter -%}
+// Set{{ field_name }} set the given {{ attribute_name }} of the receiver
+func (o *{{ specification.entity_name }}) Set{{ field_name }}({{ attribute_name }} {{ type }}){
+  o.{{ attribute_name }} = {{ attribute_name }}
+}
+
+{% endif -%}
+
+{% endfor -%}
+
 // Validate valides the current information stored into the structure.
 func (o *{{specification.entity_name}}) Validate() {{ glob.prefix }}Errors {
 
