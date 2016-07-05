@@ -37,6 +37,7 @@ type AttributeSpecification struct {
 	Filterable     bool
 	ForeignKey     bool
 	Format         string
+	Getter         bool
 	Identifier     bool
 	Index          bool
 	MaxLength      uint
@@ -48,6 +49,7 @@ type AttributeSpecification struct {
 	PrimaryKey     bool
 	ReadOnly       bool
 	Required       bool
+	Setter         bool
 	Stored         bool
 	SubType        string
 	Transient      bool
