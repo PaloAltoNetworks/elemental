@@ -109,7 +109,7 @@ func (o *{{specification.entity_name}}) SetIdentifier(ID string) {
 {% if attribute.getter -%}
 // Get{{ field_name }} returns the {{ attribute_name }} of the receiver
 func (o *{{ specification.entity_name }}) Get{{ field_name }}() {{ type }}{
-  return o.{{ attribute_name }}
+  return o.{{ field_name }}
 }
 
 {% endif -%}
@@ -117,7 +117,7 @@ func (o *{{ specification.entity_name }}) Get{{ field_name }}() {{ type }}{
 {% if attribute.setter -%}
 // Set{{ field_name }} set the given {{ attribute_name }} of the receiver
 func (o *{{ specification.entity_name }}) Set{{ field_name }}({{ attribute_name }} {{ type }}){
-  o.{{ attribute_name }} = {{ attribute_name }}
+  o.{{ field_name }} = {{ attribute_name }}
 }
 
 {% endif -%}
