@@ -38,3 +38,14 @@ func NewErrors(errors ...*Error) Errors {
 
 	return append(Errors{}, errors...)
 }
+
+func (e *Errors) Error() string {
+
+	var errorString string
+
+	for i, err := range *e {
+		errorString += fmt.Sprintf("error %d: %s\n", i, err.Error())
+	}
+
+	return errorString
+}
