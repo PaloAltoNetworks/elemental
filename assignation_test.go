@@ -28,7 +28,7 @@ func TestAssignation_NewAssignation(t *testing.T) {
 		})
 
 		Convey("Then the identity should be InternalAssignationIdentity", func() {
-			So(a.Identity(), ShouldResemble, InternalAssignationIdentity)
+			So(a.Identity(), ShouldResemble, internalAssignationIdentity)
 		})
 
 		Convey("Then the identifier should be InternalAssignationIdentity", func() {

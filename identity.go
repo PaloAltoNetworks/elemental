@@ -6,10 +6,10 @@ package elemental
 
 import "fmt"
 
-// IdentifiablesList is a list of objects implementing the Identifiable interface.
+// An IdentifiablesList is a list of objects implementing the Identifiable interface.
 type IdentifiablesList []Identifiable
 
-// Identifiable is the interface that object which have Identity must implement.
+// An Identifiable is the interface that Elemental objects must implement.
 type Identifiable interface {
 
 	// Identity returns the Identity of the of the receiver.
@@ -22,28 +22,16 @@ type Identifiable interface {
 	SetIdentifier(string)
 }
 
-// Rootable is the interface that must be implemented by the root object of the API.
-// A Rootable also implements the Identifiable interface.
-type Rootable interface {
-	Identifiable
-
-	// APIKey returns the token that will be used to authentify the communication
-	// between a Storer and the backend.
-	APIKey() string
-
-	// SetAPIKey sets the token used by the Storer.
-	SetAPIKey(string)
-}
-
-// Identity is a structure that contains the necessary information about an Identifiable.
+// An Identity is a structure that contains the necessary information about an Identifiable.
 // The Name is usually the singular form of the Category.
-// For instance, "enterprise" and "enterprises".
+//
+// For instance, "cat" and "cats".
 type Identity struct {
 	Name     string
 	Category string
 }
 
-// MakeIdentity creates a new Identity
+// MakeIdentity returns a new Identity.
 func MakeIdentity(name, category string) Identity {
 
 	return Identity{
@@ -58,7 +46,7 @@ func (i Identity) String() string {
 	return fmt.Sprintf("<Identity %s|%s>", i.Name, i.Category)
 }
 
-// IsEmpty checks if the identity is empty or not.
+// IsEmpty checks if the identity is empty.
 func (i Identity) IsEmpty() bool {
 
 	return i.Name == "" && i.Category == ""

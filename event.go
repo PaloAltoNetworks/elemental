@@ -6,27 +6,24 @@ package elemental
 
 import "time"
 
-// EventHandler is prototype of a Push Center Handler.
-type EventHandler func(*Event)
-
-// EventType is the type of an event
+// EventType is the type of an event.
 type EventType string
 
 const (
 	// EventCreate is the type of creation event.
-	EventCreate = "create"
+	EventCreate EventType = "create"
 
 	// EventUpdate is the type of update event.
-	EventUpdate = "update"
+	EventUpdate EventType = "update"
 
 	// EventDelete is the type of delete event.
-	EventDelete = "delete"
+	EventDelete EventType = "delete"
 )
 
 // UpdateMechanism is the mechanism of an event
 type UpdateMechanism string
 
-// Event represents one item of a Notification.
+// An Event represents a computational event.
 type Event struct {
 	Entity    interface{} `json:"entity"`
 	Identity  string      `json:"identity"`
@@ -34,7 +31,7 @@ type Event struct {
 	Timestamp time.Time   `json:"timestamp"`
 }
 
-// NewEvent returns a new *Notification.
+// NewEvent returns a new Event.
 func NewEvent(t EventType, o Identifiable) *Event {
 
 	return &Event{
@@ -45,10 +42,10 @@ func NewEvent(t EventType, o Identifiable) *Event {
 	}
 }
 
-// Events represents a list of *Event.
+// An Events represents a list of Event.
 type Events []*Event
 
-// NewEvents creates a new EventsList.
+// NewEvents retutns a new Events.
 func NewEvents(events ...*Event) Events {
 
 	return append(Events{}, events...)

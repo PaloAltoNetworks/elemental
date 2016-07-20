@@ -31,12 +31,12 @@ const (
 	intInListFormat                  = `Data '%d' of attribute '%s' is not in list '%d'`
 )
 
-// Validatable is the interface for objects that can be validated.
+// A Validatable is the interface for objects that can be validated.
 type Validatable interface {
 	Validate() Errors
 }
 
-// ValidateStringInList validates if the string is in the list
+// ValidateStringInList validates if the string is in the list.
 func ValidateStringInList(attribute string, value string, enums []string) *Error {
 
 	for _, v := range enums {
@@ -48,7 +48,7 @@ func ValidateStringInList(attribute string, value string, enums []string) *Error
 	return NewError("Validation Error", fmt.Sprintf(stringInListFormat, value, attribute, enums), attribute, 409)
 }
 
-// ValidateFloatInList validates if the string is in the list
+// ValidateFloatInList validates if the string is in the list.
 func ValidateFloatInList(attribute string, value float64, enums []float64) *Error {
 
 	for _, v := range enums {
@@ -60,7 +60,7 @@ func ValidateFloatInList(attribute string, value float64, enums []float64) *Erro
 	return NewError("Validation Error", fmt.Sprintf(floatInListFormat, value, attribute, enums), attribute, 409)
 }
 
-// ValidateIntInList validates if the string is in the list
+// ValidateIntInList validates if the string is in the list.
 func ValidateIntInList(attribute string, value int, enums []int) *Error {
 
 	for _, v := range enums {
@@ -72,7 +72,7 @@ func ValidateIntInList(attribute string, value int, enums []int) *Error {
 	return NewError("Validation Error", fmt.Sprintf(intInListFormat, value, attribute, enums), attribute, 409)
 }
 
-// ValidateRequiredInt validates is the int is set to 0
+// ValidateRequiredInt validates is the int is set to 0.
 func ValidateRequiredInt(attribute string, value int) *Error {
 
 	if value == 0 {
@@ -82,7 +82,7 @@ func ValidateRequiredInt(attribute string, value int) *Error {
 	return nil
 }
 
-// ValidateRequiredFloat validates is the int is set to 0
+// ValidateRequiredFloat validates is the int is set to 0.
 func ValidateRequiredFloat(attribute string, value float64) *Error {
 
 	if value == 0.0 {
@@ -92,7 +92,7 @@ func ValidateRequiredFloat(attribute string, value float64) *Error {
 	return nil
 }
 
-// ValidateMaximumFloat validates a float against a maximum value
+// ValidateMaximumFloat validates a float against a maximum value.
 func ValidateMaximumFloat(attribute string, value float64, max float64, exclusive bool) *Error {
 
 	if !exclusive && value > max {
@@ -104,7 +104,7 @@ func ValidateMaximumFloat(attribute string, value float64, max float64, exclusiv
 	return nil
 }
 
-// ValidateMinimumFloat validates a float against a maximum value
+// ValidateMinimumFloat validates a float against a maximum value.
 func ValidateMinimumFloat(attribute string, value float64, min float64, exclusive bool) *Error {
 
 	if !exclusive && value < min {
@@ -116,7 +116,7 @@ func ValidateMinimumFloat(attribute string, value float64, min float64, exclusiv
 	return nil
 }
 
-// ValidateMaximumInt validates a integer against a maximum value
+// ValidateMaximumInt validates a integer against a maximum value.
 func ValidateMaximumInt(attribute string, value int, max int, exclusive bool) *Error {
 
 	if !exclusive && value > max {
@@ -128,7 +128,7 @@ func ValidateMaximumInt(attribute string, value int, max int, exclusive bool) *E
 	return nil
 }
 
-// ValidateMinimumInt validates a integer against a maximum value
+// ValidateMinimumInt validates a integer against a maximum value.
 func ValidateMinimumInt(attribute string, value int, min int, exclusive bool) *Error {
 
 	if !exclusive && value < min {
@@ -140,7 +140,7 @@ func ValidateMinimumInt(attribute string, value int, min int, exclusive bool) *E
 	return nil
 }
 
-// ValidateRequiredString validates is the string is empty or not
+// ValidateRequiredString validates if the string is empty.
 func ValidateRequiredString(attribute string, value string) *Error {
 
 	if value == "" {
@@ -150,7 +150,7 @@ func ValidateRequiredString(attribute string, value string) *Error {
 	return nil
 }
 
-// ValidatePattern validates a string against a regular expression
+// ValidatePattern validates a string against a regular expression.
 func ValidatePattern(attribute string, value string, pattern string) *Error {
 
 	re := regexp.MustCompile(pattern)
@@ -162,7 +162,7 @@ func ValidatePattern(attribute string, value string, pattern string) *Error {
 	return nil
 }
 
-// ValidateMinimumLength validates the minimum length of a string
+// ValidateMinimumLength validates the minimum length of a string.
 func ValidateMinimumLength(attribute string, value string, min int, exclusive bool) *Error {
 
 	length := len([]rune(value))
@@ -176,7 +176,7 @@ func ValidateMinimumLength(attribute string, value string, min int, exclusive bo
 	return nil
 }
 
-// ValidateMaximumLength validates the maximum length of a string
+// ValidateMaximumLength validates the maximum length of a string.
 func ValidateMaximumLength(attribute string, value string, max int, exclusive bool) *Error {
 
 	length := len([]rune(value))
