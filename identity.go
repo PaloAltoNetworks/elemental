@@ -75,3 +75,9 @@ var AllIdentity = Identity{
 	Name:     "__all__",
 	Category: "__all__",
 }
+
+// EmptyIdentity represents an empty Identity.
+var EmptyIdentity = Identity{
+	Name:     "",
+	Category: "",
+}
