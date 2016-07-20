@@ -45,7 +45,7 @@ func (t *Tag) Validate() Errors {
 
 func TestError_NewEvent(t *testing.T) {
 
-	Convey("Given I create an Error", t, func() {
+	Convey("Given I create an Event", t, func() {
 
 		tag := &Tag{}
 		e := NewEvent(EventCreate, tag)
@@ -54,6 +54,22 @@ func TestError_NewEvent(t *testing.T) {
 			So(e.Identity, ShouldEqual, "tag")
 			So(e.Type, ShouldEqual, EventCreate)
 			So(e.Entity, ShouldEqual, tag)
+		})
+	})
+}
+
+func TestError_NewEvents(t *testing.T) {
+
+	Convey("Given I create an Events", t, func() {
+
+		tag := &Tag{}
+		e1 := NewEvent(EventCreate, tag)
+		e2 := NewEvent(EventDelete, tag)
+
+		evts := NewEvents(e1, e2)
+
+		Convey("Then the Error should be correctly initialized", func() {
+			So(len(evts), ShouldEqual, 2)
 		})
 	})
 }

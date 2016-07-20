@@ -6,9 +6,6 @@ package elemental
 
 import "time"
 
-// EventsList represents a list of *Event.
-type EventsList []*Event
-
 // EventHandler is prototype of a Push Center Handler.
 type EventHandler func(*Event)
 
@@ -46,4 +43,13 @@ func NewEvent(t EventType, o Identifiable) *Event {
 		Identity:  o.Identity().Name,
 		Timestamp: time.Now(),
 	}
+}
+
+// Events represents a list of *Event.
+type Events []*Event
+
+// NewEvents creates a new EventsList.
+func NewEvents(events ...*Event) Events {
+
+	return append(Events{}, events...)
 }
