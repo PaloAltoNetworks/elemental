@@ -3,6 +3,7 @@
 package {{ package_name }}
 
 {% if package_name != 'elemental' -%}
+import "fmt"
 import "github.com/aporeto-inc/elemental"
 {% set _ = glob.update({'prefix': 'elemental.'}) -%}
 {% endif %}
@@ -89,6 +90,11 @@ func (o *{{specification.entity_name}}) Identity() {{ glob.prefix }}Identity {
 func (o *{{specification.entity_name}}) Identifier() string {
 
     return o.{{ glob.identifier }}
+}
+
+func  (o *{{specification.entity_name}}) String() string {
+
+  return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
 }
 
 // SetIdentifier sets the value of the object's unique identifier.
