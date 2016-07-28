@@ -153,7 +153,7 @@ func (o *{{specification.entity_name}}) Validate() {{ glob.prefix }}Errors {
     {% endif -%}
 
     {% if attribute.allowed_chars != None -%}
-    if err := {{ glob.prefix }}ValidatePattern("{{ attribute_name }}", o.{{ field_name }}, "{{ attribute.allowed_chars }}"); err != nil {
+    if err := {{ glob.prefix }}ValidatePattern("{{ attribute_name }}", o.{{ field_name }}, `{{ attribute.allowed_chars }}`); err != nil {
         errors = append(errors, err)
     }
 
@@ -211,7 +211,12 @@ func (o *{{specification.entity_name}}) Validate() {{ glob.prefix }}Errors {
     {% endif -%}
 
     {% endfor -%}
-    return errors
+
+    if len(errors) > 0 {
+        return errors
+    }
+
+    return nil
 }
 
 {% if specification.is_root -%}
@@ -240,7 +245,7 @@ var {{ specification.entity_name }}AttributesMap = map[{{ glob.prefix }}Attribut
   {% for attribute in specification.attributes -%}
     {{ specification.entity_name }}AttributeName{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}}: {{ glob.prefix }}AttributeSpecification{
       {% if attribute.allowed_chars -%}
-      AllowedChars: "{{ attribute.allowed_chars}}",
+      AllowedChars: `{{ attribute.allowed_chars}}`,
       {% endif -%}
       {% if attribute.allowed_choices -%}
       AllowedChoices: []string{"{{ attribute.allowed_choices|join('", "') }}"},
