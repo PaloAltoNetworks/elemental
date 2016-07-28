@@ -14,7 +14,9 @@ import "{{imp}}"
 
 const (
 {% for attribute in specification.attributes -%}
+    // {{ specification.entity_name }}AttributeName{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}} represents the attribute {{ attribute.local_name }}.
     {{ specification.entity_name }}AttributeName{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}} {{ glob.prefix }}AttributeSpecificationNameKey = "{{ specification.rest_name }}/{{ attribute.local_name }}"
+
 {% endfor -%}
 )
 
@@ -23,7 +25,9 @@ const (
 type {{ constant.type }} string
 const (
 {% for value in constant['values'] -%}
+    // {{ value.name }} represents the value {{ value.value }}.
     {{ value.name }} {{ constant.type }} = "{{ value.value }}"
+
 {% endfor -%}
 )
 {% endfor -%}
@@ -50,7 +54,9 @@ type {{specification.entity_name}} struct {
     {% if attribute.name in constants -%}
     {% set type = constants[attribute.name]['type'] -%}
     {%- endif -%}
+    // {{ attribute.description }}
     {{ field_name }} {{ type }} `{{json_tags}} {{cql_tags}}`
+
     {% if attribute.identifier -%}
     {% set _ = glob.update({'identifier': field_name}) -%}
     {% endif -%}
@@ -229,6 +235,7 @@ func (o {{specification.entity_name}}) SpecificationForAttribute(name {{ glob.pr
   return {{ specification.entity_name }}AttributesMap[name]
 }
 
+// {{ specification.entity_name }}AttributesMap represents the map of attribute for {{ specification.entity_name }}.
 var {{ specification.entity_name }}AttributesMap = map[{{ glob.prefix }}AttributeSpecificationNameKey]{{ glob.prefix }}AttributeSpecification{
   {% for attribute in specification.attributes -%}
     {{ specification.entity_name }}AttributeName{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}}: {{ glob.prefix }}AttributeSpecification{
