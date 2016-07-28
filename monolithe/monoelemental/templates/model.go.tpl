@@ -71,7 +71,7 @@ func New{{specification.entity_name}}() *{{specification.entity_name}} {
         {% set constructor = attribute.local_type.split(';')[1] -%}
         {% if constructor -%}
         {{ field_name }}: {{ constructor }},
-        {% endif %}
+        {% endif -%}
         {% elif attribute.default_value -%}
         {% set enclosing_format = '"%s"' if attribute.type in ['string', 'enum'] else '%s' -%}
         {{field_name}}: {{ enclosing_format % attribute.default_value}},
