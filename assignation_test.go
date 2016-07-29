@@ -19,10 +19,10 @@ func TestAssignation_NewAssignation(t *testing.T) {
 		l2 := NewList()
 		l2.ID = "2"
 
-		a := NewAssignation(OperationSet, ListIdentity, l1, l2)
+		a := NewAssignation(AssignationTypeSet, ListIdentity, l1, l2)
 
 		Convey("Then the assignation should be correctly initialized", func() {
-			So(a.Operation, ShouldEqual, OperationSet)
+			So(a.Type, ShouldEqual, AssignationTypeSet)
 			So(a.IDs, ShouldResemble, []string{"1", "2"})
 			So(a.MembersIdentity, ShouldResemble, ListIdentity)
 		})
@@ -42,13 +42,13 @@ func TestAssignation_NewAssignation(t *testing.T) {
 		l1.Name = "l1"
 
 		Convey("Then it should panic", func() {
-			So(func() { NewAssignation(OperationSet, ListIdentity, l1) }, ShouldPanic)
+			So(func() { NewAssignation(AssignationTypeSet, ListIdentity, l1) }, ShouldPanic)
 		})
 	})
 
 	Convey("Given I create a new Assignation with a bad operation", t, func() {
 
-		a := NewAssignation("bad", ListIdentity)
+		a := NewAssignation(42, ListIdentity)
 
 		Convey("Then it not validate correctly", func() {
 			So(a.Validate(), ShouldNotBeNil)
@@ -64,42 +64,42 @@ func TestAssignation_String(t *testing.T) {
 
 	Convey("Given I create a new Assignation with operation set", t, func() {
 
-		a := NewAssignation(OperationSet, ListIdentity, l1)
+		a := NewAssignation(AssignationTypeSet, ListIdentity, l1)
 
 		Convey("When I convert it to string", func() {
 
 			s := a.String()
 
 			Convey("Then the string should be correct", func() {
-				So(s, ShouldEqual, "<Assignation type:set identity:list ids:[1]>")
+				So(s, ShouldEqual, "<Assignation type:1 identity:list ids:[1]>")
 			})
 		})
 	})
 
 	Convey("Given I create a new Assignation with operation substractive", t, func() {
 
-		a := NewAssignation(OperationSubstractive, ListIdentity, l1)
+		a := NewAssignation(AssignationTypeSubstract, ListIdentity, l1)
 
 		Convey("When I convert it to string", func() {
 
 			s := a.String()
 
 			Convey("Then the string should be correct", func() {
-				So(s, ShouldEqual, "<Assignation type:substractive identity:list ids:[1]>")
+				So(s, ShouldEqual, "<Assignation type:3 identity:list ids:[1]>")
 			})
 		})
 	})
 
 	Convey("Given I create a new Assignation with operation additive", t, func() {
 
-		a := NewAssignation(OperationAdditive, ListIdentity, l1)
+		a := NewAssignation(AssignationTypeAdd, ListIdentity, l1)
 
 		Convey("When I convert it to string", func() {
 
 			s := a.String()
 
 			Convey("Then the string should be correct", func() {
-				So(s, ShouldEqual, "<Assignation type:additive identity:list ids:[1]>")
+				So(s, ShouldEqual, "<Assignation type:2 identity:list ids:[1]>")
 			})
 		})
 	})
