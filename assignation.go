@@ -12,29 +12,30 @@ var internalAssignationIdentity = Identity{
 	Category: "__internal_assignation__",
 }
 
-// Operation represents an partial operation.
-type Operation string
+// OperationMode represents the mode of an operation.
+type OperationMode int
 
 const (
-	// OperationSet represents an full an complete assignatuon
-	OperationSet Operation = "set"
 
-	// OperationAdditive represents a partial additive assignation.
-	OperationAdditive = "additive"
+	// OperationModeSet use to set an entire set of object.
+	OperationModeSet OperationMode = iota + 1
 
-	// OperationSubstractive represents a partial Substractive assignation.
-	OperationSubstractive = "substractive"
+	// OperationModeAdditive represents a partial additive assignation.
+	OperationModeAdditive
+
+	// OperationModeSubstractive represents a partial Substractive assignation.
+	OperationModeSubstractive
 )
 
 // An Assignation represents an abstract assignation between two elemental Identifiables.
 type Assignation struct {
-	MembersIdentity Identity  `json:"membersIdentity"`
-	IDs             []string  `json:"IDs"`
-	Operation       Operation `json:"operation"`
+	MembersIdentity Identity      `json:"membersIdentity"`
+	IDs             []string      `json:"IDs"`
+	Mode            OperationMode `json:"mode"`
 }
 
 // NewAssignation returns a new Assignation.
-func NewAssignation(operation Operation, membersIdentity Identity, members ...Identifiable) *Assignation {
+func NewAssignation(mode OperationMode, membersIdentity Identity, members ...Identifiable) *Assignation {
 
 	var ids []string
 	for _, member := range members {
@@ -47,7 +48,7 @@ func NewAssignation(operation Operation, membersIdentity Identity, members ...Id
 	return &Assignation{
 		MembersIdentity: membersIdentity,
 		IDs:             ids,
-		Operation:       operation,
+		Mode:            mode,
 	}
 }
 
@@ -74,7 +75,7 @@ func (a *Assignation) SetIdentifier(string) {}
 
 func (a *Assignation) String() string {
 
-	return fmt.Sprintf("<Assignation type:%s identity:%s ids:%v>", a.Operation, a.MembersIdentity.Name, a.IDs)
+	return fmt.Sprintf("<Assignation type:%d identity:%s ids:%v>", a.Mode, a.MembersIdentity.Name, a.IDs)
 }
 
 // Validate validates the current information stored into the Assignation.
@@ -82,7 +83,7 @@ func (a *Assignation) Validate() Errors {
 
 	errors := Errors{}
 
-	if err := ValidateStringInList("operation", string(a.Operation), []string{"full", "additive", "substractive"}); err != nil {
+	if err := ValidateStringInList("operation", string(a.Mode), []string{"full", "additive", "substractive"}); err != nil {
 		errors = append(errors, err)
 	}
 
