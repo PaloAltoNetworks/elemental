@@ -283,6 +283,9 @@ var {{ specification.entity_name }}AttributesMap = map[{{ glob.prefix }}Attribut
       {% if attribute.format -%}
       Format: "{{ attribute.format }}",
       {% endif -%}
+      {% if attribute.getter -%}
+      Getter: true,
+      {% endif -%}
       {% if attribute.identifier -%}
       Identifier: true,
       {% endif -%}
@@ -315,6 +318,9 @@ var {{ specification.entity_name }}AttributesMap = map[{{ glob.prefix }}Attribut
       {% endif -%}
       {% if attribute.required -%}
       Required: true,
+      {% endif -%}
+      {% if attribute.setter -%}
+      Setter: true,
       {% endif -%}
       {% if attribute.stored -%}
       Stored: true,

@@ -3,11 +3,20 @@ package elemental
 import "fmt"
 
 const (
-	ListAttributeNameID          AttributeSpecificationNameKey = "list/ID"
-	ListAttributeNameDescription AttributeSpecificationNameKey = "list/description"
-	ListAttributeNameName        AttributeSpecificationNameKey = "list/name"
-	ListAttributeNameParentID    AttributeSpecificationNameKey = "list/parentID"
-	ListAttributeNameParentType  AttributeSpecificationNameKey = "list/parentType"
+	// ListAttributeNameID represents the attribute ID.
+	ListAttributeNameID AttributeSpecificationNameKey = "ID"
+
+	// ListAttributeNameDescription represents the attribute description.
+	ListAttributeNameDescription AttributeSpecificationNameKey = "Description"
+
+	// ListAttributeNameName represents the attribute name.
+	ListAttributeNameName AttributeSpecificationNameKey = "Name"
+
+	// ListAttributeNameParentID represents the attribute parentID.
+	ListAttributeNameParentID AttributeSpecificationNameKey = "ParentID"
+
+	// ListAttributeNameParentType represents the attribute parentType.
+	ListAttributeNameParentType AttributeSpecificationNameKey = "ParentType"
 )
 
 // ListIdentity represents the Identity of the object
@@ -21,11 +30,20 @@ type ListsList []*List
 
 // List represents the model of a list
 type List struct {
-	ID          string `json:"ID,omitempty" cql:"id,omitempty"`
+	// The identifier
+	ID string `json:"ID,omitempty" cql:"id,omitempty"`
+
+	// The description
 	Description string `json:"description,omitempty" cql:"description,omitempty"`
-	Name        string `json:"name,omitempty" cql:"name,omitempty"`
-	ParentID    string `json:"parentID,omitempty" cql:"parentid,omitempty"`
-	ParentType  string `json:"parentType,omitempty" cql:"parenttype,omitempty"`
+
+	// The name
+	Name string `json:"name,omitempty" cql:"name,omitempty"`
+
+	// The identifier of the parent of the object
+	ParentID string `json:"parentID,omitempty" cql:"parentid,omitempty"`
+
+	// The type of the parent of the object
+	ParentType string `json:"parentType,omitempty" cql:"parenttype,omitempty"`
 }
 
 // NewList returns a new *List
@@ -46,10 +64,25 @@ func (o *List) Identifier() string {
 	return o.ID
 }
 
+func (o *List) String() string {
+
+	return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
+}
+
 // SetIdentifier sets the value of the object's unique identifier.
 func (o *List) SetIdentifier(ID string) {
 
 	o.ID = ID
+}
+
+// GetName returns the name of the receiver
+func (o *List) GetName() string {
+	return o.Name
+}
+
+// SetName set the given name of the receiver
+func (o *List) SetName(name string) {
+	o.Name = name
 }
 
 // Validate valides the current information stored into the structure.
@@ -61,7 +94,11 @@ func (o *List) Validate() Errors {
 		errors = append(errors, err)
 	}
 
-	return errors
+	if len(errors) > 0 {
+		return errors
+	}
+
+	return nil
 }
 
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
@@ -70,6 +107,7 @@ func (o List) SpecificationForAttribute(name AttributeSpecificationNameKey) Attr
 	return ListAttributesMap[name]
 }
 
+// ListAttributesMap represents the map of attribute for List.
 var ListAttributesMap = map[AttributeSpecificationNameKey]AttributeSpecification{
 	ListAttributeNameID: AttributeSpecification{
 		AllowedChoices: []string{},
@@ -136,21 +174,37 @@ var ListAttributesMap = map[AttributeSpecificationNameKey]AttributeSpecification
 }
 
 const (
-	TaskAttributeNameID          AttributeSpecificationNameKey = "task/ID"
-	TaskAttributeNameDescription AttributeSpecificationNameKey = "task/description"
-	TaskAttributeNameName        AttributeSpecificationNameKey = "task/name"
-	TaskAttributeNameParentID    AttributeSpecificationNameKey = "task/parentID"
-	TaskAttributeNameParentType  AttributeSpecificationNameKey = "task/parentType"
-	TaskAttributeNameStatus      AttributeSpecificationNameKey = "task/status"
+	// TaskAttributeNameID represents the attribute ID.
+	TaskAttributeNameID AttributeSpecificationNameKey = "ID"
+
+	// TaskAttributeNameDescription represents the attribute description.
+	TaskAttributeNameDescription AttributeSpecificationNameKey = "Description"
+
+	// TaskAttributeNameName represents the attribute name.
+	TaskAttributeNameName AttributeSpecificationNameKey = "Name"
+
+	// TaskAttributeNameParentID represents the attribute parentID.
+	TaskAttributeNameParentID AttributeSpecificationNameKey = "ParentID"
+
+	// TaskAttributeNameParentType represents the attribute parentType.
+	TaskAttributeNameParentType AttributeSpecificationNameKey = "ParentType"
+
+	// TaskAttributeNameStatus represents the attribute status.
+	TaskAttributeNameStatus AttributeSpecificationNameKey = "Status"
 )
 
 // TaskStatusValue represents the possible values for attribute "status".
 type TaskStatusValue string
 
 const (
-	TaskStatusDone     TaskStatusValue = "DONE"
+	// TaskStatusDone represents the value DONE.
+	TaskStatusDone TaskStatusValue = "DONE"
+
+	// TaskStatusProgress represents the value PROGRESS.
 	TaskStatusProgress TaskStatusValue = "PROGRESS"
-	TaskStatusTodo     TaskStatusValue = "TODO"
+
+	// TaskStatusTodo represents the value TODO.
+	TaskStatusTodo TaskStatusValue = "TODO"
 )
 
 // TaskIdentity represents the Identity of the object
@@ -164,12 +218,23 @@ type TasksList []*Task
 
 // Task represents the model of a task
 type Task struct {
-	ID          string          `json:"ID,omitempty" cql:"id,omitempty"`
-	Description string          `json:"description,omitempty" cql:"description,omitempty"`
-	Name        string          `json:"name,omitempty" cql:"name,omitempty"`
-	ParentID    string          `json:"parentID,omitempty" cql:"parentid,omitempty"`
-	ParentType  string          `json:"parentType,omitempty" cql:"parenttype,omitempty"`
-	Status      TaskStatusValue `json:"status,omitempty" cql:"status,omitempty"`
+	// The identifier
+	ID string `json:"ID,omitempty" cql:"id,omitempty"`
+
+	// The description
+	Description string `json:"description,omitempty" cql:"description,omitempty"`
+
+	// The name
+	Name string `json:"name,omitempty" cql:"name,omitempty"`
+
+	// The identifier of the parent of the object
+	ParentID string `json:"parentID,omitempty" cql:"parentid,omitempty"`
+
+	// The type of the parent of the object
+	ParentType string `json:"parentType,omitempty" cql:"parenttype,omitempty"`
+
+	// The status of the task
+	Status TaskStatusValue `json:"status,omitempty" cql:"status,omitempty"`
 }
 
 // NewTask returns a new *Task
@@ -192,6 +257,11 @@ func (o *Task) Identifier() string {
 	return o.ID
 }
 
+func (o *Task) String() string {
+
+	return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
+}
+
 // SetIdentifier sets the value of the object's unique identifier.
 func (o *Task) SetIdentifier(ID string) {
 
@@ -211,7 +281,11 @@ func (o *Task) Validate() Errors {
 		errors = append(errors, err)
 	}
 
-	return errors
+	if len(errors) > 0 {
+		return errors
+	}
+
+	return nil
 }
 
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
@@ -220,6 +294,7 @@ func (o Task) SpecificationForAttribute(name AttributeSpecificationNameKey) Attr
 	return TaskAttributesMap[name]
 }
 
+// TaskAttributesMap represents the map of attribute for Task.
 var TaskAttributesMap = map[AttributeSpecificationNameKey]AttributeSpecification{
 	TaskAttributeNameID: AttributeSpecification{
 		AllowedChoices: []string{},
