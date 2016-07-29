@@ -22,7 +22,7 @@ func TestAssignation_NewAssignation(t *testing.T) {
 		a := NewAssignation(AssignationTypeSet, ListIdentity, l1, l2)
 
 		Convey("Then the assignation should be correctly initialized", func() {
-			So(a.Mode, ShouldEqual, AssignationTypeSet)
+			So(a.Type, ShouldEqual, AssignationTypeSet)
 			So(a.IDs, ShouldResemble, []string{"1", "2"})
 			So(a.MembersIdentity, ShouldResemble, ListIdentity)
 		})

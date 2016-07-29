@@ -31,7 +31,7 @@ const (
 type Assignation struct {
 	MembersIdentity Identity        `json:"membersIdentity"`
 	IDs             []string        `json:"IDs"`
-	Mode            AssignationType `json:"mode"`
+	Type            AssignationType `json:"type"`
 }
 
 // NewAssignation returns a new Assignation.
@@ -48,7 +48,7 @@ func NewAssignation(mode AssignationType, membersIdentity Identity, members ...I
 	return &Assignation{
 		MembersIdentity: membersIdentity,
 		IDs:             ids,
-		Mode:            mode,
+		Type:            mode,
 	}
 }
 
@@ -75,7 +75,7 @@ func (a *Assignation) SetIdentifier(string) {}
 
 func (a *Assignation) String() string {
 
-	return fmt.Sprintf("<Assignation type:%d identity:%s ids:%v>", a.Mode, a.MembersIdentity.Name, a.IDs)
+	return fmt.Sprintf("<Assignation type:%d identity:%s ids:%v>", a.Type, a.MembersIdentity.Name, a.IDs)
 }
 
 // Validate validates the current information stored into the Assignation.
@@ -83,7 +83,7 @@ func (a *Assignation) Validate() Errors {
 
 	errors := Errors{}
 
-	if err := ValidateStringInList("operation", string(a.Mode), []string{"full", "additive", "substractive"}); err != nil {
+	if err := ValidateStringInList("operation", string(a.Type), []string{"full", "additive", "substractive"}); err != nil {
 		errors = append(errors, err)
 	}
 
