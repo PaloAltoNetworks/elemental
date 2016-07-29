@@ -14,8 +14,9 @@ import "{{imp}}"
 
 const (
 {% for attribute in specification.attributes -%}
+    {% set field_name = attribute.local_name[0:1].upper() + attribute.local_name[1:] -%}
     // {{ specification.entity_name }}AttributeName{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}} represents the attribute {{ attribute.local_name }}.
-    {{ specification.entity_name }}AttributeName{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}} {{ glob.prefix }}AttributeSpecificationNameKey = "{{ specification.rest_name }}/{{ attribute.local_name }}"
+    {{ specification.entity_name }}AttributeName{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}} {{ glob.prefix }}AttributeSpecificationNameKey = "{{ field_name }}"
 
 {% endfor -%}
 )
