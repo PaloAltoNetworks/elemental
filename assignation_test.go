@@ -19,10 +19,10 @@ func TestAssignation_NewAssignation(t *testing.T) {
 		l2 := NewList()
 		l2.ID = "2"
 
-		a := NewAssignation(OperationModeSet, ListIdentity, l1, l2)
+		a := NewAssignation(AssignationTypeSet, ListIdentity, l1, l2)
 
 		Convey("Then the assignation should be correctly initialized", func() {
-			So(a.Mode, ShouldEqual, OperationModeSet)
+			So(a.Mode, ShouldEqual, AssignationTypeSet)
 			So(a.IDs, ShouldResemble, []string{"1", "2"})
 			So(a.MembersIdentity, ShouldResemble, ListIdentity)
 		})
@@ -42,7 +42,7 @@ func TestAssignation_NewAssignation(t *testing.T) {
 		l1.Name = "l1"
 
 		Convey("Then it should panic", func() {
-			So(func() { NewAssignation(OperationModeSet, ListIdentity, l1) }, ShouldPanic)
+			So(func() { NewAssignation(AssignationTypeSet, ListIdentity, l1) }, ShouldPanic)
 		})
 	})
 
@@ -64,7 +64,7 @@ func TestAssignation_String(t *testing.T) {
 
 	Convey("Given I create a new Assignation with operation set", t, func() {
 
-		a := NewAssignation(OperationModeSet, ListIdentity, l1)
+		a := NewAssignation(AssignationTypeSet, ListIdentity, l1)
 
 		Convey("When I convert it to string", func() {
 
@@ -78,7 +78,7 @@ func TestAssignation_String(t *testing.T) {
 
 	Convey("Given I create a new Assignation with operation substractive", t, func() {
 
-		a := NewAssignation(OperationModeSubstractive, ListIdentity, l1)
+		a := NewAssignation(AssignationTypeSubstract, ListIdentity, l1)
 
 		Convey("When I convert it to string", func() {
 
@@ -92,7 +92,7 @@ func TestAssignation_String(t *testing.T) {
 
 	Convey("Given I create a new Assignation with operation additive", t, func() {
 
-		a := NewAssignation(OperationModeAdditive, ListIdentity, l1)
+		a := NewAssignation(AssignationTypeAdd, ListIdentity, l1)
 
 		Convey("When I convert it to string", func() {
 

@@ -12,30 +12,30 @@ var internalAssignationIdentity = Identity{
 	Category: "__internal_assignation__",
 }
 
-// OperationMode represents the mode of an operation.
-type OperationMode int
+// AssignationType represents the mode of an operation.
+type AssignationType int
 
 const (
 
-	// OperationModeSet use to set an entire set of object.
-	OperationModeSet OperationMode = iota + 1
+	// AssignationTypeSet use to set an entire set of object.
+	AssignationTypeSet AssignationType = iota + 1
 
-	// OperationModeAdditive represents a partial additive assignation.
-	OperationModeAdditive
+	// AssignationTypeAdd represents a partial additive assignation.
+	AssignationTypeAdd
 
-	// OperationModeSubstractive represents a partial Substractive assignation.
-	OperationModeSubstractive
+	// AssignationTypeSubstract represents a partial Substractive assignation.
+	AssignationTypeSubstract
 )
 
 // An Assignation represents an abstract assignation between two elemental Identifiables.
 type Assignation struct {
-	MembersIdentity Identity      `json:"membersIdentity"`
-	IDs             []string      `json:"IDs"`
-	Mode            OperationMode `json:"mode"`
+	MembersIdentity Identity        `json:"membersIdentity"`
+	IDs             []string        `json:"IDs"`
+	Mode            AssignationType `json:"mode"`
 }
 
 // NewAssignation returns a new Assignation.
-func NewAssignation(mode OperationMode, membersIdentity Identity, members ...Identifiable) *Assignation {
+func NewAssignation(mode AssignationType, membersIdentity Identity, members ...Identifiable) *Assignation {
 
 	var ids []string
 	for _, member := range members {
