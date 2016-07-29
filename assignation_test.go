@@ -71,7 +71,7 @@ func TestAssignation_String(t *testing.T) {
 			s := a.String()
 
 			Convey("Then the string should be correct", func() {
-				So(s, ShouldEqual, "<Assignation type:set identity:list ids:[1]>")
+				So(s, ShouldEqual, "<Assignation type:1 identity:list ids:[1]>")
 			})
 		})
 	})
@@ -85,7 +85,7 @@ func TestAssignation_String(t *testing.T) {
 			s := a.String()
 
 			Convey("Then the string should be correct", func() {
-				So(s, ShouldEqual, "<Assignation type:substractive identity:list ids:[1]>")
+				So(s, ShouldEqual, "<Assignation type:3 identity:list ids:[1]>")
 			})
 		})
 	})
@@ -99,7 +99,7 @@ func TestAssignation_String(t *testing.T) {
 			s := a.String()
 
 			Convey("Then the string should be correct", func() {
-				So(s, ShouldEqual, "<Assignation type:additive identity:list ids:[1]>")
+				So(s, ShouldEqual, "<Assignation type:2 identity:list ids:[1]>")
 			})
 		})
 	})

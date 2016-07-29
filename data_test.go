@@ -16,6 +16,9 @@ type List struct {
 	// The identifier
 	ID string `json:"ID,omitempty" cql:"id,omitempty"`
 
+	// A creation only only attribute
+	CreationOnly string `json:"creationOnly,omitempty" cql:"creationonly,omitempty"`
+
 	// The description
 	Description string `json:"description,omitempty" cql:"description,omitempty"`
 
@@ -27,6 +30,9 @@ type List struct {
 
 	// The type of the parent of the object
 	ParentType string `json:"parentType,omitempty" cql:"parenttype,omitempty"`
+
+	// A read only attribute
+	ReadOnly string `json:"readOnly,omitempty" cql:"readonly,omitempty"`
 }
 
 // NewList returns a new *List
@@ -58,6 +64,11 @@ func (o *List) SetIdentifier(ID string) {
 	o.ID = ID
 }
 
+// GetCreationOnly returns the creationOnly of the receiver
+func (o *List) GetCreationOnly() string {
+	return o.CreationOnly
+}
+
 // GetName returns the name of the receiver
 func (o *List) GetName() string {
 	return o.Name
@@ -68,12 +79,25 @@ func (o *List) SetName(name string) {
 	o.Name = name
 }
 
+// GetReadOnly returns the readOnly of the receiver
+func (o *List) GetReadOnly() string {
+	return o.ReadOnly
+}
+
 // Validate valides the current information stored into the structure.
 func (o *List) Validate() Errors {
 
 	errors := Errors{}
 
+	if err := ValidateRequiredString("creationOnly", o.CreationOnly); err != nil {
+		errors = append(errors, err)
+	}
+
 	if err := ValidateRequiredString("name", o.Name); err != nil {
+		errors = append(errors, err)
+	}
+
+	if err := ValidateRequiredString("readOnly", o.ReadOnly); err != nil {
 		errors = append(errors, err)
 	}
 
@@ -101,6 +125,20 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Identifier:     true,
 		Name:           "ID",
 		Orderable:      true,
+		Stored:         true,
+		Type:           "string",
+		Unique:         true,
+	},
+	"CreationOnly": AttributeSpecification{
+		AllowedChoices: []string{},
+		CreationOnly:   true,
+		Exposed:        true,
+		Filterable:     true,
+		Format:         "free",
+		Getter:         true,
+		Name:           "creationOnly",
+		Orderable:      true,
+		Required:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
@@ -150,6 +188,20 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
+		Stored:         true,
+		Type:           "string",
+		Unique:         true,
+	},
+	"ReadOnly": AttributeSpecification{
+		AllowedChoices: []string{},
+		Exposed:        true,
+		Filterable:     true,
+		Format:         "free",
+		Getter:         true,
+		Name:           "readOnly",
+		Orderable:      true,
+		ReadOnly:       true,
+		Required:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
