@@ -39,7 +39,7 @@ func TestAttribute_SpecificationForAttribute(t *testing.T) {
 
 		Convey("When I get the Attribute specification for the name", func() {
 
-			spec := l.SpecificationForAttribute(ListAttributeNameName)
+			spec := l.SpecificationForAttribute("Name")
 
 			Convey("then it should be correct", func() {
 				So(spec.AllowedChars, ShouldEqual, "")

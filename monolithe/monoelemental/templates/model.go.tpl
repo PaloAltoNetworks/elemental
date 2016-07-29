@@ -12,15 +12,6 @@ import "github.com/aporeto-inc/elemental"
 import "{{imp}}"
 {% endfor -%}
 
-const (
-{% for attribute in specification.attributes -%}
-    {% set field_name = attribute.local_name[0:1].upper() + attribute.local_name[1:] -%}
-    // {{ specification.entity_name }}AttributeName{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}} represents the attribute {{ attribute.local_name }}.
-    {{ specification.entity_name }}AttributeName{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}} {{ glob.prefix }}AttributeSpecificationNameKey = "{{ field_name }}"
-
-{% endfor -%}
-)
-
 {% for attr, constant in constants.iteritems() -%}
 // {{ constant.type }} represents the possible values for attribute "{{attr}}".
 type {{ constant.type }} string
@@ -236,15 +227,15 @@ func (o *{{specification.entity_name}}) SetAPIKey(key string) {
 {% endif -%}
 
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
-func (o {{specification.entity_name}}) SpecificationForAttribute(name {{ glob.prefix }}AttributeSpecificationNameKey) {{ glob.prefix }}AttributeSpecification {
+func (o {{specification.entity_name}}) SpecificationForAttribute(name string) {{ glob.prefix }}AttributeSpecification {
 
   return {{ specification.entity_name }}AttributesMap[name]
 }
 
 // {{ specification.entity_name }}AttributesMap represents the map of attribute for {{ specification.entity_name }}.
-var {{ specification.entity_name }}AttributesMap = map[{{ glob.prefix }}AttributeSpecificationNameKey]{{ glob.prefix }}AttributeSpecification{
+var {{ specification.entity_name }}AttributesMap = map[string]{{ glob.prefix }}AttributeSpecification{
   {% for attribute in specification.attributes -%}
-    {{ specification.entity_name }}AttributeName{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}}: {{ glob.prefix }}AttributeSpecification{
+    "{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}}": {{ glob.prefix }}AttributeSpecification{
       {% if attribute.allowed_chars -%}
       AllowedChars: `{{ attribute.allowed_chars}}`,
       {% endif -%}

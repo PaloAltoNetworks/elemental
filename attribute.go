@@ -4,12 +4,9 @@
 
 package elemental
 
-// AttributeSpecificationNameKey represents an attribute name.
-type AttributeSpecificationNameKey string
-
 // An AttributeSpecifiable is the interface an object must implement in order to access specification of its attributes.
 type AttributeSpecifiable interface {
-	SpecificationForAttribute(AttributeSpecificationNameKey) AttributeSpecification
+	SpecificationForAttribute(string) AttributeSpecification
 }
 
 // UniqueScope is a the type used to define uniqueness.
