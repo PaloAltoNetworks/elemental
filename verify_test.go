@@ -13,27 +13,23 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 		l1 := NewList()
 		l2 := NewList()
 
-		Convey("When I verify 2 objects that are ok", func() {
+		Convey("When I verify 2 objects that are ok on a create operation", func() {
 
-			l1.ReadOnly = "value"
-			l2.ReadOnly = "value"
-
+			l1.ReadOnly = ""
 			l1.CreationOnly = "cvalue"
-			l2.CreationOnly = "cvalue"
 
-			errs := ValidateAdvancedSpecification(l1, l2, OperationCreate)
+			errs := ValidateAdvancedSpecification(l1, nil, OperationCreate)
 
 			Convey("Then errs should not nil", func() {
 				So(errs, ShouldBeNil)
 			})
 		})
 
-		Convey("When I try to modify a readonly attribute on a create operation", func() {
+		Convey("When I try to set a readonly attribute on a create operation", func() {
 
 			l1.ReadOnly = "value"
-			l2.ReadOnly = "not value"
 
-			errs := ValidateAdvancedSpecification(l1, l2, OperationCreate)
+			errs := ValidateAdvancedSpecification(l1, nil, OperationCreate)
 
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)

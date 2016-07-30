@@ -34,7 +34,7 @@ func TestUtils_extractFieldNames(t *testing.T) {
 	})
 }
 
-func TestUtils_areValuesEqual(t *testing.T) {
+func TestUtils_areFieldValuesEqual(t *testing.T) {
 
 	Convey("Given I have 2 list", t, func() {
 
@@ -47,7 +47,7 @@ func TestUtils_areValuesEqual(t *testing.T) {
 			l2.Name = "list1"
 
 			Convey("Then the values should be equal", func() {
-				So(fieldValuesEquals("Name", l1, l2), ShouldBeTrue)
+				So(areFieldValuesEqual("Name", l1, l2), ShouldBeTrue)
 			})
 		})
 
@@ -57,7 +57,81 @@ func TestUtils_areValuesEqual(t *testing.T) {
 			l2.Name = "list2"
 
 			Convey("Then the values should not be equal", func() {
-				So(fieldValuesEquals("Name", l1, l2), ShouldBeFalse)
+				So(areFieldValuesEqual("Name", l1, l2), ShouldBeFalse)
+			})
+		})
+	})
+}
+
+func TestUtils_isFieldValueZero(t *testing.T) {
+
+	Convey("Given I have a struct", t, func() {
+
+		type S struct {
+			S   string
+			B   bool
+			I   int
+			F   float32
+			A   []string
+			M   map[string]string
+			Sub *S
+		}
+
+		Convey("When I set all zero values", func() {
+
+			s := &S{"", false, 0, 0.0, nil, nil, &S{}}
+
+			Convey("Then isFieldValueZero on S should return true", func() {
+				So(isFieldValueZero("S", s), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueZero on B should return true", func() {
+				So(isFieldValueZero("B", s), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueZero on I should return true", func() {
+				So(isFieldValueZero("I", s), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueZero on F should return true", func() {
+				So(isFieldValueZero("F", s), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueZero on A should return true", func() {
+				So(isFieldValueZero("A", s), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueZero on M should return true", func() {
+				So(isFieldValueZero("M", s), ShouldBeTrue)
+			})
+		})
+
+		Convey("When I set all non zero values", func() {
+
+			s := &S{"hello", true, 1, 1.0, []string{"a"}, map[string]string{"a": "b"}, &S{S: "nope"}}
+
+			Convey("Then isFieldValueZero on S should return false", func() {
+				So(isFieldValueZero("S", s), ShouldBeFalse)
+			})
+
+			Convey("Then isFieldValueZero on B should return false", func() {
+				So(isFieldValueZero("B", s), ShouldBeFalse)
+			})
+
+			Convey("Then isFieldValueZero on I should return false", func() {
+				So(isFieldValueZero("I", s), ShouldBeFalse)
+			})
+
+			Convey("Then isFieldValueZero on F should return false", func() {
+				So(isFieldValueZero("F", s), ShouldBeFalse)
+			})
+
+			Convey("Then isFieldValueZero on A should return false", func() {
+				So(isFieldValueZero("A", s), ShouldBeFalse)
+			})
+
+			Convey("Then isFieldValueZero on M should return false", func() {
+				So(isFieldValueZero("M", s), ShouldBeFalse)
 			})
 		})
 	})

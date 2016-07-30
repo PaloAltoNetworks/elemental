@@ -16,33 +16,44 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 
 		spec := obj.SpecificationForAttribute(field)
 
-		// Read Only
-		if spec.ReadOnly &&
-			!fieldValuesEquals(field, obj, pristine) {
-			errors = append(
-				errors,
-				NewError(
-					"Read Only Error",
-					fmt.Sprintf("Field %s is read only. You cannot set the value.", field),
-					"specification",
-					3001,
-				),
-			)
-		}
+		switch op {
+		case OperationCreate:
+			if spec.ReadOnly && !isFieldValueZero(field, obj) {
+				errors = append(
+					errors,
+					NewError(
+						"Read Only Error",
+						fmt.Sprintf("Field %s is read only. You cannot set its value.", field),
+						"specification",
+						3001,
+					),
+				)
+			}
 
-		// Create Only
-		if spec.CreationOnly &&
-			op != OperationCreate &&
-			!fieldValuesEquals(field, obj, pristine) {
-			errors = append(
-				errors,
-				NewError(
-					"Creation Only Error",
-					fmt.Sprintf("Field %s can only be set during creation. You cannot change the value.", field),
-					"specification",
-					3001,
-				),
-			)
+		case OperationUpdate:
+			if spec.ReadOnly && !areFieldValuesEqual(field, obj, pristine) {
+				errors = append(
+					errors,
+					NewError(
+						"Read Only Error",
+						fmt.Sprintf("Field %s is read only. You cannot modify its value.", field),
+						"specification",
+						3001,
+					),
+				)
+			}
+
+			if spec.CreationOnly && !areFieldValuesEqual(field, obj, pristine) {
+				errors = append(
+					errors,
+					NewError(
+						"Creation Only Error",
+						fmt.Sprintf("Field %s can only be set during creation. You cannot modify its value.", field),
+						"specification",
+						3001,
+					),
+				)
+			}
 		}
 	}
 
