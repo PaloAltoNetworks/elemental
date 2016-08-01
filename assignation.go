@@ -83,7 +83,7 @@ func (a *Assignation) Validate() Errors {
 
 	errors := Errors{}
 
-	if err := ValidateStringInList("operation", string(a.Type), []string{"full", "additive", "substractive"}); err != nil {
+	if err := ValidateStringInList("operation", string(a.Type), []string{"full", "additive", "substractive"}, false); err != nil {
 		errors = append(errors, err)
 	}
 

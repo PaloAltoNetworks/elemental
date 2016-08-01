@@ -292,7 +292,7 @@ func (o *Task) Validate() Errors {
 		errors = append(errors, err)
 	}
 
-	if err := ValidateStringInList("status", string(o.Status), []string{"DONE", "PROGRESS", "TODO"}); err != nil {
+	if err := ValidateStringInList("status", string(o.Status), []string{"DONE", "PROGRESS", "TODO"}, false); err != nil {
 		errors = append(errors, err)
 	}
 
