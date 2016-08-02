@@ -92,3 +92,33 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 		})
 	})
 }
+
+func TestVerify_BackportUnexposedFields(t *testing.T) {
+
+	Convey("Given have to objects", t, func() {
+
+		l1 := NewList()
+		l2 := NewList()
+
+		l1.Name = "l1"
+		l2.Name = "l2"
+
+		l1.Unexposed = "u1"
+		l2.Unexposed = "u2"
+
+		Convey("When I backport unexposed fields from l1 to l2", func() {
+
+			BackportUnexposedFields(l1, l2)
+
+			Convey("Then the name should be different", func() {
+				So(l1.Name, ShouldEqual, "l1")
+				So(l2.Name, ShouldEqual, "l2")
+			})
+
+			Convey("Then the Unexposed attribute should be equal", func() {
+				So(l1.Unexposed, ShouldEqual, "u1")
+				So(l2.Unexposed, ShouldEqual, "u1")
+			})
+		})
+	})
+}

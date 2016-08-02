@@ -2,6 +2,7 @@ package elemental
 
 import (
 	"fmt"
+	"reflect"
 )
 
 // ValidateAdvancedSpecification verifies advanced specifications attributes like ReadOnly and CreationOnly.
@@ -15,6 +16,11 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 	for _, field := range extractFieldNames(obj) {
 
 		spec := obj.SpecificationForAttribute(field)
+
+		// If the field is not exposed, we don't enforce anything.
+		if !spec.Exposed {
+			continue
+		}
 
 		switch op {
 		case OperationCreate:
@@ -62,4 +68,17 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 	}
 
 	return nil
+}
+
+// BackportUnexposedFields copy the values of unexposed fields from src to dest.
+func BackportUnexposedFields(src, dest AttributeSpecifiable) {
+
+	for _, field := range extractFieldNames(src) {
+
+		spec := src.SpecificationForAttribute(field)
+
+		if !spec.Exposed {
+			reflect.ValueOf(dest).Elem().FieldByName(field).Set(reflect.ValueOf(src).Elem().FieldByName(field))
+		}
+	}
 }

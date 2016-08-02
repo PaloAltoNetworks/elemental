@@ -21,7 +21,7 @@ func TestUtils_extractFieldNames(t *testing.T) {
 			fields := extractFieldNames(l1)
 
 			Convey("Then all fields should be present", func() {
-				So(len(fields), ShouldEqual, 7)
+				So(len(fields), ShouldEqual, 8)
 				So(fields, ShouldContain, "ID")
 				So(fields, ShouldContain, "Description")
 				So(fields, ShouldContain, "Name")
@@ -29,6 +29,7 @@ func TestUtils_extractFieldNames(t *testing.T) {
 				So(fields, ShouldContain, "ParentType")
 				So(fields, ShouldContain, "CreationOnly")
 				So(fields, ShouldContain, "ReadOnly")
+				So(fields, ShouldContain, "Unexposed")
 			})
 		})
 	})

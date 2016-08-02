@@ -14,25 +14,28 @@ type ListsList []*List
 // List represents the model of a list
 type List struct {
 	// The identifier
-	ID string `json:"ID,omitempty" cql:"id,omitempty"`
+	ID string `json:"ID,omitempty" cql:"id"`
 
 	// A creation only only attribute
-	CreationOnly string `json:"creationOnly,omitempty" cql:"creationonly,omitempty"`
+	CreationOnly string `json:"creationOnly,omitempty" cql:"creationonly"`
 
 	// The description
-	Description string `json:"description,omitempty" cql:"description,omitempty"`
+	Description string `json:"description,omitempty" cql:"description"`
 
 	// The name
-	Name string `json:"name,omitempty" cql:"name,omitempty"`
+	Name string `json:"name,omitempty" cql:"name"`
 
 	// The identifier of the parent of the object
-	ParentID string `json:"parentID,omitempty" cql:"parentid,omitempty"`
+	ParentID string `json:"parentID,omitempty" cql:"parentid"`
 
 	// The type of the parent of the object
-	ParentType string `json:"parentType,omitempty" cql:"parenttype,omitempty"`
+	ParentType string `json:"parentType,omitempty" cql:"parenttype"`
 
 	// A read only attribute
-	ReadOnly string `json:"readOnly,omitempty" cql:"readonly,omitempty"`
+	ReadOnly string `json:"readOnly,omitempty" cql:"readonly"`
+
+	// An unexposed attribute
+	Unexposed string `json:"-" cql:"unexposed"`
 }
 
 // NewList returns a new *List
@@ -84,6 +87,11 @@ func (o *List) GetReadOnly() string {
 	return o.ReadOnly
 }
 
+// GetUnexposed returns the unexposed of the receiver
+func (o *List) GetUnexposed() string {
+	return o.Unexposed
+}
+
 // Validate valides the current information stored into the structure.
 func (o *List) Validate() Errors {
 
@@ -98,6 +106,10 @@ func (o *List) Validate() Errors {
 	}
 
 	if err := ValidateRequiredString("readOnly", o.ReadOnly); err != nil {
+		errors = append(errors, err)
+	}
+
+	if err := ValidateRequiredString("unexposed", o.Unexposed); err != nil {
 		errors = append(errors, err)
 	}
 
@@ -206,6 +218,19 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Type:           "string",
 		Unique:         true,
 	},
+	"Unexposed": AttributeSpecification{
+		AllowedChoices: []string{},
+		CreationOnly:   true,
+		Filterable:     true,
+		Format:         "free",
+		Getter:         true,
+		Name:           "unexposed",
+		Orderable:      true,
+		Required:       true,
+		Stored:         true,
+		Type:           "string",
+		Unique:         true,
+	},
 }
 
 // TaskStatusValue represents the possible values for attribute "status".
@@ -234,22 +259,22 @@ type TasksList []*Task
 // Task represents the model of a task
 type Task struct {
 	// The identifier
-	ID string `json:"ID,omitempty" cql:"id,omitempty"`
+	ID string `json:"ID,omitempty" cql:"id"`
 
 	// The description
-	Description string `json:"description,omitempty" cql:"description,omitempty"`
+	Description string `json:"description,omitempty" cql:"description"`
 
 	// The name
-	Name string `json:"name,omitempty" cql:"name,omitempty"`
+	Name string `json:"name,omitempty" cql:"name"`
 
 	// The identifier of the parent of the object
-	ParentID string `json:"parentID,omitempty" cql:"parentid,omitempty"`
+	ParentID string `json:"parentID,omitempty" cql:"parentid"`
 
 	// The type of the parent of the object
-	ParentType string `json:"parentType,omitempty" cql:"parenttype,omitempty"`
+	ParentType string `json:"parentType,omitempty" cql:"parenttype"`
 
 	// The status of the task
-	Status TaskStatusValue `json:"status,omitempty" cql:"status,omitempty"`
+	Status TaskStatusValue `json:"status,omitempty" cql:"status"`
 }
 
 // NewTask returns a new *Task
