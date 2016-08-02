@@ -41,7 +41,7 @@ type {{specification.entity_name}} struct {
     {% set field_name = attribute.local_name[0:1].upper() + attribute.local_name[1:] -%}
     {% set json_tags = 'json:"%s,omitempty"' % attribute.local_name if attribute.exposed else 'json:"-"' -%}
     {% set primary_key = ',primarykey' if attribute.primary_key else '' -%}
-    {% set cql_tags = 'cql:"%s%s"' % (attribute.local_name.lower(), primary_key) if attribute.stored else 'cql:"-"' -%}
+    {% set cql_tags = 'cql:"%s%s,omitempty"' % (attribute.local_name.lower(), primary_key) if attribute.stored else 'cql:"-"' -%}
     {% set type = attribute.local_type.split(';')[0] -%}
     {% if attribute.name in constants -%}
     {% set type = constants[attribute.name]['type'] -%}
