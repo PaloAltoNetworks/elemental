@@ -4,7 +4,10 @@
 
 package elemental
 
-import "reflect"
+import (
+	"reflect"
+	"time"
+)
 
 // extractFieldNames returns all the field Name of the given
 // object using reflection.
@@ -25,7 +28,15 @@ func extractFieldNames(obj interface{}) []string {
 // equal in both given objects using reflection.
 func areFieldValuesEqual(field string, o1, o2 interface{}) bool {
 
-	return reflect.ValueOf(o1).Elem().FieldByName(field).Interface() == reflect.ValueOf(o2).Elem().FieldByName(field).Interface()
+	field1 := reflect.ValueOf(o1).Elem().FieldByName(field)
+	field2 := reflect.ValueOf(o2).Elem().FieldByName(field)
+
+	// This is to handle time structure whatever their timezone
+	if field1.Type() == reflect.ValueOf(time.Now()).Type() {
+		return field1.Interface().(time.Time).Unix() == field2.Interface().(time.Time).Unix()
+	}
+
+	return field1.Interface() == field2.Interface()
 }
 
 // isFieldValueZero check if the value of the given field is set to its zero value.

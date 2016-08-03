@@ -6,6 +6,7 @@ package elemental
 
 import (
 	"testing"
+	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -21,7 +22,7 @@ func TestUtils_extractFieldNames(t *testing.T) {
 			fields := extractFieldNames(l1)
 
 			Convey("Then all fields should be present", func() {
-				So(len(fields), ShouldEqual, 8)
+				So(len(fields), ShouldEqual, 9)
 				So(fields, ShouldContain, "ID")
 				So(fields, ShouldContain, "Description")
 				So(fields, ShouldContain, "Name")
@@ -30,6 +31,7 @@ func TestUtils_extractFieldNames(t *testing.T) {
 				So(fields, ShouldContain, "CreationOnly")
 				So(fields, ShouldContain, "ReadOnly")
 				So(fields, ShouldContain, "Unexposed")
+				So(fields, ShouldContain, "Date")
 			})
 		})
 	})
@@ -59,6 +61,26 @@ func TestUtils_areFieldValuesEqual(t *testing.T) {
 
 			Convey("Then the values should not be equal", func() {
 				So(areFieldValuesEqual("Name", l1, l2), ShouldBeFalse)
+			})
+		})
+
+		Convey("When I set a same time", func() {
+
+			l1.Date = time.Date(2009, time.November, 10, 10, 0, 0, 0, time.UTC)
+			l2.Date = time.Date(2009, time.November, 10, 5, 0, 0, 0, time.FixedZone("Eastern", -5*3600))
+
+			Convey("Then the values should not be equal", func() {
+				So(areFieldValuesEqual("Date", l1, l2), ShouldBeTrue)
+			})
+		})
+
+		Convey("When I set a different time", func() {
+
+			l1.Date = time.Now()
+			l2.Date = time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC)
+
+			Convey("Then the values should not be equal", func() {
+				So(areFieldValuesEqual("Date", l1, l2), ShouldBeFalse)
 			})
 		})
 	})
