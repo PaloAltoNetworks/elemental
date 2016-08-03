@@ -1,6 +1,9 @@
 package elemental
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 // ListIdentity represents the Identity of the object
 var ListIdentity = Identity{
@@ -36,6 +39,8 @@ type List struct {
 
 	// An unexposed attribute
 	Unexposed string `json:"-" cql:"unexposed"`
+
+	Date time.Time
 }
 
 // NewList returns a new *List
