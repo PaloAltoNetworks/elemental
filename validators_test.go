@@ -5,6 +5,7 @@
 package elemental
 
 import (
+	"net/http"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -34,6 +35,7 @@ func TestMethodValidateRequiredIntWithUnvalidInt(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, "Attribute 'age' is required")
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -62,6 +64,7 @@ func TestMethodValidateRequiredFloatWithUnvalidFloat(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, "Attribute 'age' is required")
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -90,6 +93,7 @@ func TestMethodValidateRequiredStringWithUnvalidString(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, "Attribute 'name' is required")
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -116,6 +120,7 @@ func TestMethodValidateMaximumFloatNonExclusiveWithUnvalidFloat(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18.1' of attribute 'age' should be less than 18`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -154,6 +159,7 @@ func TestMethodValidateMaximumFloatExclusiveWithUnvalidFloat(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18.1' of attribute 'age' should be less or equal than 18`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -168,6 +174,7 @@ func TestMethodValidateMaximumFloatExclusiveWithValidFloatEqualToTheMax(t *testi
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18' of attribute 'age' should be less or equal than 18`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -194,6 +201,7 @@ func TestMethodValidateMinimumFloatNonExclusiveWithUnvalidFloat(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18.1' of attribute 'age' should be greater than 19`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -232,6 +240,7 @@ func TestMethodValidateMinimumFloatExclusiveWithUnvalidFloat(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18.1' of attribute 'age' should be greater or equal than 19`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -246,6 +255,7 @@ func TestMethodValidateMinimumFloatExclusiveWithValidFloatEqualToTheMax(t *testi
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18' of attribute 'age' should be greater or equal than 18`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -272,6 +282,7 @@ func TestMethodValidateMaximumIntNonExclusiveWithUnvalidInt(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '19' of attribute 'age' should be less than 18`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -310,6 +321,7 @@ func TestMethodValidateMaximumIntExclusiveWithUnvalidInt(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '19' of attribute 'age' should be less or equal than 18`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -324,6 +336,7 @@ func TestMethodValidateMaximumIntExclusiveWithValidIntEqualToTheMax(t *testing.T
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18' of attribute 'age' should be less or equal than 18`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -350,6 +363,7 @@ func TestMethodValidateMinimumIntNonExclusiveWithUnvalidInt(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18' of attribute 'age' should be greater than 19`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -388,6 +402,7 @@ func TestMethodValidateMinimumIntExclusiveWithUnvalidInt(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18' of attribute 'age' should be greater or equal than 19`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -402,6 +417,7 @@ func TestMethodValidateMinimumIntExclusiveWithValidIntEqualToTheMax(t *testing.T
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18' of attribute 'age' should be greater or equal than 18`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -428,6 +444,7 @@ func TestMethodValidateMaximumLengthNonExclusiveWithUnvalidLength(t *testing.T) 
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' should be less than 1 chars long`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -466,6 +483,7 @@ func TestMethodValidateMaximumLengthExclusiveWithUnvalidLength(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' should be less or equal than 1 chars long`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -480,6 +498,7 @@ func TestMethodValidateMaximumLengthExclusiveWithValidLengthEqualToTheMax(t *tes
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' should be less or equal than 9 chars long`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -506,6 +525,7 @@ func TestMethodValidateMinimumLengthNonExclusiveWithUnvalidLength(t *testing.T) 
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' should be greater than 19 chars long`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -544,6 +564,7 @@ func TestMethodValidateMinimumLengthExclusiveWithUnvalidLength(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' should be greater or equal than 19 chars long`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -558,6 +579,7 @@ func TestMethodValidateMinimumLengthExclusiveWithValidLengthEqualToTheMax(t *tes
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' should be greater or equal than 9 chars long`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -591,7 +613,7 @@ func TestMethodValidateStringInListWithValidString(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' is not in list '[Dimitri Antoine]'`)
-
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -618,7 +640,7 @@ func TestMethodValidateIntInListWithUnvalidInt(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18' of attribute 'age' is not in list '[31 12]'`)
-
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -645,7 +667,7 @@ func TestMethodValidateFloatInListWithUnvalidFloat(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18.3' of attribute 'age' is not in list '[31 12]'`)
-
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }
@@ -672,6 +694,7 @@ func TestMethodValidatePatternWithUnvalidString(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' should match 'Antoine'`)
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
 }

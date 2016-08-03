@@ -1,6 +1,7 @@
 package elemental
 
 import (
+	"net/http"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -34,6 +35,7 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)
 				So(len(errs), ShouldEqual, 1)
+				So(errs[0].Code, ShouldEqual, http.StatusExpectationFailed)
 			})
 		})
 
@@ -47,6 +49,7 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)
 				So(len(errs), ShouldEqual, 1)
+				So(errs[0].Code, ShouldEqual, http.StatusExpectationFailed)
 			})
 		})
 
@@ -72,6 +75,7 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)
 				So(len(errs), ShouldEqual, 1)
+				So(errs[0].Code, ShouldEqual, http.StatusExpectationFailed)
 			})
 		})
 
@@ -88,6 +92,8 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)
 				So(len(errs), ShouldEqual, 2)
+				So(errs[0].Code, ShouldEqual, http.StatusExpectationFailed)
+				So(errs[1].Code, ShouldEqual, http.StatusExpectationFailed)
 			})
 		})
 	})
