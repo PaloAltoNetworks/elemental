@@ -40,11 +40,14 @@ func areFieldValuesEqual(field string, o1, o2 interface{}) bool {
 }
 
 // isFieldValueZero check if the value of the given field is set to its zero value.
-//
-// For a Slic
 func isFieldValueZero(field string, o interface{}) bool {
 
 	v := reflect.ValueOf(o).Elem().FieldByName(field)
+
+	var defaultTime time.Time
+	if v.Type() == reflect.TypeOf(defaultTime) {
+		return v.Interface() == defaultTime
+	}
 
 	switch v.Kind() {
 	case reflect.Slice, reflect.Map:

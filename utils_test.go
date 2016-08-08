@@ -97,12 +97,14 @@ func TestUtils_isFieldValueZero(t *testing.T) {
 			F   float32
 			A   []string
 			M   map[string]string
+			T   time.Time
 			Sub *S
 		}
 
 		Convey("When I set all zero values", func() {
 
-			s := &S{"", false, 0, 0.0, nil, nil, &S{}}
+			var t time.Time
+			s := &S{"", false, 0, 0.0, nil, nil, t, &S{}}
 
 			Convey("Then isFieldValueZero on S should return true", func() {
 				So(isFieldValueZero("S", s), ShouldBeTrue)
@@ -127,11 +129,16 @@ func TestUtils_isFieldValueZero(t *testing.T) {
 			Convey("Then isFieldValueZero on M should return true", func() {
 				So(isFieldValueZero("M", s), ShouldBeTrue)
 			})
+
+			Convey("Then isFieldValueZero on T should return true", func() {
+				So(isFieldValueZero("T", s), ShouldBeTrue)
+			})
 		})
 
 		Convey("When I set all non zero values", func() {
 
-			s := &S{"hello", true, 1, 1.0, []string{"a"}, map[string]string{"a": "b"}, &S{S: "nope"}}
+			t := time.Now()
+			s := &S{"hello", true, 1, 1.0, []string{"a"}, map[string]string{"a": "b"}, t, &S{S: "nope"}}
 
 			Convey("Then isFieldValueZero on S should return false", func() {
 				So(isFieldValueZero("S", s), ShouldBeFalse)
@@ -155,6 +162,10 @@ func TestUtils_isFieldValueZero(t *testing.T) {
 
 			Convey("Then isFieldValueZero on M should return false", func() {
 				So(isFieldValueZero("M", s), ShouldBeFalse)
+			})
+
+			Convey("Then isFieldValueZero on T should return false", func() {
+				So(isFieldValueZero("T", s), ShouldBeFalse)
 			})
 		})
 	})
