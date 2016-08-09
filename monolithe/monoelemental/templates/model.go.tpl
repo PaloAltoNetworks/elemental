@@ -201,6 +201,12 @@ func (o *{{specification.entity_name}}) Validate() {{ glob.prefix }}Errors {
     }
 
     {% endif -%}
+    {% if attribute.type == "time" -%}
+    if err := {{ glob.prefix }}ValidateRequiredTime("{{ attribute_name }}", o.{{ field_name }}); err != nil {
+        errors = append(errors, err)
+    }
+
+    {% endif -%}
     {% endif -%}
 
     {% endfor -%}

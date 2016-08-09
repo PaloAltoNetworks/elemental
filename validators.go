@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"time"
 )
 
 const (
@@ -26,6 +27,7 @@ const (
 	patternFailFormat                = `Data '%s' of attribute '%s' should match '%s'`
 	requiredFloatFailFormat          = `Attribute '%s' is required`
 	requiredStringFailFormat         = `Attribute '%s' is required`
+	requiredTimeFailFormat           = `Attribute '%s' is required`
 	requiredIntFailFormat            = `Attribute '%s' is required`
 	floatInListFormat                = `Data '%g' of attribute '%s' is not in list '%g'`
 	stringInListFormat               = `Data '%s' of attribute '%s' is not in list '%s'`
@@ -150,6 +152,17 @@ func ValidateRequiredString(attribute string, value string) *Error {
 
 	if value == "" {
 		return NewError("Validation Error", fmt.Sprintf(requiredStringFailFormat, attribute), attribute, http.StatusExpectationFailed)
+	}
+
+	return nil
+}
+
+// ValidateRequiredTime validates if the time is empty.
+func ValidateRequiredTime(attribute string, value time.Time) *Error {
+
+	var t time.Time
+	if value.Equal(t) {
+		return NewError("Validation Error", fmt.Sprintf(requiredTimeFailFormat, attribute), attribute, http.StatusExpectationFailed)
 	}
 
 	return nil

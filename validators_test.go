@@ -7,11 +7,12 @@ package elemental
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestMethodValidateRequiredIntWithValidInt(t *testing.T) {
+func TestValidator_ValidateRequiredInt(t *testing.T) {
 
 	Convey("Given I call the method ValidateRequiredInt with a valid int", t, func() {
 
@@ -22,9 +23,6 @@ func TestMethodValidateRequiredIntWithValidInt(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateRequiredIntWithUnvalidInt(t *testing.T) {
 
 	Convey("Given I call the method ValidateRequiredInt with a nonvalid int", t, func() {
 
@@ -40,7 +38,7 @@ func TestMethodValidateRequiredIntWithUnvalidInt(t *testing.T) {
 	})
 }
 
-func TestMethodValidateRequiredFloatWithValidFloat(t *testing.T) {
+func TestValidator_ValidateRequiredFloat(t *testing.T) {
 
 	Convey("Given I call the method ValidateRequiredFloat with a valid float", t, func() {
 
@@ -51,9 +49,6 @@ func TestMethodValidateRequiredFloatWithValidFloat(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateRequiredFloatWithUnvalidFloat(t *testing.T) {
 
 	Convey("Given I call the method ValidateRequiredFloat with a nonvalid float", t, func() {
 
@@ -69,7 +64,7 @@ func TestMethodValidateRequiredFloatWithUnvalidFloat(t *testing.T) {
 	})
 }
 
-func TestMethodValidateRequiredStringWithValidString(t *testing.T) {
+func TestValidator_ValidateRequiredString(t *testing.T) {
 
 	Convey("Given I call the method ValidateRequiredString with a valid string", t, func() {
 
@@ -80,9 +75,6 @@ func TestMethodValidateRequiredStringWithValidString(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateRequiredStringWithUnvalidString(t *testing.T) {
 
 	Convey("Given I call the method ValidateRequiredString with a nonvalid string", t, func() {
 
@@ -98,7 +90,34 @@ func TestMethodValidateRequiredStringWithUnvalidString(t *testing.T) {
 	})
 }
 
-func TestMethodValidateMaximumFloatNonExclusiveWithValidFloat(t *testing.T) {
+func TestValidator_ValidateRequiredTime(t *testing.T) {
+
+	Convey("Given I call the method ValidateRequiredTime with a valid time", t, func() {
+
+		validationError := ValidateRequiredTime("date", time.Now())
+
+		Convey("Then I should get nil in return", func() {
+
+			So(validationError, ShouldBeNil)
+		})
+	})
+
+	Convey("Given I call the method ValidateRequiredTime with a nonvalid time", t, func() {
+
+		var t time.Time
+		validationError := ValidateRequiredTime("date", t)
+
+		Convey("Then I should not get nil in return", func() {
+
+			So(validationError, ShouldNotBeNil)
+			So(validationError.Subject, ShouldEqual, "date")
+			So(validationError.Description, ShouldEqual, "Attribute 'date' is required")
+			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+		})
+	})
+}
+
+func TestValidator_ValidateMaximumFloat(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumFloat with a valid float and none exclusive", t, func() {
 		validationError := ValidateMaximumFloat("age", 12.4, 18, false)
@@ -108,9 +127,6 @@ func TestMethodValidateMaximumFloatNonExclusiveWithValidFloat(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMaximumFloatNonExclusiveWithUnvalidFloat(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumFloat with a unvalid float and none exclusive", t, func() {
 		validationError := ValidateMaximumFloat("age", 18.1, 18, false)
@@ -123,9 +139,6 @@ func TestMethodValidateMaximumFloatNonExclusiveWithUnvalidFloat(t *testing.T) {
 			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
-}
-
-func TestMethodValidateMaximumFloatNonExclusiveWithValidFloatEqualToTheMax(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumFloat with a valid float and none exclusive", t, func() {
 		validationError := ValidateMaximumFloat("age", 18, 18, false)
@@ -135,9 +148,6 @@ func TestMethodValidateMaximumFloatNonExclusiveWithValidFloatEqualToTheMax(t *te
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMaximumFloatExclusiveWithValidFloat(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumFloat with a valid float and exclusive", t, func() {
 		validationError := ValidateMaximumFloat("age", 12.4, 18, true)
@@ -147,9 +157,6 @@ func TestMethodValidateMaximumFloatExclusiveWithValidFloat(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMaximumFloatExclusiveWithUnvalidFloat(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumFloat with a unvalid float and exclusive", t, func() {
 		validationError := ValidateMaximumFloat("age", 18.1, 18, true)
@@ -162,9 +169,6 @@ func TestMethodValidateMaximumFloatExclusiveWithUnvalidFloat(t *testing.T) {
 			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
-}
-
-func TestMethodValidateMaximumFloatExclusiveWithValidFloatEqualToTheMax(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumFloat with a unvalid float and exclusive", t, func() {
 		validationError := ValidateMaximumFloat("age", 18, 18, true)
@@ -179,7 +183,7 @@ func TestMethodValidateMaximumFloatExclusiveWithValidFloatEqualToTheMax(t *testi
 	})
 }
 
-func TestMethodValidateMinimumFloatNonExclusiveWithValidFloat(t *testing.T) {
+func TestValidator_ValidateMinimumFloat(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumFloat with a valid float and none exclusive", t, func() {
 		validationError := ValidateMinimumFloat("age", 12.4, 6.1, false)
@@ -189,9 +193,6 @@ func TestMethodValidateMinimumFloatNonExclusiveWithValidFloat(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMinimumFloatNonExclusiveWithUnvalidFloat(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumFloat with a unvalid float and none exclusive", t, func() {
 		validationError := ValidateMinimumFloat("age", 18.1, 19, false)
@@ -204,9 +205,6 @@ func TestMethodValidateMinimumFloatNonExclusiveWithUnvalidFloat(t *testing.T) {
 			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
-}
-
-func TestMethodValidateMinimumFloatNonExclusiveWithValidFloatEqualToTheMax(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumFloat with a valid float and none exclusive", t, func() {
 		validationError := ValidateMinimumFloat("age", 18, 18, false)
@@ -216,9 +214,6 @@ func TestMethodValidateMinimumFloatNonExclusiveWithValidFloatEqualToTheMax(t *te
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMinimumFloatExclusiveWithValidFloat(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumFloat with a valid float and exclusive", t, func() {
 		validationError := ValidateMinimumFloat("age", 12.4, 6, true)
@@ -228,9 +223,6 @@ func TestMethodValidateMinimumFloatExclusiveWithValidFloat(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMinimumFloatExclusiveWithUnvalidFloat(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumFloat with a unvalid float and exclusive", t, func() {
 		validationError := ValidateMinimumFloat("age", 18.1, 19, true)
@@ -243,9 +235,6 @@ func TestMethodValidateMinimumFloatExclusiveWithUnvalidFloat(t *testing.T) {
 			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
-}
-
-func TestMethodValidateMinimumFloatExclusiveWithValidFloatEqualToTheMax(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumFloat with a unvalid float and exclusive", t, func() {
 		validationError := ValidateMinimumFloat("age", 18, 18, true)
@@ -260,7 +249,7 @@ func TestMethodValidateMinimumFloatExclusiveWithValidFloatEqualToTheMax(t *testi
 	})
 }
 
-func TestMethodValidateMaximumIntNonExclusiveWithValidInt(t *testing.T) {
+func TestValidator_ValidateMaximumInt(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumInt with a valid int and none exclusive", t, func() {
 		validationError := ValidateMaximumInt("age", 12, 18, false)
@@ -270,9 +259,6 @@ func TestMethodValidateMaximumIntNonExclusiveWithValidInt(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMaximumIntNonExclusiveWithUnvalidInt(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumInt with a unvalid int and none exclusive", t, func() {
 		validationError := ValidateMaximumInt("age", 19, 18, false)
@@ -285,9 +271,6 @@ func TestMethodValidateMaximumIntNonExclusiveWithUnvalidInt(t *testing.T) {
 			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
-}
-
-func TestMethodValidateMaximumIntNonExclusiveWithValidIntEqualToTheMax(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumInt with a valid float and none exclusive", t, func() {
 		validationError := ValidateMaximumInt("age", 18, 18, false)
@@ -297,9 +280,6 @@ func TestMethodValidateMaximumIntNonExclusiveWithValidIntEqualToTheMax(t *testin
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMaximumIntExclusiveWithValidInt(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumInt with a valid float and exclusive", t, func() {
 		validationError := ValidateMaximumInt("age", 12, 18, true)
@@ -309,9 +289,6 @@ func TestMethodValidateMaximumIntExclusiveWithValidInt(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMaximumIntExclusiveWithUnvalidInt(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumInt with a unvalid float and exclusive", t, func() {
 		validationError := ValidateMaximumInt("age", 19, 18, true)
@@ -324,9 +301,6 @@ func TestMethodValidateMaximumIntExclusiveWithUnvalidInt(t *testing.T) {
 			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
-}
-
-func TestMethodValidateMaximumIntExclusiveWithValidIntEqualToTheMax(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumInt with a unvalid float and exclusive", t, func() {
 		validationError := ValidateMaximumInt("age", 18, 18, true)
@@ -341,7 +315,7 @@ func TestMethodValidateMaximumIntExclusiveWithValidIntEqualToTheMax(t *testing.T
 	})
 }
 
-func TestMethodValidateMinimumIntNonExclusiveWithValidInt(t *testing.T) {
+func TestValidator_ValidateMinimumInt(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumInt with a valid float and none exclusive", t, func() {
 		validationError := ValidateMinimumInt("age", 12, 6, false)
@@ -351,9 +325,6 @@ func TestMethodValidateMinimumIntNonExclusiveWithValidInt(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMinimumIntNonExclusiveWithUnvalidInt(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumInt with a unvalid float and none exclusive", t, func() {
 		validationError := ValidateMinimumInt("age", 18, 19, false)
@@ -366,9 +337,6 @@ func TestMethodValidateMinimumIntNonExclusiveWithUnvalidInt(t *testing.T) {
 			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
-}
-
-func TestMethodValidateMinimumIntNonExclusiveWithValidIntEqualToTheMin(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumInt with a valid float and none exclusive", t, func() {
 		validationError := ValidateMinimumInt("age", 18, 18, false)
@@ -378,9 +346,6 @@ func TestMethodValidateMinimumIntNonExclusiveWithValidIntEqualToTheMin(t *testin
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMinimumIntExclusiveWithValidInt(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumInt with a valid float and exclusive", t, func() {
 		validationError := ValidateMinimumInt("age", 12, 6, true)
@@ -390,9 +355,6 @@ func TestMethodValidateMinimumIntExclusiveWithValidInt(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMinimumIntExclusiveWithUnvalidInt(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumInt with a unvalid float and exclusive", t, func() {
 		validationError := ValidateMinimumInt("age", 18, 19, true)
@@ -405,9 +367,6 @@ func TestMethodValidateMinimumIntExclusiveWithUnvalidInt(t *testing.T) {
 			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
-}
-
-func TestMethodValidateMinimumIntExclusiveWithValidIntEqualToTheMax(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumInt with a unvalid float and exclusive", t, func() {
 		validationError := ValidateMinimumInt("age", 18, 18, true)
@@ -422,7 +381,7 @@ func TestMethodValidateMinimumIntExclusiveWithValidIntEqualToTheMax(t *testing.T
 	})
 }
 
-func TestMethodValidateMaximumLengthNonExclusiveWithValidLength(t *testing.T) {
+func TestValidator_ValidateMaximumLength(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumLength with a valid length and none exclusive", t, func() {
 		validationError := ValidateMaximumLength("name", "Alexandre", 20, false)
@@ -432,9 +391,6 @@ func TestMethodValidateMaximumLengthNonExclusiveWithValidLength(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMaximumLengthNonExclusiveWithUnvalidLength(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumLength with a unvalid length and none exclusive", t, func() {
 		validationError := ValidateMaximumLength("name", "Alexandre", 1, false)
@@ -447,9 +403,6 @@ func TestMethodValidateMaximumLengthNonExclusiveWithUnvalidLength(t *testing.T) 
 			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
-}
-
-func TestMethodValidateMaximumLengthNonExclusiveWithValidLengthEqualToTheMax(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumLength with a valid length and none exclusive", t, func() {
 		validationError := ValidateMaximumLength("name", "Alexandre", 9, false)
@@ -459,9 +412,6 @@ func TestMethodValidateMaximumLengthNonExclusiveWithValidLengthEqualToTheMax(t *
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMaximumLengthExclusiveWithValidLength(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumLength with a valid length and exclusive", t, func() {
 		validationError := ValidateMaximumLength("name", "Alexandre", 18, true)
@@ -471,9 +421,6 @@ func TestMethodValidateMaximumLengthExclusiveWithValidLength(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMaximumLengthExclusiveWithUnvalidLength(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumLength with a unvalid length and exclusive", t, func() {
 		validationError := ValidateMaximumLength("name", "Alexandre", 1, true)
@@ -486,9 +433,6 @@ func TestMethodValidateMaximumLengthExclusiveWithUnvalidLength(t *testing.T) {
 			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
-}
-
-func TestMethodValidateMaximumLengthExclusiveWithValidLengthEqualToTheMax(t *testing.T) {
 
 	Convey("Given I call the method ValidateMaximumLength with a unvalid length and exclusive", t, func() {
 		validationError := ValidateMaximumLength("name", "Alexandre", 9, true)
@@ -503,7 +447,7 @@ func TestMethodValidateMaximumLengthExclusiveWithValidLengthEqualToTheMax(t *tes
 	})
 }
 
-func TestMethodValidateMinimumLengthNonExclusiveWithValidLength(t *testing.T) {
+func TestValidator_ValidateMinimumLength(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumLength with a valid length and none exclusive", t, func() {
 		validationError := ValidateMinimumLength("name", "Alexandre", 6, false)
@@ -513,9 +457,6 @@ func TestMethodValidateMinimumLengthNonExclusiveWithValidLength(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMinimumLengthNonExclusiveWithUnvalidLength(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumLength with a unvalid length and none exclusive", t, func() {
 		validationError := ValidateMinimumLength("name", "Alexandre", 19, false)
@@ -528,9 +469,6 @@ func TestMethodValidateMinimumLengthNonExclusiveWithUnvalidLength(t *testing.T) 
 			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
-}
-
-func TestMethodValidateMinimumLengthNonExclusiveWithValidLengthEqualToTheMin(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumLength with a valid length and none exclusive", t, func() {
 		validationError := ValidateMinimumLength("name", "Alexandre", 9, false)
@@ -540,9 +478,6 @@ func TestMethodValidateMinimumLengthNonExclusiveWithValidLengthEqualToTheMin(t *
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMinimumLengthExclusiveWithValidLength(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumLength with a valid length and exclusive", t, func() {
 		validationError := ValidateMinimumLength("name", "Alexandre", 6, true)
@@ -552,9 +487,6 @@ func TestMethodValidateMinimumLengthExclusiveWithValidLength(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateMinimumLengthExclusiveWithUnvalidLength(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumLength with a unvalid length and exclusive", t, func() {
 		validationError := ValidateMinimumLength("name", "Alexandre", 19, true)
@@ -567,9 +499,6 @@ func TestMethodValidateMinimumLengthExclusiveWithUnvalidLength(t *testing.T) {
 			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
 		})
 	})
-}
-
-func TestMethodValidateMinimumLengthExclusiveWithValidLengthEqualToTheMax(t *testing.T) {
 
 	Convey("Given I call the method ValidateMinimumLength with a unvalid length and exclusive", t, func() {
 		validationError := ValidateMinimumLength("name", "Alexandre", 9, true)
@@ -584,7 +513,7 @@ func TestMethodValidateMinimumLengthExclusiveWithValidLengthEqualToTheMax(t *tes
 	})
 }
 
-func TestMethodValidateStringInListWithValidString(t *testing.T) {
+func TestValidator_ValidateStringInList(t *testing.T) {
 
 	Convey("Given I call the method ValidateStringInList with a valid string", t, func() {
 
@@ -618,7 +547,7 @@ func TestMethodValidateStringInListWithValidString(t *testing.T) {
 	})
 }
 
-func TestMethodValidateIntInListWithValidInt(t *testing.T) {
+func TestValidator_ValidateIntInList(t *testing.T) {
 
 	Convey("Given I call the method ValidateIntInList with a valid int", t, func() {
 		validationError := ValidateIntInList("age", 18, []int{31, 12, 18})
@@ -628,9 +557,6 @@ func TestMethodValidateIntInListWithValidInt(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateIntInListWithUnvalidInt(t *testing.T) {
 
 	Convey("Given I call the method ValidateIntInList with a unvalid int", t, func() {
 		validationError := ValidateIntInList("age", 18, []int{31, 12})
@@ -645,7 +571,7 @@ func TestMethodValidateIntInListWithUnvalidInt(t *testing.T) {
 	})
 }
 
-func TestMethodValidateFloatInListWithValidFloat(t *testing.T) {
+func TestValidator_ValidateFloatInList(t *testing.T) {
 
 	Convey("Given I call the method ValidateFloatInList with a valid float", t, func() {
 		validationError := ValidateFloatInList("age", 18.1, []float64{31, 12, 18.1})
@@ -655,9 +581,6 @@ func TestMethodValidateFloatInListWithValidFloat(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidateFloatInListWithUnvalidFloat(t *testing.T) {
 
 	Convey("Given I call the method ValidateFloatInList with a unvalid float", t, func() {
 		validationError := ValidateFloatInList("age", 18.3, []float64{31, 12})
@@ -672,7 +595,7 @@ func TestMethodValidateFloatInListWithUnvalidFloat(t *testing.T) {
 	})
 }
 
-func TestMethodValidatePatternWithValidString(t *testing.T) {
+func TestValidator_ValidatePattern(t *testing.T) {
 
 	Convey("Given I call the method ValidatePattern with a valid string", t, func() {
 		validationError := ValidatePattern("name", "Alexandre", "Alexandre")
@@ -682,9 +605,6 @@ func TestMethodValidatePatternWithValidString(t *testing.T) {
 			So(validationError, ShouldBeNil)
 		})
 	})
-}
-
-func TestMethodValidatePatternWithUnvalidString(t *testing.T) {
 
 	Convey("Given I call the method ValidatePattern with a valid string", t, func() {
 		validationError := ValidatePattern("name", "Alexandre", "Antoine")
