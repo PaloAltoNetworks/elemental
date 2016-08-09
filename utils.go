@@ -46,7 +46,7 @@ func isFieldValueZero(field string, o interface{}) bool {
 
 	var defaultTime time.Time
 	if v.Type() == reflect.TypeOf(defaultTime) {
-		return v.Interface() == defaultTime
+		return defaultTime.Equal(v.Interface().(time.Time))
 	}
 
 	switch v.Kind() {
