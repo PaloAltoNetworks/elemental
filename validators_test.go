@@ -33,7 +33,7 @@ func TestValidator_ValidateRequiredInt(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, "Attribute 'age' is required")
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 }
@@ -59,7 +59,7 @@ func TestValidator_ValidateRequiredFloat(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, "Attribute 'age' is required")
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 }
@@ -85,7 +85,7 @@ func TestValidator_ValidateRequiredString(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, "Attribute 'name' is required")
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 }
@@ -112,7 +112,7 @@ func TestValidator_ValidateRequiredTime(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "date")
 			So(validationError.Description, ShouldEqual, "Attribute 'date' is required")
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 }
@@ -136,7 +136,7 @@ func TestValidator_ValidateMaximumFloat(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18.1' of attribute 'age' should be less than 18`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 
@@ -166,7 +166,7 @@ func TestValidator_ValidateMaximumFloat(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18.1' of attribute 'age' should be less or equal than 18`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 
@@ -178,7 +178,7 @@ func TestValidator_ValidateMaximumFloat(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18' of attribute 'age' should be less or equal than 18`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 }
@@ -202,7 +202,7 @@ func TestValidator_ValidateMinimumFloat(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18.1' of attribute 'age' should be greater than 19`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 
@@ -232,7 +232,7 @@ func TestValidator_ValidateMinimumFloat(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18.1' of attribute 'age' should be greater or equal than 19`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 
@@ -244,7 +244,7 @@ func TestValidator_ValidateMinimumFloat(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18' of attribute 'age' should be greater or equal than 18`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 }
@@ -268,7 +268,7 @@ func TestValidator_ValidateMaximumInt(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '19' of attribute 'age' should be less than 18`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 
@@ -298,7 +298,7 @@ func TestValidator_ValidateMaximumInt(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '19' of attribute 'age' should be less or equal than 18`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 
@@ -310,7 +310,7 @@ func TestValidator_ValidateMaximumInt(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18' of attribute 'age' should be less or equal than 18`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 }
@@ -334,7 +334,7 @@ func TestValidator_ValidateMinimumInt(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18' of attribute 'age' should be greater than 19`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 
@@ -364,7 +364,7 @@ func TestValidator_ValidateMinimumInt(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18' of attribute 'age' should be greater or equal than 19`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 
@@ -376,7 +376,7 @@ func TestValidator_ValidateMinimumInt(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18' of attribute 'age' should be greater or equal than 18`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 }
@@ -400,7 +400,7 @@ func TestValidator_ValidateMaximumLength(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' should be less than 1 chars long`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 
@@ -430,7 +430,7 @@ func TestValidator_ValidateMaximumLength(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' should be less or equal than 1 chars long`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 
@@ -442,7 +442,7 @@ func TestValidator_ValidateMaximumLength(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' should be less or equal than 9 chars long`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 }
@@ -466,7 +466,7 @@ func TestValidator_ValidateMinimumLength(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' should be greater than 19 chars long`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 
@@ -496,7 +496,7 @@ func TestValidator_ValidateMinimumLength(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' should be greater or equal than 19 chars long`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 
@@ -508,7 +508,7 @@ func TestValidator_ValidateMinimumLength(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' should be greater or equal than 9 chars long`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 }
@@ -542,7 +542,7 @@ func TestValidator_ValidateStringInList(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' is not in list '[Dimitri Antoine]'`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 }
@@ -566,7 +566,7 @@ func TestValidator_ValidateIntInList(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18' of attribute 'age' is not in list '[31 12]'`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 }
@@ -590,7 +590,7 @@ func TestValidator_ValidateFloatInList(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "age")
 			So(validationError.Description, ShouldEqual, `Data '18.3' of attribute 'age' is not in list '[31 12]'`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 }
@@ -614,7 +614,7 @@ func TestValidator_ValidatePattern(t *testing.T) {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Subject, ShouldEqual, "name")
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' should match 'Antoine'`)
-			So(validationError.Code, ShouldEqual, http.StatusExpectationFailed)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 		})
 	})
 }

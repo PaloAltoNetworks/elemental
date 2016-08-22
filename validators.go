@@ -52,7 +52,7 @@ func ValidateStringInList(attribute string, value string, enums []string, autoge
 		}
 	}
 
-	return NewError("Validation Error", fmt.Sprintf(stringInListFormat, value, attribute, enums), attribute, http.StatusExpectationFailed)
+	return NewError("Validation Error", fmt.Sprintf(stringInListFormat, value, attribute, enums), attribute, http.StatusUnprocessableEntity)
 }
 
 // ValidateFloatInList validates if the string is in the list.
@@ -64,7 +64,7 @@ func ValidateFloatInList(attribute string, value float64, enums []float64) *Erro
 		}
 	}
 
-	return NewError("Validation Error", fmt.Sprintf(floatInListFormat, value, attribute, enums), attribute, http.StatusExpectationFailed)
+	return NewError("Validation Error", fmt.Sprintf(floatInListFormat, value, attribute, enums), attribute, http.StatusUnprocessableEntity)
 }
 
 // ValidateIntInList validates if the string is in the list.
@@ -76,14 +76,14 @@ func ValidateIntInList(attribute string, value int, enums []int) *Error {
 		}
 	}
 
-	return NewError("Validation Error", fmt.Sprintf(intInListFormat, value, attribute, enums), attribute, http.StatusExpectationFailed)
+	return NewError("Validation Error", fmt.Sprintf(intInListFormat, value, attribute, enums), attribute, http.StatusUnprocessableEntity)
 }
 
 // ValidateRequiredInt validates is the int is set to 0.
 func ValidateRequiredInt(attribute string, value int) *Error {
 
 	if value == 0 {
-		return NewError("Validation Error", fmt.Sprintf(requiredIntFailFormat, attribute), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(requiredIntFailFormat, attribute), attribute, http.StatusUnprocessableEntity)
 	}
 
 	return nil
@@ -93,7 +93,7 @@ func ValidateRequiredInt(attribute string, value int) *Error {
 func ValidateRequiredFloat(attribute string, value float64) *Error {
 
 	if value == 0.0 {
-		return NewError("Validation Error", fmt.Sprintf(requiredFloatFailFormat, attribute), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(requiredFloatFailFormat, attribute), attribute, http.StatusUnprocessableEntity)
 	}
 
 	return nil
@@ -103,9 +103,9 @@ func ValidateRequiredFloat(attribute string, value float64) *Error {
 func ValidateMaximumFloat(attribute string, value float64, max float64, exclusive bool) *Error {
 
 	if !exclusive && value > max {
-		return NewError("Validation Error", fmt.Sprintf(maximumFloatFailFormat, value, attribute, max), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(maximumFloatFailFormat, value, attribute, max), attribute, http.StatusUnprocessableEntity)
 	} else if exclusive && value >= max {
-		return NewError("Validation Error", fmt.Sprintf(maximumFloatExclusiveFailFormat, value, attribute, max), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(maximumFloatExclusiveFailFormat, value, attribute, max), attribute, http.StatusUnprocessableEntity)
 	}
 
 	return nil
@@ -115,9 +115,9 @@ func ValidateMaximumFloat(attribute string, value float64, max float64, exclusiv
 func ValidateMinimumFloat(attribute string, value float64, min float64, exclusive bool) *Error {
 
 	if !exclusive && value < min {
-		return NewError("Validation Error", fmt.Sprintf(minimumFloatFailFormat, value, attribute, min), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(minimumFloatFailFormat, value, attribute, min), attribute, http.StatusUnprocessableEntity)
 	} else if exclusive && value <= min {
-		return NewError("Validation Error", fmt.Sprintf(minimumFloatExclusiveFailFormat, value, attribute, min), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(minimumFloatExclusiveFailFormat, value, attribute, min), attribute, http.StatusUnprocessableEntity)
 	}
 
 	return nil
@@ -127,9 +127,9 @@ func ValidateMinimumFloat(attribute string, value float64, min float64, exclusiv
 func ValidateMaximumInt(attribute string, value int, max int, exclusive bool) *Error {
 
 	if !exclusive && value > max {
-		return NewError("Validation Error", fmt.Sprintf(maximumIntFailFormat, value, attribute, max), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(maximumIntFailFormat, value, attribute, max), attribute, http.StatusUnprocessableEntity)
 	} else if exclusive && value >= max {
-		return NewError("Validation Error", fmt.Sprintf(maximumIntExclusiveFailFormat, value, attribute, max), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(maximumIntExclusiveFailFormat, value, attribute, max), attribute, http.StatusUnprocessableEntity)
 	}
 
 	return nil
@@ -139,9 +139,9 @@ func ValidateMaximumInt(attribute string, value int, max int, exclusive bool) *E
 func ValidateMinimumInt(attribute string, value int, min int, exclusive bool) *Error {
 
 	if !exclusive && value < min {
-		return NewError("Validation Error", fmt.Sprintf(minimumIntFailFormat, value, attribute, min), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(minimumIntFailFormat, value, attribute, min), attribute, http.StatusUnprocessableEntity)
 	} else if exclusive && value <= min {
-		return NewError("Validation Error", fmt.Sprintf(minimumIntExclusiveFailFormat, value, attribute, min), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(minimumIntExclusiveFailFormat, value, attribute, min), attribute, http.StatusUnprocessableEntity)
 	}
 
 	return nil
@@ -151,7 +151,7 @@ func ValidateMinimumInt(attribute string, value int, min int, exclusive bool) *E
 func ValidateRequiredString(attribute string, value string) *Error {
 
 	if value == "" {
-		return NewError("Validation Error", fmt.Sprintf(requiredStringFailFormat, attribute), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(requiredStringFailFormat, attribute), attribute, http.StatusUnprocessableEntity)
 	}
 
 	return nil
@@ -162,7 +162,7 @@ func ValidateRequiredTime(attribute string, value time.Time) *Error {
 
 	var t time.Time
 	if value.Equal(t) {
-		return NewError("Validation Error", fmt.Sprintf(requiredTimeFailFormat, attribute), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(requiredTimeFailFormat, attribute), attribute, http.StatusUnprocessableEntity)
 	}
 
 	return nil
@@ -174,7 +174,7 @@ func ValidatePattern(attribute string, value string, pattern string) *Error {
 	re := regexp.MustCompile(pattern)
 
 	if !re.MatchString(value) {
-		return NewError("Validation Error", fmt.Sprintf(patternFailFormat, value, attribute, pattern), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(patternFailFormat, value, attribute, pattern), attribute, http.StatusUnprocessableEntity)
 	}
 
 	return nil
@@ -186,9 +186,9 @@ func ValidateMinimumLength(attribute string, value string, min int, exclusive bo
 	length := len([]rune(value))
 
 	if !exclusive && length < min {
-		return NewError("Validation Error", fmt.Sprintf(minimumLengthFailFormat, value, attribute, min), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(minimumLengthFailFormat, value, attribute, min), attribute, http.StatusUnprocessableEntity)
 	} else if exclusive && length <= min {
-		return NewError("Validation Error", fmt.Sprintf(minimumLengthExclusiveFailFormat, value, attribute, min), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(minimumLengthExclusiveFailFormat, value, attribute, min), attribute, http.StatusUnprocessableEntity)
 	}
 
 	return nil
@@ -200,9 +200,9 @@ func ValidateMaximumLength(attribute string, value string, max int, exclusive bo
 	length := len([]rune(value))
 
 	if !exclusive && length > max {
-		return NewError("Validation Error", fmt.Sprintf(maximumLengthFailFormat, value, attribute, max), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(maximumLengthFailFormat, value, attribute, max), attribute, http.StatusUnprocessableEntity)
 	} else if exclusive && length >= max {
-		return NewError("Validation Error", fmt.Sprintf(maximumLengthExclusiveFailFormat, value, attribute, max), attribute, http.StatusExpectationFailed)
+		return NewError("Validation Error", fmt.Sprintf(maximumLengthExclusiveFailFormat, value, attribute, max), attribute, http.StatusUnprocessableEntity)
 	}
 
 	return nil

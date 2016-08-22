@@ -35,7 +35,7 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)
 				So(len(errs), ShouldEqual, 1)
-				So(errs[0].Code, ShouldEqual, http.StatusExpectationFailed)
+				So(errs[0].Code, ShouldEqual, http.StatusUnprocessableEntity)
 			})
 		})
 
@@ -49,7 +49,7 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)
 				So(len(errs), ShouldEqual, 1)
-				So(errs[0].Code, ShouldEqual, http.StatusExpectationFailed)
+				So(errs[0].Code, ShouldEqual, http.StatusUnprocessableEntity)
 			})
 		})
 
@@ -75,7 +75,7 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)
 				So(len(errs), ShouldEqual, 1)
-				So(errs[0].Code, ShouldEqual, http.StatusExpectationFailed)
+				So(errs[0].Code, ShouldEqual, http.StatusUnprocessableEntity)
 			})
 		})
 
@@ -92,8 +92,8 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)
 				So(len(errs), ShouldEqual, 2)
-				So(errs[0].Code, ShouldEqual, http.StatusExpectationFailed)
-				So(errs[1].Code, ShouldEqual, http.StatusExpectationFailed)
+				So(errs[0].Code, ShouldEqual, http.StatusUnprocessableEntity)
+				So(errs[1].Code, ShouldEqual, http.StatusUnprocessableEntity)
 			})
 		})
 	})
