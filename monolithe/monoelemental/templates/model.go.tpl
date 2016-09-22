@@ -87,7 +87,11 @@ func (o *{{specification.entity_name}}) Identity() {{ glob.prefix }}Identity {
 // Identifier returns the value of the object's unique identifier.
 func (o *{{specification.entity_name}}) Identifier() string {
 
+    {% if glob.identifier != "" -%}
     return o.{{ glob.identifier }}
+    {% else -%}
+    return ""
+    {% endif -%}
 }
 
 func  (o *{{specification.entity_name}}) String() string {
@@ -98,7 +102,9 @@ func  (o *{{specification.entity_name}}) String() string {
 // SetIdentifier sets the value of the object's unique identifier.
 func (o *{{specification.entity_name}}) SetIdentifier(ID string) {
 
+    {% if glob.identifier != "" -%}
     o.{{ glob.identifier }} = ID
+    {% endif -%}
 }
 
 {% for attribute in specification.attributes -%}
