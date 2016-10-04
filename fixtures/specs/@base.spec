@@ -22,7 +22,7 @@
             "min_value": null,
             "name": "ID",
             "orderable": true,
-            "primary_key": false,
+            "primary_key": true,
             "read_only": false,
             "required": false,
             "stored": true,

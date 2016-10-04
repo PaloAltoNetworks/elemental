@@ -1,9 +1,6 @@
 package elemental
 
-import (
-	"fmt"
-	"time"
-)
+import "fmt"
 
 // ListIdentity represents the Identity of the object
 var ListIdentity = Identity{
@@ -17,30 +14,28 @@ type ListsList []*List
 // List represents the model of a list
 type List struct {
 	// The identifier
-	ID string `json:"ID,omitempty" cql:"id"`
+	ID string `json:"ID" cql:"id,primarykey,omitempty" bson:"_id"`
 
 	// A creation only only attribute
-	CreationOnly string `json:"creationOnly,omitempty" cql:"creationonly"`
+	CreationOnly string `json:"creationOnly" cql:"creationonly,omitempty" bson:"creationonly"`
 
 	// The description
-	Description string `json:"description,omitempty" cql:"description"`
+	Description string `json:"description" cql:"description,omitempty" bson:"description"`
 
 	// The name
-	Name string `json:"name,omitempty" cql:"name"`
+	Name string `json:"name" cql:"name,omitempty" bson:"name"`
 
 	// The identifier of the parent of the object
-	ParentID string `json:"parentID,omitempty" cql:"parentid"`
+	ParentID string `json:"parentID" cql:"parentid,omitempty" bson:"parentid"`
 
 	// The type of the parent of the object
-	ParentType string `json:"parentType,omitempty" cql:"parenttype"`
+	ParentType string `json:"parentType" cql:"parenttype,omitempty" bson:"parenttype"`
 
 	// A read only attribute
-	ReadOnly string `json:"readOnly,omitempty" cql:"readonly"`
+	ReadOnly string `json:"readOnly" cql:"readonly,omitempty" bson:"readonly"`
 
 	// An unexposed attribute
-	Unexposed string `json:"-" cql:"unexposed"`
-
-	Date time.Time
+	Unexposed string `json:"-" cql:"unexposed,omitempty" bson:"unexposed"`
 }
 
 // NewList returns a new *List
@@ -142,6 +137,7 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Identifier:     true,
 		Name:           "ID",
 		Orderable:      true,
+		PrimaryKey:     true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
@@ -264,22 +260,22 @@ type TasksList []*Task
 // Task represents the model of a task
 type Task struct {
 	// The identifier
-	ID string `json:"ID,omitempty" cql:"id"`
+	ID string `json:"ID" cql:"id,primarykey,omitempty" bson:"_id"`
 
 	// The description
-	Description string `json:"description,omitempty" cql:"description"`
+	Description string `json:"description" cql:"description,omitempty" bson:"description"`
 
 	// The name
-	Name string `json:"name,omitempty" cql:"name"`
+	Name string `json:"name" cql:"name,omitempty" bson:"name"`
 
 	// The identifier of the parent of the object
-	ParentID string `json:"parentID,omitempty" cql:"parentid"`
+	ParentID string `json:"parentID" cql:"parentid,omitempty" bson:"parentid"`
 
 	// The type of the parent of the object
-	ParentType string `json:"parentType,omitempty" cql:"parenttype"`
+	ParentType string `json:"parentType" cql:"parenttype,omitempty" bson:"parenttype"`
 
 	// The status of the task
-	Status TaskStatusValue `json:"status,omitempty" cql:"status"`
+	Status TaskStatusValue `json:"status" cql:"status,omitempty" bson:"status"`
 }
 
 // NewTask returns a new *Task
@@ -350,6 +346,7 @@ var TaskAttributesMap = map[string]AttributeSpecification{
 		Identifier:     true,
 		Name:           "ID",
 		Orderable:      true,
+		PrimaryKey:     true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
