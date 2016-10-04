@@ -17,30 +17,31 @@ type ListsList []*List
 // List represents the model of a list
 type List struct {
 	// The identifier
-	ID string `json:"ID,omitempty" cql:"id"`
+	ID string `json:"ID" cql:"id,primarykey,omitempty" bson:"_id"`
 
 	// A creation only only attribute
-	CreationOnly string `json:"creationOnly,omitempty" cql:"creationonly"`
+	CreationOnly string `json:"creationOnly" cql:"creationonly,omitempty" bson:"creationonly"`
+
+	// A Date
+	Date time.Time `json:"-" cql:"date,omitempty" bson:"date"`
 
 	// The description
-	Description string `json:"description,omitempty" cql:"description"`
+	Description string `json:"description" cql:"description,omitempty" bson:"description"`
 
 	// The name
-	Name string `json:"name,omitempty" cql:"name"`
+	Name string `json:"name" cql:"name,omitempty" bson:"name"`
 
 	// The identifier of the parent of the object
-	ParentID string `json:"parentID,omitempty" cql:"parentid"`
+	ParentID string `json:"parentID" cql:"parentid,omitempty" bson:"parentid"`
 
 	// The type of the parent of the object
-	ParentType string `json:"parentType,omitempty" cql:"parenttype"`
+	ParentType string `json:"parentType" cql:"parenttype,omitempty" bson:"parenttype"`
 
 	// A read only attribute
-	ReadOnly string `json:"readOnly,omitempty" cql:"readonly"`
+	ReadOnly string `json:"readOnly" cql:"readonly,omitempty" bson:"readonly"`
 
 	// An unexposed attribute
-	Unexposed string `json:"-" cql:"unexposed"`
-
-	Date time.Time
+	Unexposed string `json:"-" cql:"unexposed,omitempty" bson:"unexposed"`
 }
 
 // NewList returns a new *List
@@ -77,6 +78,11 @@ func (o *List) GetCreationOnly() string {
 	return o.CreationOnly
 }
 
+// GetDate returns the date of the receiver
+func (o *List) GetDate() time.Time {
+	return o.Date
+}
+
 // GetName returns the name of the receiver
 func (o *List) GetName() string {
 	return o.Name
@@ -103,6 +109,10 @@ func (o *List) Validate() Errors {
 	errors := Errors{}
 
 	if err := ValidateRequiredString("creationOnly", o.CreationOnly); err != nil {
+		errors = append(errors, err)
+	}
+
+	if err := ValidateRequiredTime("date", o.Date); err != nil {
 		errors = append(errors, err)
 	}
 
@@ -142,6 +152,7 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Identifier:     true,
 		Name:           "ID",
 		Orderable:      true,
+		PrimaryKey:     true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
@@ -158,6 +169,19 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Required:       true,
 		Stored:         true,
 		Type:           "string",
+		Unique:         true,
+	},
+	"Date": AttributeSpecification{
+		AllowedChoices: []string{},
+		CreationOnly:   true,
+		Filterable:     true,
+		Format:         "free",
+		Getter:         true,
+		Name:           "date",
+		Orderable:      true,
+		Required:       true,
+		Stored:         true,
+		Type:           "time",
 		Unique:         true,
 	},
 	"Description": AttributeSpecification{
@@ -264,22 +288,22 @@ type TasksList []*Task
 // Task represents the model of a task
 type Task struct {
 	// The identifier
-	ID string `json:"ID,omitempty" cql:"id"`
+	ID string `json:"ID" cql:"id,primarykey,omitempty" bson:"_id"`
 
 	// The description
-	Description string `json:"description,omitempty" cql:"description"`
+	Description string `json:"description" cql:"description,omitempty" bson:"description"`
 
 	// The name
-	Name string `json:"name,omitempty" cql:"name"`
+	Name string `json:"name" cql:"name,omitempty" bson:"name"`
 
 	// The identifier of the parent of the object
-	ParentID string `json:"parentID,omitempty" cql:"parentid"`
+	ParentID string `json:"parentID" cql:"parentid,omitempty" bson:"parentid"`
 
 	// The type of the parent of the object
-	ParentType string `json:"parentType,omitempty" cql:"parenttype"`
+	ParentType string `json:"parentType" cql:"parenttype,omitempty" bson:"parenttype"`
 
 	// The status of the task
-	Status TaskStatusValue `json:"status,omitempty" cql:"status"`
+	Status TaskStatusValue `json:"status" cql:"status,omitempty" bson:"status"`
 }
 
 // NewTask returns a new *Task
@@ -350,6 +374,7 @@ var TaskAttributesMap = map[string]AttributeSpecification{
 		Identifier:     true,
 		Name:           "ID",
 		Orderable:      true,
+		PrimaryKey:     true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
