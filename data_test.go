@@ -1,6 +1,9 @@
 package elemental
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 // ListIdentity represents the Identity of the object
 var ListIdentity = Identity{
@@ -18,6 +21,9 @@ type List struct {
 
 	// A creation only only attribute
 	CreationOnly string `json:"creationOnly" cql:"creationonly,omitempty" bson:"creationonly"`
+
+	// A Date
+	Date time.Time `json:"-" cql:"date,omitempty" bson:"date"`
 
 	// The description
 	Description string `json:"description" cql:"description,omitempty" bson:"description"`
@@ -72,6 +78,11 @@ func (o *List) GetCreationOnly() string {
 	return o.CreationOnly
 }
 
+// GetDate returns the date of the receiver
+func (o *List) GetDate() time.Time {
+	return o.Date
+}
+
 // GetName returns the name of the receiver
 func (o *List) GetName() string {
 	return o.Name
@@ -98,6 +109,10 @@ func (o *List) Validate() Errors {
 	errors := Errors{}
 
 	if err := ValidateRequiredString("creationOnly", o.CreationOnly); err != nil {
+		errors = append(errors, err)
+	}
+
+	if err := ValidateRequiredTime("date", o.Date); err != nil {
 		errors = append(errors, err)
 	}
 
@@ -154,6 +169,19 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Required:       true,
 		Stored:         true,
 		Type:           "string",
+		Unique:         true,
+	},
+	"Date": AttributeSpecification{
+		AllowedChoices: []string{},
+		CreationOnly:   true,
+		Filterable:     true,
+		Format:         "free",
+		Getter:         true,
+		Name:           "date",
+		Orderable:      true,
+		Required:       true,
+		Stored:         true,
+		Type:           "time",
 		Unique:         true,
 	},
 	"Description": AttributeSpecification{
