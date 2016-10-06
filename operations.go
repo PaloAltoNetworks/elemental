@@ -5,27 +5,27 @@
 package elemental
 
 // Operation represents a Cid operation.
-type Operation int
+type Operation string
 
 const (
 	// OperationRetrieveMany is the operation used to get multiple objects.
-	OperationRetrieveMany Operation = iota + 1
+	OperationRetrieveMany Operation = "retrieve-many"
 
 	// OperationRetrieve is the operation used to get a single object.
-	OperationRetrieve
+	OperationRetrieve Operation = "retrieve"
 
 	// OperationCreate is the operation used to create a single object.
-	OperationCreate
+	OperationCreate Operation = "create"
 
 	// OperationUpdate is the operation used to update a single object.
-	OperationUpdate
+	OperationUpdate Operation = "update"
 
 	// OperationDelete is the operation used to delete a single object.
-	OperationDelete
+	OperationDelete Operation = "delete"
 
 	// OperationPatch is the operation used to patcj a single object.
-	OperationPatch
+	OperationPatch Operation = "patch"
 
 	// OperationInfo is the operation used to get info for a single object.
-	OperationInfo
+	OperationInfo Operation = "info"
 )
