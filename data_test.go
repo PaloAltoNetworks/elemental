@@ -104,28 +104,28 @@ func (o *List) GetUnexposed() string {
 }
 
 // Validate valides the current information stored into the structure.
-func (o *List) Validate() Errors {
+func (o *List) Validate() error {
 
 	errors := Errors{}
 
 	if err := ValidateRequiredString("creationOnly", o.CreationOnly); err != nil {
-		errors = append(errors, err)
+		errors = append(errors, err.(Error))
 	}
 
 	if err := ValidateRequiredTime("date", o.Date); err != nil {
-		errors = append(errors, err)
+		errors = append(errors, err.(Error))
 	}
 
 	if err := ValidateRequiredString("name", o.Name); err != nil {
-		errors = append(errors, err)
+		errors = append(errors, err.(Error))
 	}
 
 	if err := ValidateRequiredString("readOnly", o.ReadOnly); err != nil {
-		errors = append(errors, err)
+		errors = append(errors, err.(Error))
 	}
 
 	if err := ValidateRequiredString("unexposed", o.Unexposed); err != nil {
-		errors = append(errors, err)
+		errors = append(errors, err.(Error))
 	}
 
 	if len(errors) > 0 {
@@ -338,16 +338,16 @@ func (o *Task) SetIdentifier(ID string) {
 }
 
 // Validate valides the current information stored into the structure.
-func (o *Task) Validate() Errors {
+func (o *Task) Validate() error {
 
 	errors := Errors{}
 
 	if err := ValidateRequiredString("name", o.Name); err != nil {
-		errors = append(errors, err)
+		errors = append(errors, err.(Error))
 	}
 
 	if err := ValidateStringInList("status", string(o.Status), []string{"DONE", "PROGRESS", "TODO"}, false); err != nil {
-		errors = append(errors, err)
+		errors = append(errors, err.(Error))
 	}
 
 	if len(errors) > 0 {

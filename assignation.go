@@ -79,12 +79,12 @@ func (a *Assignation) String() string {
 }
 
 // Validate validates the current information stored into the Assignation.
-func (a *Assignation) Validate() Errors {
+func (a *Assignation) Validate() error {
 
 	errors := Errors{}
 
 	if err := ValidateStringInList("operation", string(a.Type), []string{"full", "additive", "substractive"}, false); err != nil {
-		errors = append(errors, err)
+		errors = append(errors, err.(Error))
 	}
 
 	return errors
