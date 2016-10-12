@@ -51,3 +51,9 @@ func (e *Errors) Error() string {
 
 	return errorString
 }
+
+// Code returns the code of the first error code in the Errors.
+func (e *Errors) Code() int {
+
+	return (*e)[0].Code
+}
