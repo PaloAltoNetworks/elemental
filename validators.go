@@ -36,7 +36,7 @@ const (
 
 // A Validatable is the interface for objects that can be validated.
 type Validatable interface {
-	Validate() Errors
+	Validate() error
 }
 
 // ValidateStringInList validates if the string is in the list.

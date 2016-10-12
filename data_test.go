@@ -109,23 +109,23 @@ func (o *List) Validate() error {
 	errors := Errors{}
 
 	if err := ValidateRequiredString("creationOnly", o.CreationOnly); err != nil {
-		errors = append(errors, err.(Error))
+		errors = append(errors, err)
 	}
 
 	if err := ValidateRequiredTime("date", o.Date); err != nil {
-		errors = append(errors, err.(Error))
+		errors = append(errors, err)
 	}
 
 	if err := ValidateRequiredString("name", o.Name); err != nil {
-		errors = append(errors, err.(Error))
+		errors = append(errors, err)
 	}
 
 	if err := ValidateRequiredString("readOnly", o.ReadOnly); err != nil {
-		errors = append(errors, err.(Error))
+		errors = append(errors, err)
 	}
 
 	if err := ValidateRequiredString("unexposed", o.Unexposed); err != nil {
-		errors = append(errors, err.(Error))
+		errors = append(errors, err)
 	}
 
 	if len(errors) > 0 {
@@ -343,11 +343,11 @@ func (o *Task) Validate() error {
 	errors := Errors{}
 
 	if err := ValidateRequiredString("name", o.Name); err != nil {
-		errors = append(errors, err.(Error))
+		errors = append(errors, err)
 	}
 
 	if err := ValidateStringInList("status", string(o.Status), []string{"DONE", "PROGRESS", "TODO"}, false); err != nil {
-		errors = append(errors, err.(Error))
+		errors = append(errors, err)
 	}
 
 	if len(errors) > 0 {

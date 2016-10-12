@@ -10,7 +10,7 @@ import (
 //
 // For instance, it will check if the given Manipulable has field marked as
 // readonly, that it has not changed according to the db.
-func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeSpecifiable, op Operation) Errors {
+func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeSpecifiable, op Operation) error {
 
 	errors := NewErrors()
 
