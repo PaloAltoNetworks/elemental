@@ -137,7 +137,7 @@ func (o *{{ specification.entity_name }}) Set{{ field_name }}({{ attribute_name 
 {% endfor -%}
 
 // Validate valides the current information stored into the structure.
-func (o *{{specification.entity_name}}) Validate() {{ glob.prefix }}Errors {
+func (o *{{specification.entity_name}}) Validate() error {
 
     errors := {{ glob.prefix }}Errors{}
 

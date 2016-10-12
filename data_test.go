@@ -104,7 +104,7 @@ func (o *List) GetUnexposed() string {
 }
 
 // Validate valides the current information stored into the structure.
-func (o *List) Validate() Errors {
+func (o *List) Validate() error {
 
 	errors := Errors{}
 
@@ -338,7 +338,7 @@ func (o *Task) SetIdentifier(ID string) {
 }
 
 // Validate valides the current information stored into the structure.
-func (o *Task) Validate() Errors {
+func (o *Task) Validate() error {
 
 	errors := Errors{}
 

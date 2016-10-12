@@ -30,12 +30,12 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 
 			l1.ReadOnly = "value"
 
-			errs := ValidateAdvancedSpecification(l1, nil, OperationCreate)
+			errs := ValidateAdvancedSpecification(l1, nil, OperationCreate).(Errors)
 
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)
 				So(len(errs), ShouldEqual, 1)
-				So(errs[0].Code, ShouldEqual, http.StatusUnprocessableEntity)
+				So(errs.Code(), ShouldEqual, http.StatusUnprocessableEntity)
 			})
 		})
 
@@ -44,12 +44,12 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 			l1.ReadOnly = "value"
 			l2.ReadOnly = "not value"
 
-			errs := ValidateAdvancedSpecification(l1, l2, OperationUpdate)
+			errs := ValidateAdvancedSpecification(l1, l2, OperationUpdate).(Errors)
 
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)
 				So(len(errs), ShouldEqual, 1)
-				So(errs[0].Code, ShouldEqual, http.StatusUnprocessableEntity)
+				So(errs.Code(), ShouldEqual, http.StatusUnprocessableEntity)
 			})
 		})
 
@@ -70,12 +70,12 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 			l1.CreationOnly = "value"
 			l2.CreationOnly = "not value"
 
-			errs := ValidateAdvancedSpecification(l1, l2, OperationUpdate)
+			errs := ValidateAdvancedSpecification(l1, l2, OperationUpdate).(Errors)
 
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)
 				So(len(errs), ShouldEqual, 1)
-				So(errs[0].Code, ShouldEqual, http.StatusUnprocessableEntity)
+				So(errs.Code(), ShouldEqual, http.StatusUnprocessableEntity)
 			})
 		})
 
@@ -87,13 +87,13 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 			l1.CreationOnly = "value"
 			l2.CreationOnly = "not value"
 
-			errs := ValidateAdvancedSpecification(l1, l2, OperationUpdate)
+			errs := ValidateAdvancedSpecification(l1, l2, OperationUpdate).(Errors)
 
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)
 				So(len(errs), ShouldEqual, 2)
-				So(errs[0].Code, ShouldEqual, http.StatusUnprocessableEntity)
-				So(errs[1].Code, ShouldEqual, http.StatusUnprocessableEntity)
+				So(errs.At(0).Code, ShouldEqual, http.StatusUnprocessableEntity)
+				So(errs.At(1).Code, ShouldEqual, http.StatusUnprocessableEntity)
 			})
 		})
 	})
