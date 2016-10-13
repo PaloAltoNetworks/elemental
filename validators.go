@@ -52,7 +52,7 @@ func ValidateStringInList(attribute string, value string, enums []string, autoge
 		}
 	}
 
-	return NewError("Validation Error", fmt.Sprintf(stringInListFormat, value, attribute, enums), attribute, http.StatusUnprocessableEntity)
+	return NewError("Validation Error", fmt.Sprintf(stringInListFormat, value, attribute, enums), "elemental", http.StatusUnprocessableEntity)
 }
 
 // ValidateFloatInList validates if the string is in the list.
@@ -64,7 +64,7 @@ func ValidateFloatInList(attribute string, value float64, enums []float64) error
 		}
 	}
 
-	return NewError("Validation Error", fmt.Sprintf(floatInListFormat, value, attribute, enums), attribute, http.StatusUnprocessableEntity)
+	return NewError("Validation Error", fmt.Sprintf(floatInListFormat, value, attribute, enums), "elemental", http.StatusUnprocessableEntity)
 }
 
 // ValidateIntInList validates if the string is in the list.
@@ -76,14 +76,14 @@ func ValidateIntInList(attribute string, value int, enums []int) error {
 		}
 	}
 
-	return NewError("Validation Error", fmt.Sprintf(intInListFormat, value, attribute, enums), attribute, http.StatusUnprocessableEntity)
+	return NewError("Validation Error", fmt.Sprintf(intInListFormat, value, attribute, enums), "elemental", http.StatusUnprocessableEntity)
 }
 
 // ValidateRequiredInt validates is the int is set to 0.
 func ValidateRequiredInt(attribute string, value int) error {
 
 	if value == 0 {
-		return NewError("Validation Error", fmt.Sprintf(requiredIntFailFormat, attribute), attribute, http.StatusUnprocessableEntity)
+		return NewError("Validation Error", fmt.Sprintf(requiredIntFailFormat, attribute), "elemental", http.StatusUnprocessableEntity)
 	}
 
 	return nil
@@ -93,7 +93,7 @@ func ValidateRequiredInt(attribute string, value int) error {
 func ValidateRequiredFloat(attribute string, value float64) error {
 
 	if value == 0.0 {
-		return NewError("Validation Error", fmt.Sprintf(requiredFloatFailFormat, attribute), attribute, http.StatusUnprocessableEntity)
+		return NewError("Validation Error", fmt.Sprintf(requiredFloatFailFormat, attribute), "elemental", http.StatusUnprocessableEntity)
 	}
 
 	return nil
@@ -103,9 +103,9 @@ func ValidateRequiredFloat(attribute string, value float64) error {
 func ValidateMaximumFloat(attribute string, value float64, max float64, exclusive bool) error {
 
 	if !exclusive && value > max {
-		return NewError("Validation Error", fmt.Sprintf(maximumFloatFailFormat, value, attribute, max), attribute, http.StatusUnprocessableEntity)
+		return NewError("Validation Error", fmt.Sprintf(maximumFloatFailFormat, value, attribute, max), "elemental", http.StatusUnprocessableEntity)
 	} else if exclusive && value >= max {
-		return NewError("Validation Error", fmt.Sprintf(maximumFloatExclusiveFailFormat, value, attribute, max), attribute, http.StatusUnprocessableEntity)
+		return NewError("Validation Error", fmt.Sprintf(maximumFloatExclusiveFailFormat, value, attribute, max), "elemental", http.StatusUnprocessableEntity)
 	}
 
 	return nil
@@ -115,9 +115,9 @@ func ValidateMaximumFloat(attribute string, value float64, max float64, exclusiv
 func ValidateMinimumFloat(attribute string, value float64, min float64, exclusive bool) error {
 
 	if !exclusive && value < min {
-		return NewError("Validation Error", fmt.Sprintf(minimumFloatFailFormat, value, attribute, min), attribute, http.StatusUnprocessableEntity)
+		return NewError("Validation Error", fmt.Sprintf(minimumFloatFailFormat, value, attribute, min), "elemental", http.StatusUnprocessableEntity)
 	} else if exclusive && value <= min {
-		return NewError("Validation Error", fmt.Sprintf(minimumFloatExclusiveFailFormat, value, attribute, min), attribute, http.StatusUnprocessableEntity)
+		return NewError("Validation Error", fmt.Sprintf(minimumFloatExclusiveFailFormat, value, attribute, min), "elemental", http.StatusUnprocessableEntity)
 	}
 
 	return nil
