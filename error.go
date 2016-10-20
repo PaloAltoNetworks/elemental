@@ -38,6 +38,10 @@ type Errors []error
 // NewErrors creates a new Errors.
 func NewErrors(errors ...error) Errors {
 
+	if len(errors) == 0 {
+		return Errors{}
+	}
+
 	return append(Errors{}, errors...)
 }
 
@@ -54,6 +58,10 @@ func (e Errors) Error() string {
 
 // Code returns the code of the first error code in the Errors.
 func (e Errors) Code() int {
+
+	if len(e) == 0 {
+		return -1
+	}
 
 	switch e0 := e[0].(type) {
 	case Error:
@@ -72,6 +80,6 @@ func (e Errors) At(i int) Error {
 	case Error:
 		return ei
 	default:
-		return NewError("Unknown Error", "Error doesn't exists", "elemental", -1)
+		return NewError("Standard error", ei.Error(), "elemental", -1)
 	}
 }

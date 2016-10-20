@@ -5,6 +5,7 @@
 package elemental
 
 import (
+	"fmt"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -43,7 +44,7 @@ func TestError_Error(t *testing.T) {
 
 func TestError_NewErrors(t *testing.T) {
 
-	Convey("Given I create an Error", t, func() {
+	Convey("Given I create an elemental.Errors with some errors", t, func() {
 
 		e1 := NewError("bad", "something bad", "containers", 42)
 		e2 := NewError("bad1", "something bad1", "containers1", 43)
@@ -56,4 +57,42 @@ func TestError_NewErrors(t *testing.T) {
 			So(errs.Code(), ShouldEqual, 42)
 		})
 	})
+
+	Convey("Given I create an elemental.Errors without any error", t, func() {
+
+		errs := NewErrors()
+
+		Convey("Then the Error should be correctly initialized", func() {
+			So(errs, ShouldResemble, Errors{})
+			So(errs.Code(), ShouldEqual, -1)
+		})
+	})
+
+	Convey("Given I create an elemental.Errors with a standard error", t, func() {
+
+		e := fmt.Errorf("wesh")
+		errs := NewErrors(e)
+
+		Convey("Then the Error should be correctly initialized", func() {
+			So(errs, ShouldResemble, Errors{e})
+			So(errs.Code(), ShouldEqual, -1)
+		})
+	})
+}
+
+func TestError_At(t *testing.T) {
+
+	Convey("Given I create an elemental.Errors with some errors", t, func() {
+
+		e1 := NewError("bad", "something bad", "containers", 42)
+		e2 := fmt.Errorf("not good")
+
+		errs := NewErrors(e1, e2)
+
+		Convey("Then the Error should be correctly initialized", func() {
+			So(errs.At(0), ShouldResemble, e1)
+			So(errs.At(1).Code, ShouldEqual, -1)
+		})
+	})
+
 }
