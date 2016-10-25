@@ -242,9 +242,15 @@ func (o *{{specification.entity_name}}) SetAPIKey(key string) {
 {% endif -%}
 
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
-func (o {{specification.entity_name}}) SpecificationForAttribute(name string) {{ glob.prefix }}AttributeSpecification {
+func (o *{{specification.entity_name}}) SpecificationForAttribute(name string) {{ glob.prefix }}AttributeSpecification {
 
   return {{ specification.entity_name }}AttributesMap[name]
+}
+
+// AttributeSpecifications returns the full attribute specifications map.
+func (o *{{specification.entity_name}}) AttributeSpecifications() map[string]{{ glob.prefix }}AttributeSpecification {
+
+  return {{ specification.entity_name }}AttributesMap
 }
 
 // {{ specification.entity_name }}AttributesMap represents the map of attribute for {{ specification.entity_name }}.

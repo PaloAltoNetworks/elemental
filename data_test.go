@@ -136,9 +136,15 @@ func (o *List) Validate() error {
 }
 
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
-func (o List) SpecificationForAttribute(name string) AttributeSpecification {
+func (o *List) SpecificationForAttribute(name string) AttributeSpecification {
 
 	return ListAttributesMap[name]
+}
+
+// AttributeSpecifications returns the full attribute specifications map.
+func (o *List) AttributeSpecifications() map[string]AttributeSpecification {
+
+	return ListAttributesMap
 }
 
 // ListAttributesMap represents the map of attribute for List.
@@ -358,9 +364,15 @@ func (o *Task) Validate() error {
 }
 
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
-func (o Task) SpecificationForAttribute(name string) AttributeSpecification {
+func (o *Task) SpecificationForAttribute(name string) AttributeSpecification {
 
 	return TaskAttributesMap[name]
+}
+
+// AttributeSpecifications returns the full attribute specifications map.
+func (o *Task) AttributeSpecifications() map[string]AttributeSpecification {
+
+	return TaskAttributesMap
 }
 
 // TaskAttributesMap represents the map of attribute for Task.

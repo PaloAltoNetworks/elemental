@@ -7,6 +7,7 @@ package elemental
 // An AttributeSpecifiable is the interface an object must implement in order to access specification of its attributes.
 type AttributeSpecifiable interface {
 	SpecificationForAttribute(string) AttributeSpecification
+	AttributeSpecifications() map[string]AttributeSpecification
 }
 
 // UniqueScope is a the type used to define uniqueness.
