@@ -22,7 +22,7 @@ func TestUtils_extractFieldNames(t *testing.T) {
 			fields := extractFieldNames(l1)
 
 			Convey("Then all fields should be present", func() {
-				So(len(fields), ShouldEqual, 9)
+				So(len(fields), ShouldEqual, 10)
 				So(fields, ShouldContain, "ID")
 				So(fields, ShouldContain, "Description")
 				So(fields, ShouldContain, "Name")
@@ -32,6 +32,7 @@ func TestUtils_extractFieldNames(t *testing.T) {
 				So(fields, ShouldContain, "ReadOnly")
 				So(fields, ShouldContain, "Unexposed")
 				So(fields, ShouldContain, "Date")
+				So(fields, ShouldContain, "Slice")
 			})
 		})
 	})
@@ -81,6 +82,26 @@ func TestUtils_areFieldValuesEqual(t *testing.T) {
 
 			Convey("Then the values should not be equal", func() {
 				So(areFieldValuesEqual("Date", l1, l2), ShouldBeFalse)
+			})
+		})
+
+		Convey("When I set a same slice", func() {
+
+			l1.Slice = []string{"a", "b", "c"}
+			l2.Slice = []string{"a", "b", "c"}
+
+			Convey("Then the values should not be equal", func() {
+				So(areFieldValuesEqual("Slice", l1, l2), ShouldBeTrue)
+			})
+		})
+
+		Convey("When I set a different slice", func() {
+
+			l1.Slice = []string{"a", "b", "c"}
+			l2.Slice = []string{"a", "b"}
+
+			Convey("Then the values should not be equal", func() {
+				So(areFieldValuesEqual("Slice", l1, l2), ShouldBeFalse)
 			})
 		})
 	})

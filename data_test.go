@@ -40,6 +40,9 @@ type List struct {
 	// A read only attribute
 	ReadOnly string `json:"readOnly" cql:"readonly,omitempty" bson:"readonly"`
 
+	// A Slice
+	Slice []string `json:"-" cql:"slice,omitempty" bson:"slice"`
+
 	// An unexposed attribute
 	Unexposed string `json:"-" cql:"unexposed,omitempty" bson:"unexposed"`
 }
@@ -96,6 +99,11 @@ func (o *List) SetName(name string) {
 // GetReadOnly returns the readOnly of the receiver
 func (o *List) GetReadOnly() string {
 	return o.ReadOnly
+}
+
+// GetSlice returns the slice of the receiver
+func (o *List) GetSlice() []string {
+	return o.Slice
 }
 
 // GetUnexposed returns the unexposed of the receiver
@@ -251,6 +259,20 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Required:       true,
 		Stored:         true,
 		Type:           "string",
+		Unique:         true,
+	},
+	"Slice": AttributeSpecification{
+		AllowedChoices: []string{},
+		CreationOnly:   true,
+		Filterable:     true,
+		Format:         "free",
+		Getter:         true,
+		Name:           "slice",
+		Orderable:      true,
+		Required:       true,
+		Stored:         true,
+		SubType:        "string",
+		Type:           "list",
 		Unique:         true,
 	},
 	"Unexposed": AttributeSpecification{
