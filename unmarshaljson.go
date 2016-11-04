@@ -86,7 +86,7 @@ func UnmarshalJSON(r io.Reader, i interface{}) error {
 		err = json.Unmarshal([]byte(j), i)
 
 		if err != nil || field.typ.String() != reflect.ValueOf(v).Type().String() {
-			errors = append(errors, NewError("Validation Error", fmt.Sprintf(wrongType, v, k, field.typ.String()), "elemental", http.StatusUnprocessableEntity))
+			errors = append(errors, NewError("Validation Error", fmt.Sprintf(wrongType, v, k, field.typ.Kind().String()), "elemental", http.StatusUnprocessableEntity))
 			continue
 		}
 	}
