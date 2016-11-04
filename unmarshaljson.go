@@ -86,7 +86,18 @@ func UnmarshalJSON(r io.Reader, i interface{}) error {
 		err = json.Unmarshal([]byte(j), i)
 
 		if err != nil || field.typ.String() != reflect.ValueOf(v).Type().String() {
-			errors = append(errors, NewError("Validation Error", fmt.Sprintf(wrongType, v, k, field.typ.String()), "elemental", http.StatusUnprocessableEntity))
+
+			fieldType := field.typ.Kind().String()
+
+			if field.typ.Kind() != reflect.String {
+				fieldType = field.typ.String()
+			}
+
+			if field.typ.String() == "time.Time" {
+				fieldType = "string in format YYYY-MM-DDTHH:MM:SSZ"
+			}
+
+			errors = append(errors, NewError("Validation Error", fmt.Sprintf(wrongType, v, k, fieldType), "elemental", http.StatusUnprocessableEntity))
 			continue
 		}
 	}

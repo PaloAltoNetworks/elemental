@@ -133,7 +133,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 		err := UnmarshalJSON(bytes.NewReader(json), server)
 
 		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'boom' should be a 'elemental.constant'\n")
+		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'boom' should be a 'string'\n")
 	})
 
 	Convey("Given I call the method UnmarshalJSON with an invalid key", t, func() {
@@ -143,6 +143,6 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 		err := UnmarshalJSON(bytes.NewReader(json), server)
 
 		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'updatedAt' should be a 'time.Time'\n")
+		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'updatedAt' should be a 'string in format YYYY-MM-DDTHH:MM:SSZ'\n")
 	})
 }
