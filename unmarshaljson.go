@@ -46,24 +46,10 @@ func UnmarshalJSON(r io.Reader, i interface{}) error {
 		interfaceValue = interfaceValue.Elem()
 	}
 
-	// Check for invalid key first, yes it's very opinioned
-	// Lost a bit a perf here, but fields of a type is cached
-	// Usefull checked for typo error in the json of people
-	for k := range d {
-		_, err = fieldForName(interfaceValue.Type(), k)
+	err = json.Unmarshal(data, i)
 
-		if err != nil {
-			errors = append(errors, NewError("Validation Error", fmt.Sprintf(invalidAttribute, k), "elemental", http.StatusUnprocessableEntity))
-			continue
-		}
-	}
-
-	if len(errors) == 0 {
-		err = json.Unmarshal(data, i)
-
-		if err == nil {
-			return nil
-		}
+	if err == nil {
+		return nil
 	}
 
 	// Check for type error here

@@ -77,15 +77,6 @@ func TestUnmarshalJSONWithInvalidJSON(t *testing.T) {
 
 func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 
-	Convey("Given I call the method UnmarshalJSON with a invalid json because array instead of string", t, func() {
-
-		server := &Server{}
-		json := []byte(`{"parentType" : ["ce"], "ParentTyp" : "parent"}`)
-		err := UnmarshalJSON(bytes.NewReader(json), server)
-
-		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Attribute 'ParentTyp' is invalid\nerror 1: error 422 (elemental): Validation Error: Data '[ce]' of attribute 'parentType' should be a 'string'\n")
-	})
-
 	Convey("Given I call the method UnmarshalJSON with a invalid json because string instead of int", t, func() {
 
 		server := &Server{}
@@ -114,16 +105,6 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '[12]' of attribute 'associatedTags' should be a '[]string'\n")
-	})
-
-	Convey("Given I call the method UnmarshalJSON with an invalid key", t, func() {
-
-		server := &Server{}
-		json := []byte(`{"associateags" : [12]}`)
-		err := UnmarshalJSON(bytes.NewReader(json), server)
-
-		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Attribute 'associateags' is invalid\n")
 	})
 
 	Convey("Given I call the method UnmarshalJSON with an invalid contant type", t, func() {
