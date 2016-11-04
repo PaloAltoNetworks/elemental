@@ -145,4 +145,37 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'updatedAt' should be a 'string in format YYYY-MM-DDTHH:MM:SSZ'\n")
 	})
+
+	Convey("Given I call the method UnmarshalJSON with an empty string for a list of string", t, func() {
+
+		server := &Server{}
+		server.AssociatedTags = []string{"coucou"}
+		json := []byte(`{"associatedTags" : [], "parentType" : 12}`)
+		err := UnmarshalJSON(bytes.NewReader(json), server)
+
+		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'parentType' should be a 'string'\n")
+	})
+
+	Convey("Given I call the method UnmarshalJSON with an valid list of strings for a list of string", t, func() {
+
+		server := &Server{}
+		server.AssociatedTags = []string{"coucou"}
+		json := []byte(`{"associatedTags" : ["coucou" , "pede"], "parentType" : 12}`)
+		err := UnmarshalJSON(bytes.NewReader(json), server)
+
+		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'parentType' should be a 'string'\n")
+	})
+
+	Convey("Given I call the method UnmarshalJSON with an null value for a of string", t, func() {
+
+		server := &Server{}
+		server.AssociatedTags = []string{"coucou"}
+		json := []byte(`{"boom" : null, "parentType" : 12}`)
+		err := UnmarshalJSON(bytes.NewReader(json), server)
+
+		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'parentType' should be a 'string'\n")
+	})
 }

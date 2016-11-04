@@ -75,17 +75,28 @@ func UnmarshalJSON(r io.Reader, i interface{}) error {
 			continue
 		}
 
-		var j string
+		b, err := json.MarshalIndent(v, "", "")
 
-		if reflect.ValueOf(v).Kind() == reflect.String {
-			j = fmt.Sprintf(`{"%s" : "%v"}`, k, v)
-		} else {
-			j = fmt.Sprintf(`{"%s" : %v}`, k, v)
+		// Should not go there
+		if err != nil {
+			errors = append(errors, NewError("Validation Error", fmt.Sprintf(typeError), "elemental", http.StatusUnprocessableEntity))
+			continue
 		}
 
+		j := fmt.Sprintf(`{ "%s" : %s}`, k, string(b))
 		err = json.Unmarshal([]byte(j), i)
 
-		if err != nil || field.typ.String() != reflect.ValueOf(v).Type().String() {
+		if err == nil {
+			continue
+		}
+
+		t := field.typ.String()
+
+		if field.typ.Kind() == reflect.String {
+			t = field.typ.Kind().String()
+		}
+
+		if err != nil || t != reflect.ValueOf(v).Type().String() {
 
 			fieldType := field.typ.Kind().String()
 
@@ -158,14 +169,11 @@ func cachedTypeFields(t reflect.Type) []field {
 type field struct {
 	name string
 
-	tag                   bool
-	index                 []int
-	typ                   reflect.Type
-	omitEmpty             bool
-	quoted                bool
-	autoTimestamp         bool
-	autoTimestampOverride bool
-	isPrimaryKey          bool
+	tag       bool
+	index     []int
+	typ       reflect.Type
+	omitEmpty bool
+	quoted    bool
 }
 
 // byName sorts field by name, breaking ties with depth,
