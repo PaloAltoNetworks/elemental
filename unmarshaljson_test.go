@@ -13,12 +13,15 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+type constant string
+
 type Server struct {
 	Annotation     map[string]string `json:"annotation"`
 	AssociatedTags []string          `json:"associatedTags"`
 	ParentType     string            `json:"parentType"`
 	UpdatedAt      time.Time         `json:"updatedAt"`
 	Number         int               `json:"number"`
+	Boom           constant          `json:"boom"`
 }
 
 var ta *testing.T
@@ -121,5 +124,25 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Attribute 'associateags' is invalid\n")
+	})
+
+	Convey("Given I call the method UnmarshalJSON with an invalid contant type", t, func() {
+
+		server := &Server{}
+		json := []byte(`{"boom" : 12}`)
+		err := UnmarshalJSON(bytes.NewReader(json), server)
+
+		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'boom' should be a 'elemental.constant'\n")
+	})
+
+	Convey("Given I call the method UnmarshalJSON with an invalid key", t, func() {
+
+		server := &Server{}
+		json := []byte(`{"updatedAt" : 12}`)
+		err := UnmarshalJSON(bytes.NewReader(json), server)
+
+		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'updatedAt' should be a 'time.Time'\n")
 	})
 }
