@@ -11,7 +11,7 @@ func init() {
     {% endfor -%}
 }
 
-func ManipulableForIdentity(identity string) elemental.Identifiable{
+func IdentifiableForIdentity(identity string) elemental.Identifiable{
 
   switch identity {
     {% for spec in specifications.values() -%}
