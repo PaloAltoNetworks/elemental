@@ -10,3 +10,17 @@ func init() {
     elemental.RegisterIdentity({{spec.entity_name}}Identity)
     {% endfor -%}
 }
+
+func ManipulableForIdentity(identity string) elemental.Identifiable{
+
+  switch identity {
+    {% for spec in specifications.values() -%}
+      case {{ spec.entity_name }}Identity.Name:
+        return New{{ spec.entity_name }}()
+    {% endfor -%}
+    default:
+      return nil
+  }
+
+  return nil
+}
