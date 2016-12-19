@@ -21,6 +21,4 @@ func IdentifiableForIdentity(identity string) elemental.Identifiable{
     default:
       return nil
   }
-
-  return nil
 }
