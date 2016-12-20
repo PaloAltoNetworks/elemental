@@ -229,7 +229,7 @@ func typeFields(t reflect.Type) []field {
 	next := []field{{typ: t}}
 
 	// Count of queued names for current level and the next.
-	count := map[reflect.Type]int{}
+	var count map[reflect.Type]int
 	nextCount := map[reflect.Type]int{}
 
 	// Types already visited at an earlier level.
@@ -320,7 +320,8 @@ func typeFields(t reflect.Type) []field {
 	// of field index length. Loop over names; for each name, delete
 	// hidden fields by choosing the one dominant field that survives.
 	out := fields[:0]
-	for advance, i := 0, 0; i < len(fields); i += advance {
+	var advance int
+	for i := 0; i < len(fields); i += advance {
 		// One iteration per name.
 		// Find the sequence of fields with the name of this first field.
 		fi := fields[i]
