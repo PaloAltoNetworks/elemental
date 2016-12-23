@@ -5,6 +5,7 @@
 package elemental
 
 import (
+	"encoding/json"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -51,9 +52,10 @@ func TestError_NewEvent(t *testing.T) {
 		e := NewEvent(EventCreate, tag)
 
 		Convey("Then the Error should be correctly initialized", func() {
+			d, _ := json.Marshal(tag)
 			So(e.Identity, ShouldEqual, "tag")
 			So(e.Type, ShouldEqual, EventCreate)
-			So(e.Entity, ShouldEqual, tag)
+			So(e.Entity, ShouldResemble, json.RawMessage(d))
 		})
 	})
 }

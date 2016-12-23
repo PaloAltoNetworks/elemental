@@ -4,7 +4,10 @@
 
 package elemental
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 // EventType is the type of an event.
 type EventType string
@@ -25,18 +28,23 @@ type UpdateMechanism string
 
 // An Event represents a computational event.
 type Event struct {
-	Entity    interface{} `json:"entity"`
-	Identity  string      `json:"identity"`
-	Type      EventType   `json:"type"`
-	Timestamp time.Time   `json:"timestamp"`
+	Entity    json.RawMessage `json:"entity"`
+	Identity  string          `json:"identity"`
+	Type      EventType       `json:"type"`
+	Timestamp time.Time       `json:"timestamp"`
 }
 
 // NewEvent returns a new Event.
 func NewEvent(t EventType, o Identifiable) *Event {
 
+	data, err := json.Marshal(o)
+	if err != nil {
+		panic(err)
+	}
+
 	return &Event{
 		Type:      t,
-		Entity:    o,
+		Entity:    data,
 		Identity:  o.Identity().Name,
 		Timestamp: time.Now(),
 	}
