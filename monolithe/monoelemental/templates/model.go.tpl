@@ -96,17 +96,17 @@ func (o *{{specification.entity_name}}) Identifier() string {
     {% endif -%}
 }
 
-func  (o *{{specification.entity_name}}) String() string {
-
-  return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
-}
-
 // SetIdentifier sets the value of the object's unique identifier.
 func (o *{{specification.entity_name}}) SetIdentifier(ID string) {
 
     {% if glob.identifier != "" -%}
     o.{{ glob.identifier }} = ID
     {% endif -%}
+}
+
+func  (o *{{specification.entity_name}}) String() string {
+
+  return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
 }
 
 {% for attribute in specification.attributes -%}
