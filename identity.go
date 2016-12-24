@@ -27,8 +27,8 @@ type Identifiable interface {
 //
 // For instance, "cat" and "cats".
 type Identity struct {
-	Name     string
-	Category string
+	Name     string `json:"name"`
+	Category string `json:"category"`
 }
 
 // MakeIdentity returns a new Identity.
