@@ -6,6 +6,7 @@ package elemental
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
@@ -48,6 +49,17 @@ func NewEvent(t EventType, o Identifiable) *Event {
 		Identity:  o.Identity().Name,
 		Timestamp: time.Now(),
 	}
+}
+
+// Decode decodes the data into the given destination.
+func (e *Event) Decode(dst interface{}) error {
+
+	return json.Unmarshal(e.Entity, &dst)
+}
+
+func (e *Event) String() string {
+
+	return fmt.Sprintf("<event type: %s identity: %s>", e.Type, e.Identity)
 }
 
 // An Events represents a list of Event.
