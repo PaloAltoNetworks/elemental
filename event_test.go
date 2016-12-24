@@ -44,7 +44,7 @@ func (t *Tag) Validate() Errors {
 	return nil
 }
 
-func TestError_NewEvent(t *testing.T) {
+func TestEvent_NewEvent(t *testing.T) {
 
 	Convey("Given I create an Event", t, func() {
 
@@ -58,9 +58,56 @@ func TestError_NewEvent(t *testing.T) {
 			So(e.Entity, ShouldResemble, json.RawMessage(d))
 		})
 	})
+
+	Convey("Given I create an Event with an unmarshalable entity", t, func() {
+
+		tag := &UnmarshalableList{}
+
+		Convey("Then it should panic", func() {
+			So(func() { NewEvent(EventCreate, tag) }, ShouldPanic)
+		})
+	})
 }
 
-func TestError_NewEvents(t *testing.T) {
+func TestEvent_Decode(t *testing.T) {
+
+	Convey("Given I create an Event", t, func() {
+
+		tag := &Tag{Name: "t1"}
+		e := NewEvent(EventCreate, tag)
+		d, _ := json.Marshal(tag)
+		e.Entity = d
+
+		Convey("When I decode the data", func() {
+			t2 := &Tag{}
+
+			e.Decode(t2)
+
+			Convey("Then t2 should ressemble to tag", func() {
+				So(t2, ShouldResemble, tag)
+			})
+		})
+	})
+}
+
+func TestEvent_String(t *testing.T) {
+
+	Convey("Given I create an Event", t, func() {
+
+		tag := &Tag{Name: "t1"}
+		e := NewEvent(EventCreate, tag)
+
+		Convey("When I use String", func() {
+			str := e.String()
+
+			Convey("Then the string representatipn should be correct", func() {
+				So(str, ShouldEqual, "<event type: create identity: tag>")
+			})
+		})
+	})
+}
+
+func TestEvent_NewEvents(t *testing.T) {
 
 	Convey("Given I create an Events", t, func() {
 
