@@ -98,6 +98,10 @@ func UnmarshalJSON(data []byte, i interface{}) error {
 				fieldType = "string in format YYYY-MM-DDTHH:MM:SSZ"
 			}
 
+			if field.typ.String() == "int" {
+				fieldType = "integer"
+			}
+
 			errors = append(errors, NewError("Validation Error", fmt.Sprintf(wrongType, v, k, fieldType), "elemental", http.StatusUnprocessableEntity))
 			continue
 		}
