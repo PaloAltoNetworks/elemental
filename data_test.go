@@ -764,7 +764,98 @@ var UserAttributesMap = map[string]AttributeSpecification{
 		Unique:         true,
 	},
 }
+var relationshipsRegistry RelationshipsRegistry
 
+// Relationships returns the model relationships.
+func Relationships() RelationshipsRegistry {
+
+	return relationshipsRegistry
+}
+
+func init() {
+	relationshipsRegistry = RelationshipsRegistry{}
+
+	//
+	// Main Relationship for root
+	//
+	RootMainRelationship := &Relationship{
+		AllowsRetrieve: true,
+	}
+
+	// Children relationship for lists in root
+	RootMainRelationship.AddChild(
+		IdentityFromName("list"),
+		&Relationship{
+			AllowsCreate:       true,
+			AllowsRetrieveMany: true,
+			AllowsInfo:         true,
+		},
+	)
+	// Children relationship for users in root
+	RootMainRelationship.AddChild(
+		IdentityFromName("user"),
+		&Relationship{
+			AllowsCreate:       true,
+			AllowsRetrieveMany: true,
+			AllowsInfo:         true,
+		},
+	)
+
+	relationshipsRegistry[IdentityFromName("root")] = RootMainRelationship
+
+	//
+	// Main Relationship for task
+	//
+	TaskMainRelationship := &Relationship{
+		AllowsRetrieve: true,
+		AllowsUpdate:   true,
+		AllowsDelete:   true,
+	}
+
+	relationshipsRegistry[IdentityFromName("task")] = TaskMainRelationship
+
+	//
+	// Main Relationship for list
+	//
+	ListMainRelationship := &Relationship{
+		AllowsRetrieve: true,
+		AllowsUpdate:   true,
+		AllowsDelete:   true,
+	}
+
+	// Children relationship for tasks in list
+	ListMainRelationship.AddChild(
+		IdentityFromName("task"),
+		&Relationship{
+			AllowsCreate:       true,
+			AllowsRetrieveMany: true,
+			AllowsInfo:         true,
+		},
+	)
+	// Children relationship for users in list
+	ListMainRelationship.AddChild(
+		IdentityFromName("user"),
+		&Relationship{
+			AllowsPatch:        true,
+			AllowsRetrieveMany: true,
+			AllowsInfo:         true,
+		},
+	)
+
+	relationshipsRegistry[IdentityFromName("list")] = ListMainRelationship
+
+	//
+	// Main Relationship for user
+	//
+	UserMainRelationship := &Relationship{
+		AllowsRetrieve: true,
+		AllowsUpdate:   true,
+		AllowsDelete:   true,
+	}
+
+	relationshipsRegistry[IdentityFromName("user")] = UserMainRelationship
+
+}
 func init() {
 
 	RegisterIdentity(RootIdentity)

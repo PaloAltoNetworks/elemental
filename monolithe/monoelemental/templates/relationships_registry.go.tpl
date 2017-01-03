@@ -5,7 +5,7 @@ package {{package_name}}
 
 {% if package_name != 'elemental' -%}
 import "github.com/aporeto-inc/elemental"
-{% set _ = glob.update({'prefix': '{{ glob.prefix }}'}) -%}
+{% set _ = glob.update({'prefix': 'elemental.'}) -%}
 {% endif %}
 
 var relationshipsRegistry {{ glob.prefix }}RelationshipsRegistry

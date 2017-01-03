@@ -1,11 +1,13 @@
 package elemental
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	uuid "github.com/satori/go.uuid"
@@ -24,6 +26,10 @@ type Request struct {
 	Parameters     url.Values      `json:"parameters,omitempty"`
 	Username       string          `json:"username,omitempty"`
 	Password       string          `json:"password,omitempty"`
+	Page           int             `json:"page,omitempty"`
+	PageSize       int             `json:"pageSize,omitempty"`
+
+	TLSConnectionState *tls.ConnectionState
 }
 
 // NewRequest returns a new Request.
@@ -68,6 +74,8 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		parentIdentity = IdentityFromCategory(components[1])
 		parentID = components[2]
 		identity = IdentityFromCategory(components[3])
+	default:
+		return nil, fmt.Errorf("%s is not a valid elemental request path", req.URL)
 	}
 
 	switch req.Method {
@@ -109,18 +117,37 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		}
 	}
 
+	var page, pageSize int
+
+	if v := req.URL.Query().Get("page"); v != "" {
+		page, err = strconv.Atoi(v)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if v := req.URL.Query().Get("per_page"); v != "" {
+		pageSize, err = strconv.Atoi(v)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &Request{
-		RequestID:      uuid.NewV4().String(),
-		Namespace:      req.Header.Get("X-Namespace"),
-		Operation:      operation,
-		Identity:       identity,
-		ObjectID:       ID,
-		ParentID:       parentID,
-		ParentIdentity: parentIdentity,
-		Parameters:     req.URL.Query(),
-		Username:       username,
-		Password:       password,
-		Data:           data,
+		RequestID:          uuid.NewV4().String(),
+		Namespace:          req.Header.Get("X-Namespace"),
+		Page:               page,
+		PageSize:           pageSize,
+		Operation:          operation,
+		Identity:           identity,
+		ObjectID:           ID,
+		ParentID:           parentID,
+		ParentIdentity:     parentIdentity,
+		Parameters:         req.URL.Query(),
+		Username:           username,
+		Password:           password,
+		Data:               data,
+		TLSConnectionState: req.TLS,
 	}, nil
 }
 
