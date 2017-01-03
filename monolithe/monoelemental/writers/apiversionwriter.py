@@ -37,6 +37,7 @@ class APIVersionWriter(TemplateFileWriter):
         task_manager.wait_until_exit()
 
         self._write_registry(specifications=specifications)
+        self._write_relationships(specifications=specifications)
         self._format()
 
     def _write_model(self, specification, specification_set):
@@ -58,6 +59,15 @@ class APIVersionWriter(TemplateFileWriter):
         """
         filename = 'identities_registry.go'
         self.write(destination=self.output_directory, filename=filename, template_name="identities_registry.go.tpl",
+                   specifications=specifications,
+                   package_name=self.name,
+                   header=self.header_content)
+
+    def _write_relationships(self, specifications):
+        """
+        """
+        filename = 'relationships_registry.go'
+        self.write(destination=self.output_directory, filename=filename, template_name="relationships_registry.go.tpl",
                    specifications=specifications,
                    package_name=self.name,
                    header=self.header_content)

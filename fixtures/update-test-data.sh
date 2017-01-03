@@ -8,6 +8,10 @@ monogen -f ./specs -L elemental
 echo -n > ./data_test.go
 cat ./codegen/elemental/1.0/list.go >> ./data_test.go
 cat ./codegen/elemental/1.0/task.go | (read; read; cat) >> ./data_test.go
+cat ./codegen/elemental/1.0/root.go | (read; read; read; read; read; read; read; read; cat) >> ./data_test.go
+cat ./codegen/elemental/1.0/user.go | (read; read; cat) >> ./data_test.go
+cat ./codegen/elemental/1.0/relationships.go | (read; read; cat) >> ./data_test.go
+cat ./codegen/elemental/1.0/identities_registry.go | (read; read; cat) >> ./data_test.go
 cat >> ./data_test.go << EOF
 
 var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}

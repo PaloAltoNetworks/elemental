@@ -5,7 +5,6 @@
 package elemental
 
 import (
-	"bytes"
 	"encoding/json"
 	"testing"
 	"time"
@@ -41,7 +40,7 @@ func TestUnmarshalJSONWithNoError(t *testing.T) {
 		expectedServer.Annotation = m
 		body, _ := json.Marshal(expectedServer)
 
-		err := UnmarshalJSON(bytes.NewReader(body), server)
+		err := UnmarshalJSON(body, server)
 
 		So(err, ShouldBeNil)
 		So(server.Annotation, ShouldResemble, expectedServer.Annotation)
@@ -54,7 +53,7 @@ func TestUnmarshalJSONWithNoError(t *testing.T) {
 
 		server := &Server{}
 		json := []byte(`{"number" : 12, "parentType" : "parentType", "associatedTags" : ["coucou"], "updatedAt" : "2009-11-10T23:00:00Z", "annotation" : {"test" : "ok"}}`)
-		err := UnmarshalJSON(bytes.NewReader(json), server)
+		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldBeNil)
 		So(server.Number, ShouldResemble, 12)
@@ -69,7 +68,7 @@ func TestUnmarshalJSONWithInvalidJSON(t *testing.T) {
 	Convey("Given I call the method UnmarshalJSON with an invalid json", t, func() {
 
 		server := &Server{}
-		err := UnmarshalJSON(bytes.NewReader([]byte(`{"parentType" : 123`)), server)
+		err := UnmarshalJSON([]byte(`{"parentType" : 123`), server)
 
 		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Invalid JSON\n")
 	})
@@ -81,7 +80,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 
 		server := &Server{}
 		json := []byte(`{"number" : "12"}`)
-		err := UnmarshalJSON(bytes.NewReader(json), server)
+		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'number' should be a 'int'\n")
@@ -91,7 +90,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 
 		server := &Server{}
 		json := []byte(`{"annotation" : "12"}`)
-		err := UnmarshalJSON(bytes.NewReader(json), server)
+		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'annotation' should be a 'map[string]string'\n")
@@ -101,7 +100,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 
 		server := &Server{}
 		json := []byte(`{"associatedTags" : [12]}`)
-		err := UnmarshalJSON(bytes.NewReader(json), server)
+		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '[12]' of attribute 'associatedTags' should be a '[]string'\n")
@@ -111,7 +110,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 
 		server := &Server{}
 		json := []byte(`{"boom" : 12}`)
-		err := UnmarshalJSON(bytes.NewReader(json), server)
+		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'boom' should be a 'string'\n")
@@ -121,7 +120,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 
 		server := &Server{}
 		json := []byte(`{"updatedAt" : 12}`)
-		err := UnmarshalJSON(bytes.NewReader(json), server)
+		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'updatedAt' should be a 'string in format YYYY-MM-DDTHH:MM:SSZ'\n")
@@ -132,7 +131,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 		server := &Server{}
 		server.AssociatedTags = []string{"coucou"}
 		json := []byte(`{"associatedTags" : [], "parentType" : 12}`)
-		err := UnmarshalJSON(bytes.NewReader(json), server)
+		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'parentType' should be a 'string'\n")
@@ -143,7 +142,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 		server := &Server{}
 		server.AssociatedTags = []string{"coucou"}
 		json := []byte(`{"associatedTags" : ["coucou" , "pede"], "parentType" : 12}`)
-		err := UnmarshalJSON(bytes.NewReader(json), server)
+		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'parentType' should be a 'string'\n")
@@ -154,7 +153,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 		server := &Server{}
 		server.AssociatedTags = []string{"coucou"}
 		json := []byte(`{"boom" : null, "parentType" : 12}`)
-		err := UnmarshalJSON(bytes.NewReader(json), server)
+		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'parentType' should be a 'string'\n")

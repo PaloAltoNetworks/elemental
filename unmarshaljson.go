@@ -3,8 +3,6 @@ package elemental
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"net/http"
 	"reflect"
 	"sort"
@@ -22,28 +20,34 @@ const (
 )
 
 // UnmarshalJSON unmarshal the given reader and returns detailed errors if found
-func UnmarshalJSON(r io.Reader, i interface{}) error {
+func UnmarshalJSON(data []byte, i interface{}) error {
 
-	data, err := ioutil.ReadAll(r)
-
-	if err != nil {
+	if data == nil || len(data) == 0 {
 		return NewError("Validation Error", fmt.Sprintf(readerError), "elemental", http.StatusUnprocessableEntity)
 	}
 
 	errors := Errors{}
 
 	var d map[string]interface{}
-	err = json.Unmarshal(data, &d)
+	err := json.Unmarshal(data, &d)
 
 	if err != nil {
 		errors = append(errors, NewError("Validation Error", fmt.Sprintf(invalidJSON), "elemental", http.StatusUnprocessableEntity))
 		return errors
 	}
 
+	// Dereference the interface.
 	interfaceValue := reflect.ValueOf(i)
-
 	if interfaceValue.Kind() == reflect.Ptr {
 		interfaceValue = interfaceValue.Elem()
+	}
+
+	// Continue to dereference until we find a value that is not an interface.
+	for interfaceValue.Kind() == reflect.Interface {
+		interfaceValue = reflect.ValueOf(interfaceValue.Interface())
+		if interfaceValue.Kind() == reflect.Ptr {
+			interfaceValue = interfaceValue.Elem()
+		}
 	}
 
 	err = json.Unmarshal(data, i)
@@ -251,7 +255,6 @@ func typeFields(t reflect.Type) []field {
 
 			visited[f.typ] = true
 
-			// Scan f.typ for fields to include.
 			for i := 0; i < f.typ.NumField(); i++ {
 
 				sf := f.typ.Field(i)

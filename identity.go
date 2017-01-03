@@ -6,6 +6,9 @@ package elemental
 
 import "fmt"
 
+// IdentifiableFactory is the type of a function that can return an Identifiable from the given identity name.
+type IdentifiableFactory func(identity string) Identifiable
+
 // An IdentifiablesList is a list of objects implementing the Identifiable interface.
 type IdentifiablesList []Identifiable
 
@@ -68,4 +71,10 @@ var AllIdentity = Identity{
 var EmptyIdentity = Identity{
 	Name:     "",
 	Category: "",
+}
+
+// RootIdentity represents an root Identity.
+var RootIdentity = Identity{
+	Name:     "root",
+	Category: "root",
 }
