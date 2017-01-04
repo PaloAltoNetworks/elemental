@@ -36,7 +36,8 @@ type Request struct {
 func NewRequest() *Request {
 
 	return &Request{
-		RequestID: uuid.NewV4().String(),
+		RequestID:  uuid.NewV4().String(),
+		Parameters: url.Values{},
 	}
 }
 
