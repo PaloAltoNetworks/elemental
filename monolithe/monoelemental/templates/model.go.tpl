@@ -283,6 +283,9 @@ var {{ specification.entity_name }}AttributesMap = map[string]{{ glob.prefix }}A
       {% if attribute.deprecated -%}
       Deprecated: true,
       {% endif -%}
+      {% if attribute.description -%}
+      Description: "{{ attribute.description }}",
+      {% endif -%}
       {% if attribute.exposed -%}
       Exposed: true,
       {% endif -%}

@@ -62,6 +62,9 @@ type AttributeSpecification struct {
 	// Deprecated defines if the attribute is deprecated.
 	Deprecated bool
 
+	// Description contains the description of the attribute.
+	Description string
+
 	// Exposed defines if the attribute is exposed through the north bound API.
 	Exposed bool
 
