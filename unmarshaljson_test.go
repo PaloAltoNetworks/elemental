@@ -83,7 +83,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'number' should be a 'int'\n")
+		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'number' should be a 'integer'\n")
 	})
 
 	Convey("Given I call the method UnmarshalJSON with a invalid json because string instead of int", t, func() {
