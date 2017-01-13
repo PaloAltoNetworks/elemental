@@ -30,7 +30,7 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 					errors,
 					NewError(
 						"Read Only Error",
-						fmt.Sprintf("Field %s is read only. You cannot set its value.", field),
+						fmt.Sprintf("Field %s is read only. You cannot set its value.", spec.Name),
 						"elemental",
 						http.StatusUnprocessableEntity,
 					),
@@ -38,12 +38,12 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 			}
 
 		case OperationUpdate:
-			if spec.ReadOnly && !areFieldValuesEqual(field, obj, pristine) {
+			if !spec.CreationOnly && spec.ReadOnly && !areFieldValuesEqual(field, obj, pristine) {
 				errors = append(
 					errors,
 					NewError(
 						"Read Only Error",
-						fmt.Sprintf("Field %s is read only. You cannot modify its value.", field),
+						fmt.Sprintf("Field %s is read only. You cannot modify its value.", spec.Name),
 						"elemental",
 						http.StatusUnprocessableEntity,
 					),
@@ -55,7 +55,7 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 					errors,
 					NewError(
 						"Creation Only Error",
-						fmt.Sprintf("Field %s can only be set during creation. You cannot modify its value.", field),
+						fmt.Sprintf("Field %s can only be set during creation. You cannot modify its value.", spec.Name),
 						"elemental",
 						http.StatusUnprocessableEntity,
 					),
