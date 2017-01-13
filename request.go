@@ -17,6 +17,7 @@ import (
 type Request struct {
 	RequestID      string          `json:"rid"`
 	Namespace      string          `json:"namespace"`
+	Recursive      bool            `json:"recursive"`
 	Operation      Operation       `json:"operation"`
 	Identity       Identity        `json:"identity"`
 	ObjectID       string          `json:"objectID"`
@@ -137,6 +138,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 	return &Request{
 		RequestID:          uuid.NewV4().String(),
 		Namespace:          req.Header.Get("X-Namespace"),
+		Recursive:          req.Header.Get("X-Request-Recursive") == "true",
 		Page:               page,
 		PageSize:           pageSize,
 		Operation:          operation,
