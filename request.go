@@ -25,6 +25,7 @@ type Request struct {
 	ParentID       string          `json:"parentID"`
 	Data           json.RawMessage `json:"data,omitempty"`
 	Parameters     url.Values      `json:"parameters,omitempty"`
+	Headers        http.Header     `json:"headers,omitempty"`
 	Username       string          `json:"username,omitempty"`
 	Password       string          `json:"password,omitempty"`
 	Page           int             `json:"page,omitempty"`
@@ -39,6 +40,7 @@ func NewRequest() *Request {
 	return &Request{
 		RequestID:  uuid.NewV4().String(),
 		Parameters: url.Values{},
+		Headers:    http.Header{},
 	}
 }
 
@@ -151,6 +153,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		Password:           password,
 		Data:               data,
 		TLSConnectionState: req.TLS,
+		Headers:            req.Header,
 	}, nil
 }
 
