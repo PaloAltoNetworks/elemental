@@ -175,3 +175,17 @@ func (r *Request) Decode(dst interface{}) error {
 
 	return UnmarshalJSON(r.Data, &dst)
 }
+
+func (r *Request) String() string {
+
+	return fmt.Sprintf("<request id: %s operation: %s namespace: %s recursive: %v identity: %s objectid: %s parentidentity: %s parentid: %s>",
+		r.RequestID,
+		r.Operation,
+		r.Namespace,
+		r.Recursive,
+		r.Identity,
+		r.ObjectID,
+		r.ParentIdentity,
+		r.ParentID,
+	)
+}
