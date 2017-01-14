@@ -178,7 +178,7 @@ func (r *Request) Decode(dst interface{}) error {
 
 func (r *Request) String() string {
 
-	return fmt.Sprintf("<request id: %s operation: %s namespace: %s recursive: %v identity: %s objectid: %s parentidentity: %s parentid: %s>",
+	return fmt.Sprintf("<request id:%s operation:%s namespace:%s recursive:%v identity:%s objectid:%s parentidentity:%s parentid:%s>",
 		r.RequestID,
 		r.Operation,
 		r.Namespace,
