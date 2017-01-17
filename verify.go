@@ -19,7 +19,7 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 		spec := obj.SpecificationForAttribute(field)
 
 		// If the field is not exposed, we don't enforce anything.
-		if !spec.Exposed {
+		if !spec.Exposed || spec.Transient {
 			continue
 		}
 
