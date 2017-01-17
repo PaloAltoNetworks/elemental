@@ -157,6 +157,36 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 	}, nil
 }
 
+// Duplicate duplicates the Request.
+func (r *Request) Duplicate() *Request {
+
+	req := NewRequest()
+
+	req.Namespace = r.Namespace
+	req.Recursive = r.Recursive
+	req.Page = r.Page
+	req.PageSize = r.PageSize
+	req.Operation = r.Operation
+	req.Identity = r.Identity
+	req.ObjectID = r.ObjectID
+	req.ParentID = r.ParentID
+	req.ParentIdentity = r.ParentIdentity
+	req.Username = r.Username
+	req.Password = r.Password
+	req.Data = r.Data
+	req.TLSConnectionState = r.TLSConnectionState
+
+	for k, v := range r.Headers {
+		req.Headers[k] = v
+	}
+
+	for k, v := range r.Parameters {
+		req.Parameters[k] = v
+	}
+
+	return req
+}
+
 // Encode encodes the given identifiable into the request.
 func (r *Request) Encode(entity Identifiable) error {
 

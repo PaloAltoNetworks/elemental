@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
+	"net/url"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -673,6 +674,51 @@ func TestRequest_FromHttp(t *testing.T) {
 
 			Convey("Then err should not be nil", func() {
 				So(err, ShouldNotBeNil)
+			})
+		})
+	})
+}
+
+func TestRequest_Duplicate(t *testing.T) {
+
+	Convey("Given I have a Request", t, func() {
+
+		req := NewRequest()
+		req.Data = []byte(`{"hello": "world"}`)
+		req.Headers = http.Header{"x-h1": []string{"hey"}}
+		req.Identity = UserIdentity
+		req.Namespace = "ns"
+		req.ObjectID = "xxx"
+		req.Operation = OperationPatch
+		req.Page = 1
+		req.PageSize = 2
+		req.Parameters = url.Values{"p1": []string{"v1"}}
+		req.ParentID = "zzz"
+		req.ParentIdentity = TaskIdentity
+		req.Password = "pass"
+		req.Recursive = true
+		req.Username = "user"
+
+		Convey("When I use Duplicate()", func() {
+
+			req2 := req.Duplicate()
+
+			Convey("Then the duplicated request should be correct", func() {
+				So(req2.Data, ShouldResemble, req.Data)
+				So(req2.Headers.Get("x-h1"), ShouldEqual, req.Headers.Get("x-h1"))
+				So(req2.Identity.IsEqual(req.Identity), ShouldBeTrue)
+				So(req2.Namespace, ShouldEqual, req.Namespace)
+				So(req2.ObjectID, ShouldEqual, req.ObjectID)
+				So(req2.Operation, ShouldEqual, req.Operation)
+				So(req2.Page, ShouldEqual, req.Page)
+				So(req2.PageSize, ShouldEqual, req.PageSize)
+				So(req2.Parameters.Get("p1"), ShouldEqual, req.Parameters.Get("p1"))
+				So(req2.ParentID, ShouldEqual, req.ParentID)
+				So(req2.ParentIdentity.IsEqual(req.ParentIdentity), ShouldBeTrue)
+				So(req2.Password, ShouldEqual, req.Password)
+				So(req2.Recursive, ShouldEqual, req.Recursive)
+				So(req2.Username, ShouldEqual, req.Username)
+				So(req2.RequestID, ShouldNotEqual, req.RequestID)
 			})
 		})
 	})
