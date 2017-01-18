@@ -141,7 +141,7 @@ func (o *{{specification.entity_name}}) Validate() error {
 
     errors := {{ glob.prefix }}Errors{}
 
-    {% for attribute in specification.attributes -%}
+    {% for attribute in specification.attributes if attribute.exposed and not attribute.transient-%}
     {% set field_name = attribute.local_name[0:1].upper() + attribute.local_name[1:] -%}
     {% set attribute_name = attribute.local_name -%}
 
@@ -211,6 +211,12 @@ func (o *{{specification.entity_name}}) Validate() error {
     {% endif -%}
     {% if attribute.type == "time" -%}
     if err := {{ glob.prefix }}ValidateRequiredTime("{{ attribute_name }}", o.{{ field_name }}); err != nil {
+        errors = append(errors, err)
+    }
+
+    {% endif -%}
+    {% if attribute.type == "external" -%}
+    if err := {{ glob.prefix }}ValidateRequiredExternal("{{ attribute_name }}", o.{{ field_name }}); err != nil {
         errors = append(errors, err)
     }
 
