@@ -38,6 +38,55 @@ func TestValidator_ValidateRequiredInt(t *testing.T) {
 	})
 }
 
+func TestValidator_ValidateRequiredExternal(t *testing.T) {
+
+	Convey("Given I call the method ValidateRequiredExternal with a valid value", t, func() {
+
+		validationError := ValidateRequiredExternal("age", 15)
+
+		Convey("Then I should get nil in return", func() {
+
+			So(validationError, ShouldBeNil)
+		})
+	})
+
+	Convey("Given I call the method ValidateRequiredExternal with a valid array", t, func() {
+
+		validationError := ValidateRequiredExternal("ages", []string{"coucou"})
+
+		Convey("Then I should get nil in return", func() {
+
+			So(validationError, ShouldBeNil)
+		})
+	})
+
+	Convey("Given I call the method ValidateRequiredExternal with an empty array", t, func() {
+
+		validationError := ValidateRequiredExternal("ages", []string{}).(Error)
+
+		Convey("Then I should not get nil in return", func() {
+
+			So(validationError, ShouldNotBeNil)
+			So(validationError.Description, ShouldEqual, "Attribute 'ages' is required")
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
+			So(validationError.Data, ShouldResemble, map[string]string{"attribute": "ages"})
+		})
+	})
+
+	Convey("Given I call the method ValidateRequiredExternal with a nonvalid int", t, func() {
+
+		validationError := ValidateRequiredExternal("age", nil).(Error)
+
+		Convey("Then I should not get nil in return", func() {
+
+			So(validationError, ShouldNotBeNil)
+			So(validationError.Description, ShouldEqual, "Attribute 'age' is required")
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
+			So(validationError.Data, ShouldResemble, map[string]string{"attribute": "age"})
+		})
+	})
+}
+
 func TestValidator_ValidateRequiredFloat(t *testing.T) {
 
 	Convey("Given I call the method ValidateRequiredFloat with a valid float", t, func() {

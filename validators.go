@@ -7,6 +7,7 @@ package elemental
 import (
 	"fmt"
 	"net/http"
+	"reflect"
 	"regexp"
 	"time"
 )
@@ -29,6 +30,7 @@ const (
 	requiredStringFailFormat         = `Attribute '%s' is required`
 	requiredTimeFailFormat           = `Attribute '%s' is required`
 	requiredIntFailFormat            = `Attribute '%s' is required`
+	requiredExternalFailFormat       = `Attribute '%s' is required`
 	floatInListFormat                = `Data '%g' of attribute '%s' is not in list '%g'`
 	stringInListFormat               = `Data '%s' of attribute '%s' is not in list '%s'`
 	intInListFormat                  = `Data '%d' of attribute '%s' is not in list '%d'`
@@ -102,6 +104,34 @@ func ValidateRequiredFloat(attribute string, value float64) error {
 
 	if value == 0.0 {
 		err := NewError("Validation Error", fmt.Sprintf(requiredFloatFailFormat, attribute), "elemental", http.StatusUnprocessableEntity)
+		err.Data = map[string]string{"attribute": attribute}
+		return err
+	}
+
+	return nil
+}
+
+// ValidateRequiredExternal validates if the given value is null or not
+func ValidateRequiredExternal(attribute string, value interface{}) error {
+	var valueIsNil bool
+
+	if value == nil {
+		valueIsNil = true
+	}
+
+	if !valueIsNil {
+		v := reflect.ValueOf(value)
+
+		switch v.Kind() {
+		case reflect.Slice, reflect.Map:
+			valueIsNil = v.IsNil() || v.Len() == 0
+		default:
+			valueIsNil = v.Interface() == reflect.Zero(reflect.TypeOf(v.Interface())).Interface()
+		}
+	}
+
+	if valueIsNil {
+		err := NewError("Validation Error", fmt.Sprintf(requiredExternalFailFormat, attribute), "elemental", http.StatusUnprocessableEntity)
 		err.Data = map[string]string{"attribute": attribute}
 		return err
 	}
