@@ -28,3 +28,13 @@ func IdentifiableForIdentity(identity string) {{ glob.prefix }}Identifiable{
       return nil
   }
 }
+
+// AllIdentities returns all existing identities.
+func AllIdentities() []{{ glob.prefix }}Identity {
+
+  return []{{ glob.prefix }}Identity{
+    {% for spec in specifications.values() -%}
+      {{spec.entity_name}}Identity,
+    {% endfor -%}
+  }
+}
