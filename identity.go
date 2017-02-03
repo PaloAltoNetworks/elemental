@@ -63,8 +63,8 @@ func (i Identity) IsEqual(identity Identity) bool {
 
 // AllIdentity represents all possible Identities.
 var AllIdentity = Identity{
-	Name:     "__all__",
-	Category: "__all__",
+	Name:     "*",
+	Category: "*",
 }
 
 // EmptyIdentity represents an empty Identity.
