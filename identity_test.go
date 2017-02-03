@@ -15,12 +15,12 @@ func TestIdentity_AllIdentity(t *testing.T) {
 	Convey("Given I retrieve the AllIdentity", t, func() {
 		i := AllIdentity
 
-		Convey("Then Name should __all__", func() {
-			So(i.Name, ShouldEqual, "__all__")
+		Convey("Then Name should *", func() {
+			So(i.Name, ShouldEqual, "*")
 		})
 
-		Convey("Then Category should __all__", func() {
-			So(i.Category, ShouldEqual, "__all__")
+		Convey("Then Category should *", func() {
+			So(i.Category, ShouldEqual, "*")
 		})
 	})
 }
