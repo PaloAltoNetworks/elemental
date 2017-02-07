@@ -122,6 +122,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 	}
 
 	var page, pageSize int
+	var recursive bool
 
 	if v := req.URL.Query().Get("page"); v != "" {
 		page, err = strconv.Atoi(v)
@@ -130,17 +131,21 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		}
 	}
 
-	if v := req.URL.Query().Get("per_page"); v != "" {
+	if v := req.URL.Query().Get("pagesize"); v != "" {
 		pageSize, err = strconv.Atoi(v)
 		if err != nil {
 			return nil, err
 		}
 	}
 
+	if v := req.URL.Query().Get("recursive"); v != "" {
+		recursive = true
+	}
+
 	return &Request{
 		RequestID:          uuid.NewV4().String(),
 		Namespace:          req.Header.Get("X-Namespace"),
-		Recursive:          req.Header.Get("X-Request-Recursive") == "true",
+		Recursive:          recursive,
 		Page:               page,
 		PageSize:           pageSize,
 		Operation:          operation,
