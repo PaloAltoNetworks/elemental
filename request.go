@@ -15,21 +15,22 @@ import (
 
 // A Request represents an abstract request on an elemental model.
 type Request struct {
-	RequestID      string          `json:"rid"`
-	Namespace      string          `json:"namespace"`
-	Recursive      bool            `json:"recursive"`
-	Operation      Operation       `json:"operation"`
-	Identity       Identity        `json:"identity"`
-	ObjectID       string          `json:"objectID"`
-	ParentIdentity Identity        `json:"parentIdentity"`
-	ParentID       string          `json:"parentID"`
-	Data           json.RawMessage `json:"data,omitempty"`
-	Parameters     url.Values      `json:"parameters,omitempty"`
-	Headers        http.Header     `json:"headers,omitempty"`
-	Username       string          `json:"username,omitempty"`
-	Password       string          `json:"password,omitempty"`
-	Page           int             `json:"page,omitempty"`
-	PageSize       int             `json:"pageSize,omitempty"`
+	RequestID          string          `json:"rid"`
+	Namespace          string          `json:"namespace"`
+	Recursive          bool            `json:"recursive"`
+	Operation          Operation       `json:"operation"`
+	Identity           Identity        `json:"identity"`
+	ObjectID           string          `json:"objectID"`
+	ParentIdentity     Identity        `json:"parentIdentity"`
+	ParentID           string          `json:"parentID"`
+	Data               json.RawMessage `json:"data,omitempty"`
+	Parameters         url.Values      `json:"parameters,omitempty"`
+	Headers            http.Header     `json:"headers,omitempty"`
+	Username           string          `json:"username,omitempty"`
+	Password           string          `json:"password,omitempty"`
+	Page               int             `json:"page,omitempty"`
+	PageSize           int             `json:"pageSize,omitempty"`
+	OverrideProtection bool            `json:"overrideProtection,omitempty"`
 
 	TLSConnectionState *tls.ConnectionState
 }
@@ -122,7 +123,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 	}
 
 	var page, pageSize int
-	var recursive bool
+	var recursive, override bool
 
 	if v := req.URL.Query().Get("page"); v != "" {
 		page, err = strconv.Atoi(v)
@@ -142,6 +143,10 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		recursive = true
 	}
 
+	if v := req.URL.Query().Get("override"); v != "" {
+		override = true
+	}
+
 	return &Request{
 		RequestID:          uuid.NewV4().String(),
 		Namespace:          req.Header.Get("X-Namespace"),
@@ -159,6 +164,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		Data:               data,
 		TLSConnectionState: req.TLS,
 		Headers:            req.Header,
+		OverrideProtection: override,
 	}, nil
 }
 
@@ -179,6 +185,7 @@ func (r *Request) Duplicate() *Request {
 	req.Username = r.Username
 	req.Password = r.Password
 	req.Data = r.Data
+	req.OverrideProtection = r.OverrideProtection
 	req.TLSConnectionState = r.TLSConnectionState
 
 	for k, v := range r.Headers {
