@@ -64,6 +64,18 @@ func (e *Event) String() string {
 	return fmt.Sprintf("<event type: %s identity: %s>", e.Type, e.Identity)
 }
 
+// Duplicate creates a copy of the event.
+func (e *Event) Duplicate() *Event {
+
+	return &Event{
+		Type:      e.Type,
+		Entity:    e.Entity,
+		Identity:  e.Identity,
+		Timestamp: e.Timestamp,
+		UserInfo:  e.UserInfo,
+	}
+}
+
 // An Events represents a list of Event.
 type Events []*Event
 
