@@ -38,3 +38,17 @@ func AllIdentities() []{{ glob.prefix }}Identity {
     {% endfor -%}
   }
 }
+
+var aliasesMap = map[string]{{ glob.prefix }}Identity {
+  {% for spec in specifications.values() -%}
+    {% for alias in spec.aliases -%}
+    "{{ alias }}": {{spec.entity_name}}Identity,
+    {% endfor -%}
+  {% endfor -%}
+}
+
+// IdentityForAlias returns the Identity associated to the given alias
+func IdentityForAlias(alias string) {{ glob.prefix }}Identity {
+
+  return aliasesMap[alias]
+}
