@@ -22,11 +22,9 @@ func TestPushFilter_Duplicate(t *testing.T) {
 	Convey("Given I create a new PushFilter", t, func() {
 
 		f := NewPushFilter()
-		i1 := MakeIdentity("i1", "i1")
-		i2 := MakeIdentity("i2", "i2")
 
-		f.FilterIdentity(i1, EventCreate, EventDelete)
-		f.FilterIdentity(i2, EventCreate, EventDelete)
+		f.FilterIdentity("i1", EventCreate, EventDelete)
+		f.FilterIdentity("i2", EventCreate, EventDelete)
 
 		Convey("When I duplicate it", func() {
 			dup := f.Duplicate()
@@ -44,13 +42,11 @@ func TestPushFilter_IsFilteredOut(t *testing.T) {
 	Convey("Given I create a new PushFilter", t, func() {
 
 		f := NewPushFilter()
-		i1 := MakeIdentity("i1", "i1")
-		i2 := MakeIdentity("i2", "i2")
 
 		Convey("When I check if i1 is filtered", func() {
 
-			filtered1 := f.IsFilteredOut(i1, EventDelete)
-			filtered2 := f.IsFilteredOut(i2, EventDelete)
+			filtered1 := f.IsFilteredOut("i1", EventDelete)
+			filtered2 := f.IsFilteredOut("i2", EventDelete)
 
 			Convey("Then filtered1 should be false", func() {
 				So(filtered1, ShouldBeFalse)
@@ -63,38 +59,38 @@ func TestPushFilter_IsFilteredOut(t *testing.T) {
 
 		Convey("When I add a filter for i1 on Create and Delete", func() {
 
-			f.FilterIdentity(i1, EventCreate, EventDelete)
+			f.FilterIdentity("i1", EventCreate, EventDelete)
 
 			Convey("Then create and delete should not be filtered out on i1", func() {
-				So(f.IsFilteredOut(i1, EventCreate), ShouldBeFalse)
-				So(f.IsFilteredOut(i1, EventDelete), ShouldBeFalse)
+				So(f.IsFilteredOut("i1", EventCreate), ShouldBeFalse)
+				So(f.IsFilteredOut("i1", EventDelete), ShouldBeFalse)
 			})
 
 			Convey("Then update should be filtered out on i1", func() {
-				So(f.IsFilteredOut(i1, EventUpdate), ShouldBeTrue)
+				So(f.IsFilteredOut("i1", EventUpdate), ShouldBeTrue)
 			})
 
 			Convey("Then nothing should be filtered out on i2", func() {
-				So(f.IsFilteredOut(i2, EventCreate), ShouldBeFalse)
-				So(f.IsFilteredOut(i2, EventUpdate), ShouldBeFalse)
-				So(f.IsFilteredOut(i2, EventDelete), ShouldBeFalse)
+				So(f.IsFilteredOut("i2", EventCreate), ShouldBeFalse)
+				So(f.IsFilteredOut("i2", EventUpdate), ShouldBeFalse)
+				So(f.IsFilteredOut("i2", EventDelete), ShouldBeFalse)
 			})
 		})
 
 		Convey("When I add a filter for i1 on nothing", func() {
 
-			f.FilterIdentity(i1)
+			f.FilterIdentity("i1")
 
 			Convey("Then everything should not be filtered out on i1", func() {
-				So(f.IsFilteredOut(i1, EventCreate), ShouldBeFalse)
-				So(f.IsFilteredOut(i1, EventDelete), ShouldBeFalse)
-				So(f.IsFilteredOut(i1, EventUpdate), ShouldBeFalse)
+				So(f.IsFilteredOut("i1", EventCreate), ShouldBeFalse)
+				So(f.IsFilteredOut("i1", EventDelete), ShouldBeFalse)
+				So(f.IsFilteredOut("i1", EventUpdate), ShouldBeFalse)
 			})
 
 			Convey("Then nothing should be filtered out on i2", func() {
-				So(f.IsFilteredOut(i2, EventCreate), ShouldBeFalse)
-				So(f.IsFilteredOut(i2, EventUpdate), ShouldBeFalse)
-				So(f.IsFilteredOut(i2, EventDelete), ShouldBeFalse)
+				So(f.IsFilteredOut("i2", EventCreate), ShouldBeFalse)
+				So(f.IsFilteredOut("i2", EventUpdate), ShouldBeFalse)
+				So(f.IsFilteredOut("i2", EventDelete), ShouldBeFalse)
 			})
 		})
 	})
@@ -105,15 +101,14 @@ func TestPushFilter_String(t *testing.T) {
 	Convey("Given I create a new PushFilter", t, func() {
 
 		f := NewPushFilter()
-		i1 := MakeIdentity("i1", "i1")
 
-		f.FilterIdentity(i1, EventCreate, EventDelete)
+		f.FilterIdentity("i1", EventCreate, EventDelete)
 
 		Convey("When I call the String Method", func() {
 			s := f.String()
 
 			Convey("Then it should be correctly printed", func() {
-				So(s, ShouldEqual, "<pushfilter identities:map[<Identity i1|i1>:[create delete]]>")
+				So(s, ShouldEqual, "<pushfilter identities:map[i1:[create delete]]>")
 			})
 		})
 	})

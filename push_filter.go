@@ -4,30 +4,30 @@ import "fmt"
 
 // A PushFilter represents an abstract filter for filtering out push notifications.
 type PushFilter struct {
-	Identities map[Identity][]EventType `json:"identities"`
+	Identities map[string][]EventType `json:"identities"`
 }
 
 // NewPushFilter returns a new PushFilter.
 func NewPushFilter() *PushFilter {
 
 	return &PushFilter{
-		Identities: map[Identity][]EventType{},
+		Identities: map[string][]EventType{},
 	}
 }
 
 // FilterIdentity adds the given identity for the given eventTypes in the PushFilter.
-func (f *PushFilter) FilterIdentity(identity Identity, eventTypes ...EventType) {
-	f.Identities[identity] = eventTypes
+func (f *PushFilter) FilterIdentity(identityName string, eventTypes ...EventType) {
+	f.Identities[identityName] = eventTypes
 }
 
 // IsFilteredOut returns true if the given Identity is not part of the PushFilter.
-func (f *PushFilter) IsFilteredOut(identity Identity, eventType EventType) bool {
+func (f *PushFilter) IsFilteredOut(identityName string, eventType EventType) bool {
 
 	if len(f.Identities) == 0 {
 		return false
 	}
 
-	types := f.Identities[identity]
+	types := f.Identities[identityName]
 
 	if types == nil || len(types) == 0 {
 		return false
