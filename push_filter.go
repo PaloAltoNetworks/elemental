@@ -17,6 +17,7 @@ func NewPushFilter() *PushFilter {
 
 // FilterIdentity adds the given identity for the given eventTypes in the PushFilter.
 func (f *PushFilter) FilterIdentity(identityName string, eventTypes ...EventType) {
+
 	f.Identities[identityName] = eventTypes
 }
 
@@ -27,7 +28,10 @@ func (f *PushFilter) IsFilteredOut(identityName string, eventType EventType) boo
 		return false
 	}
 
-	types := f.Identities[identityName]
+	types, ok := f.Identities[identityName]
+	if !ok {
+		return true
+	}
 
 	if types == nil || len(types) == 0 {
 		return false
