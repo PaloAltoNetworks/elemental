@@ -60,6 +60,7 @@ func TestPushFilter_IsFilteredOut(t *testing.T) {
 		Convey("When I add a filter for i1 on Create and Delete", func() {
 
 			f.FilterIdentity("i1", EventCreate, EventDelete)
+			f.FilterIdentity("i2")
 
 			Convey("Then create and delete should not be filtered out on i1", func() {
 				So(f.IsFilteredOut("i1", EventCreate), ShouldBeFalse)
@@ -80,6 +81,7 @@ func TestPushFilter_IsFilteredOut(t *testing.T) {
 		Convey("When I add a filter for i1 on nothing", func() {
 
 			f.FilterIdentity("i1")
+			f.FilterIdentity("i2")
 
 			Convey("Then everything should not be filtered out on i1", func() {
 				So(f.IsFilteredOut("i1", EventCreate), ShouldBeFalse)
