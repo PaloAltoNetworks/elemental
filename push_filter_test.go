@@ -43,7 +43,9 @@ func TestPushFilter_IsFilteredOut(t *testing.T) {
 
 		f := NewPushFilter()
 
-		Convey("When I check if i1 is filtered", func() {
+		Convey("When I check if i1 is filtered with a nil value for identities", func() {
+
+			f.Identities = nil
 
 			filtered1 := f.IsFilteredOut("i1", EventDelete)
 			filtered2 := f.IsFilteredOut("i2", EventDelete)
@@ -54,6 +56,36 @@ func TestPushFilter_IsFilteredOut(t *testing.T) {
 
 			Convey("Then filtered2 should be false", func() {
 				So(filtered2, ShouldBeFalse)
+			})
+		})
+
+		Convey("When I check if i1 is filtered with an empty identities list", func() {
+
+			filtered1 := f.IsFilteredOut("i1", EventDelete)
+			filtered2 := f.IsFilteredOut("i2", EventDelete)
+
+			Convey("Then filtered1 should be false", func() {
+				So(filtered1, ShouldBeTrue)
+			})
+
+			Convey("Then filtered2 should be false", func() {
+				So(filtered2, ShouldBeTrue)
+			})
+		})
+
+		Convey("When I check if i1 is filtered", func() {
+
+			f.FilterIdentity("i1")
+
+			filtered1 := f.IsFilteredOut("i1", EventDelete)
+			filtered2 := f.IsFilteredOut("i2", EventDelete)
+
+			Convey("Then filtered1 should be false", func() {
+				So(filtered1, ShouldBeFalse)
+			})
+
+			Convey("Then filtered2 should be false", func() {
+				So(filtered2, ShouldBeTrue)
 			})
 		})
 

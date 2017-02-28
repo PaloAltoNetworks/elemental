@@ -24,8 +24,14 @@ func (f *PushFilter) FilterIdentity(identityName string, eventTypes ...EventType
 // IsFilteredOut returns true if the given Identity is not part of the PushFilter.
 func (f *PushFilter) IsFilteredOut(identityName string, eventType EventType) bool {
 
-	if len(f.Identities) == 0 {
+	// if the identities list is nil, we filter nothing.
+	if f.Identities == nil {
 		return false
+	}
+
+	// if the identities list not nil but contains nothing, we filter everything.
+	if len(f.Identities) == 0 {
+		return true
 	}
 
 	types, ok := f.Identities[identityName]
