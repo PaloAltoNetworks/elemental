@@ -32,6 +32,8 @@ type Request struct {
 	PageSize           int             `json:"pageSize,omitempty"`
 	OverrideProtection bool            `json:"overrideProtection,omitempty"`
 
+	Metadata map[string]interface{}
+
 	TLSConnectionState *tls.ConnectionState
 }
 
@@ -42,6 +44,7 @@ func NewRequest() *Request {
 		RequestID:  uuid.NewV4().String(),
 		Parameters: url.Values{},
 		Headers:    http.Header{},
+		Metadata:   map[string]interface{}{},
 	}
 }
 
@@ -165,6 +168,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		TLSConnectionState: req.TLS,
 		Headers:            req.Header,
 		OverrideProtection: override,
+		Metadata:           map[string]interface{}{},
 	}, nil
 }
 
@@ -194,6 +198,10 @@ func (r *Request) Duplicate() *Request {
 
 	for k, v := range r.Parameters {
 		req.Parameters[k] = v
+	}
+
+	for k, v := range r.Metadata {
+		req.Metadata[k] = v
 	}
 
 	return req
