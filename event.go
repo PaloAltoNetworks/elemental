@@ -24,9 +24,6 @@ const (
 	EventDelete EventType = "delete"
 )
 
-// UpdateMechanism is the mechanism of an event
-type UpdateMechanism string
-
 // An Event represents a computational event.
 type Event struct {
 	Entity    json.RawMessage `json:"entity"`

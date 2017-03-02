@@ -11,18 +11,9 @@
 ## configure this throught environment variables
 PROJECT_OWNER?=github.com/aporeto-inc
 PROJECT_NAME?=my-super-project
-BUILD_NUMBER?=latest
+DOMINGO_DOCKER_TAG?=latest
+DOMINGO_DOCKER_REPO=gcr.io/aporetodev
 GITHUB_TOKEN?=
-DOCKER_LOGIN_COMMAND?=
-DOCKER_REGISTRY?=926088932149.dkr.ecr.us-west-2.amazonaws.com
-DOCKER_IMAGE_NAME?=$(PROJECT_NAME)
-DOCKER_IMAGE_TAG?=$(BUILD_NUMBER)
-DOCKER_ENABLE_BUILD?=0
-DOCKER_ENABLE_PUSH?=0
-DOCKER_ENABLE_RETAG?=0
-DOCKER_LATEST_TAG?=latest
-DOMINGO_EXPORT_FOLDER?=/outside_world
-DOMINGO_BASE_IMAGE?=$(DOCKER_REGISTRY)/domingo
 
 ######################################################################
 ######################################################################
@@ -55,9 +46,7 @@ domingo_update:
 ## initialization
 
 domingo_init:
-	@echo "# Running domingo_init in" $(PWD)
-	@if [ -f glide.yml ]; then glide up; else go get ./...; fi
-	@go get -u github.com/aporeto-inc/kennebec
+	@if [ -f glide.yaml ]; then glide install; else go get ./...; fi
 
 ## Testing
 
@@ -86,84 +75,6 @@ domingo_save_vendor:
 domingo_restore_vendor:
 	@if [ -d vendor.lock ]; then rm -rf vendor && mv vendor.lock vendor; else rm -rf vendor; fi
 
-
-## Docker Test Container
-
-define DOCKER_FILE
-FROM $(DOMINGO_BASE_IMAGE)
-MAINTAINER Antoine Mercadal <antoine@aporeto.com>
-ADD . /go/src/$(PROJECT_OWNER)/$(PROJECT_NAME)
-WORKDIR /go/src/$(PROJECT_OWNER)/$(PROJECT_NAME)
-endef
-export DOCKER_FILE
-
-domingo_contained_build:
-	@echo "# Running domingo_build"
-	echo "$$DOCKER_FILE" > .dockerfile-domingo
-	eval $(DOCKER_LOGIN_COMMAND)
-	docker pull $(DOMINGO_BASE_IMAGE)
-	docker build --file .dockerfile-domingo -t $(PROJECT_NAME)-build-image:$(BUILD_NUMBER) .
-	rm -f .dockerfile-domingo
-	docker run \
-		--name $(PROJECT_NAME)-build-container_$(BUILD_NUMBER) \
-		--privileged \
-		--net host \
-		-t \
-		-v /var/run/docker.sock:/var/run/docker.sock \
-		-v /dev/shm:/dev/shm \
-		-v $(ROOT_DIR):$(DOMINGO_EXPORT_FOLDER) \
-		-e BUILD_NUMBER="$(BUILD_NUMBER)" \
-		-e DOMINGO_EXPORT_FOLDER="$(DOMINGO_EXPORT_FOLDER)" \
-		-e DOCKER_HOST="unix:///var/run/docker.sock" \
-		-e DOCKER_LOGIN_COMMAND="$(DOCKER_LOGIN_COMMAND)" \
-		-e DOCKER_ENABLE_BUILD="$(DOCKER_ENABLE_BUILD)" \
-		-e DOCKER_ENABLE_PUSH="$(DOCKER_ENABLE_PUSH)" \
-		-e DOCKER_IMAGE_NAME="$(DOCKER_IMAGE_NAME)" \
-		-e DOCKER_IMAGE_TAG="$(DOCKER_IMAGE_TAG)" \
-		-e DOCKER_REGISTRY="$(DOCKER_REGISTRY)" \
-		-e GITHUB_TOKEN="$(GITHUB_TOKEN)" \
-		-e PROJECT_NAME="$(PROJECT_NAME)" \
-		-e PROJECT_OWNER="$(PROJECT_OWNER)" \
-		$(PROJECT_NAME)-build-image:$(BUILD_NUMBER)
-	docker rm -f $(PROJECT_NAME)-build-container_$(BUILD_NUMBER)
-	docker rmi $(PROJECT_NAME)-build-image:$(BUILD_NUMBER)
-
-ifeq ($(DOCKER_ENABLE_BUILD),1)
-domingo_docker_build:
-	@echo "# Running domingo_docker_build"
-	docker -H unix:///var/run/docker.sock \
-		build \
-		-t $(DOCKER_REGISTRY)/$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG) \
-		docker
-else
-domingo_docker_build:
-	@echo " - docker build not explicitely enabled: run 'export DOCKER_ENABLE_BUILD=1'"
-endif
-
-ifeq ($(DOCKER_ENABLE_PUSH),1)
-domingo_docker_push:
-	@echo "# Running domingo_docker_push"
-	eval $(DOCKER_LOGIN_COMMAND)
-	docker -H unix:///var/run/docker.sock \
-		push \
-		$(DOCKER_REGISTRY)/$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)
-else
-domingo_docker_push:
-	@echo " - docker push not explicitely enabled: run 'export DOCKER_ENABLE_PUSH=1'"
-endif
-
-ifeq ($(DOCKER_ENABLE_RETAG),1)
-domingo_docker_retag:
-	@echo "# Running domingo_docker_tag_latest"
-	eval $(DOCKER_LOGIN_COMMAND);
-	docker -H unix:///var/run/docker.sock \
-		tag \
-		$(DOCKER_REGISTRY)/$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG) \
-		$(DOCKER_REGISTRY)/$(DOCKER_IMAGE_NAME):$(DOCKER_LATEST_TAG)
-	docker -H unix:///var/run/docker.sock \
-		push \
-		$(DOCKER_REGISTRY)/$(DOCKER_IMAGE_NAME):$(DOCKER_LATEST_TAG)
-else
-domingo_docker_retag:
-	@echo " - docker retag not explicitely enabled: run 'export DOCKER_ENABLE_RETAG=1'"
-endif
+container:
+	make build_linux
+	cd docker && docker build -t $(DOMINGO_DOCKER_REPO)/$(PROJECT_NAME):$(DOMINGO_DOCKER_TAG) .
