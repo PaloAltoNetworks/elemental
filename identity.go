@@ -78,3 +78,9 @@ var RootIdentity = Identity{
 	Name:     "root",
 	Category: "root",
 }
+
+// ContentIdentifiable is the interface of a list of Identifiable that can
+// returns the Identity of the objects it contains.
+type ContentIdentifiable interface {
+	ContentIdentity() Identity
+}
