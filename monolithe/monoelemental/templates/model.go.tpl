@@ -33,6 +33,11 @@ var {{specification.entity_name}}Identity = {{ glob.prefix }}Identity {
 {% if not specification.is_root -%}
 // {{specification.entity_name_plural}}List represents a list of {{specification.entity_name_plural}}
 type {{specification.entity_name_plural}}List []*{{specification.entity_name}}
+
+// ContentIdentity returns the identity of the objects in the list.
+func (o {{specification.entity_name_plural}}List) ContentIdentity() {{ glob.prefix }}Identity {
+  return {{specification.entity_name}}Identity
+}
 {%- endif %}
 
 // {{specification.entity_name}} represents the model of a {{specification.rest_name}}
