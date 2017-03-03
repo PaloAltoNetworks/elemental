@@ -36,7 +36,7 @@ func ContentIdentifiableForIdentity(identity string) {{ glob.prefix }}ContentIde
     {% for spec in specifications.values() -%}
       {% if not spec.is_root -%}
       case {{ spec.entity_name }}Identity.Name:
-        return {{spec.entity_name_plural}}List{}
+        return &{{spec.entity_name_plural}}List{}
       {% endif -%}
     {% endfor -%}
     default:

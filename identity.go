@@ -83,4 +83,5 @@ var RootIdentity = Identity{
 // returns the Identity of the objects it contains.
 type ContentIdentifiable interface {
 	ContentIdentity() Identity
+	List() IdentifiablesList
 }

@@ -38,6 +38,18 @@ type {{specification.entity_name_plural}}List []*{{specification.entity_name}}
 func (o {{specification.entity_name_plural}}List) ContentIdentity() {{ glob.prefix }}Identity {
   return {{specification.entity_name}}Identity
 }
+
+// List convert the object to and {{ glob.prefix }}IdentifiablesList.
+func (o {{specification.entity_name_plural}}List) List() {{ glob.prefix }}IdentifiablesList {
+
+  out := {{ glob.prefix }}IdentifiablesList{}
+  for _, item := range o {
+    out = append(out, item)
+  }
+
+  return out
+}
+
 {%- endif %}
 
 // {{specification.entity_name}} represents the model of a {{specification.rest_name}}
