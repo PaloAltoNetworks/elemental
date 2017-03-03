@@ -39,7 +39,7 @@ func (f *PushFilter) IsFilteredOut(identityName string, eventType EventType) boo
 		return true
 	}
 
-	if types == nil || len(types) == 0 {
+	if len(types) == 0 {
 		return false
 	}
 

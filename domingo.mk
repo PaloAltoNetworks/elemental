@@ -23,14 +23,9 @@ export ROOT_DIR?=$(PWD)
 MAKEFLAGS += --warn-undefined-variables
 SHELL := /bin/bash -o pipefail
 
-APOMOCK_FILE            := .apomock
-APOMOCK_PACKAGES        := $(shell if [ -f $(APOMOCK_FILE) ]; then cat $(APOMOCK_FILE); fi)
 NOVENDOR                := $(shell glide novendor)
-MANAGED_DIRS            := $(sort $(dir $(wildcard */Makefile)))
-MOCK_DIRS               := $(sort $(dir $(wildcard */.apomock)))
-NOTEST_DIRS             := $(MANAGED_DIRS)
-NOTEST_DIRS             := $(addsuffix ...,$(NOTEST_DIRS))
-NOTEST_DIRS             := $(addprefix ./,$(NOTEST_DIRS))
+NOTEST_DIRS             := $(addsuffix ...,$(NOVENDOR))
+NOTEST_DIRS             := $(addprefix ./,$(NOVENDOR))
 TEST_DIRS               := $(filter-out $(NOTEST_DIRS),$(NOVENDOR))
 GO_SRCS                 := $(wildcard *.go)
 
@@ -51,29 +46,26 @@ domingo_init:
 ## Testing
 
 domingo_goconvey:
-	make domingo_lint domingo_init_apomock
-	goconvey .
-	make domingo_deinit_apomock
+	goconvey -port 34562 .
 
 domingo_test:
-	@$(foreach dir,$(MANAGED_DIRS),pushd ${dir} > /dev/null && make domingo_test && popd > /dev/null;)
-	@if [ -f $(APOMOCK_FILE) ]; then make domingo_init_apomock; fi
-	@if [ "$(GO_SRCS)" != "" ]; then go test -race -cover $(TEST_DIRS) || exit 1; else echo "# Skipped as no go sources found"; fi
-	@if [ -f $(APOMOCK_FILE) ]; then make domingo_deinit_apomock; fi
-
-
-domingo_init_apomock:
-	@make domingo_save_vendor
-	@kennebec --package="$(APOMOCK_PACKAGES)" --output-dir=vendor -v=4 -logtostderr=true >> /dev/null 2>&1
-
-domingo_deinit_apomock:
-	@make domingo_restore_vendor
-
-domingo_save_vendor:
-	@if [ -d vendor ]; then cp -a vendor vendor.lock; fi
-
-domingo_restore_vendor:
-	@if [ -d vendor.lock ]; then rm -rf vendor && mv vendor.lock vendor; else rm -rf vendor; fi
+	@echo "Running linters army..."
+	@gometalinter --vendor --disable-all \
+		--enable=vet \
+		--enable=vetshadow \
+		--enable=golint \
+		--enable=ineffassign \
+		--enable=goconst \
+		--enable=errcheck \
+		--enable=varcheck \
+		--enable=structcheck \
+		--enable=gosimple \
+		--enable=misspell \
+		--deadline 5m \
+		--tests $(TEST_DIRS)
+	@echo "Running unit tests..."
+	@go test -race -cover $(TEST_DIRS)
+	@echo "Success!"
 
 container:
 	make build_linux

@@ -3,7 +3,7 @@ package elemental
 // A RelationshipsRegistry maintains the relationship for Identities.
 type RelationshipsRegistry map[Identity]*Relationship
 
-// A Relationship describes the hierachical relationship of the models.
+// A Relationship describes the hierarchical relationship of the models.
 type Relationship struct {
 	Type string
 

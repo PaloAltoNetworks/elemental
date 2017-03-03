@@ -10,9 +10,9 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestResponse_NewReponse(t *testing.T) {
+func TestResponse_NewResponse(t *testing.T) {
 
-	Convey("Given I create a new reponse", t, func() {
+	Convey("Given I create a new response", t, func() {
 
 		r := NewResponse()
 

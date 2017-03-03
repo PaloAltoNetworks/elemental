@@ -23,8 +23,6 @@ type Server struct {
 	Boom           constant          `json:"boom"`
 }
 
-var ta *testing.T
-
 func TestUnmarshalJSONWithNoError(t *testing.T) {
 
 	Convey("Given I call the method UnmarshalJSON with a valid json created with a struct", t, func() {

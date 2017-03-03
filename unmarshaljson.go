@@ -12,17 +12,16 @@ import (
 )
 
 const (
-	invalidJSON      = `Invalid JSON`
-	invalidAttribute = `Attribute '%s' is invalid`
-	readerError      = `Something went wrong in the server when reading the body of the request`
-	typeError        = `Something went wrong in the server when analyzing the JSON`
-	wrongType        = `Data '%v' of attribute '%s' should be a '%s'`
+	invalidJSON = `Invalid JSON`
+	readerError = `Something went wrong in the server when reading the body of the request`
+	typeError   = `Something went wrong in the server when analyzing the JSON`
+	wrongType   = `Data '%v' of attribute '%s' should be a '%s'`
 )
 
 // UnmarshalJSON unmarshal the given reader and returns detailed errors if found
 func UnmarshalJSON(data []byte, i interface{}) error {
 
-	if data == nil || len(data) == 0 {
+	if len(data) == 0 {
 		return NewError("Validation Error", fmt.Sprintf(readerError), "elemental", http.StatusUnprocessableEntity)
 	}
 
@@ -163,11 +162,9 @@ func cachedTypeFields(t reflect.Type) []field {
 type field struct {
 	name string
 
-	tag       bool
-	index     []int
-	typ       reflect.Type
-	omitEmpty bool
-	quoted    bool
+	tag   bool
+	index []int
+	typ   reflect.Type
 }
 
 // byName sorts field by name, breaking ties with depth,

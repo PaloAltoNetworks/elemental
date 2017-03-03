@@ -103,7 +103,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 	case http.MethodPatch:
 		operation = OperationPatch
 		data, err = ioutil.ReadAll(req.Body)
-		defer req.Body.Close()
+		defer func() { _ = req.Body.Close() }()
 		if err != nil {
 			return nil, err
 		}
@@ -111,7 +111,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 	case http.MethodPost:
 		operation = OperationCreate
 		data, err = ioutil.ReadAll(req.Body)
-		defer req.Body.Close()
+		defer func() { _ = req.Body.Close() }()
 		if err != nil {
 			return nil, err
 		}
@@ -119,7 +119,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 	case http.MethodPut:
 		operation = OperationUpdate
 		data, err = ioutil.ReadAll(req.Body)
-		defer req.Body.Close()
+		defer func() { _ = req.Body.Close() }()
 		if err != nil {
 			return nil, err
 		}

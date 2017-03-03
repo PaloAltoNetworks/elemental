@@ -81,9 +81,9 @@ func TestEvent_Decode(t *testing.T) {
 		Convey("When I decode the data", func() {
 			t2 := &Tag{}
 
-			e.Decode(t2)
+			_ = e.Decode(t2)
 
-			Convey("Then t2 should ressemble to tag", func() {
+			Convey("Then t2 should resemble to tag", func() {
 				So(t2, ShouldResemble, tag)
 			})
 		})
