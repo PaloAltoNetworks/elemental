@@ -35,7 +35,7 @@ var {{specification.entity_name}}Identity = {{ glob.prefix }}Identity {
 type {{specification.entity_name_plural}}List []*{{specification.entity_name}}
 
 // ContentIdentity returns the identity of the objects in the list.
-func (o *{{specification.entity_name_plural}}List) ContentIdentity() {{ glob.prefix }}Identity {
+func (o {{specification.entity_name_plural}}List) ContentIdentity() {{ glob.prefix }}Identity {
   return {{specification.entity_name}}Identity
 }
 {%- endif %}

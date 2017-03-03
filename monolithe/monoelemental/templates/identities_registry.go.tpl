@@ -29,6 +29,22 @@ func IdentifiableForIdentity(identity string) {{ glob.prefix }}Identifiable{
   }
 }
 
+// ContentIdentifiableForIdentity returns a new instance of a ContentIdentifiable for the given identity name.
+func ContentIdentifiableForIdentity(identity string) {{ glob.prefix }}ContentIdentifiable{
+
+  switch identity {
+    {% for spec in specifications.values() -%}
+      {% if not spec.is_root -%}
+      case {{ spec.entity_name }}Identity.Name:
+        return {{spec.entity_name_plural}}List{}
+      {% endif -%}
+    {% endfor -%}
+    default:
+      return nil
+  }
+}
+
+
 // AllIdentities returns all existing identities.
 func AllIdentities() []{{ glob.prefix }}Identity {
 
