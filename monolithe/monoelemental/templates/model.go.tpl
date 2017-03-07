@@ -58,7 +58,6 @@ type {{specification.entity_name}} struct {
     {% set field_name = attribute.local_name[0:1].upper() + attribute.local_name[1:] -%}
     {% set json_tags = 'json:"%s"' % attribute.local_name if attribute.exposed else 'json:"-"' -%}
     {% set primary_key = ',primarykey' if attribute.primary_key else '' -%}
-    {% set cql_tags = 'cql:"%s%s,omitempty"' % (attribute.local_name.lower(), primary_key) if attribute.stored else 'cql:"-"' -%}
     {% set bson_identifier_key = '_' if attribute.identifier else '' -%}
     {% set bson_tags = 'bson:"%s%s"' % (bson_identifier_key, attribute.local_name.lower()) if attribute.stored else 'bson:"-"' -%}
     {% set type = attribute.local_type.split(';')[0] -%}
@@ -66,7 +65,7 @@ type {{specification.entity_name}} struct {
     {% set type = constants[attribute.name]['type'] -%}
     {%- endif -%}
     // {{ attribute.description }}
-    {{ field_name }} {{ type }} `{{json_tags}} {{cql_tags}} {{bson_tags}}`
+    {{ field_name }} {{ type }} `{{json_tags}} {{bson_tags}}`
 
     {% if attribute.identifier -%}
     {% set _ = glob.update({'identifier': field_name}) -%}
