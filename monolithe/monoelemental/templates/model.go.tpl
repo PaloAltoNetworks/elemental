@@ -57,7 +57,6 @@ type {{specification.entity_name}} struct {
     {% for attribute in specification.attributes -%}
     {% set field_name = attribute.local_name[0:1].upper() + attribute.local_name[1:] -%}
     {% set json_tags = 'json:"%s"' % attribute.local_name if attribute.exposed else 'json:"-"' -%}
-    {% set primary_key = ',primarykey' if attribute.primary_key else '' -%}
     {% set bson_identifier_key = '_' if attribute.identifier else '' -%}
     {% set bson_tags = 'bson:"%s%s"' % (bson_identifier_key, attribute.local_name.lower()) if attribute.stored else 'bson:"-"' -%}
     {% set type = attribute.local_type.split(';')[0] -%}
