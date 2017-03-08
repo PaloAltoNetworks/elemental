@@ -121,6 +121,12 @@ func (o *{{specification.entity_name}}) SetIdentifier(ID string) {
     {% endif -%}
 }
 
+// Version returns the hardcoded version of the model
+func  (o *{{specification.entity_name}}) Version() float64 {
+
+  return {{ model_version }}
+}
+
 func  (o *{{specification.entity_name}}) String() string {
 
   return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
