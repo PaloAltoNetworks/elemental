@@ -19,43 +19,58 @@ func (o ListsList) ContentIdentity() Identity {
 	return ListIdentity
 }
 
+// List convert the object to and IdentifiablesList.
+func (o ListsList) List() IdentifiablesList {
+
+	out := IdentifiablesList{}
+	for _, item := range o {
+		out = append(out, item)
+	}
+
+	return out
+}
+
 // List represents the model of a list
 type List struct {
 	// The identifier
-	ID string `json:"ID" cql:"id,primarykey,omitempty" bson:"_id"`
+	ID string `json:"ID" bson:"_id"`
 
 	// A creation only only attribute
-	CreationOnly string `json:"creationOnly" cql:"creationonly,omitempty" bson:"creationonly"`
+	CreationOnly string `json:"creationOnly" bson:"creationonly"`
 
 	// A Date
-	Date time.Time `json:"-" cql:"date,omitempty" bson:"date"`
+	Date time.Time `json:"-" bson:"date"`
 
 	// The description
-	Description string `json:"description" cql:"description,omitempty" bson:"description"`
+	Description string `json:"description" bson:"description"`
 
 	// The name
-	Name string `json:"name" cql:"name,omitempty" bson:"name"`
+	Name string `json:"name" bson:"name"`
 
 	// The identifier of the parent of the object
-	ParentID string `json:"parentID" cql:"parentid,omitempty" bson:"parentid"`
+	ParentID string `json:"parentID" bson:"parentid"`
 
 	// The type of the parent of the object
-	ParentType string `json:"parentType" cql:"parenttype,omitempty" bson:"parenttype"`
+	ParentType string `json:"parentType" bson:"parenttype"`
 
 	// A read only attribute
-	ReadOnly string `json:"readOnly" cql:"readonly,omitempty" bson:"readonly"`
+	ReadOnly string `json:"readOnly" bson:"readonly"`
 
 	// A Slice
-	Slice []string `json:"-" cql:"slice,omitempty" bson:"slice"`
+	Slice []string `json:"-" bson:"slice"`
 
 	// An unexposed attribute
-	Unexposed string `json:"-" cql:"unexposed,omitempty" bson:"unexposed"`
+	Unexposed string `json:"-" bson:"unexposed"`
+
+	ModelVersion float64 `json:"-" bson:"_modelversion"`
 }
 
 // NewList returns a new *List
 func NewList() *List {
 
-	return &List{}
+	return &List{
+		ModelVersion: 1.0,
+	}
 }
 
 // Identity returns the Identity of the object.
@@ -74,6 +89,12 @@ func (o *List) Identifier() string {
 func (o *List) SetIdentifier(ID string) {
 
 	o.ID = ID
+}
+
+// Version returns the hardcoded version of the model
+func (o *List) Version() float64 {
+
+	return 1.0
 }
 
 func (o *List) String() string {
@@ -342,32 +363,46 @@ func (o TasksList) ContentIdentity() Identity {
 	return TaskIdentity
 }
 
+// List convert the object to and IdentifiablesList.
+func (o TasksList) List() IdentifiablesList {
+
+	out := IdentifiablesList{}
+	for _, item := range o {
+		out = append(out, item)
+	}
+
+	return out
+}
+
 // Task represents the model of a task
 type Task struct {
 	// The identifier
-	ID string `json:"ID" cql:"id,primarykey,omitempty" bson:"_id"`
+	ID string `json:"ID" bson:"_id"`
 
 	// The description
-	Description string `json:"description" cql:"description,omitempty" bson:"description"`
+	Description string `json:"description" bson:"description"`
 
 	// The name
-	Name string `json:"name" cql:"name,omitempty" bson:"name"`
+	Name string `json:"name" bson:"name"`
 
 	// The identifier of the parent of the object
-	ParentID string `json:"parentID" cql:"parentid,omitempty" bson:"parentid"`
+	ParentID string `json:"parentID" bson:"parentid"`
 
 	// The type of the parent of the object
-	ParentType string `json:"parentType" cql:"parenttype,omitempty" bson:"parenttype"`
+	ParentType string `json:"parentType" bson:"parenttype"`
 
 	// The status of the task
-	Status TaskStatusValue `json:"status" cql:"status,omitempty" bson:"status"`
+	Status TaskStatusValue `json:"status" bson:"status"`
+
+	ModelVersion float64 `json:"-" bson:"_modelversion"`
 }
 
 // NewTask returns a new *Task
 func NewTask() *Task {
 
 	return &Task{
-		Status: "TODO",
+		ModelVersion: 1.0,
+		Status:       "TODO",
 	}
 }
 
@@ -387,6 +422,12 @@ func (o *Task) Identifier() string {
 func (o *Task) SetIdentifier(ID string) {
 
 	o.ID = ID
+}
+
+// Version returns the hardcoded version of the model
+func (o *Task) Version() float64 {
+
+	return 1.0
 }
 
 func (o *Task) String() string {
@@ -504,6 +545,7 @@ var TaskAttributesMap = map[string]AttributeSpecification{
 	},
 	"Status": AttributeSpecification{
 		AllowedChoices: []string{"DONE", "PROGRESS", "TODO"},
+		DefaultValue:   TaskStatusValue("TODO"),
 		Description:    `The status of the task`,
 		Exposed:        true,
 		Filterable:     true,
@@ -517,22 +559,25 @@ var TaskAttributesMap = map[string]AttributeSpecification{
 // Root represents the model of a root
 type Root struct {
 	// The identifier
-	ID string `json:"ID" cql:"id,primarykey,omitempty" bson:"_id"`
+	ID string `json:"ID" bson:"_id"`
 
 	// The identifier of the parent of the object
-	ParentID string `json:"parentID" cql:"parentid,omitempty" bson:"parentid"`
+	ParentID string `json:"parentID" bson:"parentid"`
 
 	// The type of the parent of the object
-	ParentType string `json:"parentType" cql:"parenttype,omitempty" bson:"parenttype"`
+	ParentType string `json:"parentType" bson:"parenttype"`
 
-	Token        string `json:"APIKey,omitempty"`
-	Organization string `json:"enterprise,omitempty"`
+	Token        string  `json:"APIKey,omitempty"`
+	Organization string  `json:"enterprise,omitempty"`
+	ModelVersion float64 `json:"-" bson:"_modelversion"`
 }
 
 // NewRoot returns a new *Root
 func NewRoot() *Root {
 
-	return &Root{}
+	return &Root{
+		ModelVersion: 1.0,
+	}
 }
 
 // Identity returns the Identity of the object.
@@ -551,6 +596,12 @@ func (o *Root) Identifier() string {
 func (o *Root) SetIdentifier(ID string) {
 
 	o.ID = ID
+}
+
+// Version returns the hardcoded version of the model
+func (o *Root) Version() float64 {
+
+	return 1.0
 }
 
 func (o *Root) String() string {
@@ -659,31 +710,46 @@ func (o UsersList) ContentIdentity() Identity {
 	return UserIdentity
 }
 
+// List convert the object to and IdentifiablesList.
+func (o UsersList) List() IdentifiablesList {
+
+	out := IdentifiablesList{}
+	for _, item := range o {
+		out = append(out, item)
+	}
+
+	return out
+}
+
 // User represents the model of a user
 type User struct {
 	// The identifier
-	ID string `json:"ID" cql:"id,primarykey,omitempty" bson:"_id"`
+	ID string `json:"ID" bson:"_id"`
 
 	// The first name
-	FirstName string `json:"firstName" cql:"firstname,omitempty" bson:"firstname"`
+	FirstName string `json:"firstName" bson:"firstname"`
 
 	// The last name
-	LastName string `json:"lastName" cql:"lastname,omitempty" bson:"lastname"`
+	LastName string `json:"lastName" bson:"lastname"`
 
 	// The identifier of the parent of the object
-	ParentID string `json:"parentID" cql:"parentid,omitempty" bson:"parentid"`
+	ParentID string `json:"parentID" bson:"parentid"`
 
 	// The type of the parent of the object
-	ParentType string `json:"parentType" cql:"parenttype,omitempty" bson:"parenttype"`
+	ParentType string `json:"parentType" bson:"parenttype"`
 
 	// the login
-	UserName string `json:"userName" cql:"username,omitempty" bson:"username"`
+	UserName string `json:"userName" bson:"username"`
+
+	ModelVersion float64 `json:"-" bson:"_modelversion"`
 }
 
 // NewUser returns a new *User
 func NewUser() *User {
 
-	return &User{}
+	return &User{
+		ModelVersion: 1.0,
+	}
 }
 
 // Identity returns the Identity of the object.
@@ -702,6 +768,12 @@ func (o *User) Identifier() string {
 func (o *User) SetIdentifier(ID string) {
 
 	o.ID = ID
+}
+
+// Version returns the hardcoded version of the model
+func (o *User) Version() float64 {
+
+	return 1.0
 }
 
 func (o *User) String() string {
@@ -944,6 +1016,9 @@ func init() {
 	RegisterIdentity(UserIdentity)
 }
 
+// ModelVersion returns the current version of the model
+func ModelVersion() float64 { return 1.0 }
+
 // IdentifiableForIdentity returns a new instance of the Identifiable for the given identity name.
 func IdentifiableForIdentity(identity string) Identifiable {
 
@@ -956,6 +1031,21 @@ func IdentifiableForIdentity(identity string) Identifiable {
 		return NewList()
 	case UserIdentity.Name:
 		return NewUser()
+	default:
+		return nil
+	}
+}
+
+// ContentIdentifiableForIdentity returns a new instance of a ContentIdentifiable for the given identity name.
+func ContentIdentifiableForIdentity(identity string) ContentIdentifiable {
+
+	switch identity {
+	case TaskIdentity.Name:
+		return &TasksList{}
+	case ListIdentity.Name:
+		return &ListsList{}
+	case UserIdentity.Name:
+		return &UsersList{}
 	default:
 		return nil
 	}

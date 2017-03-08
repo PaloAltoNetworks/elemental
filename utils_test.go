@@ -22,7 +22,7 @@ func TestUtils_extractFieldNames(t *testing.T) {
 			fields := extractFieldNames(l1)
 
 			Convey("Then all fields should be present", func() {
-				So(len(fields), ShouldEqual, 10)
+				So(len(fields), ShouldEqual, 11)
 				So(fields, ShouldContain, "ID")
 				So(fields, ShouldContain, "Description")
 				So(fields, ShouldContain, "Name")
@@ -33,6 +33,7 @@ func TestUtils_extractFieldNames(t *testing.T) {
 				So(fields, ShouldContain, "Unexposed")
 				So(fields, ShouldContain, "Date")
 				So(fields, ShouldContain, "Slice")
+				So(fields, ShouldContain, "ModelVersion")
 			})
 		})
 	})
