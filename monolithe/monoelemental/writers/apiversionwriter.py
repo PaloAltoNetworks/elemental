@@ -19,7 +19,8 @@ class APIVersionWriter(TemplateFileWriter):
         output = monolithe_config.get_option("output", "transformer")
         self.name = monolithe_config.get_option("name", "transformer")
 
-        self.output_directory = "%s/elemental/%s" % (output, api_info["version"])
+        self.output_directory = "%s/elemental" % output
+        self.api_info = api_info
 
         header_path = "%s/elemental/__code_header" % output
         if os.path.exists(header_path):
@@ -52,7 +53,8 @@ class APIVersionWriter(TemplateFileWriter):
                    package_name=self.name,
                    header=self.header_content,
                    constants=constants,
-                   imports=imports)
+                   imports=imports,
+                   model_version=self.api_info["version"])
 
     def _write_registry(self, specifications):
         """

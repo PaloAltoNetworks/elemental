@@ -74,12 +74,14 @@ type {{specification.entity_name}} struct {
     Token string `json:"APIKey,omitempty"`
     Organization string `json:"enterprise,omitempty"`
     {%- endif %}
+    ModelVersion float64 `json:"-" bson:"_modelversion"`
 }
 
 // New{{specification.entity_name}} returns a new *{{specification.entity_name}}
 func New{{specification.entity_name}}() *{{specification.entity_name}} {
 
     return &{{specification.entity_name}}{
+        ModelVersion: {{ model_version }},
         {% for attribute in specification.attributes -%}
         {% set field_name = attribute.local_name[0:1].upper() + attribute.local_name[1:] -%}
         {% if attribute.type == 'external' -%}
