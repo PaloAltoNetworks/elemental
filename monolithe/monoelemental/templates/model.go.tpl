@@ -327,6 +327,19 @@ var {{ specification.entity_name }}AttributesMap = map[string]{{ glob.prefix }}A
       {% if attribute.default_order -%}
       DefaultOrder: true,
       {% endif -%}
+      {% if attribute.default_value -%}
+      {% if attribute.type == 'external' -%}
+      {% set constructor = attribute.local_type.split(';')[1] -%}
+      DefaultValue: {{ constructor }},
+      {% else -%}
+      {% if attribute.type == 'enum' -%}
+      DefaultValue: {{ constants[attribute.name].type }}("{{ attribute.default_value }}"),
+      {% else -%}
+      {% set enclosing_format = '"%s"' if attribute.type == 'string' else '%s' -%}
+      DefaultValue: {{ enclosing_format % attribute.default_value}},
+      {% endif -%}
+      {% endif -%}
+      {% endif -%}
       {% if attribute.deprecated -%}
       Deprecated: true,
       {% endif -%}

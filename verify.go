@@ -83,3 +83,18 @@ func BackportUnexposedFields(src, dest AttributeSpecifiable) {
 		}
 	}
 }
+
+// ResetDefaultForZeroValues reset the default value from the specification when a field is Zero.
+func ResetDefaultForZeroValues(obj AttributeSpecifiable) {
+
+	for _, field := range extractFieldNames(obj) {
+
+		spec := obj.SpecificationForAttribute(field)
+
+		if spec.DefaultValue == nil || !isFieldValueZero(field, obj) {
+			continue
+		}
+
+		reflect.ValueOf(obj).Elem().FieldByName(field).Set(reflect.ValueOf(spec.DefaultValue))
+	}
+}

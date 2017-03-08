@@ -59,6 +59,9 @@ type AttributeSpecification struct {
 	// This is not enforced by elemental. You must write your own business logic to honor this.
 	DefaultOrder bool
 
+	// DefaultValue holds the default value declared in specification.
+	DefaultValue interface{}
+
 	// Deprecated defines if the attribute is deprecated.
 	Deprecated bool
 
