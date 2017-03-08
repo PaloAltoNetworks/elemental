@@ -63,7 +63,8 @@ class APIVersionWriter(TemplateFileWriter):
         self.write(destination=self.output_directory, filename=filename, template_name="identities_registry.go.tpl",
                    specifications=specifications,
                    package_name=self.name,
-                   header=self.header_content)
+                   header=self.header_content,
+                   model_version=self.api_info["version"])
 
     def _write_relationships(self, specifications):
         """
