@@ -127,6 +127,14 @@ func  (o *{{specification.entity_name}}) Version() float64 {
   return {{ model_version }}
 }
 
+{% if specification.description %}
+// Doc returns the documentation for the object
+func (o *{{specification.entity_name}}) Doc() string {
+  return `{{specification.description}}`
+}
+{% endif %}
+
+
 func  (o *{{specification.entity_name}}) String() string {
 
   return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())

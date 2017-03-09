@@ -85,3 +85,8 @@ type ContentIdentifiable interface {
 	ContentIdentity() Identity
 	List() IdentifiablesList
 }
+
+// Documentable is the interface of an object that can be documented.
+type Documentable interface {
+	Doc() string
+}
