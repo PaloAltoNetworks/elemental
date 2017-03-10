@@ -74,16 +74,30 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 	}
 
 	components := strings.Split(req.URL.Path, "/")
+
+	// We remove the first element as it's always empty
+	components = append(components[:0], components[1:]...)
+
+	// If the first one is "v" it means the next one has to be a int for the version number.
+	if components[0] == "v" {
+		version, err = strconv.Atoi(components[1])
+		if err != nil {
+			return nil, fmt.Errorf("Invalid api version number '%s'", components[1])
+		}
+		// once we've set the version, we remove it, and continue as usual.
+		components = append(components[:0], components[2:]...)
+	}
+
 	switch len(components) {
+	case 1:
+		identity = IdentityFromCategory(components[0])
 	case 2:
-		identity = IdentityFromCategory(components[1])
+		identity = IdentityFromCategory(components[0])
+		ID = components[1]
 	case 3:
-		identity = IdentityFromCategory(components[1])
-		ID = components[2]
-	case 4:
-		parentIdentity = IdentityFromCategory(components[1])
-		parentID = components[2]
-		identity = IdentityFromCategory(components[3])
+		parentIdentity = IdentityFromCategory(components[0])
+		parentID = components[1]
+		identity = IdentityFromCategory(components[2])
 	default:
 		return nil, fmt.Errorf("%s is not a valid elemental request path", req.URL)
 	}
@@ -93,7 +107,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		operation = OperationDelete
 
 	case http.MethodGet:
-		if len(components) == 2 || len(components) == 4 {
+		if len(components) == 1 || len(components) == 3 {
 			operation = OperationRetrieveMany
 		} else {
 			operation = OperationRetrieve
@@ -150,13 +164,6 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 
 	if v := req.URL.Query().Get("override"); v != "" {
 		override = true
-	}
-
-	if v := req.Header.Get("X-Api-Version"); v != "" {
-		version, err = strconv.Atoi(v)
-		if err != nil {
-			return nil, fmt.Errorf("Invalid version number '%s'", v)
-		}
 	}
 
 	return &Request{

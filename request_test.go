@@ -94,9 +94,8 @@ func TestRequest_FromHttp(t *testing.T) {
 
 	Convey("Given I have a get http request on /lists", t, func() {
 
-		req, _ := http.NewRequest(http.MethodGet, "http://server/lists?p=v", nil)
+		req, _ := http.NewRequest(http.MethodGet, "http://server/v/10/lists?p=v", nil)
 		req.Header.Set("X-Namespace", "ns")
-		req.Header.Set("X-Api-Version", "10")
 
 		Convey("When I create a new elemental Request from it", func() {
 
