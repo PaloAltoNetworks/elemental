@@ -30,8 +30,7 @@ type Event struct {
 	Identity  string          `json:"identity"`
 	Type      EventType       `json:"type"`
 	Timestamp time.Time       `json:"timestamp"`
-
-	UserInfo interface{}
+	UserInfo  interface{}     `json:"userInfo,omitempty"`
 }
 
 // NewEvent returns a new Event.
