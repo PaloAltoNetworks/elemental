@@ -31,6 +31,7 @@ type Request struct {
 	Page               int             `json:"page,omitempty"`
 	PageSize           int             `json:"pageSize,omitempty"`
 	OverrideProtection bool            `json:"overrideProtection,omitempty"`
+	Version            int             `json:"version,omitempty"`
 
 	Metadata map[string]interface{}
 
@@ -62,6 +63,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 	var parentID string
 	var username string
 	var password string
+	var version int
 	var data []byte
 	var err error
 
@@ -150,6 +152,13 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		override = true
 	}
 
+	if v := req.Header.Get("X-Api-Version"); v != "" {
+		version, err = strconv.Atoi(v)
+		if err != nil {
+			return nil, fmt.Errorf("Invalid version number '%s'", v)
+		}
+	}
+
 	return &Request{
 		RequestID:          uuid.NewV4().String(),
 		Namespace:          req.Header.Get("X-Namespace"),
@@ -169,6 +178,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		Headers:            req.Header,
 		OverrideProtection: override,
 		Metadata:           map[string]interface{}{},
+		Version:            version,
 	}, nil
 }
 
@@ -189,6 +199,7 @@ func (r *Request) Duplicate() *Request {
 	req.Username = r.Username
 	req.Password = r.Password
 	req.Data = r.Data
+	req.Version = r.Version
 	req.OverrideProtection = r.OverrideProtection
 	req.TLSConnectionState = r.TLSConnectionState
 
@@ -228,7 +239,7 @@ func (r *Request) Decode(dst interface{}) error {
 
 func (r *Request) String() string {
 
-	return fmt.Sprintf("<request id:%s operation:%s namespace:%s recursive:%v identity:%s objectid:%s parentidentity:%s parentid:%s>",
+	return fmt.Sprintf("<request id:%s operation:%s namespace:%s recursive:%v identity:%s objectid:%s parentidentity:%s parentid:%s version:%d>",
 		r.RequestID,
 		r.Operation,
 		r.Namespace,
@@ -237,5 +248,6 @@ func (r *Request) String() string {
 		r.ObjectID,
 		r.ParentIdentity,
 		r.ParentID,
+		r.Version,
 	)
 }

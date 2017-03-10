@@ -95,7 +95,8 @@ func TestRequest_FromHttp(t *testing.T) {
 	Convey("Given I have a get http request on /lists", t, func() {
 
 		req, _ := http.NewRequest(http.MethodGet, "http://server/lists?p=v", nil)
-		req.Header.Add("X-Namespace", "ns")
+		req.Header.Set("X-Namespace", "ns")
+		req.Header.Set("X-Api-Version", "10")
 
 		Convey("When I create a new elemental Request from it", func() {
 
@@ -111,6 +112,10 @@ func TestRequest_FromHttp(t *testing.T) {
 
 			Convey("Then the operation should be OperationRetrieveMany", func() {
 				So(r.Operation, ShouldEqual, OperationRetrieveMany)
+			})
+
+			Convey("Then the version should be 10", func() {
+				So(r.Version, ShouldEqual, 10)
 			})
 
 			Convey("Then the Namespace should be ns", func() {
@@ -677,6 +682,25 @@ func TestRequest_FromHttp(t *testing.T) {
 			})
 		})
 	})
+
+	Convey("Given I have a http request with bad version ", t, func() {
+
+		req, _ := http.NewRequest(http.MethodPut, "", nil)
+		req.Header.Set("x-api-version", "nope")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req)
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+			})
+		})
+	})
 }
 
 func TestRequest_Duplicate(t *testing.T) {
@@ -698,6 +722,7 @@ func TestRequest_Duplicate(t *testing.T) {
 		req.Password = "pass"
 		req.Recursive = true
 		req.Username = "user"
+		req.Version = 12
 
 		Convey("When I use Duplicate()", func() {
 
@@ -719,6 +744,8 @@ func TestRequest_Duplicate(t *testing.T) {
 				So(req2.Recursive, ShouldEqual, req.Recursive)
 				So(req2.Username, ShouldEqual, req.Username)
 				So(req2.RequestID, ShouldNotEqual, req.RequestID)
+				So(req2.RequestID, ShouldNotEqual, req.RequestID)
+				So(req2.Version, ShouldEqual, req.Version)
 			})
 		})
 	})
