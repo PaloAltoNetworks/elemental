@@ -22,7 +22,7 @@ const (
 func UnmarshalJSON(data []byte, i interface{}) error {
 
 	if len(data) == 0 {
-		return NewError("Validation Error", fmt.Sprint(readerError), "elemental", http.StatusUnprocessableEntity)
+		return NewError("Bad Request", fmt.Sprint(readerError), "elemental", http.StatusBadRequest)
 	}
 
 	errors := Errors{}
@@ -31,7 +31,7 @@ func UnmarshalJSON(data []byte, i interface{}) error {
 	err := json.Unmarshal(data, &d)
 
 	if err != nil {
-		errors = append(errors, NewError("Validation Error", fmt.Sprint(invalidJSON), "elemental", http.StatusUnprocessableEntity))
+		errors = append(errors, NewError("Bad Request", fmt.Sprint(invalidJSON), "elemental", http.StatusBadRequest))
 		return errors
 	}
 
