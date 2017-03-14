@@ -8,6 +8,8 @@ import "github.com/aporeto-inc/elemental"
 {% set _ = glob.update({'prefix': 'elemental.'}) %}
 {% endif %}
 
+const nodocString = "[nodoc]"
+
 var relationshipsRegistry {{ glob.prefix }}RelationshipsRegistry
 
 // Relationships returns the model relationships.

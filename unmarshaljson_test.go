@@ -68,7 +68,7 @@ func TestUnmarshalJSONWithInvalidJSON(t *testing.T) {
 		server := &Server{}
 		err := UnmarshalJSON([]byte(`{"parentType" : 123`), server)
 
-		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Invalid JSON\n")
+		So(err.Error(), ShouldResemble, "error 0: error 400 (elemental): Bad Request: Invalid JSON\n")
 	})
 }
 

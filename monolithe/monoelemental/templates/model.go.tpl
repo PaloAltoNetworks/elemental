@@ -8,6 +8,8 @@ import "github.com/aporeto-inc/elemental"
 {% set _ = glob.update({'prefix': 'elemental.'}) %}
 {% endif %}
 
+import "sync"
+
 {% for imp in imports %}
 import "{{imp}}"
 {% endfor %}
@@ -75,6 +77,8 @@ type {{specification.entity_name}} struct {
     Organization string `json:"enterprise,omitempty"`
     {% endif %}
     ModelVersion float64 `json:"-" bson:"_modelversion"`
+
+    sync.Mutex
 }
 
 // New{{specification.entity_name}} returns a new *{{specification.entity_name}}
@@ -130,10 +134,13 @@ func  (o *{{specification.entity_name}}) Version() float64 {
 {% if specification.description %}
 // Doc returns the documentation for the object
 func (o *{{specification.entity_name}}) Doc() string {
+  {% if specification.description == '[nodoc]' %}
+  return nodocString
+  {% else %}
   return `{{specification.description}}`
+  {% endif %}
 }
 {% endif %}
-
 
 func  (o *{{specification.entity_name}}) String() string {
 
@@ -305,13 +312,13 @@ func (o *{{specification.entity_name}}) SetAPIKey(key string) {
 {% endif %}
 
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
-func ({{specification.entity_name}}) SpecificationForAttribute(name string) {{ glob.prefix }}AttributeSpecification {
+func (*{{specification.entity_name}}) SpecificationForAttribute(name string) {{ glob.prefix }}AttributeSpecification {
 
   return {{ specification.entity_name }}AttributesMap[name]
 }
 
 // AttributeSpecifications returns the full attribute specifications map.
-func ({{specification.entity_name}}) AttributeSpecifications() map[string]{{ glob.prefix }}AttributeSpecification {
+func (*{{specification.entity_name}}) AttributeSpecifications() map[string]{{ glob.prefix }}AttributeSpecification {
 
   return {{ specification.entity_name }}AttributesMap
 }
