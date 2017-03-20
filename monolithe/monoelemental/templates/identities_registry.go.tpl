@@ -32,6 +32,19 @@ func IdentifiableForIdentity(identity string) {{ glob.prefix }}Identifiable{
   }
 }
 
+// IdentifiableForCategory returns a new instance of the Identifiable for the given category name.
+func IdentifiableForCategory(category string) {{ glob.prefix }}Identifiable{
+
+  switch category {
+    {% for spec in specifications.values() -%}
+      case {{ spec.entity_name }}Identity.Category:
+        return New{{ spec.entity_name }}()
+    {% endfor -%}
+    default:
+      return nil
+  }
+}
+
 // ContentIdentifiableForIdentity returns a new instance of a ContentIdentifiable for the given identity name.
 func ContentIdentifiableForIdentity(identity string) {{ glob.prefix }}ContentIdentifiable{
 
@@ -39,6 +52,21 @@ func ContentIdentifiableForIdentity(identity string) {{ glob.prefix }}ContentIde
     {% for spec in specifications.values() -%}
       {% if not spec.is_root -%}
       case {{ spec.entity_name }}Identity.Name:
+        return &{{spec.entity_name_plural}}List{}
+      {% endif -%}
+    {% endfor -%}
+    default:
+      return nil
+  }
+}
+
+// ContentIdentifiableForCategory returns a new instance of a ContentIdentifiable for the given category name.
+func ContentIdentifiableForCategory(category string) {{ glob.prefix }}ContentIdentifiable{
+
+  switch category {
+    {% for spec in specifications.values() -%}
+      {% if not spec.is_root -%}
+      case {{ spec.entity_name }}Identity.Category:
         return &{{spec.entity_name_plural}}List{}
       {% endif -%}
     {% endfor -%}
