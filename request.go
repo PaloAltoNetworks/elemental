@@ -258,3 +258,28 @@ func (r *Request) String() string {
 		r.Version,
 	)
 }
+
+// URL returns the request that will be sent to a server
+func (r *Request) URL() string {
+	var url string
+
+	// Parent
+	if !r.ParentIdentity.IsEmpty() {
+		url += "/" + r.ParentIdentity.Category
+
+		if r.ParentID != "" {
+			url += "/" + r.ParentID
+		}
+	}
+
+	// Object
+	if !r.Identity.IsEmpty() {
+		url += "/" + r.Identity.Category
+
+		if r.ObjectID != "" {
+			url += "/" + r.ObjectID
+		}
+	}
+
+	return url
+}

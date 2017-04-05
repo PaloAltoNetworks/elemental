@@ -156,6 +156,12 @@ func TestRequest_FromHttp(t *testing.T) {
 			Convey("Then the Data should be empty", func() {
 				So(r.Data, ShouldBeEmpty)
 			})
+
+			url := r.URL()
+			expectedURL := "/lists"
+			Convey("Then the URL method should return /lists", func() {
+				So(url, ShouldEqual, expectedURL)
+			})
 		})
 	})
 
@@ -219,6 +225,12 @@ func TestRequest_FromHttp(t *testing.T) {
 
 			Convey("Then the Data should be empty", func() {
 				So(r.Data, ShouldBeEmpty)
+			})
+
+			url := r.URL()
+			expectedURL := "/lists"
+			Convey("Then the URL method should return /lists", func() {
+				So(url, ShouldEqual, expectedURL)
 			})
 		})
 	})
@@ -414,6 +426,12 @@ func TestRequest_FromHttp(t *testing.T) {
 			Convey("Then the Data should be correct", func() {
 				So(r.Data, ShouldBeEmpty)
 			})
+
+			url := r.URL()
+			expectedURL := "/lists/xx"
+			Convey("Then the URL method should return /lists/xx", func() {
+				So(url, ShouldEqual, expectedURL)
+			})
 		})
 	})
 
@@ -478,6 +496,12 @@ func TestRequest_FromHttp(t *testing.T) {
 
 			Convey("Then the Data should be correct", func() {
 				So(string(r.Data), ShouldEqual, `{"name": "toto"}`)
+			})
+
+			url := r.URL()
+			expectedURL := "/lists/xx"
+			Convey("Then the URL method should return /lists/xx", func() {
+				So(url, ShouldEqual, expectedURL)
 			})
 		})
 	})
@@ -606,6 +630,12 @@ func TestRequest_FromHttp(t *testing.T) {
 
 			Convey("Then the Data should be correct", func() {
 				So(r.Data, ShouldBeEmpty)
+			})
+
+			url := r.URL()
+			expectedURL := "/lists/xx/tasks"
+			Convey("Then the URL method should return /lists/xx/tasks", func() {
+				So(url, ShouldEqual, expectedURL)
 			})
 		})
 	})
