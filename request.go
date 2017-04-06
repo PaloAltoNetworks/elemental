@@ -10,42 +10,50 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
+
 	uuid "github.com/satori/go.uuid"
 )
 
 // A Request represents an abstract request on an elemental model.
 type Request struct {
-	RequestID          string          `json:"rid"`
-	Namespace          string          `json:"namespace"`
-	Recursive          bool            `json:"recursive"`
-	Operation          Operation       `json:"operation"`
-	Identity           Identity        `json:"identity"`
-	ObjectID           string          `json:"objectID"`
-	ParentIdentity     Identity        `json:"parentIdentity"`
-	ParentID           string          `json:"parentID"`
-	Data               json.RawMessage `json:"data,omitempty"`
-	Parameters         url.Values      `json:"parameters,omitempty"`
-	Headers            http.Header     `json:"headers,omitempty"`
-	Username           string          `json:"username,omitempty"`
-	Password           string          `json:"password,omitempty"`
-	Page               int             `json:"page,omitempty"`
-	PageSize           int             `json:"pageSize,omitempty"`
-	OverrideProtection bool            `json:"overrideProtection,omitempty"`
-	Version            int             `json:"version,omitempty"`
+	RequestID          string                     `json:"rid"`
+	Namespace          string                     `json:"namespace"`
+	Recursive          bool                       `json:"recursive"`
+	Operation          Operation                  `json:"operation"`
+	Identity           Identity                   `json:"identity"`
+	ObjectID           string                     `json:"objectID"`
+	ParentIdentity     Identity                   `json:"parentIdentity"`
+	ParentID           string                     `json:"parentID"`
+	Data               json.RawMessage            `json:"data,omitempty"`
+	Parameters         url.Values                 `json:"parameters,omitempty"`
+	Headers            http.Header                `json:"headers,omitempty"`
+	Username           string                     `json:"username,omitempty"`
+	Password           string                     `json:"password,omitempty"`
+	Page               int                        `json:"page,omitempty"`
+	PageSize           int                        `json:"pageSize,omitempty"`
+	OverrideProtection bool                       `json:"overrideProtection,omitempty"`
+	Version            int                        `json:"version,omitempty"`
+	TrackingData       opentracing.TextMapCarrier `json:"trackingData,omitempty"`
 
 	Metadata map[string]interface{}
 
 	TLSConnectionState *tls.ConnectionState
+
+	span        opentracing.Span
+	wireContext opentracing.SpanContext
 }
 
 // NewRequest returns a new Request.
 func NewRequest() *Request {
 
 	return &Request{
-		RequestID:  uuid.NewV4().String(),
-		Parameters: url.Values{},
-		Headers:    http.Header{},
-		Metadata:   map[string]interface{}{},
+		RequestID:    uuid.NewV4().String(),
+		Parameters:   url.Values{},
+		Headers:      http.Header{},
+		Metadata:     map[string]interface{}{},
+		TrackingData: opentracing.TextMapCarrier{},
 	}
 }
 
@@ -166,6 +174,12 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		override = true
 	}
 
+	tracer := opentracing.GlobalTracer()
+	var wireContext opentracing.SpanContext
+	if tracer != nil {
+		wireContext, _ = tracer.Extract(opentracing.TextMap, opentracing.HTTPHeadersCarrier(req.Header))
+	}
+
 	return &Request{
 		RequestID:          uuid.NewV4().String(),
 		Namespace:          req.Header.Get("X-Namespace"),
@@ -186,7 +200,62 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		OverrideProtection: override,
 		Metadata:           map[string]interface{}{},
 		Version:            version,
+		TrackingData:       opentracing.TextMapCarrier{},
+		wireContext:        wireContext,
 	}, nil
+}
+
+// StartTracing starts tracing the request.
+func (r *Request) StartTracing() {
+
+	tracer := opentracing.GlobalTracer()
+	if tracer == nil {
+		return
+	}
+
+	if r.wireContext == nil {
+		r.wireContext, _ = tracer.Extract(opentracing.TextMap, opentracing.TextMapCarrier(r.TrackingData))
+	}
+
+	r.span = opentracing.StartSpan(r.tracingName(), ext.RPCServerOption(r.wireContext))
+	r.span.SetTag("parameters", r.Parameters)
+	r.span.SetTag("headers", r.Headers)
+
+	r.span.SetTag("elemental.identity", r.Identity.Name)
+	r.span.SetTag("elemental.id", r.ObjectID)
+	r.span.SetTag("elemental.operation", r.Operation)
+	r.span.SetTag("elemental.namespace", r.Namespace)
+
+	if r.ParentID != "" {
+		r.span.SetTag("elemental.parent_identity", r.ParentIdentity.Name)
+		r.span.SetTag("elemental.parent_id", r.ParentID)
+	}
+}
+
+// FinishTracing will finish the request tracing.
+func (r *Request) FinishTracing() {
+
+	if r.span == nil {
+		return
+	}
+
+	r.span.Finish()
+}
+
+// Span returns the current span.
+func (r *Request) Span() opentracing.Span {
+
+	return r.span
+}
+
+// NewChildSpan return a new child tracing span.
+func (r *Request) NewChildSpan(name string) opentracing.Span {
+
+	if r.span == nil {
+		return opentracing.StartSpan(name)
+	}
+
+	return opentracing.StartSpan(name, opentracing.ChildOf(r.span.Context()))
 }
 
 // Duplicate duplicates the Request.
@@ -209,6 +278,8 @@ func (r *Request) Duplicate() *Request {
 	req.Version = r.Version
 	req.OverrideProtection = r.OverrideProtection
 	req.TLSConnectionState = r.TLSConnectionState
+	req.span = r.span
+	req.wireContext = r.wireContext
 
 	for k, v := range r.Headers {
 		req.Headers[k] = v
@@ -220,6 +291,10 @@ func (r *Request) Duplicate() *Request {
 
 	for k, v := range r.Metadata {
 		req.Metadata[k] = v
+	}
+
+	for k, v := range r.TrackingData {
+		req.TrackingData[k] = v
 	}
 
 	return req
@@ -244,6 +319,24 @@ func (r *Request) Decode(dst interface{}) error {
 	return UnmarshalJSON(r.Data, &dst)
 }
 
+// Set is part of the implementation of the opentracing TextMapWriter.
+func (r *Request) Set(key string, value string) {
+
+	r.TrackingData[key] = value
+}
+
+// ForeachKey is part of the implementation of the opentracing TextMapReader.
+func (r *Request) ForeachKey(handler func(key, val string) error) error {
+
+	for k, v := range r.TrackingData {
+		if err := handler(k, v); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (r *Request) String() string {
 
 	return fmt.Sprintf("<request id:%s operation:%s namespace:%s recursive:%v identity:%s objectid:%s parentidentity:%s parentid:%s version:%d>",
@@ -257,4 +350,33 @@ func (r *Request) String() string {
 		r.ParentID,
 		r.Version,
 	)
+}
+
+func (r *Request) tracingName() string {
+
+	switch r.Operation {
+
+	case OperationCreate:
+		return fmt.Sprintf("elemental.request.create.%s", r.Identity.Category)
+
+	case OperationRetrieveMany:
+		return fmt.Sprintf("elemental.request.retrieve_many.%s", r.Identity.Category)
+
+	case OperationInfo:
+		return fmt.Sprintf("elemental.request.info.%s", r.Identity.Category)
+
+	case OperationUpdate:
+		return fmt.Sprintf("elemental.request.update.%s", r.Identity.Category)
+
+	case OperationDelete:
+		return fmt.Sprintf("elemental.request.delete.%s", r.Identity.Category)
+
+	case OperationRetrieve:
+		return fmt.Sprintf("elemental.request.retrieve.%s", r.Identity.Category)
+
+	case OperationPatch:
+		return fmt.Sprintf("elemental.request.patch.%s", r.Identity.Category)
+	}
+
+	return fmt.Sprintf("Unknown operation: %s", r)
 }
