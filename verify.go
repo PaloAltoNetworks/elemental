@@ -26,40 +26,37 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 		switch op {
 		case OperationCreate:
 			if spec.ReadOnly && !isFieldValueZero(field, obj) {
-				errors = append(
-					errors,
-					NewError(
-						"Read Only Error",
-						fmt.Sprintf("Field %s is read only. You cannot set its value.", spec.Name),
-						"elemental",
-						http.StatusUnprocessableEntity,
-					),
+				e := NewError(
+					"Read Only Error",
+					fmt.Sprintf("Field %s is read only. You cannot set its value.", spec.Name),
+					"elemental",
+					http.StatusUnprocessableEntity,
 				)
+				e.Data = map[string]string{"attribute": spec.Name}
+				errors = append(errors, e)
 			}
 
 		case OperationUpdate:
 			if !spec.CreationOnly && spec.ReadOnly && !areFieldValuesEqual(field, obj, pristine) {
-				errors = append(
-					errors,
-					NewError(
-						"Read Only Error",
-						fmt.Sprintf("Field %s is read only. You cannot modify its value.", spec.Name),
-						"elemental",
-						http.StatusUnprocessableEntity,
-					),
+				e := NewError(
+					"Read Only Error",
+					fmt.Sprintf("Field %s is read only. You cannot modify its value.", spec.Name),
+					"elemental",
+					http.StatusUnprocessableEntity,
 				)
+				e.Data = map[string]string{"attribute": spec.Name}
+				errors = append(errors, e)
 			}
 
 			if spec.CreationOnly && !areFieldValuesEqual(field, obj, pristine) {
-				errors = append(
-					errors,
-					NewError(
-						"Creation Only Error",
-						fmt.Sprintf("Field %s can only be set during creation. You cannot modify its value.", spec.Name),
-						"elemental",
-						http.StatusUnprocessableEntity,
-					),
+				e := NewError(
+					"Creation Only Error",
+					fmt.Sprintf("Field %s can only be set during creation. You cannot modify its value.", spec.Name),
+					"elemental",
+					http.StatusUnprocessableEntity,
 				)
+				e.Data = map[string]string{"attribute": spec.Name}
+				errors = append(errors, e)
 			}
 		}
 	}
