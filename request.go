@@ -232,6 +232,10 @@ func (r *Request) StartTracing() {
 		r.span.SetTag("elemental.parent_identity", r.ParentIdentity.Name)
 		r.span.SetTag("elemental.parent_id", r.ParentID)
 	}
+
+	if len(r.Data) > 0 {
+		r.span.SetTag("elemental.payload", string(r.Data))
+	}
 }
 
 // FinishTracing will finish the request tracing.
