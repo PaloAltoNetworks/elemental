@@ -36,6 +36,7 @@ type Request struct {
 	OverrideProtection bool                       `json:"overrideProtection,omitempty"`
 	Version            int                        `json:"version,omitempty"`
 	TrackingData       opentracing.TextMapCarrier `json:"trackingData,omitempty"`
+	ExternalTrackingID string                     `json:"externalTrackingID,omitempty"`
 
 	Metadata map[string]interface{}
 
@@ -201,6 +202,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		Metadata:           map[string]interface{}{},
 		Version:            version,
 		TrackingData:       opentracing.TextMapCarrier{},
+		ExternalTrackingID: req.Header.Get("X-External-Tracking-ID"),
 		wireContext:        wireContext,
 	}, nil
 }
@@ -218,9 +220,9 @@ func (r *Request) StartTracing() {
 	}
 
 	r.span = opentracing.StartSpan(r.tracingName(), ext.RPCServerOption(r.wireContext))
-	r.span.SetTag("parameters", r.Parameters)
-	r.span.SetTag("headers", r.Headers)
-
+	r.span.SetTag("elemental.parameters", r.Parameters)
+	r.span.SetTag("elemental.headers", r.Headers)
+	r.span.SetTag("elemental.external_tracking_id", r.ExternalTrackingID)
 	r.span.SetTag("elemental.identity", r.Identity.Name)
 	r.span.SetTag("elemental.id", r.ObjectID)
 	r.span.SetTag("elemental.operation", r.Operation)
@@ -280,6 +282,7 @@ func (r *Request) Duplicate() *Request {
 	req.TLSConnectionState = r.TLSConnectionState
 	req.span = r.span
 	req.wireContext = r.wireContext
+	req.ExternalTrackingID = r.ExternalTrackingID
 
 	for k, v := range r.Headers {
 		req.Headers[k] = v
