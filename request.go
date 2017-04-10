@@ -18,25 +18,26 @@ import (
 
 // A Request represents an abstract request on an elemental model.
 type Request struct {
-	RequestID          string                     `json:"rid"`
-	Namespace          string                     `json:"namespace"`
-	Recursive          bool                       `json:"recursive"`
-	Operation          Operation                  `json:"operation"`
-	Identity           Identity                   `json:"identity"`
-	ObjectID           string                     `json:"objectID"`
-	ParentIdentity     Identity                   `json:"parentIdentity"`
-	ParentID           string                     `json:"parentID"`
-	Data               json.RawMessage            `json:"data,omitempty"`
-	Parameters         url.Values                 `json:"parameters,omitempty"`
-	Headers            http.Header                `json:"headers,omitempty"`
-	Username           string                     `json:"username,omitempty"`
-	Password           string                     `json:"password,omitempty"`
-	Page               int                        `json:"page,omitempty"`
-	PageSize           int                        `json:"pageSize,omitempty"`
-	OverrideProtection bool                       `json:"overrideProtection,omitempty"`
-	Version            int                        `json:"version,omitempty"`
-	TrackingData       opentracing.TextMapCarrier `json:"trackingData,omitempty"`
-	ExternalTrackingID string                     `json:"externalTrackingID,omitempty"`
+	RequestID            string                     `json:"rid"`
+	Namespace            string                     `json:"namespace"`
+	Recursive            bool                       `json:"recursive"`
+	Operation            Operation                  `json:"operation"`
+	Identity             Identity                   `json:"identity"`
+	ObjectID             string                     `json:"objectID"`
+	ParentIdentity       Identity                   `json:"parentIdentity"`
+	ParentID             string                     `json:"parentID"`
+	Data                 json.RawMessage            `json:"data,omitempty"`
+	Parameters           url.Values                 `json:"parameters,omitempty"`
+	Headers              http.Header                `json:"headers,omitempty"`
+	Username             string                     `json:"username,omitempty"`
+	Password             string                     `json:"password,omitempty"`
+	Page                 int                        `json:"page,omitempty"`
+	PageSize             int                        `json:"pageSize,omitempty"`
+	OverrideProtection   bool                       `json:"overrideProtection,omitempty"`
+	Version              int                        `json:"version,omitempty"`
+	TrackingData         opentracing.TextMapCarrier `json:"trackingData,omitempty"`
+	ExternalTrackingID   string                     `json:"externalTrackingID,omitempty"`
+	ExternalTrackingType string                     `json:"externalTrackingType,omitempty"`
 
 	Metadata map[string]interface{}
 
@@ -182,28 +183,29 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 	}
 
 	return &Request{
-		RequestID:          uuid.NewV4().String(),
-		Namespace:          req.Header.Get("X-Namespace"),
-		Recursive:          recursive,
-		Page:               page,
-		PageSize:           pageSize,
-		Operation:          operation,
-		Identity:           identity,
-		ObjectID:           ID,
-		ParentID:           parentID,
-		ParentIdentity:     parentIdentity,
-		Parameters:         req.URL.Query(),
-		Username:           username,
-		Password:           password,
-		Data:               data,
-		TLSConnectionState: req.TLS,
-		Headers:            req.Header,
-		OverrideProtection: override,
-		Metadata:           map[string]interface{}{},
-		Version:            version,
-		TrackingData:       opentracing.TextMapCarrier{},
-		ExternalTrackingID: req.Header.Get("X-External-Tracking-ID"),
-		wireContext:        wireContext,
+		RequestID:            uuid.NewV4().String(),
+		Namespace:            req.Header.Get("X-Namespace"),
+		Recursive:            recursive,
+		Page:                 page,
+		PageSize:             pageSize,
+		Operation:            operation,
+		Identity:             identity,
+		ObjectID:             ID,
+		ParentID:             parentID,
+		ParentIdentity:       parentIdentity,
+		Parameters:           req.URL.Query(),
+		Username:             username,
+		Password:             password,
+		Data:                 data,
+		TLSConnectionState:   req.TLS,
+		Headers:              req.Header,
+		OverrideProtection:   override,
+		Metadata:             map[string]interface{}{},
+		Version:              version,
+		TrackingData:         opentracing.TextMapCarrier{},
+		ExternalTrackingID:   req.Header.Get("X-External-Tracking-ID"),
+		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
+		wireContext:          wireContext,
 	}, nil
 }
 
@@ -223,6 +225,7 @@ func (r *Request) StartTracing() {
 	r.span.SetTag("elemental.parameters", r.Parameters)
 	r.span.SetTag("elemental.headers", r.Headers)
 	r.span.SetTag("elemental.external_tracking_id", r.ExternalTrackingID)
+	r.span.SetTag("elemental.external_tracking_type", r.ExternalTrackingType)
 	r.span.SetTag("elemental.identity", r.Identity.Name)
 	r.span.SetTag("elemental.id", r.ObjectID)
 	r.span.SetTag("elemental.operation", r.Operation)
@@ -287,6 +290,7 @@ func (r *Request) Duplicate() *Request {
 	req.span = r.span
 	req.wireContext = r.wireContext
 	req.ExternalTrackingID = r.ExternalTrackingID
+	req.ExternalTrackingType = r.ExternalTrackingType
 
 	for k, v := range r.Headers {
 		req.Headers[k] = v
