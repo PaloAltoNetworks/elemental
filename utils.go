@@ -36,6 +36,10 @@ func areFieldValuesEqual(field string, o1, o2 interface{}) bool {
 		return field1.Interface().(time.Time).Unix() == field2.Interface().(time.Time).Unix()
 	}
 
+	if isFieldValueZero(field, o1) && isFieldValueZero(field, o2) {
+		return true
+	}
+
 	if field1.Kind() == reflect.Slice || field1.Kind() == reflect.Array {
 		if field1.Len() != field2.Len() {
 			return false
