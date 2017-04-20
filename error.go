@@ -4,7 +4,10 @@
 
 package elemental
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // An Error represents a computational error.
 //
@@ -47,13 +50,13 @@ func NewErrors(errors ...error) Errors {
 
 func (e Errors) Error() string {
 
-	var str string
+	var strs []string
 
-	for i, err := range e {
-		str += fmt.Sprintf("error %d: %s\n", i, err.Error())
+	for _, err := range e {
+		strs = append(strs, err.Error())
 	}
 
-	return str
+	return strings.Join(strs, ", ")
 }
 
 // Code returns the code of the first error code in the Errors.
