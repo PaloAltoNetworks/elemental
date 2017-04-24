@@ -53,7 +53,7 @@ func TestError_NewErrors(t *testing.T) {
 
 		Convey("Then the Error should be correctly initialized", func() {
 			So(errs, ShouldResemble, Errors{e1, e2})
-			So(errs.Error(), ShouldResemble, "error 0: error 42 (containers): bad: something bad\nerror 1: error 43 (containers1): bad1: something bad1\n")
+			So(errs.Error(), ShouldResemble, "error 42 (containers): bad: something bad, error 43 (containers1): bad1: something bad1")
 			So(errs.Code(), ShouldEqual, 42)
 		})
 	})

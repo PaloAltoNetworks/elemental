@@ -68,7 +68,7 @@ func TestUnmarshalJSONWithInvalidJSON(t *testing.T) {
 		server := &Server{}
 		err := UnmarshalJSON([]byte(`{"parentType" : 123`), server)
 
-		So(err.Error(), ShouldResemble, "error 0: error 400 (elemental): Bad Request: Invalid JSON\n")
+		So(err.Error(), ShouldResemble, "error 400 (elemental): Bad Request: Invalid JSON")
 	})
 }
 
@@ -81,7 +81,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'number' should be a 'integer'\n")
+		So(err.Error(), ShouldResemble, "error 422 (elemental): Validation Error: Data '12' of attribute 'number' should be a 'integer'")
 	})
 
 	Convey("Given I call the method UnmarshalJSON with a invalid json because string instead of int", t, func() {
@@ -91,7 +91,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'annotation' should be a 'map[string]string'\n")
+		So(err.Error(), ShouldResemble, "error 422 (elemental): Validation Error: Data '12' of attribute 'annotation' should be a 'map[string]string'")
 	})
 
 	Convey("Given I call the method UnmarshalJSON with a invalid json because []int instead of []string", t, func() {
@@ -101,7 +101,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '[12]' of attribute 'associatedTags' should be a '[]string'\n")
+		So(err.Error(), ShouldResemble, "error 422 (elemental): Validation Error: Data '[12]' of attribute 'associatedTags' should be a '[]string'")
 	})
 
 	Convey("Given I call the method UnmarshalJSON with an invalid contant type", t, func() {
@@ -111,7 +111,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'boom' should be a 'string'\n")
+		So(err.Error(), ShouldResemble, "error 422 (elemental): Validation Error: Data '12' of attribute 'boom' should be a 'string'")
 	})
 
 	Convey("Given I call the method UnmarshalJSON with an invalid key", t, func() {
@@ -121,7 +121,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'updatedAt' should be a 'string in format YYYY-MM-DDTHH:MM:SSZ'\n")
+		So(err.Error(), ShouldResemble, "error 422 (elemental): Validation Error: Data '12' of attribute 'updatedAt' should be a 'string in format YYYY-MM-DDTHH:MM:SSZ'")
 	})
 
 	Convey("Given I call the method UnmarshalJSON with an empty string for a list of string", t, func() {
@@ -132,7 +132,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'parentType' should be a 'string'\n")
+		So(err.Error(), ShouldResemble, "error 422 (elemental): Validation Error: Data '12' of attribute 'parentType' should be a 'string'")
 	})
 
 	Convey("Given I call the method UnmarshalJSON with an valid list of strings for a list of string", t, func() {
@@ -143,7 +143,7 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'parentType' should be a 'string'\n")
+		So(err.Error(), ShouldResemble, "error 422 (elemental): Validation Error: Data '12' of attribute 'parentType' should be a 'string'")
 	})
 
 	Convey("Given I call the method UnmarshalJSON with an null value for a of string", t, func() {
@@ -154,6 +154,6 @@ func TestUnmarshalJSONWithInvalidKeyAndValueJSON(t *testing.T) {
 		err := UnmarshalJSON(json, server)
 
 		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldResemble, "error 0: error 422 (elemental): Validation Error: Data '12' of attribute 'parentType' should be a 'string'\n")
+		So(err.Error(), ShouldResemble, "error 422 (elemental): Validation Error: Data '12' of attribute 'parentType' should be a 'string'")
 	})
 }
