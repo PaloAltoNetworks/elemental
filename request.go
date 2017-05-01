@@ -23,6 +23,7 @@ type Request struct {
 	Recursive            bool                       `json:"recursive"`
 	Operation            Operation                  `json:"operation"`
 	Identity             Identity                   `json:"identity"`
+	Order                []string                   `json:"order"`
 	ObjectID             string                     `json:"objectID"`
 	ParentIdentity       Identity                   `json:"parentIdentity"`
 	ParentID             string                     `json:"parentID"`
@@ -206,6 +207,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		ExternalTrackingID:   req.Header.Get("X-External-Tracking-ID"),
 		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
 		wireContext:          wireContext,
+		Order:                req.URL.Query()["order"],
 	}, nil
 }
 
@@ -291,6 +293,7 @@ func (r *Request) Duplicate() *Request {
 	req.wireContext = r.wireContext
 	req.ExternalTrackingID = r.ExternalTrackingID
 	req.ExternalTrackingType = r.ExternalTrackingType
+	req.Order = append([]string{}, r.Order...)
 
 	for k, v := range r.Headers {
 		req.Headers[k] = v

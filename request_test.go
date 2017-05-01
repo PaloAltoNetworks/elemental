@@ -285,13 +285,17 @@ func TestRequest_FromHttp(t *testing.T) {
 			Convey("Then the Data should be correct", func() {
 				So(string(r.Data), ShouldEqual, `{"name": "toto"}`)
 			})
+
+			Convey("Then the order should be nil", func() {
+				So(r.Order, ShouldBeNil)
+			})
 		})
 	})
 
 	Convey("Given I have a post http request on /lists", t, func() {
 
 		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
-		req, _ := http.NewRequest(http.MethodPost, "http://server/lists?p=v", buffer)
+		req, _ := http.NewRequest(http.MethodPost, "http://server/lists?p=v&order=name&order=toto", buffer)
 		req.Header.Add("X-Namespace", "ns")
 		req.Header.Add("Authorization", "user pass")
 
@@ -317,6 +321,10 @@ func TestRequest_FromHttp(t *testing.T) {
 
 			Convey("Then the RequestID should not be empty", func() {
 				So(r.RequestID, ShouldNotBeEmpty)
+			})
+
+			Convey("Then the order should be correct", func() {
+				So(r.Order, ShouldResemble, []string{"name", "toto"})
 			})
 
 			Convey("Then the parameters should be correct", func() {
@@ -722,6 +730,7 @@ func TestRequest_Duplicate(t *testing.T) {
 		req.Recursive = true
 		req.Username = "user"
 		req.Version = 12
+		req.Order = []string{"key1", "key2"}
 
 		Convey("When I use Duplicate()", func() {
 
@@ -745,6 +754,7 @@ func TestRequest_Duplicate(t *testing.T) {
 				So(req2.RequestID, ShouldNotEqual, req.RequestID)
 				So(req2.RequestID, ShouldNotEqual, req.RequestID)
 				So(req2.Version, ShouldEqual, req.Version)
+				So(req2.Order, ShouldResemble, req.Order)
 			})
 		})
 	})
