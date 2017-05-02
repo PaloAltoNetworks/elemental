@@ -59,6 +59,7 @@ func (o {{specification.entity_name_plural}}List) List() {{ glob.prefix }}Identi
   return out
 }
 
+// DefaultOrder returns the default ordering fields of the content.
 func (o {{specification.entity_name_plural}}List) DefaultOrder() []string {
 
   return []string{
