@@ -25,6 +25,13 @@ type Identifiable interface {
 	SetIdentifier(string)
 }
 
+// DefaultOrderer is the interface of an object that has default ordering fields.
+type DefaultOrderer interface {
+
+	// Default order returns the keys that can be used for default ordering.
+	DefaultOrder() []string
+}
+
 // An Identity is a structure that contains the necessary information about an Identifiable.
 // The Name is usually the singular form of the Category.
 //

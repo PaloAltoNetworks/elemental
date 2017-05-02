@@ -1,5 +1,5 @@
 {{ header }}
-{% set glob = {'identifier': '', 'prefix': ''} %}
+{% set glob = {'identifier': '', 'prefix': '', 'default_order_keys': []} %}
 package {{ package_name }}
 
 {% if package_name != 'elemental' %}
@@ -7,6 +7,13 @@ import "fmt"
 import "github.com/aporeto-inc/elemental"
 {% set _ = glob.update({'prefix': 'elemental.'}) %}
 {% endif %}
+
+{% for attribute in specification.attributes %}
+{% if attribute.default_order %}
+{% do glob.default_order_keys.append(attribute.name) %}
+{% endif %}
+{% endfor %}
+
 
 import "sync"
 
@@ -50,6 +57,15 @@ func (o {{specification.entity_name_plural}}List) List() {{ glob.prefix }}Identi
   }
 
   return out
+}
+
+func (o {{specification.entity_name_plural}}List) DefaultOrder() []string {
+
+  return []string{
+    {% for key in glob.default_order_keys %}
+    "{{ key }}",
+    {% endfor %}
+  }
 }
 
 {% endif %}
@@ -126,9 +142,19 @@ func (o *{{specification.entity_name}}) SetIdentifier(ID string) {
 }
 
 // Version returns the hardcoded version of the model
-func  (o *{{specification.entity_name}}) Version() float64 {
+func (o *{{specification.entity_name}}) Version() float64 {
 
   return {{ model_version }}
+}
+
+// DefaultOrder returns the list of default ordering fields.
+func (o *{{specification.entity_name}}) DefaultOrder() []string {
+
+  return []string{
+    {% for key in glob.default_order_keys %}
+    "{{ key }}",
+    {% endfor %}
+  }
 }
 
 {% if specification.description %}
