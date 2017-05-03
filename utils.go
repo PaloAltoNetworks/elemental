@@ -68,3 +68,32 @@ func isFieldValueZero(field string, o interface{}) bool {
 		return v.Interface() == reflect.Zero(reflect.TypeOf(v.Interface())).Interface()
 	}
 }
+
+func areFieldsValueEqualValue(f string, obj interface{}, value interface{}) bool {
+	field := reflect.ValueOf(obj).Elem().FieldByName(f)
+
+	if value == nil {
+		return isFieldValueZero(f, obj)
+	}
+
+	v2 := reflect.ValueOf(value)
+
+	// This is to handle time structure whatever their timezone
+	if field.Type() == reflect.ValueOf(time.Now()).Type() {
+		return field.Interface().(time.Time).Unix() == v2.Interface().(time.Time).Unix()
+	}
+
+	if field.Kind() == reflect.Slice || field.Kind() == reflect.Array {
+		if field.Len() != v2.Len() {
+			return false
+		}
+
+		return reflect.DeepEqual(field.Interface(), v2.Interface())
+	}
+
+	if field.Kind() == reflect.Map {
+		return reflect.DeepEqual(field.Interface(), v2.Interface())
+	}
+
+	return field.Interface() == v2.Interface()
+}
