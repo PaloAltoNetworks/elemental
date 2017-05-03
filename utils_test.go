@@ -108,6 +108,124 @@ func TestUtils_areFieldValuesEqual(t *testing.T) {
 	})
 }
 
+func TestUtils_isFieldValueEqualValue(t *testing.T) {
+	Convey("Given I have a struct", t, func() {
+
+		type S struct {
+			S   string
+			B   bool
+			I   int
+			F   float32
+			A   []string
+			M   map[string]string
+			T   time.Time
+			Sub *S
+		}
+
+		Convey("When I set all zero values", func() {
+
+			var t time.Time
+			s := &S{"", false, 0, 0.0, nil, nil, t, &S{}}
+
+			Convey("Then isFieldValueEqualValue on S should return true", func() {
+				So(isFieldValueEqualValue("S", s, ""), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueEqualValue on B should return true", func() {
+				So(isFieldValueEqualValue("B", s, false), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueEqualValue on I should return true", func() {
+				So(isFieldValueEqualValue("I", s, 0), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueEqualValue on F should return true", func() {
+				So(isFieldValueEqualValue("F", s, float32(0.0)), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueEqualValue on A should return true", func() {
+				So(isFieldValueEqualValue("A", s, nil), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueEqualValue on M should return true", func() {
+				So(isFieldValueEqualValue("M", s, nil), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueEqualValue on T should return true", func() {
+				So(isFieldValueEqualValue("T", s, t), ShouldBeTrue)
+			})
+		})
+
+		Convey("When I set all non zero values with equal values", func() {
+
+			t := time.Now()
+			s := &S{"hello", true, 1, 1.0, []string{"a"}, map[string]string{"a": "b"}, t, &S{S: "nope"}}
+
+			Convey("Then isFieldValueEqualValue on S should return true", func() {
+				So(isFieldValueEqualValue("S", s, "hello"), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueEqualValue on B should return true", func() {
+				So(isFieldValueEqualValue("B", s, true), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueEqualValue on I should return true", func() {
+				So(isFieldValueEqualValue("I", s, 1), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueEqualValue on F should return true", func() {
+				So(isFieldValueEqualValue("F", s, float32(1)), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueEqualValue on A should return true", func() {
+				So(isFieldValueEqualValue("A", s, []string{"a"}), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueEqualValue on M should return true", func() {
+				So(isFieldValueEqualValue("M", s, map[string]string{"a": "b"}), ShouldBeTrue)
+			})
+
+			Convey("Then isFieldValueEqualValue on T should return true", func() {
+				So(isFieldValueEqualValue("T", s, t), ShouldBeTrue)
+			})
+		})
+
+		Convey("When I set all non zero values with not equal values", func() {
+
+			s := &S{"hello", true, 1, 1.0, []string{"a"}, map[string]string{"a": "b"}, time.Now(), &S{S: "nope"}}
+
+			Convey("Then isFieldValueEqualValue on S should return false", func() {
+				So(isFieldValueEqualValue("S", s, "hello1"), ShouldBeFalse)
+			})
+
+			Convey("Then isFieldValueEqualValue on B should return false", func() {
+				So(isFieldValueEqualValue("B", s, false), ShouldBeFalse)
+			})
+
+			Convey("Then isFieldValueEqualValue on I should return false", func() {
+				So(isFieldValueEqualValue("I", s, 2), ShouldBeFalse)
+			})
+
+			Convey("Then isFieldValueEqualValue on F should return false", func() {
+				So(isFieldValueEqualValue("F", s, float32(2)), ShouldBeFalse)
+			})
+
+			Convey("Then isFieldValueEqualValue on A should return false", func() {
+				So(isFieldValueEqualValue("A", s, []string{"b"}), ShouldBeFalse)
+				So(isFieldValueEqualValue("A", s, []string{"b", "a"}), ShouldBeFalse)
+			})
+
+			Convey("Then isFieldValueEqualValue on M should return false", func() {
+				So(isFieldValueEqualValue("M", s, map[string]string{"b": "a"}), ShouldBeFalse)
+			})
+
+			Convey("Then isFieldValueEqualValue on T should return false", func() {
+				So(isFieldValueEqualValue("T", s, time.Now()), ShouldBeFalse)
+			})
+		})
+	})
+}
+
 func TestUtils_isFieldValueZero(t *testing.T) {
 
 	Convey("Given I have a struct", t, func() {
