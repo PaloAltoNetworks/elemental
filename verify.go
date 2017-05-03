@@ -25,7 +25,7 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 
 		switch op {
 		case OperationCreate:
-			if spec.ReadOnly && !isFieldValueZero(field, obj) && !isFieldValueEqualValue(field, obj, spec.DefaultValue) {
+			if spec.ReadOnly && !isFieldValueZero(field, obj) && !areFieldsValueEqualValue(field, obj, spec.DefaultValue) {
 				e := NewError(
 					"Read Only Error",
 					fmt.Sprintf("Field %s is read only. You cannot set its value.", spec.Name),

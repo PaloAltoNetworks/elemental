@@ -33,7 +33,7 @@ func areFieldValuesEqual(field string, o1, o2 interface{}) bool {
 
 	// This is to handle time structure whatever their timezone
 	if field1.Type() == reflect.ValueOf(time.Now()).Type() {
-		return field1.Interface().(time.Time).UnixNano() == field2.Interface().(time.Time).UnixNano()
+		return field1.Interface().(time.Time).Unix() == field2.Interface().(time.Time).Unix()
 	}
 
 	if isFieldValueZero(field, o1) && isFieldValueZero(field, o2) {
@@ -69,21 +69,18 @@ func isFieldValueZero(field string, o interface{}) bool {
 	}
 }
 
-func isFieldValueEqualValue(f string, obj interface{}, value interface{}) bool {
+func areFieldsValueEqualValue(f string, obj interface{}, value interface{}) bool {
 	field := reflect.ValueOf(obj).Elem().FieldByName(f)
 
 	if value == nil {
-		if isFieldValueZero(f, obj) {
-			return true
-		}
-		return false
+		return isFieldValueZero(f, obj)
 	}
 
 	v2 := reflect.ValueOf(value)
 
 	// This is to handle time structure whatever their timezone
 	if field.Type() == reflect.ValueOf(time.Now()).Type() {
-		return field.Interface().(time.Time).UnixNano() == v2.Interface().(time.Time).UnixNano()
+		return field.Interface().(time.Time).Unix() == v2.Interface().(time.Time).Unix()
 	}
 
 	if field.Kind() == reflect.Slice || field.Kind() == reflect.Array {
