@@ -21,7 +21,7 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 
 			errs := ValidateAdvancedSpecification(l1, nil, OperationCreate)
 
-			Convey("Then errs should not nil", func() {
+			Convey("Then errs should be nil", func() {
 				So(errs, ShouldBeNil)
 			})
 		})
@@ -36,6 +36,18 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 				So(errs, ShouldNotBeNil)
 				So(len(errs), ShouldEqual, 1)
 				So(errs.Code(), ShouldEqual, http.StatusUnprocessableEntity)
+			})
+		})
+
+		Convey("When I try to set a readonly attribute on a create operation that has the same value as the pristine", func() {
+
+			l1.ReadOnly = "value"
+			l2.ReadOnly = "value"
+
+			errs := ValidateAdvancedSpecification(l1, l2, OperationCreate)
+
+			Convey("Then errs should be nil", func() {
+				So(errs, ShouldBeNil)
 			})
 		})
 
