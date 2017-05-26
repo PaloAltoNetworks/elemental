@@ -22,46 +22,24 @@ func Relationships() {{ glob.prefix }}RelationshipsRegistry {
 func init() {
   relationshipsRegistry = {{ glob.prefix }}RelationshipsRegistry{}
 
-  {% for spec in specifications.values() %}
-  //
-  // Main Relationship for {{spec.rest_name}}
-  //
-  {{spec.entity_name}}MainRelationship := &{{ glob.prefix }}Relationship{
-  {% if spec.allows_get %}
+  {% for rest_name, relation in relationships.iteritems() %}
+  relationshipsRegistry[{{ glob.prefix }}IdentityFromName("{{rest_name}}")] = &{{ glob.prefix }}Relationship{
+    Parents: map[string]bool{
+      {% for parent in relation['parents'] %}
+      "{{parent}}": true,
+      {% endfor %}
+    },
+  {% if relation['allows_create'] %}
+    AllowsCreate: true,
+  {% endif %}
+  {% if relation['allows_update'] and relation['relationship'] == "member" %}
+    AllowsPatch: true,
+  {% endif %}
+  {% if relation['allows_get'] %}
     AllowsRetrieve: true,
-  {% endif %}
-  {% if spec.allows_update %}
-    AllowsUpdate: true,
-  {% endif %}
-  {% if spec.allows_delete %}
-    AllowsDelete: true,
+    AllowsRetrieveMany: true,
+    AllowsInfo: true,
   {% endif %}
   }
-
-  {% for child_api in spec.child_apis %}
-  {% set child_rest_name = child_api.rest_name %}
-  {% set child_spec = specifications[child_rest_name] %}
-  {% set child_resource_name = child_spec.resource_name %}
-  {% set child_entity_name = child_spec.entity_name %}
-
-  // Children relationship for {{child_resource_name}} in {{spec.rest_name}}
-  {{spec.entity_name}}MainRelationship.AddChild(
-    {{ glob.prefix }}IdentityFromName("{{child_rest_name}}"),
-    &{{ glob.prefix }}Relationship{
-    {% if child_api.allows_create %}
-      AllowsCreate: true,
-    {% endif %}
-    {% if child_api.allows_update and child_api.relationship == "member" %}
-      AllowsPatch: true,
-    {% endif %}
-    {% if child_api.allows_get %}
-      AllowsRetrieveMany: true,
-      AllowsInfo: true,
-    {% endif %}
-    },
-  )
-  {% endfor %}
-  relationshipsRegistry[{{ glob.prefix }}IdentityFromName("{{spec.rest_name}}")] = {{spec.entity_name}}MainRelationship
-
   {% endfor %}
 }

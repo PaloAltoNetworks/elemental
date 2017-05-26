@@ -5,7 +5,8 @@ type RelationshipsRegistry map[Identity]*Relationship
 
 // A Relationship describes the hierarchical relationship of the models.
 type Relationship struct {
-	Type string
+	Type    string
+	Parents map[string]bool
 
 	AllowsRetrieve     bool
 	AllowsRetrieveMany bool
@@ -15,18 +16,18 @@ type Relationship struct {
 	AllowsDelete       bool
 	AllowsPatch        bool
 
-	Children RelationshipsRegistry
+	// Children RelationshipsRegistry
 }
 
-// AddChild adds a new child Relationship.
-func (r *Relationship) AddChild(identity Identity, relationship *Relationship) {
-
-	if r.Children == nil {
-		r.Children = RelationshipsRegistry{}
-	}
-
-	r.Children[identity] = relationship
-}
+// // AddChild adds a new child Relationship.
+// func (r *Relationship) AddChild(identity Identity, relationship *Relationship) {
+//
+// 	if r.Children == nil {
+// 		r.Children = RelationshipsRegistry{}
+// 	}
+//
+// 	r.Children[identity] = relationship
+// }
 
 // IsRetrieveAllowed returns true if retrieving the given identity is allowed.
 func IsRetrieveAllowed(registry RelationshipsRegistry, i Identity) bool {
@@ -64,63 +65,43 @@ func IsDeleteAllowed(registry RelationshipsRegistry, i Identity) bool {
 // IsRetrieveManyAllowed returns true if retrieving many children with the given identity under the parentIdentity is allowed.
 func IsRetrieveManyAllowed(registry RelationshipsRegistry, i Identity, pid Identity) bool {
 
-	r, ok := registry[pid]
+	r, ok := registry[i]
 	if !ok {
 		return false
 	}
 
-	cr, ok := r.Children[i]
-	if !ok {
-		return false
-	}
-
-	return cr.AllowsRetrieveMany
+	return r.Parents[pid.Name] && r.AllowsRetrieveMany
 }
 
 // IsInfoAllowed returns true if retrieving info on children with the given identity under the parentIdentity is allowed.
 func IsInfoAllowed(registry RelationshipsRegistry, i Identity, pid Identity) bool {
 
-	r, ok := registry[pid]
+	r, ok := registry[i]
 	if !ok {
 		return false
 	}
 
-	cr, ok := r.Children[i]
-	if !ok {
-		return false
-	}
-
-	return cr.AllowsInfo
+	return r.Parents[pid.Name] && r.AllowsInfo
 }
 
 // IsPatchAllowed returns true if patching children with the given identity under the parentIdentity is allowed.
 func IsPatchAllowed(registry RelationshipsRegistry, i Identity, pid Identity) bool {
 
-	r, ok := registry[pid]
+	r, ok := registry[i]
 	if !ok {
 		return false
 	}
 
-	cr, ok := r.Children[i]
-	if !ok {
-		return false
-	}
-
-	return cr.AllowsPatch
+	return r.Parents[pid.Name] && r.AllowsPatch
 }
 
 // IsCreateAllowed returns true if creating the given identity under the parentIdentity is allowed.
 func IsCreateAllowed(registry RelationshipsRegistry, i Identity, pid Identity) bool {
 
-	r, ok := registry[pid]
+	r, ok := registry[i]
 	if !ok {
 		return false
 	}
 
-	cr, ok := r.Children[i]
-	if !ok {
-		return false
-	}
-
-	return cr.AllowsCreate
+	return r.Parents[pid.Name] && r.AllowsCreate
 }

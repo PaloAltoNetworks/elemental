@@ -38,8 +38,47 @@ class APIVersionWriter(TemplateFileWriter):
         task_manager.wait_until_exit()
 
         self._write_registry(specifications=specifications)
-        self._write_relationships(specifications=specifications)
+
+        relationships = {}
+
+        # Compute relations to create an inversed registry
+        for rest_name, specification in specifications.items():
+            self.add_relation(relationships=relationships, specification=specification)
+
+            for child_api in specification.child_apis:
+                child_specification = specifications[child_api.rest_name]
+                self.add_relation(relationships, child_specification, specification, child_api.relationship)
+
+        self._write_relationships(relationships=relationships)
         self._format()
+
+    def add_relation(self, relationships, specification, from_parent_specification=None, child_relationship=''):
+        """Add specification in relations registry"""
+        if specification.rest_name not in relationships:
+            # Add with default values
+            relationships[specification.rest_name] = {
+                'allows_get': specification.allows_get,
+                'allows_update': specification.allows_update,
+                'allows_delete': specification.allows_delete,
+                'parents': [] if from_parent_specification is None else [from_parent_specification.rest_name],
+                'relationship': child_relationship
+            }
+        else:
+            # Relation already exists, so we update it
+            if not relationships[specification.rest_name]['allows_get'] and specification.allows_get:
+                relationships[specification.rest_name]['allows_get'] = specification.allows_get
+
+            if not relationships[specification.rest_name]['allows_update'] and specification.allows_update:
+                relationships[specification.rest_name]['allows_update'] = specification.allows_update
+
+            if not relationships[specification.rest_name]['allows_delete'] and specification.allows_delete:
+                relationships[specification.rest_name]['allows_delete'] = specification.allows_delete
+
+            if from_parent_specification is not None and from_parent_specification.rest_name not in relationships[specification.rest_name]['parents']:
+                relationships[specification.rest_name]['parents'].append(from_parent_specification.rest_name)
+
+            if child_relationship is not '' and relationships[specification.rest_name]['relationship'] == "":
+                relationships[specification.rest_name]['relationship'] = child_relationship
 
     def _write_model(self, specification, specification_set):
         """
@@ -66,12 +105,12 @@ class APIVersionWriter(TemplateFileWriter):
                    header=self.header_content,
                    model_version=self.api_info["version"])
 
-    def _write_relationships(self, specifications):
+    def _write_relationships(self, relationships):
         """
         """
         filename = 'relationships_registry.go'
         self.write(destination=self.output_directory, filename=filename, template_name="relationships_registry.go.tpl",
-                   specifications=specifications,
+                   relationships=relationships,
                    package_name=self.name,
                    header=self.header_content)
 
