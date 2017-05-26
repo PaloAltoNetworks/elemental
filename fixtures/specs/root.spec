@@ -29,7 +29,7 @@
     "model": {
         "create": false,
         "delete": false,
-        "description": "Root object of the APIh",
+        "description": "Root object of the API",
         "entity_name": "Root",
         "extends": [
           "@base"
