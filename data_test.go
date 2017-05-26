@@ -21,7 +21,7 @@ func (o ListsList) ContentIdentity() Identity {
 	return ListIdentity
 }
 
-// List converts the object to and IdentifiablesList.
+// List converts the object to an IdentifiablesList.
 func (o ListsList) List() IdentifiablesList {
 
 	out := IdentifiablesList{}
@@ -385,7 +385,7 @@ func (o TasksList) ContentIdentity() Identity {
 	return TaskIdentity
 }
 
-// List converts the object to and IdentifiablesList.
+// List converts the object to an IdentifiablesList.
 func (o TasksList) List() IdentifiablesList {
 
 	out := IdentifiablesList{}
@@ -765,7 +765,7 @@ func (o UsersList) ContentIdentity() Identity {
 	return UserIdentity
 }
 
-// List converts the object to and IdentifiablesList.
+// List converts the object to an IdentifiablesList.
 func (o UsersList) List() IdentifiablesList {
 
 	out := IdentifiablesList{}
@@ -1005,35 +1005,72 @@ func init() {
 	relationshipsRegistry = RelationshipsRegistry{}
 
 	relationshipsRegistry[IdentityFromName("list")] = &Relationship{
-		Parents: map[string]bool{
+		AllowsCreate: map[string]bool{
 			"root": true,
 		},
-		AllowsRetrieve:     true,
-		AllowsRetrieveMany: true,
-		AllowsInfo:         true,
+		AllowsUpdate: map[string]bool{
+			"root": true,
+		},
+		AllowsDelete: map[string]bool{
+			"root": true,
+		},
+		AllowsRetrieve: map[string]bool{
+			"root": true,
+		},
+		AllowsRetrieveMany: map[string]bool{
+			"root": true,
+		},
+		AllowsInfo: map[string]bool{
+			"root": true,
+		},
 	}
 	relationshipsRegistry[IdentityFromName("task")] = &Relationship{
-		Parents: map[string]bool{
+		AllowsCreate: map[string]bool{
 			"list": true,
 		},
-		AllowsRetrieve:     true,
-		AllowsRetrieveMany: true,
-		AllowsInfo:         true,
+		AllowsUpdate: map[string]bool{
+			"root": true,
+		},
+		AllowsDelete: map[string]bool{
+			"root": true,
+		},
+		AllowsRetrieve: map[string]bool{
+			"list": true,
+			"root": true,
+		},
+		AllowsRetrieveMany: map[string]bool{
+			"list": true,
+			"root": true,
+		},
+		AllowsInfo: map[string]bool{
+			"list": true,
+			"root": true,
+		},
 	}
-	relationshipsRegistry[IdentityFromName("root")] = &Relationship{
-		Parents:            map[string]bool{},
-		AllowsRetrieve:     true,
-		AllowsRetrieveMany: true,
-		AllowsInfo:         true,
-	}
+	relationshipsRegistry[IdentityFromName("root")] = &Relationship{}
 	relationshipsRegistry[IdentityFromName("user")] = &Relationship{
-		Parents: map[string]bool{
+		AllowsCreate: map[string]bool{
+			"root": true,
+		},
+		AllowsUpdate: map[string]bool{
 			"root": true,
 			"list": true,
 		},
-		AllowsRetrieve:     true,
-		AllowsRetrieveMany: true,
-		AllowsInfo:         true,
+		AllowsDelete: map[string]bool{
+			"root": true,
+		},
+		AllowsRetrieve: map[string]bool{
+			"list": true,
+			"root": true,
+		},
+		AllowsRetrieveMany: map[string]bool{
+			"list": true,
+			"root": true,
+		},
+		AllowsInfo: map[string]bool{
+			"list": true,
+			"root": true,
+		},
 	}
 }
 func init() {

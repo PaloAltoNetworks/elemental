@@ -33,7 +33,9 @@ func TestRelationship_IsRetrieveAllowed(t *testing.T) {
 
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{
-				AllowsRetrieve: true,
+				AllowsRetrieve: map[string]bool{
+					RootIdentity.Name: true,
+				},
 			},
 		}
 
@@ -84,7 +86,9 @@ func TestRelationship_IsUpdateAllowed(t *testing.T) {
 
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{
-				AllowsUpdate: true,
+				AllowsUpdate: map[string]bool{
+					RootIdentity.Name: true,
+				},
 			},
 		}
 
@@ -135,7 +139,9 @@ func TestRelationship_IsDeleteAllowed(t *testing.T) {
 
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{
-				AllowsDelete: true,
+				AllowsDelete: map[string]bool{
+					RootIdentity.Name: true,
+				},
 			},
 		}
 
@@ -187,8 +193,7 @@ func TestRelationship_IsRetrieveManyAllowed(t *testing.T) {
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
-				AllowsRetrieveMany: true,
-				Parents: map[string]bool{
+				AllowsRetrieveMany: map[string]bool{
 					ListIdentity.Name: true,
 				},
 			},
@@ -209,30 +214,7 @@ func TestRelationship_IsRetrieveManyAllowed(t *testing.T) {
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
-				AllowsRetrieveMany: false,
-				Parents: map[string]bool{
-					ListIdentity.Name: true,
-				},
-			},
-		}
-
-		Convey("When I call IsRetrieveManyAllowed", func() {
-
-			ok := IsRetrieveManyAllowed(registry, TaskIdentity, ListIdentity)
-
-			Convey("Then retrieve should not be ok", func() {
-				So(ok, ShouldBeFalse)
-			})
-		})
-	})
-
-	Convey("Given I have some relationships that don't allows retrieveMany on requested parent", t, func() {
-
-		registry := RelationshipsRegistry{
-			ListIdentity: &Relationship{},
-			TaskIdentity: &Relationship{
-				AllowsRetrieveMany: true,
-				Parents:            map[string]bool{},
+				AllowsRetrieveMany: map[string]bool{},
 			},
 		}
 
@@ -284,8 +266,7 @@ func TestRelationship_IsInfoAllowed(t *testing.T) {
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
-				AllowsInfo: true,
-				Parents: map[string]bool{
+				AllowsInfo: map[string]bool{
 					ListIdentity.Name: true,
 				},
 			},
@@ -306,30 +287,7 @@ func TestRelationship_IsInfoAllowed(t *testing.T) {
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
-				AllowsInfo: false,
-				Parents: map[string]bool{
-					ListIdentity.Name: true,
-				},
-			},
-		}
-
-		Convey("When I call IsInfoAllowed", func() {
-
-			ok := IsInfoAllowed(registry, TaskIdentity, ListIdentity)
-
-			Convey("Then retrieve should not be ok", func() {
-				So(ok, ShouldBeFalse)
-			})
-		})
-	})
-
-	Convey("Given I have some relationships that don't allows info on requested parent", t, func() {
-
-		registry := RelationshipsRegistry{
-			ListIdentity: &Relationship{},
-			TaskIdentity: &Relationship{
-				AllowsInfo: true,
-				Parents:    map[string]bool{},
+				AllowsInfo: map[string]bool{},
 			},
 		}
 
@@ -381,8 +339,7 @@ func TestRelationship_IsPatchAllowed(t *testing.T) {
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
-				AllowsPatch: true,
-				Parents: map[string]bool{
+				AllowsPatch: map[string]bool{
 					ListIdentity.Name: true,
 				},
 			},
@@ -403,30 +360,7 @@ func TestRelationship_IsPatchAllowed(t *testing.T) {
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
-				AllowsPatch: false,
-				Parents: map[string]bool{
-					ListIdentity.Name: true,
-				},
-			},
-		}
-
-		Convey("When I call IsPatchAllowed", func() {
-
-			ok := IsPatchAllowed(registry, TaskIdentity, ListIdentity)
-
-			Convey("Then retrieve should not be ok", func() {
-				So(ok, ShouldBeFalse)
-			})
-		})
-	})
-
-	Convey("Given I have some relationships that don't allows patch on requested parent", t, func() {
-
-		registry := RelationshipsRegistry{
-			ListIdentity: &Relationship{},
-			TaskIdentity: &Relationship{
-				AllowsPatch: true,
-				Parents:     map[string]bool{},
+				AllowsPatch: map[string]bool{},
 			},
 		}
 
@@ -478,8 +412,7 @@ func TestRelationship_IsCreateAllowed(t *testing.T) {
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
-				AllowsCreate: true,
-				Parents: map[string]bool{
+				AllowsCreate: map[string]bool{
 					ListIdentity.Name: true,
 				},
 			},
@@ -500,30 +433,7 @@ func TestRelationship_IsCreateAllowed(t *testing.T) {
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
-				AllowsCreate: false,
-				Parents: map[string]bool{
-					ListIdentity.Name: true,
-				},
-			},
-		}
-
-		Convey("When I call IsCreateAllowed", func() {
-
-			ok := IsCreateAllowed(registry, TaskIdentity, ListIdentity)
-
-			Convey("Then retrieve should not be ok", func() {
-				So(ok, ShouldBeFalse)
-			})
-		})
-	})
-
-	Convey("Given I have some relationships that don't allows create on requested parent", t, func() {
-
-		registry := RelationshipsRegistry{
-			ListIdentity: &Relationship{},
-			TaskIdentity: &Relationship{
-				AllowsCreate: true,
-				Parents:      map[string]bool{},
+				AllowsCreate: map[string]bool{},
 			},
 		}
 

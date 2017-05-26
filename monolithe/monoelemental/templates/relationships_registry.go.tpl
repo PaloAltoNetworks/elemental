@@ -24,27 +24,50 @@ func init() {
 
   {% for rest_name, relation in relationships.iteritems() %}
   relationshipsRegistry[{{ glob.prefix }}IdentityFromName("{{rest_name}}")] = &{{ glob.prefix }}Relationship{
-    Parents: map[string]bool{
-      {% for parent in relation['parents'] %}
-      "{{parent}}": true,
+  {% if relation['allows_create']|length > 0 %}
+    AllowsCreate: map[string]bool {
+      {% for parent in relation['allows_create'] %}
+      "{{parent}}" : true,
       {% endfor %}
     },
-  {% if relation['allows_create'] %}
-    AllowsCreate: true,
   {% endif %}
-  {% if relation['allows_update'] %}
-    AllowsUpdate: true,
+  {% if relation['allows_update']|length > 0 %}
+    AllowsUpdate: map[string]bool {
+      {% for parent in relation['allows_update'] %}
+      "{{parent}}" : true,
+      {% endfor %}
+    },
+    {% if relation['relationships'] == "member" %}
+    AllowsPatch: map[string]bool {
+      {% for parent in relation['allows_update'] %}
+      "{{parent}}" : true,
+      {% endfor %}
+    },
+    {% endif %}
   {% endif %}
-  {% if relation['allows_delete'] %}
-    AllowsDelete: true,
+  {% if relation['allows_delete']|length > 0 %}
+    AllowsDelete: map[string]bool {
+      {% for parent in relation['allows_delete'] %}
+      "{{parent}}" : true,
+      {% endfor %}
+    },
   {% endif %}
-  {% if relation['allows_update'] and relation['relationship'] == "member" %}
-    AllowsPatch: true,
-  {% endif %}
-  {% if relation['allows_get'] %}
-    AllowsRetrieve: true,
-    AllowsRetrieveMany: true,
-    AllowsInfo: true,
+  {% if relation['allows_get']|length > 0 %}
+    AllowsRetrieve: map[string]bool {
+      {% for parent in relation['allows_get'] %}
+      "{{parent}}" : true,
+      {% endfor %}
+    },
+    AllowsRetrieveMany: map[string]bool {
+      {% for parent in relation['allows_get'] %}
+      "{{parent}}" : true,
+      {% endfor %}
+    },
+    AllowsInfo: map[string]bool {
+      {% for parent in relation['allows_get'] %}
+      "{{parent}}" : true,
+      {% endfor %}
+    },
   {% endif %}
   }
   {% endfor %}
