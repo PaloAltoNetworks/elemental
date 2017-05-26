@@ -49,7 +49,7 @@ func (o {{specification.entity_name_plural}}List) ContentIdentity() {{ glob.pref
   return {{specification.entity_name}}Identity
 }
 
-// List converts the object to and {{ glob.prefix }}IdentifiablesList.
+// List converts the object to an {{ glob.prefix }}IdentifiablesList.
 func (o {{specification.entity_name_plural}}List) List() {{ glob.prefix }}IdentifiablesList {
 
   out := {{ glob.prefix }}IdentifiablesList{}
