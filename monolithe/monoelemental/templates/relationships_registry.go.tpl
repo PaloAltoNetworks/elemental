@@ -32,6 +32,12 @@ func init() {
   {% if relation['allows_create'] %}
     AllowsCreate: true,
   {% endif %}
+  {% if relation['allows_update'] %}
+    AllowsUpdate: true,
+  {% endif %}
+  {% if relation['allows_delete'] %}
+    AllowsDelete: true,
+  {% endif %}
   {% if relation['allows_update'] and relation['relationship'] == "member" %}
     AllowsPatch: true,
   {% endif %}

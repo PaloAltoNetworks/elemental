@@ -60,6 +60,7 @@ class APIVersionWriter(TemplateFileWriter):
                 'allows_get': specification.allows_get,
                 'allows_update': specification.allows_update,
                 'allows_delete': specification.allows_delete,
+                'allows_create': specification.allows_create,
                 'parents': [] if from_parent_specification is None else [from_parent_specification.rest_name],
                 'relationship': child_relationship
             }
@@ -70,6 +71,9 @@ class APIVersionWriter(TemplateFileWriter):
 
             if not relationships[specification.rest_name]['allows_update'] and specification.allows_update:
                 relationships[specification.rest_name]['allows_update'] = specification.allows_update
+
+            if not relationships[specification.rest_name]['allows_create'] and specification.allows_create:
+                relationships[specification.rest_name]['allows_create'] = specification.allows_create
 
             if not relationships[specification.rest_name]['allows_delete'] and specification.allows_delete:
                 relationships[specification.rest_name]['allows_delete'] = specification.allows_delete
