@@ -655,7 +655,7 @@ func (o *Root) DefaultOrder() []string {
 
 // Doc returns the documentation for the object
 func (o *Root) Doc() string {
-	return `Root object of the APIh`
+	return `Root object of the API`
 }
 
 func (o *Root) String() string {
@@ -991,7 +991,7 @@ var UserAttributesMap = map[string]AttributeSpecification{
 	},
 }
 
-const nodocString = "[nodoc]"
+const nodocString = "[nodoc]" // nolint: varcheck
 
 var relationshipsRegistry RelationshipsRegistry
 
