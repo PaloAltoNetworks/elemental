@@ -43,11 +43,9 @@ class APIVersionWriter(TemplateFileWriter):
 
         # Compute relations to create an inversed registry
         for rest_name, specification in specifications.items():
-            print "+ %s" % rest_name
             self.add_relation(relationships=relationships, specification=specification)
 
             for child_api in specification.child_apis:
-                print "+ >>> %s" % child_api.rest_name
                 # child_specification = specifications[child_api.rest_name]
                 self.add_relation(relationships, child_api, specification.rest_name, child_api.relationship)
 
