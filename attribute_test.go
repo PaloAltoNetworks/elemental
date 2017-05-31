@@ -12,15 +12,6 @@ import (
 
 func TestAttribute_Interface(t *testing.T) {
 
-	Convey("Given I create a new List", t, func() {
-
-		l := List{}
-
-		Convey("Then the list should implement the AttributeSpecifiable interface", func() {
-			So(l, ShouldImplement, (*AttributeSpecifiable)(nil))
-		})
-	})
-
 	Convey("Given I create a new *List", t, func() {
 
 		l := NewList()

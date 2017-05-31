@@ -5,6 +5,7 @@
 package elemental
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -21,8 +22,10 @@ func TestUtils_extractFieldNames(t *testing.T) {
 
 			fields := extractFieldNames(l1)
 
+			fmt.Println(fields)
+
 			Convey("Then all fields should be present", func() {
-				So(len(fields), ShouldEqual, 11)
+				So(len(fields), ShouldEqual, 12)
 				So(fields, ShouldContain, "ID")
 				So(fields, ShouldContain, "Description")
 				So(fields, ShouldContain, "Name")
@@ -34,6 +37,7 @@ func TestUtils_extractFieldNames(t *testing.T) {
 				So(fields, ShouldContain, "Date")
 				So(fields, ShouldContain, "Slice")
 				So(fields, ShouldContain, "ModelVersion")
+				So(fields, ShouldContain, "Mutex")
 			})
 		})
 	})

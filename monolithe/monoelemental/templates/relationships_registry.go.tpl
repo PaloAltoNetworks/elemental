@@ -8,7 +8,7 @@ import "github.com/aporeto-inc/elemental"
 {% set _ = glob.update({'prefix': 'elemental.'}) %}
 {% endif %}
 
-const nodocString = "[nodoc]"
+const nodocString = "[nodoc]" // nolint: varcheck
 
 var relationshipsRegistry {{ glob.prefix }}RelationshipsRegistry
 
@@ -22,46 +22,53 @@ func Relationships() {{ glob.prefix }}RelationshipsRegistry {
 func init() {
   relationshipsRegistry = {{ glob.prefix }}RelationshipsRegistry{}
 
-  {% for spec in specifications.values() %}
-  //
-  // Main Relationship for {{spec.rest_name}}
-  //
-  {{spec.entity_name}}MainRelationship := &{{ glob.prefix }}Relationship{
-  {% if spec.allows_get %}
-    AllowsRetrieve: true,
+  {% for rest_name, relation in relationships.iteritems() %}
+  relationshipsRegistry[{{ glob.prefix }}IdentityFromName("{{rest_name}}")] = &{{ glob.prefix }}Relationship{
+  {% if relation['allows_create']|length > 0 %}
+    AllowsCreate: map[string]bool {
+      {% for parent in relation['allows_create'] %}
+      "{{parent}}" : true,
+      {% endfor %}
+    },
   {% endif %}
-  {% if spec.allows_update %}
-    AllowsUpdate: true,
+  {% if relation['allows_update']|length > 0 %}
+    AllowsUpdate: map[string]bool {
+      {% for parent in relation['allows_update'] %}
+      "{{parent}}" : true,
+      {% endfor %}
+    },
+    {% if relation['relationships'] == "member" %}
+    AllowsPatch: map[string]bool {
+      {% for parent in relation['allows_update'] %}
+      "{{parent}}" : true,
+      {% endfor %}
+    },
+    {% endif %}
   {% endif %}
-  {% if spec.allows_delete %}
-    AllowsDelete: true,
+  {% if relation['allows_delete']|length > 0 %}
+    AllowsDelete: map[string]bool {
+      {% for parent in relation['allows_delete'] %}
+      "{{parent}}" : true,
+      {% endfor %}
+    },
+  {% endif %}
+  {% if relation['allows_get']|length > 0 %}
+    AllowsRetrieve: map[string]bool {
+      {% for parent in relation['allows_get'] %}
+      "{{parent}}" : true,
+      {% endfor %}
+    },
+    AllowsRetrieveMany: map[string]bool {
+      {% for parent in relation['allows_get'] %}
+      "{{parent}}" : true,
+      {% endfor %}
+    },
+    AllowsInfo: map[string]bool {
+      {% for parent in relation['allows_get'] %}
+      "{{parent}}" : true,
+      {% endfor %}
+    },
   {% endif %}
   }
-
-  {% for child_api in spec.child_apis %}
-  {% set child_rest_name = child_api.rest_name %}
-  {% set child_spec = specifications[child_rest_name] %}
-  {% set child_resource_name = child_spec.resource_name %}
-  {% set child_entity_name = child_spec.entity_name %}
-
-  // Children relationship for {{child_resource_name}} in {{spec.rest_name}}
-  {{spec.entity_name}}MainRelationship.AddChild(
-    {{ glob.prefix }}IdentityFromName("{{child_rest_name}}"),
-    &{{ glob.prefix }}Relationship{
-    {% if child_api.allows_create %}
-      AllowsCreate: true,
-    {% endif %}
-    {% if child_api.allows_update and child_api.relationship == "member" %}
-      AllowsPatch: true,
-    {% endif %}
-    {% if child_api.allows_get %}
-      AllowsRetrieveMany: true,
-      AllowsInfo: true,
-    {% endif %}
-    },
-  )
-  {% endfor %}
-  relationshipsRegistry[{{ glob.prefix }}IdentityFromName("{{spec.rest_name}}")] = {{spec.entity_name}}MainRelationship
-
   {% endfor %}
 }

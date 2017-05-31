@@ -2,6 +2,7 @@ package elemental
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
@@ -16,10 +17,11 @@ type ListsList []*List
 
 // ContentIdentity returns the identity of the objects in the list.
 func (o ListsList) ContentIdentity() Identity {
+
 	return ListIdentity
 }
 
-// List convert the object to and IdentifiablesList.
+// List converts the object to an IdentifiablesList.
 func (o ListsList) List() IdentifiablesList {
 
 	out := IdentifiablesList{}
@@ -28,6 +30,12 @@ func (o ListsList) List() IdentifiablesList {
 	}
 
 	return out
+}
+
+// DefaultOrder returns the default ordering fields of the content.
+func (o ListsList) DefaultOrder() []string {
+
+	return []string{}
 }
 
 // List represents the model of a list
@@ -63,6 +71,8 @@ type List struct {
 	Unexposed string `json:"-" bson:"unexposed"`
 
 	ModelVersion float64 `json:"-" bson:"_modelversion"`
+
+	sync.Mutex
 }
 
 // NewList returns a new *List
@@ -95,6 +105,17 @@ func (o *List) SetIdentifier(ID string) {
 func (o *List) Version() float64 {
 
 	return 1.0
+}
+
+// DefaultOrder returns the list of default ordering fields.
+func (o *List) DefaultOrder() []string {
+
+	return []string{}
+}
+
+// Doc returns the documentation for the object
+func (o *List) Doc() string {
+	return `Represent a a list of task to do.`
 }
 
 func (o *List) String() string {
@@ -179,13 +200,13 @@ func (o *List) Validate() error {
 }
 
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
-func (List) SpecificationForAttribute(name string) AttributeSpecification {
+func (*List) SpecificationForAttribute(name string) AttributeSpecification {
 
 	return ListAttributesMap[name]
 }
 
 // AttributeSpecifications returns the full attribute specifications map.
-func (List) AttributeSpecifications() map[string]AttributeSpecification {
+func (*List) AttributeSpecifications() map[string]AttributeSpecification {
 
 	return ListAttributesMap
 }
@@ -360,10 +381,11 @@ type TasksList []*Task
 
 // ContentIdentity returns the identity of the objects in the list.
 func (o TasksList) ContentIdentity() Identity {
+
 	return TaskIdentity
 }
 
-// List convert the object to and IdentifiablesList.
+// List converts the object to an IdentifiablesList.
 func (o TasksList) List() IdentifiablesList {
 
 	out := IdentifiablesList{}
@@ -372,6 +394,12 @@ func (o TasksList) List() IdentifiablesList {
 	}
 
 	return out
+}
+
+// DefaultOrder returns the default ordering fields of the content.
+func (o TasksList) DefaultOrder() []string {
+
+	return []string{}
 }
 
 // Task represents the model of a task
@@ -395,6 +423,8 @@ type Task struct {
 	Status TaskStatusValue `json:"status" bson:"status"`
 
 	ModelVersion float64 `json:"-" bson:"_modelversion"`
+
+	sync.Mutex
 }
 
 // NewTask returns a new *Task
@@ -428,6 +458,17 @@ func (o *Task) SetIdentifier(ID string) {
 func (o *Task) Version() float64 {
 
 	return 1.0
+}
+
+// DefaultOrder returns the list of default ordering fields.
+func (o *Task) DefaultOrder() []string {
+
+	return []string{}
+}
+
+// Doc returns the documentation for the object
+func (o *Task) Doc() string {
+	return `Represent a task to do in a listd`
 }
 
 func (o *Task) String() string {
@@ -465,13 +506,13 @@ func (o *Task) Validate() error {
 }
 
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
-func (Task) SpecificationForAttribute(name string) AttributeSpecification {
+func (*Task) SpecificationForAttribute(name string) AttributeSpecification {
 
 	return TaskAttributesMap[name]
 }
 
 // AttributeSpecifications returns the full attribute specifications map.
-func (Task) AttributeSpecifications() map[string]AttributeSpecification {
+func (*Task) AttributeSpecifications() map[string]AttributeSpecification {
 
 	return TaskAttributesMap
 }
@@ -570,6 +611,8 @@ type Root struct {
 	Token        string  `json:"APIKey,omitempty"`
 	Organization string  `json:"enterprise,omitempty"`
 	ModelVersion float64 `json:"-" bson:"_modelversion"`
+
+	sync.Mutex
 }
 
 // NewRoot returns a new *Root
@@ -602,6 +645,17 @@ func (o *Root) SetIdentifier(ID string) {
 func (o *Root) Version() float64 {
 
 	return 1.0
+}
+
+// DefaultOrder returns the list of default ordering fields.
+func (o *Root) DefaultOrder() []string {
+
+	return []string{}
+}
+
+// Doc returns the documentation for the object
+func (o *Root) Doc() string {
+	return `Root object of the API`
 }
 
 func (o *Root) String() string {
@@ -639,13 +693,13 @@ func (o *Root) SetAPIKey(key string) {
 }
 
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
-func (Root) SpecificationForAttribute(name string) AttributeSpecification {
+func (*Root) SpecificationForAttribute(name string) AttributeSpecification {
 
 	return RootAttributesMap[name]
 }
 
 // AttributeSpecifications returns the full attribute specifications map.
-func (Root) AttributeSpecifications() map[string]AttributeSpecification {
+func (*Root) AttributeSpecifications() map[string]AttributeSpecification {
 
 	return RootAttributesMap
 }
@@ -707,10 +761,11 @@ type UsersList []*User
 
 // ContentIdentity returns the identity of the objects in the list.
 func (o UsersList) ContentIdentity() Identity {
+
 	return UserIdentity
 }
 
-// List convert the object to and IdentifiablesList.
+// List converts the object to an IdentifiablesList.
 func (o UsersList) List() IdentifiablesList {
 
 	out := IdentifiablesList{}
@@ -719,6 +774,12 @@ func (o UsersList) List() IdentifiablesList {
 	}
 
 	return out
+}
+
+// DefaultOrder returns the default ordering fields of the content.
+func (o UsersList) DefaultOrder() []string {
+
+	return []string{}
 }
 
 // User represents the model of a user
@@ -742,6 +803,8 @@ type User struct {
 	UserName string `json:"userName" bson:"username"`
 
 	ModelVersion float64 `json:"-" bson:"_modelversion"`
+
+	sync.Mutex
 }
 
 // NewUser returns a new *User
@@ -774,6 +837,17 @@ func (o *User) SetIdentifier(ID string) {
 func (o *User) Version() float64 {
 
 	return 1.0
+}
+
+// DefaultOrder returns the list of default ordering fields.
+func (o *User) DefaultOrder() []string {
+
+	return []string{}
+}
+
+// Doc returns the documentation for the object
+func (o *User) Doc() string {
+	return `Represent a user.`
 }
 
 func (o *User) String() string {
@@ -823,13 +897,13 @@ func (o *User) Validate() error {
 }
 
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
-func (User) SpecificationForAttribute(name string) AttributeSpecification {
+func (*User) SpecificationForAttribute(name string) AttributeSpecification {
 
 	return UserAttributesMap[name]
 }
 
 // AttributeSpecifications returns the full attribute specifications map.
-func (User) AttributeSpecifications() map[string]AttributeSpecification {
+func (*User) AttributeSpecifications() map[string]AttributeSpecification {
 
 	return UserAttributesMap
 }
@@ -916,6 +990,9 @@ var UserAttributesMap = map[string]AttributeSpecification{
 		Unique:         true,
 	},
 }
+
+const nodocString = "[nodoc]" // nolint: varcheck
+
 var relationshipsRegistry RelationshipsRegistry
 
 // Relationships returns the model relationships.
@@ -927,86 +1004,74 @@ func Relationships() RelationshipsRegistry {
 func init() {
 	relationshipsRegistry = RelationshipsRegistry{}
 
-	//
-	// Main Relationship for root
-	//
-	RootMainRelationship := &Relationship{
-		AllowsRetrieve: true,
-	}
-
-	// Children relationship for lists in root
-	RootMainRelationship.AddChild(
-		IdentityFromName("list"),
-		&Relationship{
-			AllowsCreate:       true,
-			AllowsRetrieveMany: true,
-			AllowsInfo:         true,
+	relationshipsRegistry[IdentityFromName("list")] = &Relationship{
+		AllowsCreate: map[string]bool{
+			"root": true,
 		},
-	)
-	// Children relationship for users in root
-	RootMainRelationship.AddChild(
-		IdentityFromName("user"),
-		&Relationship{
-			AllowsCreate:       true,
-			AllowsRetrieveMany: true,
-			AllowsInfo:         true,
+		AllowsUpdate: map[string]bool{
+			"root": true,
 		},
-	)
-
-	relationshipsRegistry[IdentityFromName("root")] = RootMainRelationship
-
-	//
-	// Main Relationship for task
-	//
-	TaskMainRelationship := &Relationship{
-		AllowsRetrieve: true,
-		AllowsUpdate:   true,
-		AllowsDelete:   true,
-	}
-
-	relationshipsRegistry[IdentityFromName("task")] = TaskMainRelationship
-
-	//
-	// Main Relationship for list
-	//
-	ListMainRelationship := &Relationship{
-		AllowsRetrieve: true,
-		AllowsUpdate:   true,
-		AllowsDelete:   true,
-	}
-
-	// Children relationship for tasks in list
-	ListMainRelationship.AddChild(
-		IdentityFromName("task"),
-		&Relationship{
-			AllowsCreate:       true,
-			AllowsRetrieveMany: true,
-			AllowsInfo:         true,
+		AllowsDelete: map[string]bool{
+			"root": true,
 		},
-	)
-	// Children relationship for users in list
-	ListMainRelationship.AddChild(
-		IdentityFromName("user"),
-		&Relationship{
-			AllowsPatch:        true,
-			AllowsRetrieveMany: true,
-			AllowsInfo:         true,
+		AllowsRetrieve: map[string]bool{
+			"root": true,
 		},
-	)
-
-	relationshipsRegistry[IdentityFromName("list")] = ListMainRelationship
-
-	//
-	// Main Relationship for user
-	//
-	UserMainRelationship := &Relationship{
-		AllowsRetrieve: true,
-		AllowsUpdate:   true,
-		AllowsDelete:   true,
+		AllowsRetrieveMany: map[string]bool{
+			"root": true,
+		},
+		AllowsInfo: map[string]bool{
+			"root": true,
+		},
 	}
-
-	relationshipsRegistry[IdentityFromName("user")] = UserMainRelationship
-
+	relationshipsRegistry[IdentityFromName("task")] = &Relationship{
+		AllowsCreate: map[string]bool{
+			"list": true,
+		},
+		AllowsUpdate: map[string]bool{
+			"root": true,
+		},
+		AllowsDelete: map[string]bool{
+			"root": true,
+		},
+		AllowsRetrieve: map[string]bool{
+			"list": true,
+			"root": true,
+		},
+		AllowsRetrieveMany: map[string]bool{
+			"list": true,
+			"root": true,
+		},
+		AllowsInfo: map[string]bool{
+			"list": true,
+			"root": true,
+		},
+	}
+	relationshipsRegistry[IdentityFromName("root")] = &Relationship{}
+	relationshipsRegistry[IdentityFromName("user")] = &Relationship{
+		AllowsCreate: map[string]bool{
+			"root": true,
+		},
+		AllowsUpdate: map[string]bool{
+			"root": true,
+			"list": true,
+		},
+		AllowsDelete: map[string]bool{
+			"root": true,
+		},
+		AllowsRetrieve: map[string]bool{
+			"list": true,
+			"root": true,
+		},
+		AllowsRetrieveMany: map[string]bool{
+			"list": true,
+			"root": true,
+		},
+		AllowsInfo: map[string]bool{
+			"list": true,
+			"root": true,
+		},
+	}
 }
 func init() {
 
@@ -1036,6 +1101,23 @@ func IdentifiableForIdentity(identity string) Identifiable {
 	}
 }
 
+// IdentifiableForCategory returns a new instance of the Identifiable for the given category name.
+func IdentifiableForCategory(category string) Identifiable {
+
+	switch category {
+	case RootIdentity.Category:
+		return NewRoot()
+	case TaskIdentity.Category:
+		return NewTask()
+	case ListIdentity.Category:
+		return NewList()
+	case UserIdentity.Category:
+		return NewUser()
+	default:
+		return nil
+	}
+}
+
 // ContentIdentifiableForIdentity returns a new instance of a ContentIdentifiable for the given identity name.
 func ContentIdentifiableForIdentity(identity string) ContentIdentifiable {
 
@@ -1045,6 +1127,21 @@ func ContentIdentifiableForIdentity(identity string) ContentIdentifiable {
 	case ListIdentity.Name:
 		return &ListsList{}
 	case UserIdentity.Name:
+		return &UsersList{}
+	default:
+		return nil
+	}
+}
+
+// ContentIdentifiableForCategory returns a new instance of a ContentIdentifiable for the given category name.
+func ContentIdentifiableForCategory(category string) ContentIdentifiable {
+
+	switch category {
+	case TaskIdentity.Category:
+		return &TasksList{}
+	case ListIdentity.Category:
+		return &ListsList{}
+	case UserIdentity.Category:
 		return &UsersList{}
 	default:
 		return nil
