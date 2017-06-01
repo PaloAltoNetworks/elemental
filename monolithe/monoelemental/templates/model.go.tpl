@@ -4,6 +4,7 @@ package {{ package_name }}
 
 {% if package_name != 'elemental' %}
 import "fmt"
+import "strings"
 import "github.com/aporeto-inc/elemental"
 {% set _ = glob.update({'prefix': 'elemental.'}) %}
 {% endif %}
@@ -342,7 +343,7 @@ func (o *{{specification.entity_name}}) SetAPIKey(key string) {
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
 func (*{{specification.entity_name}}) SpecificationForAttribute(name string) {{ glob.prefix }}AttributeSpecification {
 
-  return {{ specification.entity_name }}AttributesMap[name]
+  return {{ specification.entity_name }}AttributesMap[strings.ToLower(name)]
 }
 
 // AttributeSpecifications returns the full attribute specifications map.
@@ -354,7 +355,7 @@ func (*{{specification.entity_name}}) AttributeSpecifications() map[string]{{ gl
 // {{ specification.entity_name }}AttributesMap represents the map of attribute for {{ specification.entity_name }}.
 var {{ specification.entity_name }}AttributesMap = map[string]{{ glob.prefix }}AttributeSpecification{
   {% for attribute in specification.attributes %}
-    "{{attribute.local_name[0:1].upper() + attribute.local_name[1:]}}": {{ glob.prefix }}AttributeSpecification{
+    "{{attribute.local_name.lower()}}": {{ glob.prefix }}AttributeSpecification{
       {% if attribute.allowed_chars %}
       AllowedChars: `{{ attribute.allowed_chars}}`,
       {% endif %}
