@@ -96,6 +96,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 		req, _ := http.NewRequest(http.MethodGet, "http://server/v/10/lists?p=v", nil)
 		req.Header.Set("X-Namespace", "ns")
+		req.RemoteAddr = "42.42.42.42"
 
 		Convey("When I create a new elemental Request from it", func() {
 
@@ -156,6 +157,11 @@ func TestRequest_FromHttp(t *testing.T) {
 			Convey("Then the Data should be empty", func() {
 				So(r.Data, ShouldBeEmpty)
 			})
+
+			Convey("Then the ClientIP should be set", func() {
+				So(r.ClientIP, ShouldEqual, "42.42.42.42")
+			})
+
 		})
 	})
 
@@ -731,6 +737,7 @@ func TestRequest_Duplicate(t *testing.T) {
 		req.Username = "user"
 		req.Version = 12
 		req.Order = []string{"key1", "key2"}
+		req.ClientIP = "1.2.3.4"
 
 		Convey("When I use Duplicate()", func() {
 
@@ -755,6 +762,7 @@ func TestRequest_Duplicate(t *testing.T) {
 				So(req2.RequestID, ShouldNotEqual, req.RequestID)
 				So(req2.Version, ShouldEqual, req.Version)
 				So(req2.Order, ShouldResemble, req.Order)
+				So(req2.ClientIP, ShouldResemble, req.ClientIP)
 			})
 		})
 	})

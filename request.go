@@ -42,6 +42,7 @@ type Request struct {
 
 	Metadata map[string]interface{}
 
+	ClientIP           string
 	TLSConnectionState *tls.ConnectionState
 
 	span        opentracing.Span
@@ -208,6 +209,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
 		wireContext:          wireContext,
 		Order:                req.URL.Query()["order"],
+		ClientIP:             req.RemoteAddr,
 	}, nil
 }
 
@@ -293,6 +295,7 @@ func (r *Request) Duplicate() *Request {
 	req.wireContext = r.wireContext
 	req.ExternalTrackingID = r.ExternalTrackingID
 	req.ExternalTrackingType = r.ExternalTrackingType
+	req.ClientIP = r.ClientIP
 	req.Order = append([]string{}, r.Order...)
 
 	for k, v := range r.Headers {
