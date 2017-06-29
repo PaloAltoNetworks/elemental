@@ -5,6 +5,7 @@
 package elemental
 
 import (
+	"net/http"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -51,6 +52,27 @@ func TestResponse_EncodeDecode(t *testing.T) {
 
 				Convey("Then o2 should resemble to o", func() {
 					So(o1, ShouldResemble, o)
+				})
+			})
+
+			Convey("When I Decode it but the response code is set to 204", func() {
+
+				r.Data = nil
+				r.StatusCode = http.StatusNoContent
+				err := r.Decode(nil)
+
+				Convey("Then err should be nil", func() {
+					So(err, ShouldBeNil)
+				})
+			})
+
+			Convey("When I Decode an nil object but the response code is not set to 204", func() {
+
+				r.Data = nil
+				err := r.Decode(nil)
+
+				Convey("Then err should be nil", func() {
+					So(err, ShouldNotBeNil)
 				})
 			})
 		})

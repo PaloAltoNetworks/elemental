@@ -1,6 +1,9 @@
 package elemental
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"net/http"
+)
 
 // A Response contains the response from a Request.
 type Response struct {
@@ -32,6 +35,10 @@ func (r *Response) Encode(obj interface{}) error {
 
 // Decode decodes the data into the given destination
 func (r *Response) Decode(dst interface{}) error {
+
+	if r.StatusCode == http.StatusNoContent {
+		return nil
+	}
 
 	return json.Unmarshal(r.Data, &dst)
 }
