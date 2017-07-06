@@ -22,7 +22,7 @@ const (
 func UnmarshalJSON(data []byte, i interface{}) error {
 
 	if len(data) == 0 {
-		return NewError("Bad Request", fmt.Sprint(readerError), "elemental", http.StatusBadRequest)
+		return NewError("Bad Request", readerError, "elemental", http.StatusBadRequest)
 	}
 
 	errors := Errors{}
@@ -31,7 +31,7 @@ func UnmarshalJSON(data []byte, i interface{}) error {
 	err := json.Unmarshal(data, &d)
 
 	if err != nil {
-		errors = append(errors, NewError("Bad Request", fmt.Sprint(invalidJSON), "elemental", http.StatusBadRequest))
+		errors = append(errors, NewError("Bad Request", invalidJSON, "elemental", http.StatusBadRequest))
 		return errors
 	}
 
@@ -68,7 +68,7 @@ func UnmarshalJSON(data []byte, i interface{}) error {
 
 		// Should not go there
 		if err != nil {
-			errors = append(errors, NewError("Validation Error", fmt.Sprint(typeError), "elemental", http.StatusUnprocessableEntity))
+			errors = append(errors, NewError("Validation Error", typeError, "elemental", http.StatusUnprocessableEntity))
 			continue
 		}
 
@@ -108,7 +108,7 @@ func UnmarshalJSON(data []byte, i interface{}) error {
 
 	// Should not enter here, but in case we create a serve error if we don't find the json error
 	if len(errors) == 0 {
-		errors = append(errors, NewError("Validation Error", fmt.Sprint(typeError), "elemental", http.StatusUnprocessableEntity))
+		errors = append(errors, NewError("Validation Error", typeError, "elemental", http.StatusUnprocessableEntity))
 	}
 
 	return errors
