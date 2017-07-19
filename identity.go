@@ -97,3 +97,8 @@ type ContentIdentifiable interface {
 type Documentable interface {
 	Doc() string
 }
+
+// Versionable is the interface of an object that can be versioned.
+type Versionable interface {
+	Version() float64
+}

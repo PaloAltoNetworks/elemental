@@ -70,6 +70,12 @@ func (o {{specification.entity_name_plural}}List) DefaultOrder() []string {
   }
 }
 
+// Version returns the version of the content.
+func (o {{specification.entity_name_plural}}List) Version() float64 {
+
+  return {{ model_version }}
+}
+
 {% endif %}
 
 // {{specification.entity_name}} represents the model of a {{specification.rest_name}}
