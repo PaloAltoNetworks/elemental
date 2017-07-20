@@ -71,7 +71,7 @@ func (o {{specification.entity_name_plural}}List) DefaultOrder() []string {
 }
 
 // Version returns the version of the content.
-func (o {{specification.entity_name_plural}}List) Version() float64 {
+func (o {{specification.entity_name_plural}}List) Version() int {
 
   return {{ model_version }}
 }

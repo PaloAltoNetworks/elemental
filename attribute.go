@@ -8,7 +8,6 @@ package elemental
 type AttributeSpecifiable interface {
 	SpecificationForAttribute(string) AttributeSpecification
 	AttributeSpecifications() map[string]AttributeSpecification
-	Version() float64
 }
 
 // UniqueScope is a the type used to define uniqueness.

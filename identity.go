@@ -23,6 +23,9 @@ type Identifiable interface {
 
 	// SetIdentifier sets the unique identifier of the of the receiver.
 	SetIdentifier(string)
+
+	// Version returns the version of the identifiable.
+	Version() int
 }
 
 // DefaultOrderer is the interface of an object that has default ordering fields.
@@ -96,9 +99,4 @@ type ContentIdentifiable interface {
 // Documentable is the interface of an object that can be documented.
 type Documentable interface {
 	Doc() string
-}
-
-// Versionable is the interface of an object that can be versioned.
-type Versionable interface {
-	Version() float64
 }

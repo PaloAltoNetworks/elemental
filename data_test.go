@@ -38,6 +38,11 @@ func (o ListsList) DefaultOrder() []string {
 	return []string{}
 }
 
+func (o ListsList) Version() int {
+
+	return 1
+}
+
 // List represents the model of a list
 type List struct {
 	// The identifier
@@ -70,7 +75,7 @@ type List struct {
 	// An unexposed attribute
 	Unexposed string `json:"-" bson:"unexposed"`
 
-	ModelVersion float64 `json:"-" bson:"_modelversion"`
+	ModelVersion int `json:"-" bson:"_modelversion"`
 
 	sync.Mutex
 }
@@ -102,7 +107,7 @@ func (o *List) SetIdentifier(ID string) {
 }
 
 // Version returns the hardcoded version of the model
-func (o *List) Version() float64 {
+func (o *List) Version() int {
 
 	return 1.0
 }
@@ -402,6 +407,11 @@ func (o TasksList) DefaultOrder() []string {
 	return []string{}
 }
 
+func (o TasksList) Version() int {
+
+	return 1
+}
+
 // Task represents the model of a task
 type Task struct {
 	// The identifier
@@ -422,7 +432,7 @@ type Task struct {
 	// The status of the task
 	Status TaskStatusValue `json:"status" bson:"status"`
 
-	ModelVersion float64 `json:"-" bson:"_modelversion"`
+	ModelVersion int `json:"-" bson:"_modelversion"`
 
 	sync.Mutex
 }
@@ -455,7 +465,7 @@ func (o *Task) SetIdentifier(ID string) {
 }
 
 // Version returns the hardcoded version of the model
-func (o *Task) Version() float64 {
+func (o *Task) Version() int {
 
 	return 1.0
 }
@@ -608,9 +618,9 @@ type Root struct {
 	// The type of the parent of the object
 	ParentType string `json:"parentType" bson:"parenttype"`
 
-	Token        string  `json:"APIKey,omitempty"`
-	Organization string  `json:"enterprise,omitempty"`
-	ModelVersion float64 `json:"-" bson:"_modelversion"`
+	Token        string `json:"APIKey,omitempty"`
+	Organization string `json:"enterprise,omitempty"`
+	ModelVersion int    `json:"-" bson:"_modelversion"`
 
 	sync.Mutex
 }
@@ -642,7 +652,7 @@ func (o *Root) SetIdentifier(ID string) {
 }
 
 // Version returns the hardcoded version of the model
-func (o *Root) Version() float64 {
+func (o *Root) Version() int {
 
 	return 1.0
 }
@@ -782,6 +792,11 @@ func (o UsersList) DefaultOrder() []string {
 	return []string{}
 }
 
+func (o UsersList) Version() int {
+
+	return 1
+}
+
 // User represents the model of a user
 type User struct {
 	// The identifier
@@ -802,7 +817,7 @@ type User struct {
 	// the login
 	UserName string `json:"userName" bson:"username"`
 
-	ModelVersion float64 `json:"-" bson:"_modelversion"`
+	ModelVersion int `json:"-" bson:"_modelversion"`
 
 	sync.Mutex
 }
@@ -834,7 +849,7 @@ func (o *User) SetIdentifier(ID string) {
 }
 
 // Version returns the hardcoded version of the model
-func (o *User) Version() float64 {
+func (o *User) Version() int {
 
 	return 1.0
 }
@@ -1082,7 +1097,7 @@ func init() {
 }
 
 // ModelVersion returns the current version of the model
-func ModelVersion() float64 { return 1.0 }
+func ModelVersion() int { return 1.0 }
 
 // IdentifiableForIdentity returns a new instance of the Identifiable for the given identity name.
 func IdentifiableForIdentity(identity string) Identifiable {
