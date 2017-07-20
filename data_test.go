@@ -1019,7 +1019,7 @@ func Relationships() RelationshipsRegistry {
 func init() {
 	relationshipsRegistry = RelationshipsRegistry{}
 
-	relationshipsRegistry[IdentityFromName("list")] = &Relationship{
+	relationshipsRegistry[ListIdentity] = &Relationship{
 		AllowsCreate: map[string]bool{
 			"root": true,
 		},
@@ -1039,7 +1039,7 @@ func init() {
 			"root": true,
 		},
 	}
-	relationshipsRegistry[IdentityFromName("task")] = &Relationship{
+	relationshipsRegistry[TaskIdentity] = &Relationship{
 		AllowsCreate: map[string]bool{
 			"list": true,
 		},
@@ -1062,8 +1062,8 @@ func init() {
 			"root": true,
 		},
 	}
-	relationshipsRegistry[IdentityFromName("root")] = &Relationship{}
-	relationshipsRegistry[IdentityFromName("user")] = &Relationship{
+	relationshipsRegistry[RootIdentity] = &Relationship{}
+	relationshipsRegistry[UserIdentity] = &Relationship{
 		AllowsCreate: map[string]bool{
 			"root": true,
 		},

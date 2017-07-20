@@ -43,20 +43,24 @@ class APIVersionWriter(TemplateFileWriter):
 
         # Compute relations to create an inversed registry
         for rest_name, specification in specifications.items():
-            self.add_relation(relationships=relationships, specification=specification)
+            self.add_relation(relationships=relationships, specification=specification, specification_set=specifications)
 
             for child_api in specification.child_apis:
                 # child_specification = specifications[child_api.rest_name]
-                self.add_relation(relationships, child_api, specification.rest_name, child_api.relationship)
+                self.add_relation(relationships=relationships, specification=child_api, parent_name=specification.rest_name, child_relationship=child_api.relationship, specification_set=specifications)
 
         self._write_relationships(relationships=relationships)
         self._format()
 
-    def add_relation(self, relationships, specification, parent_name="root", child_relationship=''):
+    def add_relation(self, relationships, specification, parent_name="root", child_relationship='', specification_set={}):
         """Add specification in relations registry"""
-        if specification.rest_name not in relationships:
+
+        key = specification_set[specification.rest_name].entity_name
+
+        if key not in relationships:
+
             # Add with default values
-            relationships[specification.rest_name] = {
+            relationships[key] = {
                 'allows_get': set(),
                 'allows_update': set(),
                 'allows_delete': set(),
@@ -68,19 +72,19 @@ class APIVersionWriter(TemplateFileWriter):
             return
 
         if specification.allows_get and parent_name is not None:
-            relationships[specification.rest_name]['allows_get'].add(parent_name)
+            relationships[key]['allows_get'].add(parent_name)
 
         if specification.allows_update and parent_name is not None:
-            relationships[specification.rest_name]['allows_update'].add(parent_name)
+            relationships[key]['allows_update'].add(parent_name)
 
         if specification.allows_create and parent_name is not None:
-            relationships[specification.rest_name]['allows_create'].add(parent_name)
+            relationships[key]['allows_create'].add(parent_name)
 
         if specification.allows_delete and parent_name is not None:
-            relationships[specification.rest_name]['allows_delete'].add(parent_name)
+            relationships[key]['allows_delete'].add(parent_name)
 
-        if child_relationship is not '' and relationships[specification.rest_name]['relationship'] == "":
-            relationships[specification.rest_name]['relationship'] = child_relationship
+        if child_relationship is not '' and relationships[key]['relationship'] == "":
+            relationships[key]['relationship'] = child_relationship
 
     def _write_model(self, specification, specification_set):
         """
