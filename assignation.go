@@ -68,6 +68,10 @@ func (a *Assignation) Identifier() string {
 	return "__internal__"
 }
 
+func (a *Assignation) Version() int {
+	return 1
+}
+
 // SetIdentifier sets the unique identifier of the of the receiver.
 //
 // In that case it does nothing.
