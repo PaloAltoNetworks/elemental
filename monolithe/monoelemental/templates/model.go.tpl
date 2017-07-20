@@ -100,7 +100,7 @@ type {{specification.entity_name}} struct {
     Token string `json:"APIKey,omitempty"`
     Organization string `json:"enterprise,omitempty"`
     {% endif %}
-    ModelVersion float64 `json:"-" bson:"_modelversion"`
+    ModelVersion int `json:"-" bson:"_modelversion"`
 
     sync.Mutex
 }
@@ -150,7 +150,7 @@ func (o *{{specification.entity_name}}) SetIdentifier(ID string) {
 }
 
 // Version returns the hardcoded version of the model
-func (o *{{specification.entity_name}}) Version() float64 {
+func (o *{{specification.entity_name}}) Version() int {
 
   return {{ model_version }}
 }
