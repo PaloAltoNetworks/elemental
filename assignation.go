@@ -68,7 +68,9 @@ func (a *Assignation) Identifier() string {
 	return "__internal__"
 }
 
+// Version returns the version of the assignation.
 func (a *Assignation) Version() int {
+
 	return 1
 }
 
