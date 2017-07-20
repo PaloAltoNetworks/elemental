@@ -22,8 +22,8 @@ func Relationships() {{ glob.prefix }}RelationshipsRegistry {
 func init() {
   relationshipsRegistry = {{ glob.prefix }}RelationshipsRegistry{}
 
-  {% for rest_name, relation in relationships.iteritems() %}
-  relationshipsRegistry[{{ glob.prefix }}IdentityFromName("{{rest_name}}")] = &{{ glob.prefix }}Relationship{
+  {% for entity_name, relation in relationships | dictsort %}
+  relationshipsRegistry[{{entity_name}}Identity] = &{{ glob.prefix }}Relationship{
   {% if relation['allows_create']|length > 0 %}
     AllowsCreate: map[string]bool {
       {% for parent in relation['allows_create'] %}
