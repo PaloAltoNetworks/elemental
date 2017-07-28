@@ -43,6 +43,11 @@ domingo_update:
 domingo_init:
 	@if [ -f glide.yaml ]; then glide install; else go get ./...; fi
 
+## To be used whenever using Kubernetes.
+## Extra argument -v remove nested vendors.
+domingo_init_kube:
+	@if [ -f glide.yaml ]; then glide up -v; else go get ./...; fi
+
 ## Testing
 
 domingo_goconvey:
@@ -50,7 +55,7 @@ domingo_goconvey:
 
 domingo_test:
 	@echo "Running linters army..."
-	@gometalinter --vendor --disable-all \
+	@gometalinter --vendor --exclude=vendor --disable-all \
 		--enable=vet \
 		--enable=vetshadow \
 		--enable=golint \
