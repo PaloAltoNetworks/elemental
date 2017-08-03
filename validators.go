@@ -230,7 +230,11 @@ func ValidateRequiredTime(attribute string, value time.Time) error {
 }
 
 // ValidatePattern validates a string against a regular expression.
-func ValidatePattern(attribute string, value string, pattern string) error {
+func ValidatePattern(attribute string, value string, pattern string, required bool) error {
+
+	if !required && value == "" {
+		return nil
+	}
 
 	re := regexp.MustCompile(pattern)
 

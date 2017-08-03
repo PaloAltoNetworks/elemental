@@ -248,7 +248,7 @@ func (o *{{specification.entity_name}}) Validate() error {
     {% endif %}
 
     {% if attribute.allowed_chars != None %}
-    if err := {{ glob.prefix }}ValidatePattern("{{ attribute_name }}", o.{{ field_name }}, `{{ attribute.allowed_chars }}`); err != nil {
+    if err := {{ glob.prefix }}ValidatePattern("{{ attribute_name }}", o.{{ field_name }}, `{{ attribute.allowed_chars }}`, {{ attribute.required }}); err != nil {
         errors = append(errors, err)
     }
 
