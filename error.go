@@ -35,7 +35,7 @@ func NewError(title, description, subject string, code int) Error {
 func (e Error) Error() string {
 
 	if e.Trace != "" {
-		return fmt.Sprintf("error %d (%s): %s: %s [requestID: %s]", e.Code, e.Subject, e.Title, e.Description, e.Trace)
+		return fmt.Sprintf("error %d (%s): %s: %s [trace: %s]", e.Code, e.Subject, e.Title, e.Description, e.Trace)
 	}
 
 	return fmt.Sprintf("error %d (%s): %s: %s", e.Code, e.Subject, e.Title, e.Description)
