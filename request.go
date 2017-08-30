@@ -226,23 +226,26 @@ func (r *Request) StartTracing() {
 	}
 
 	r.span = opentracing.StartSpan(r.tracingName(), ext.RPCServerOption(r.wireContext))
-	r.span.SetTag("elemental.parameters", r.Parameters)
-	r.span.SetTag("elemental.headers", r.Headers)
-	r.span.SetTag("elemental.external_tracking_id", r.ExternalTrackingID)
-	r.span.SetTag("elemental.external_tracking_type", r.ExternalTrackingType)
-	r.span.SetTag("elemental.identity", r.Identity.Name)
-	r.span.SetTag("elemental.id", r.ObjectID)
-	r.span.SetTag("elemental.operation", r.Operation)
-	r.span.SetTag("elemental.namespace", r.Namespace)
 
-	if r.ParentID != "" {
-		r.span.SetTag("elemental.parent_identity", r.ParentIdentity.Name)
-		r.span.SetTag("elemental.parent_id", r.ParentID)
-	}
-
-	if len(r.Data) > 0 {
-		r.span.SetTag("elemental.payload", string(r.Data))
-	}
+	r.span.SetTag("elemental.request.api_version", r.Version)
+	r.span.SetTag("elemental.request.external_tracking_id", r.ExternalTrackingID)
+	r.span.SetTag("elemental.request.external_tracking_type", r.ExternalTrackingType)
+	r.span.SetTag("elemental.request.headers", r.Headers)
+	r.span.SetTag("elemental.request.id", r.RequestID)
+	r.span.SetTag("elemental.request.identity", r.Identity.Name)
+	r.span.SetTag("elemental.request.namespace", r.Namespace)
+	r.span.SetTag("elemental.request.object.id", r.ObjectID)
+	r.span.SetTag("elemental.request.operation", r.Operation)
+	r.span.SetTag("elemental.request.order_by", r.Order)
+	r.span.SetTag("elemental.request.override_protection", r.OverrideProtection)
+	r.span.SetTag("elemental.request.page.number", r.Page)
+	r.span.SetTag("elemental.request.page.size", r.PageSize)
+	r.span.SetTag("elemental.request.parameters", r.Parameters)
+	r.span.SetTag("elemental.request.parent.id", r.ParentID)
+	r.span.SetTag("elemental.request.parent.identity", r.ParentIdentity.Name)
+	r.span.SetTag("elemental.request.payload", string(r.Data))
+	r.span.SetTag("elemental.request.recursive", r.Recursive)
+	r.span.SetTag("elemental.request.client_ip", r.ClientIP)
 }
 
 // FinishTracing will finish the request tracing.
