@@ -18,6 +18,7 @@ type Error struct {
 	Subject     string      `json:"subject"`
 	Title       string      `json:"title"`
 	Data        interface{} `json:"data"`
+	RequestID   string      `json:"requestID"`
 }
 
 // NewError returns a new Error.
@@ -32,6 +33,11 @@ func NewError(title, description, subject string, code int) Error {
 }
 
 func (e Error) Error() string {
+
+	if e.RequestID != "" {
+		return fmt.Sprintf("error %d (%s): %s: %s [requestID: %s]", e.Code, e.Subject, e.Title, e.Description, e.RequestID)
+	}
+
 	return fmt.Sprintf("error %d (%s): %s: %s", e.Code, e.Subject, e.Title, e.Description)
 }
 

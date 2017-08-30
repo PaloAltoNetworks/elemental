@@ -759,7 +759,6 @@ func TestRequest_Duplicate(t *testing.T) {
 				So(req2.Recursive, ShouldEqual, req.Recursive)
 				So(req2.Username, ShouldEqual, req.Username)
 				So(req2.RequestID, ShouldNotEqual, req.RequestID)
-				So(req2.RequestID, ShouldNotEqual, req.RequestID)
 				So(req2.Version, ShouldEqual, req.Version)
 				So(req2.Order, ShouldResemble, req.Order)
 				So(req2.ClientIP, ShouldResemble, req.ClientIP)
