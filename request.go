@@ -244,7 +244,6 @@ func (r *Request) StartTracing() {
 	r.span.SetTag("elemental.request.parameters", r.Parameters)
 	r.span.SetTag("elemental.request.parent.id", r.ParentID)
 	r.span.SetTag("elemental.request.parent.identity", r.ParentIdentity.Name)
-	r.span.SetTag("elemental.request.payload", string(r.Data))
 	r.span.SetTag("elemental.request.recursive", r.Recursive)
 	r.span.SetTag("elemental.request.client_ip", r.ClientIP)
 
