@@ -12,6 +12,7 @@ import (
 
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
+	"github.com/opentracing/opentracing-go/log"
 
 	uuid "github.com/satori/go.uuid"
 )
@@ -246,6 +247,10 @@ func (r *Request) StartTracing() {
 	r.span.SetTag("elemental.request.payload", string(r.Data))
 	r.span.SetTag("elemental.request.recursive", r.Recursive)
 	r.span.SetTag("elemental.request.client_ip", r.ClientIP)
+
+	if r.Data != nil {
+		r.span.LogFields(log.Object("payload", string(r.Data)))
+	}
 }
 
 // FinishTracing will finish the request tracing.
