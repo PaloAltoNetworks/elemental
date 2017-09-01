@@ -5,6 +5,7 @@
 package elemental
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -91,4 +92,20 @@ func (e Errors) At(i int) Error {
 	default:
 		return NewError("Standard error", ei.Error(), "elemental", -1)
 	}
+}
+
+// DecodeErrors decodes the given bytes into a en elemental.Errors.
+func DecodeErrors(data []byte) (Errors, error) {
+
+	es := []Error{}
+	if err := json.Unmarshal(data, &es); err != nil {
+		return nil, err
+	}
+
+	e := NewErrors()
+	for _, err := range es {
+		e = append(e, err)
+	}
+
+	return e, nil
 }
