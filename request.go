@@ -343,24 +343,6 @@ func (r *Request) Decode(dst interface{}) error {
 	return UnmarshalJSON(r.Data, &dst)
 }
 
-// Set is part of the implementation of the opentracing TextMapWriter.
-func (r *Request) Set(key string, value string) {
-
-	r.TrackingData[key] = value
-}
-
-// ForeachKey is part of the implementation of the opentracing TextMapReader.
-func (r *Request) ForeachKey(handler func(key, val string) error) error {
-
-	for k, v := range r.TrackingData {
-		if err := handler(k, v); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (r *Request) String() string {
 
 	return fmt.Sprintf("<request id:%s operation:%s namespace:%s recursive:%v identity:%s objectid:%s parentidentity:%s parentid:%s version:%d>",
