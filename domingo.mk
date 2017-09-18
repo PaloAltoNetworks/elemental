@@ -10,7 +10,7 @@ SHELL								:= /bin/bash -o pipefail
 
 domingo_init:
 	@echo "initializing..."
-	@if [ -f glide.yaml ]; then glide up; else go get ./...; fi
+	@if [ -f glide.yaml ]; then glide cc && glide up; else go get ./...; fi
 
 domingo_write_versions:
 	@echo "writing versions file..."
