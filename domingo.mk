@@ -10,7 +10,7 @@ SHELL								:= /bin/bash -o pipefail
 
 domingo_init:
 	@echo "initializing..."
-	@if [ -f glide.yaml ]; then glide up -v; else go get ./...; fi
+	@if [ -f glide.yaml ]; then glide up; else go get ./...; fi
 
 domingo_write_versions:
 	@echo "writing versions file..."
@@ -64,7 +64,8 @@ domingo_package:
 
 domingo_container:
 	@echo "building $(DOMINGO_DOCKER_REPO)/$(PROJECT_NAME):$(DOMINGO_DOCKER_TAG)"
-	@make build_linux
+	@make domingo_build_linux
+	@make domingo_package
 	@cd docker && docker build -t $(DOMINGO_DOCKER_REPO)/$(PROJECT_NAME):$(DOMINGO_DOCKER_TAG) .
 
 domingo_update:
