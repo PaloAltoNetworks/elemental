@@ -50,3 +50,28 @@ func TestIdentity_String(t *testing.T) {
 		})
 	})
 }
+
+func TestIdentity_ContentIdentity_Copy(t *testing.T) {
+
+	Convey("Given I create I have a ContentIdentifiable with 2 Identifiable", t, func() {
+
+		l1 := NewList()
+		l1.ID = "x"
+
+		l2 := NewList()
+		l2.ID = "y"
+
+		lst1 := ListsList{l1, l2}
+
+		Convey("When I create copy", func() {
+
+			lst2 := lst1.Copy()
+
+			Convey("Then the copy should be correct", func() {
+				So(len(lst1.List()), ShouldEqual, len(lst2.List()))
+				So(lst1.List()[0].Identifier(), ShouldEqual, lst2.List()[0].Identifier())
+				So(lst1.List()[1].Identifier(), ShouldEqual, lst2.List()[1].Identifier())
+			})
+		})
+	})
+}

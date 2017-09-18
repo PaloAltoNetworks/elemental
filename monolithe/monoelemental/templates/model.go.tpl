@@ -49,6 +49,14 @@ func (o {{specification.entity_name_plural}}List) ContentIdentity() {{ glob.pref
   return {{specification.entity_name}}Identity
 }
 
+// Copy returns a pointer to a copy the {{specification.entity_name_plural}}List.
+func (o {{specification.entity_name_plural}}List) Copy() {{ glob.prefix }}ContentIdentifiable {
+
+	copy := append({{specification.entity_name_plural}}List{}, o...)
+  return &copy
+}
+
+
 // List converts the object to an {{ glob.prefix }}IdentifiablesList.
 func (o {{specification.entity_name_plural}}List) List() {{ glob.prefix }}IdentifiablesList {
 
