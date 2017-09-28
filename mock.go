@@ -1,5 +1,7 @@
 package elemental
 
+import "net/http"
+
 // MockIdentifiable mocks a Identifiable
 type MockIdentifiable struct {
 	DefinedIdentity         string
@@ -30,4 +32,11 @@ func (p *MockIdentifiable) Version() int {
 // Validate is the method that verifies the object is valid
 func (p *MockIdentifiable) Validate() error {
 	return p.ExpectedValidationError
+}
+
+func MockElementalRequest(req *http.Request) *Request {
+	r := NewRequest()
+	r.Headers.Set("Origin", req.Header.Get("Origin"))
+
+	return r
 }
