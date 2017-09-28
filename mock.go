@@ -9,7 +9,7 @@ type MockIdentifiable struct {
 
 // Identity returns the Identity of the of the receiver.
 func (p *MockIdentifiable) Identity() Identity {
-	return MakeIdentity(p.DefinedIdentity, "FakeCategory")
+	return MakeIdentity(p.DefinedIdentity, "MockCategory")
 }
 
 // Identifier returns the unique identifier of the of the receiver.
