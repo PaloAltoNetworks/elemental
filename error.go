@@ -5,6 +5,7 @@
 package elemental
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -18,6 +19,7 @@ type Error struct {
 	Subject     string      `json:"subject"`
 	Title       string      `json:"title"`
 	Data        interface{} `json:"data"`
+	Trace       string      `json:"trace"`
 }
 
 // NewError returns a new Error.
@@ -32,6 +34,11 @@ func NewError(title, description, subject string, code int) Error {
 }
 
 func (e Error) Error() string {
+
+	if e.Trace != "" {
+		return fmt.Sprintf("error %d (%s): %s: %s [trace: %s]", e.Code, e.Subject, e.Title, e.Description, e.Trace)
+	}
+
 	return fmt.Sprintf("error %d (%s): %s: %s", e.Code, e.Subject, e.Title, e.Description)
 }
 
@@ -85,4 +92,20 @@ func (e Errors) At(i int) Error {
 	default:
 		return NewError("Standard error", ei.Error(), "elemental", -1)
 	}
+}
+
+// DecodeErrors decodes the given bytes into a en elemental.Errors.
+func DecodeErrors(data []byte) (Errors, error) {
+
+	es := []Error{}
+	if err := json.Unmarshal(data, &es); err != nil {
+		return nil, err
+	}
+
+	e := NewErrors()
+	for _, err := range es {
+		e = append(e, err)
+	}
+
+	return e, nil
 }

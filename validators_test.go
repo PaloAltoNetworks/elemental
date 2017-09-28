@@ -686,24 +686,31 @@ func TestValidator_ValidatePattern(t *testing.T) {
 
 	Convey("Given I call the method ValidatePattern with a valid string", t, func() {
 
-		validationError := ValidatePattern("name", "Alexandre", "Alexandre")
+		validationError := ValidatePattern("name", "Alexandre", "Alexandre", true)
 
 		Convey("Then I should get nil in return", func() {
-
 			So(validationError, ShouldBeNil)
 		})
 	})
 
 	Convey("Given I call the method ValidatePattern with a valid string", t, func() {
 
-		validationError := ValidatePattern("name", "Alexandre", "Antoine").(Error)
+		validationError := ValidatePattern("name", "Alexandre", "Antoine", true).(Error)
 
 		Convey("Then I should get nil in return", func() {
-
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Description, ShouldEqual, `Data 'Alexandre' of attribute 'name' should match 'Antoine'`)
 			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
 			So(validationError.Data, ShouldResemble, map[string]string{"attribute": "name"})
+		})
+	})
+
+	Convey("Given I call the method ValidatePattern with a valid string", t, func() {
+
+		validationError := ValidatePattern("name", "", "Antoine", false)
+
+		Convey("Then I should get nil in return", func() {
+			So(validationError, ShouldBeNil)
 		})
 	})
 }

@@ -49,6 +49,14 @@ func (o {{specification.entity_name_plural}}List) ContentIdentity() {{ glob.pref
   return {{specification.entity_name}}Identity
 }
 
+// Copy returns a pointer to a copy the {{specification.entity_name_plural}}List.
+func (o {{specification.entity_name_plural}}List) Copy() {{ glob.prefix }}ContentIdentifiable {
+
+	copy := append({{specification.entity_name_plural}}List{}, o...)
+  return &copy
+}
+
+
 // List converts the object to an {{ glob.prefix }}IdentifiablesList.
 func (o {{specification.entity_name_plural}}List) List() {{ glob.prefix }}IdentifiablesList {
 
@@ -248,7 +256,8 @@ func (o *{{specification.entity_name}}) Validate() error {
     {% endif %}
 
     {% if attribute.allowed_chars != None %}
-    if err := {{ glob.prefix }}ValidatePattern("{{ attribute_name }}", o.{{ field_name }}, `{{ attribute.allowed_chars }}`); err != nil {
+    {% set required = "true" if attribute.required else "false "%}
+    if err := {{ glob.prefix }}ValidatePattern("{{ attribute_name }}", o.{{ field_name }}, `{{ attribute.allowed_chars }}`, {{ required }}); err != nil {
         errors = append(errors, err)
     }
 

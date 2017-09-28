@@ -93,6 +93,7 @@ var RootIdentity = Identity{
 type ContentIdentifiable interface {
 	ContentIdentity() Identity
 	List() IdentifiablesList
+	Copy() ContentIdentifiable
 	Versionable
 }
 

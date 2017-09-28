@@ -21,6 +21,12 @@ func (o ListsList) ContentIdentity() Identity {
 	return ListIdentity
 }
 
+// Copy returns a copy the ListsList.
+func (o ListsList) Copy() ContentIdentifiable {
+
+	return append(ListsList{}, o...)
+}
+
 // List converts the object to an IdentifiablesList.
 func (o ListsList) List() IdentifiablesList {
 
@@ -383,6 +389,12 @@ var TaskIdentity = Identity{
 
 // TasksList represents a list of Tasks
 type TasksList []*Task
+
+// New returns a new empty TasksList.
+func (o TasksList) Copy() ContentIdentifiable {
+
+	return append(TasksList{}, o...)
+}
 
 // ContentIdentity returns the identity of the objects in the list.
 func (o TasksList) ContentIdentity() Identity {
@@ -773,6 +785,12 @@ type UsersList []*User
 func (o UsersList) ContentIdentity() Identity {
 
 	return UserIdentity
+}
+
+// Copy returns a copy the ListsList.
+func (o UsersList) Copy() ContentIdentifiable {
+
+	return append(UsersList{}, o...)
 }
 
 // List converts the object to an IdentifiablesList.
