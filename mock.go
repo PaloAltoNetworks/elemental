@@ -9,6 +9,9 @@ type MockIdentifiable struct {
 	ExpectedValidationError error
 }
 
+// MockIdentifiablesList mocks IdentifiablesList
+type MockIdentifiablesList []MockIdentifiable
+
 // Identity returns the Identity of the of the receiver.
 func (p *MockIdentifiable) Identity() Identity {
 	return MakeIdentity(p.DefinedIdentity, "MockCategory")
@@ -34,6 +37,7 @@ func (p *MockIdentifiable) Validate() error {
 	return p.ExpectedValidationError
 }
 
+// MockElementalRequest creates an elemental request from an http request
 func MockElementalRequest(req *http.Request) *Request {
 	r := NewRequest()
 	r.Headers.Set("Origin", req.Header.Get("Origin"))
