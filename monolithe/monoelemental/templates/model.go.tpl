@@ -46,36 +46,46 @@ type {{specification.entity_name_plural}}List []*{{specification.entity_name}}
 // ContentIdentity returns the identity of the objects in the list.
 func (o {{specification.entity_name_plural}}List) ContentIdentity() {{ glob.prefix }}Identity {
 
-  return {{specification.entity_name}}Identity
+    return {{specification.entity_name}}Identity
 }
 
 // Copy returns a pointer to a copy the {{specification.entity_name_plural}}List.
 func (o {{specification.entity_name_plural}}List) Copy() {{ glob.prefix }}ContentIdentifiable {
 
-	copy := append({{specification.entity_name_plural}}List{}, o...)
-  return &copy
+    copy := append({{specification.entity_name_plural}}List{}, o...)
+    return &copy
 }
 
+// Append appends the objects to the a new copy of the {{specification.entity_name_plural}}List.
+func (o {{specification.entity_name_plural}}List) Append(objects ...{{ glob.prefix }}Identifiable) {{ glob.prefix }}ContentIdentifiable {
+
+    out := append({{specification.entity_name_plural}}List{}, o...)
+    for _, obj := range objects {
+        out = append(out, obj.(*{{specification.entity_name}}))
+    }
+
+    return out
+}
 
 // List converts the object to an {{ glob.prefix }}IdentifiablesList.
 func (o {{specification.entity_name_plural}}List) List() {{ glob.prefix }}IdentifiablesList {
 
-  out := {{ glob.prefix }}IdentifiablesList{}
-  for _, item := range o {
-    out = append(out, item)
-  }
+    out := {{ glob.prefix }}IdentifiablesList{}
+    for _, item := range o {
+        out = append(out, item)
+    }
 
-  return out
+    return out
 }
 
 // DefaultOrder returns the default ordering fields of the content.
 func (o {{specification.entity_name_plural}}List) DefaultOrder() []string {
 
-  return []string{
-    {% for key in glob.default_order_keys %}
-    "{{ key }}",
-    {% endfor %}
-  }
+    return []string{
+        {% for key in glob.default_order_keys %}
+        "{{ key }}",
+        {% endfor %}
+    }
 }
 
 // Version returns the version of the content.

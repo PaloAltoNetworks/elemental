@@ -97,6 +97,7 @@ type ContentIdentifiable interface {
 	ContentIdentity() Identity
 	List() IdentifiablesList
 	Copy() ContentIdentifiable
+	Append(...Identifiable) ContentIdentifiable
 	Versionable
 }
 
