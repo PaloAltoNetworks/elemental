@@ -9,6 +9,9 @@ import "fmt"
 // IdentifiableFactory is the type of a function that can return an Identifiable from the given identity name.
 type IdentifiableFactory func(identity string, version int) Identifiable
 
+// ContentIdentifiableFactory is the type of a function that can return an ContentIdentifiable from the given identity name.
+type ContentIdentifiableFactory func(identity string, version int) ContentIdentifiable
+
 // An IdentifiablesList is a list of objects implementing the Identifiable interface.
 type IdentifiablesList []Identifiable
 
