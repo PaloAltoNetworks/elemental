@@ -49,6 +49,17 @@ func (o ListsList) Version() int {
 	return 1
 }
 
+// Append appends the objects to the a new copy of the ListsList.
+func (o ListsList) Append(objects ...Identifiable) ContentIdentifiable {
+
+	out := append(ListsList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*List))
+	}
+
+	return out
+}
+
 // List represents the model of a list
 type List struct {
 	// The identifier
@@ -422,6 +433,17 @@ func (o TasksList) DefaultOrder() []string {
 func (o TasksList) Version() int {
 
 	return 1
+}
+
+// Append appends the objects to the a new copy of the TasksList.
+func (o TasksList) Append(objects ...Identifiable) ContentIdentifiable {
+
+	out := append(TasksList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*Task))
+	}
+
+	return out
 }
 
 // Task represents the model of a task
@@ -813,6 +835,17 @@ func (o UsersList) DefaultOrder() []string {
 func (o UsersList) Version() int {
 
 	return 1
+}
+
+// Append appends the objects to the a new copy of the UsersList.
+func (o UsersList) Append(objects ...Identifiable) ContentIdentifiable {
+
+	out := append(UsersList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*User))
+	}
+
+	return out
 }
 
 // User represents the model of a user
