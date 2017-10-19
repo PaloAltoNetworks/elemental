@@ -231,7 +231,7 @@ func (r *Request) StartTracing() {
 
 	r.span = opentracing.StartSpan(r.tracingName(), ext.RPCServerOption(r.wireContext))
 
-	// Remove senstive information from parameters.
+	// Remove sensitive information from parameters.
 	safeParameters := url.Values{}
 	for k, v := range r.Parameters {
 		lk := strings.ToLower(k)
@@ -242,7 +242,7 @@ func (r *Request) StartTracing() {
 		safeParameters[k] = v
 	}
 
-	// Remove senstive information from headers.
+	// Remove sensitive information from headers.
 	safeHeaders := http.Header{}
 	for k, v := range r.Headers {
 		lk := strings.ToLower(k)
