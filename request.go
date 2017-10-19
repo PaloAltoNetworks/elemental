@@ -2,6 +2,7 @@ package elemental
 
 import (
 	"crypto/tls"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -16,6 +17,8 @@ import (
 
 	uuid "github.com/satori/go.uuid"
 )
+
+var snipSlice = []string{"[snip]"}
 
 // A Request represents an abstract request on an elemental model.
 type Request struct {
@@ -228,10 +231,33 @@ func (r *Request) StartTracing() {
 
 	r.span = opentracing.StartSpan(r.tracingName(), ext.RPCServerOption(r.wireContext))
 
+	// Remove senstive information from parameters.
+	safeParameters := url.Values{}
+	for k, v := range r.Parameters {
+		lk := strings.ToLower(k)
+		if lk == "token" || lk == "password" {
+			safeParameters[k] = snipSlice
+			continue
+		}
+		safeParameters[k] = v
+	}
+
+	// Remove senstive information from headers.
+	safeHeaders := http.Header{}
+	for k, v := range r.Headers {
+		lk := strings.ToLower(k)
+		if lk == "authorization" {
+			safeHeaders[k] = snipSlice
+			continue
+		}
+		safeHeaders[k] = v
+	}
+
 	r.span.SetTag("elemental.request.api_version", r.Version)
 	r.span.SetTag("elemental.request.external_tracking_id", r.ExternalTrackingID)
 	r.span.SetTag("elemental.request.external_tracking_type", r.ExternalTrackingType)
-	r.span.SetTag("elemental.request.headers", r.Headers)
+	r.span.SetTag("elemental.request.headers", safeHeaders)
+	r.span.SetTag("elemental.request.claims", r.extractClaims())
 	r.span.SetTag("elemental.request.id", r.RequestID)
 	r.span.SetTag("elemental.request.identity", r.Identity.Name)
 	r.span.SetTag("elemental.request.namespace", r.Namespace)
@@ -241,7 +267,7 @@ func (r *Request) StartTracing() {
 	r.span.SetTag("elemental.request.override_protection", r.OverrideProtection)
 	r.span.SetTag("elemental.request.page.number", r.Page)
 	r.span.SetTag("elemental.request.page.size", r.PageSize)
-	r.span.SetTag("elemental.request.parameters", r.Parameters)
+	r.span.SetTag("elemental.request.parameters", safeParameters)
 	r.span.SetTag("elemental.request.parent.id", r.ParentID)
 	r.span.SetTag("elemental.request.parent.identity", r.ParentIdentity.Name)
 	r.span.SetTag("elemental.request.recursive", r.Recursive)
@@ -384,5 +410,20 @@ func (r *Request) tracingName() string {
 		return fmt.Sprintf("elemental.request.patch.%s", r.Identity.Category)
 	}
 
-	return fmt.Sprintf("Unknown operation: %s", r)
+	return fmt.Sprintf("Unknown operation: %s", r.Operation)
+}
+
+func (r *Request) extractClaims() string {
+
+	tokenParts := strings.SplitN(r.Password, ".", 3)
+	if len(tokenParts) != 3 {
+		return "{}"
+	}
+
+	identity, err := base64.RawStdEncoding.DecodeString(tokenParts[1])
+	if err != nil {
+		return "{}"
+	}
+
+	return string(identity)
 }

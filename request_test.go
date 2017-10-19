@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"testing"
 
+	opentracing "github.com/opentracing/opentracing-go"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -94,7 +95,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 	Convey("Given I have a get http request on /lists", t, func() {
 
-		req, _ := http.NewRequest(http.MethodGet, "http://server/v/10/lists?p=v", nil)
+		req, _ := http.NewRequest(http.MethodGet, "http://server/v/10/lists?p=v&page=1&pagesize=2&recursive=true&override=true", nil)
 		req.Header.Set("X-Namespace", "ns")
 		req.RemoteAddr = "42.42.42.42"
 
@@ -160,6 +161,22 @@ func TestRequest_FromHttp(t *testing.T) {
 
 			Convey("Then the ClientIP should be set", func() {
 				So(r.ClientIP, ShouldEqual, "42.42.42.42")
+			})
+
+			Convey("Then the Page should be 1", func() {
+				So(r.Page, ShouldEqual, 1)
+			})
+
+			Convey("Then the PageSize should be 2", func() {
+				So(r.PageSize, ShouldEqual, 2)
+			})
+
+			Convey("Then the Recursive should be true", func() {
+				So(r.Recursive, ShouldBeTrue)
+			})
+
+			Convey("Then the OverrideProtection should be true", func() {
+				So(r.OverrideProtection, ShouldBeTrue)
 			})
 
 		})
@@ -738,6 +755,8 @@ func TestRequest_Duplicate(t *testing.T) {
 		req.Version = 12
 		req.Order = []string{"key1", "key2"}
 		req.ClientIP = "1.2.3.4"
+		req.TrackingData = opentracing.TextMapCarrier{"a": "b"}
+		req.Metadata = map[string]interface{}{"a": 1}
 
 		Convey("When I use Duplicate()", func() {
 
@@ -762,7 +781,167 @@ func TestRequest_Duplicate(t *testing.T) {
 				So(req2.Version, ShouldEqual, req.Version)
 				So(req2.Order, ShouldResemble, req.Order)
 				So(req2.ClientIP, ShouldResemble, req.ClientIP)
+				So(req2.TrackingData, ShouldResemble, req.TrackingData)
+				So(req2.Metadata, ShouldResemble, req.Metadata)
 			})
 		})
 	})
+}
+
+func TestRequest_extractClaims(t *testing.T) {
+
+	token := "x.eyJyZWFsbSI6IkNlcnRpZmljYXRlIiwiZGF0YSI6eyJjb21tb25OYW1lIjoiYWRtaW4iLCJvcmdhbml6YXRpb24iOiJzeXN0ZW0iLCJvdTpyb290IjoidHJ1ZSIsInJlYWxtIjoiY2VydGlmaWNhdGUiLCJzZXJpYWxOdW1iZXIiOiIxODY3OTg0MjcyNDEzNDMwODM2NzY2MDU2NTk0NDg1NjUxNTk4MTcifSwiYXVkIjoiYXBvcmV0by5jb20iLCJleHAiOjE1MDg1MTYxMzEsImlhdCI6MTUwODQyOTczMSwiaXNzIjoibWlkZ2FyZC5hcG9tdXguY29tIiwic3ViIjoiMTg2Nzk4NDI3MjQxMzQzMDgzNjc2NjA1NjU5NDQ4NTY1MTU5ODE3In0.y"
+	tokenInavalid := "eyJyZWFsbSI6IkNlcnRpZmljYXRlIiwiZGF0YSI6eyJjb21tb25OYW1lIjoiYWRtaW4iLCJvcmdhbml6YXRpb24iOiJzeXN0ZW0iLCJvdTpyb290IjoidHJ1ZSIsInJlYWxtIjoiY2VydGlmaWNhdGUiLCJzZXJpYWxOdW1iZXIiOiIxODY3OTg0MjcyNDEzNDMwODM2NzY2MDU2NTk0NDg1NjUxNTk4MTcifSwiYXVkIjoiYXBvcmV0by5jb20iLCJleHAiOjE1MDg1MTYxMzEsImlhdCI6MTUwODQyOTczMSwiaXNzIjoibWlkZ2FyZC5hcG9tdXguY29tIiwic3ViIjoiMTg2Nzk4NDI3MjQxMzQzMDgzNjc2NjA1NjU5NDQ4NTY1MTU5ODE3In0.y"
+
+	Convey("Given I have a Request with Password", t, func() {
+
+		req := NewRequest()
+		req.Password = token
+
+		Convey("When I extract the claims", func() {
+
+			claims := req.extractClaims()
+
+			Convey("Then claims should be correct", func() {
+				So(claims, ShouldEqual, `{"realm":"Certificate","data":{"commonName":"admin","organization":"system","ou:root":"true","realm":"certificate","serialNumber":"186798427241343083676605659448565159817"},"aud":"aporeto.com","exp":1508516131,"iat":1508429731,"iss":"midgard.apomux.com","sub":"186798427241343083676605659448565159817"}`)
+			})
+		})
+	})
+
+	Convey("Given create a request from an http request", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/tasks?p=v", nil)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "Bearer "+token)
+		r, _ := NewRequestFromHTTPRequest(req)
+
+		Convey("When I extract the claims", func() {
+
+			claims := r.extractClaims()
+
+			Convey("Then claims should be correct", func() {
+				So(claims, ShouldEqual, `{"realm":"Certificate","data":{"commonName":"admin","organization":"system","ou:root":"true","realm":"certificate","serialNumber":"186798427241343083676605659448565159817"},"aud":"aporeto.com","exp":1508516131,"iat":1508429731,"iss":"midgard.apomux.com","sub":"186798427241343083676605659448565159817"}`)
+			})
+		})
+	})
+
+	Convey("Given I have a Request with invalid token in Password", t, func() {
+
+		req := NewRequest()
+		req.Password = tokenInavalid
+
+		Convey("When I extract the claims", func() {
+
+			claims := req.extractClaims()
+
+			Convey("Then claims should be correct", func() {
+				So(claims, ShouldEqual, `{}`)
+			})
+		})
+	})
+
+	Convey("Given I have a Request with almost invalid token in Password", t, func() {
+
+		req := NewRequest()
+		req.Password = "a.b.c"
+
+		Convey("When I extract the claims", func() {
+
+			claims := req.extractClaims()
+
+			Convey("Then claims should be correct", func() {
+				So(claims, ShouldEqual, `{}`)
+			})
+		})
+	})
+}
+
+func TestRequest_tracingName(t *testing.T) {
+
+	Convey("Given I have a create request on some identity", t, func() {
+
+		req := NewRequest()
+		req.Identity = ListIdentity
+
+		Convey("When I call tracingName for operation create", func() {
+
+			req.Operation = OperationCreate
+			name := req.tracingName()
+
+			Convey("Then name should correct", func() {
+				So(name, ShouldEqual, "elemental.request.create.lists")
+			})
+		})
+
+		Convey("When I call tracingName for operation update", func() {
+
+			req.Operation = OperationUpdate
+			name := req.tracingName()
+
+			Convey("Then name should correct", func() {
+				So(name, ShouldEqual, "elemental.request.update.lists")
+			})
+		})
+
+		Convey("When I call tracingName for operation delete", func() {
+
+			req.Operation = OperationDelete
+			name := req.tracingName()
+
+			Convey("Then name should correct", func() {
+				So(name, ShouldEqual, "elemental.request.delete.lists")
+			})
+		})
+
+		Convey("When I call tracingName for operation info", func() {
+
+			req.Operation = OperationInfo
+			name := req.tracingName()
+
+			Convey("Then name should correct", func() {
+				So(name, ShouldEqual, "elemental.request.info.lists")
+			})
+		})
+
+		Convey("When I call tracingName for operation retrieve", func() {
+
+			req.Operation = OperationRetrieve
+			name := req.tracingName()
+
+			Convey("Then name should correct", func() {
+				So(name, ShouldEqual, "elemental.request.retrieve.lists")
+			})
+		})
+
+		Convey("When I call tracingName for operation retrieve many", func() {
+
+			req.Operation = OperationRetrieveMany
+			name := req.tracingName()
+
+			Convey("Then name should correct", func() {
+				So(name, ShouldEqual, "elemental.request.retrieve_many.lists")
+			})
+		})
+
+		Convey("When I call tracingName for operation patch", func() {
+
+			req.Operation = OperationPatch
+			name := req.tracingName()
+
+			Convey("Then name should correct", func() {
+				So(name, ShouldEqual, "elemental.request.patch.lists")
+			})
+		})
+
+		Convey("When I call tracingName for operation unknown", func() {
+
+			req.Operation = Operation("nope")
+			name := req.tracingName()
+
+			Convey("Then name should correct", func() {
+				So(name, ShouldEqual, "Unknown operation: nope")
+			})
+		})
+	})
+
 }
