@@ -7,6 +7,7 @@ import "github.com/opentracing/opentracing-go"
 type ClaimsHolder interface {
 	SetClaims([]string)
 	GetClaims() []string
+	GetClaimsMap() map[string]string
 }
 
 // A TokenHolder is the interface of a structure that can hold a token.
