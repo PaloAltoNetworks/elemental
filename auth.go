@@ -1,6 +1,10 @@
 package elemental
 
-import "github.com/opentracing/opentracing-go"
+import (
+	"crypto/tls"
+
+	"github.com/opentracing/opentracing-go"
+)
 
 // A ClaimsHolder is the interface of a structure that can hold
 // Identity Claims (as in a JWT).
@@ -13,6 +17,7 @@ type ClaimsHolder interface {
 // A TokenHolder is the interface of a structure that can hold a token.
 type TokenHolder interface {
 	GetToken() string
+	TLSConnectionState() *tls.ConnectionState
 }
 
 // A SpanHolder is the interface of a structure that can holde a tracing span.
