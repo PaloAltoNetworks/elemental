@@ -8,7 +8,7 @@ import "github.com/aporeto-inc/elemental"
 {% set _ = glob.update({'prefix': 'elemental.'}) %}
 {% endif %}
 
-const nodocString = "[nodoc]" // nolint: varcheck
+const nodocString = "[nodoc]" // nolint: varcheck,deadcode
 
 var relationshipsRegistry {{ glob.prefix }}RelationshipsRegistry
 
