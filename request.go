@@ -64,10 +64,8 @@ func NewRequest() *Request {
 // NewRequestWithContext returns a new Request with the given context.Context.
 func NewRequestWithContext(ctx context.Context) *Request {
 
-	uuidV4, _ := uuid.NewV4()
-
 	return &Request{
-		RequestID:    uuidV4.String(),
+		RequestID:    uuid.Must(uuid.NewV4()).String(),
 		Parameters:   url.Values{},
 		Headers:      http.Header{},
 		Metadata:     map[string]interface{}{},
@@ -199,10 +197,8 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		wireContext, _ = tracer.Extract(opentracing.TextMap, opentracing.HTTPHeadersCarrier(req.Header))
 	}
 
-	uuidV4, _ := uuid.NewV4()
-
 	return &Request{
-		RequestID:            uuidV4.String(),
+		RequestID:            uuid.Must(uuid.NewV4()).String(),
 		Namespace:            req.Header.Get("X-Namespace"),
 		Recursive:            recursive,
 		Page:                 page,
