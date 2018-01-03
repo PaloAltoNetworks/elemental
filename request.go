@@ -1,6 +1,7 @@
 package elemental
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
@@ -51,10 +52,17 @@ type Request struct {
 
 	span        opentracing.Span
 	wireContext opentracing.SpanContext
+	context     context.Context
 }
 
 // NewRequest returns a new Request.
 func NewRequest() *Request {
+
+	return NewRequestWithContext(context.Background())
+}
+
+// NewRequestWithContext returns a new Request with the given context.Context.
+func NewRequestWithContext(ctx context.Context) *Request {
 
 	return &Request{
 		RequestID:    uuid.NewV4().String(),
@@ -62,6 +70,7 @@ func NewRequest() *Request {
 		Headers:      http.Header{},
 		Metadata:     map[string]interface{}{},
 		TrackingData: opentracing.TextMapCarrier{},
+		context:      ctx,
 	}
 }
 
@@ -214,6 +223,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		wireContext:          wireContext,
 		Order:                req.URL.Query()["order"],
 		ClientIP:             req.RemoteAddr,
+		context:              req.Context(),
 	}, nil
 }
 
@@ -330,6 +340,7 @@ func (r *Request) Duplicate() *Request {
 	req.ExternalTrackingType = r.ExternalTrackingType
 	req.ClientIP = r.ClientIP
 	req.Order = append([]string{}, r.Order...)
+	req.context = r.context
 
 	for k, v := range r.Headers {
 		req.Headers[k] = v
@@ -367,6 +378,11 @@ func (r *Request) Encode(entity Identifiable) error {
 func (r *Request) Decode(dst interface{}) error {
 
 	return UnmarshalJSON(r.Data, &dst)
+}
+
+// Context returns the request context.Context.
+func (r *Request) Context() context.Context {
+	return r.context
 }
 
 func (r *Request) String() string {
