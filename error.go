@@ -7,6 +7,7 @@ package elemental
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
 )
 
@@ -108,4 +109,46 @@ func DecodeErrors(data []byte) (Errors, error) {
 	}
 
 	return e, nil
+}
+
+// IsValidationError returns true if the given error is a validation error
+// with the given title for the given attribute.
+func IsValidationError(err error, title string, attribute string) bool {
+
+	var elementalError Error
+	switch e := err.(type) {
+
+	case Errors:
+		if e.Code() != http.StatusUnprocessableEntity {
+			return false
+		}
+		if len(e) != 1 {
+			return false
+		}
+		elementalError = e[0].(Error)
+
+	case Error:
+		if e.Code != http.StatusUnprocessableEntity {
+			return false
+		}
+		elementalError = e
+
+	default:
+		return false
+	}
+
+	if elementalError.Title != title {
+		return false
+	}
+
+	if elementalError.Data == nil {
+		return false
+	}
+
+	m, ok := elementalError.Data.(map[string]interface{})
+	if !ok {
+		return false
+	}
+
+	return m["attribute"].(string) == attribute
 }

@@ -5,7 +5,9 @@
 package elemental
 
 import (
+	"errors"
 	"fmt"
+	"net/http"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -94,5 +96,149 @@ func TestError_At(t *testing.T) {
 			So(errs.At(1).Code, ShouldEqual, -1)
 		})
 	})
+}
 
+func TestError_IsValidationError(t *testing.T) {
+
+	Convey("Given I have a list of one validation error", t, func() {
+
+		err := NewError("the title", "the description", "http.test", http.StatusUnprocessableEntity)
+		err.Data = map[string]interface{}{"attribute": "theattr"}
+
+		errs := NewErrors(err)
+
+		Convey("When I call IsValidationError with expected title and attribute", func() {
+
+			ok := IsValidationError(errs, "the title", "theattr")
+
+			Convey("Then is should be ok", func() {
+				So(ok, ShouldBeTrue)
+			})
+		})
+
+		Convey("When I call IsValidationError with expected title and non expected attribute", func() {
+
+			ok := IsValidationError(errs, "the title", "not-theattr")
+
+			Convey("Then is should not be ok", func() {
+				So(ok, ShouldBeFalse)
+			})
+		})
+
+		Convey("When I call IsValidationError with non expected title and expected attribute", func() {
+
+			ok := IsValidationError(errs, "not the title", "theattr")
+
+			Convey("Then is should not be ok", func() {
+				So(ok, ShouldBeFalse)
+			})
+		})
+	})
+
+	Convey("Given I have a list of multiple validation errors", t, func() {
+
+		err := NewError("the title", "the description", "http.test", http.StatusUnprocessableEntity)
+		err.Data = map[string]interface{}{"attribute": "theattr"}
+
+		errs := NewErrors(err, err)
+
+		Convey("When I call IsValidationError with expected title and attribute", func() {
+
+			ok := IsValidationError(errs, "the title", "theattr")
+
+			Convey("Then is should not be ok", func() {
+				So(ok, ShouldBeFalse)
+			})
+		})
+	})
+
+	Convey("Given I have a single validation error", t, func() {
+
+		err := NewError("the title", "the description", "http.test", http.StatusUnprocessableEntity)
+		err.Data = map[string]interface{}{"attribute": "theattr"}
+
+		Convey("When I call IsValidationError with expected title and attribute", func() {
+
+			ok := IsValidationError(err, "the title", "theattr")
+
+			Convey("Then is should be ok", func() {
+				So(ok, ShouldBeTrue)
+			})
+		})
+	})
+
+	Convey("Given I have a classic error", t, func() {
+
+		err := errors.New("not elemental")
+
+		Convey("When I call IsValidationError", func() {
+
+			ok := IsValidationError(err, "the title", "theattr")
+
+			Convey("Then is should not be ok", func() {
+				So(ok, ShouldBeFalse)
+			})
+		})
+	})
+
+	Convey("Given I have a list of non validation elemental error", t, func() {
+
+		err := NewError("the title", "the description", "http.test", http.StatusNotFound)
+		err.Data = map[string]interface{}{"attribute": "theattr"}
+
+		errs := NewErrors(err)
+
+		Convey("When I call IsValidationError with expected title and attribute", func() {
+
+			ok := IsValidationError(errs, "the title", "theattr")
+
+			Convey("Then is should not be ok", func() {
+				So(ok, ShouldBeFalse)
+			})
+		})
+	})
+
+	Convey("Given I have a non validation elemental error", t, func() {
+
+		err := NewError("the title", "the description", "http.test", http.StatusNotFound)
+		err.Data = map[string]interface{}{"attribute": "theattr"}
+
+		Convey("When I call IsValidationError with expected title and attribute", func() {
+
+			ok := IsValidationError(err, "the title", "theattr")
+
+			Convey("Then is should not be ok", func() {
+				So(ok, ShouldBeFalse)
+			})
+		})
+	})
+
+	Convey("Given I have a validation elemental error with no data", t, func() {
+
+		err := NewError("the title", "the description", "http.test", http.StatusUnprocessableEntity)
+
+		Convey("When I call IsValidationError with expected title and attribute", func() {
+
+			ok := IsValidationError(err, "the title", "theattr")
+
+			Convey("Then is should not be ok", func() {
+				So(ok, ShouldBeFalse)
+			})
+		})
+	})
+
+	Convey("Given I have a validation elemental error with no bad data", t, func() {
+
+		err := NewError("the title", "the description", "http.test", http.StatusUnprocessableEntity)
+		err.Data = "zob"
+
+		Convey("When I call IsValidationError with expected title and attribute", func() {
+
+			ok := IsValidationError(err, "the title", "theattr")
+
+			Convey("Then is should not be ok", func() {
+				So(ok, ShouldBeFalse)
+			})
+		})
+	})
 }

@@ -6,6 +6,11 @@ import (
 	"reflect"
 )
 
+const (
+	readOnlyErrorTitle     = "Read Only Error"
+	creationOnlyErrorTitle = "Creation Only Error"
+)
+
 // ValidateAdvancedSpecification verifies advanced specifications attributes like ReadOnly and CreationOnly.
 //
 // For instance, it will check if the given Manipulable has field marked as
@@ -33,7 +38,7 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 				}
 
 				e := NewError(
-					"Read Only Error",
+					readOnlyErrorTitle,
 					fmt.Sprintf("Field %s is read only. You cannot set its value.", spec.Name),
 					"elemental",
 					http.StatusUnprocessableEntity,
@@ -45,7 +50,7 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 		case OperationUpdate:
 			if !spec.CreationOnly && spec.ReadOnly && !areFieldValuesEqual(field, obj, pristine) {
 				e := NewError(
-					"Read Only Error",
+					readOnlyErrorTitle,
 					fmt.Sprintf("Field %s is read only. You cannot modify its value.", spec.Name),
 					"elemental",
 					http.StatusUnprocessableEntity,
@@ -56,7 +61,7 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 
 			if spec.CreationOnly && !areFieldValuesEqual(field, obj, pristine) {
 				e := NewError(
-					"Creation Only Error",
+					creationOnlyErrorTitle,
 					fmt.Sprintf("Field %s can only be set during creation. You cannot modify its value.", spec.Name),
 					"elemental",
 					http.StatusUnprocessableEntity,
