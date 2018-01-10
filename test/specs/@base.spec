@@ -94,7 +94,7 @@
             "name": "parentType",
             "orderable": true,
             "primary_key": false,
-            "read_only": false,
+            "read_only": true,
             "required": false,
             "secret": false,
             "setter": false,
