@@ -34,3 +34,18 @@ func (o *UnmarshalableList) MarshalJSON() ([]byte, error) {
 
 // Validate validates the data
 func (o *UnmarshalableList) Validate() elemental.Errors { return nil }
+
+// An UnmarshalableError is a List that cannot be marshalled or unmarshalled.
+type UnmarshalableError struct {
+	elemental.Error
+}
+
+// UnmarshalJSON makes the UnmarshalableError not unmarshalable.
+func (o *UnmarshalableError) UnmarshalJSON([]byte) error {
+	return fmt.Errorf("error unmarshalling")
+}
+
+// MarshalJSON makes the UnmarshalableError not marshalable.
+func (o *UnmarshalableError) MarshalJSON() ([]byte, error) {
+	return nil, fmt.Errorf("error marshalling")
+}
