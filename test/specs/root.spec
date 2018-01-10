@@ -27,13 +27,12 @@
         }
     ],
     "model": {
+        "aliases": [],
         "create": false,
         "delete": false,
         "description": "Root object of the API",
         "entity_name": "Root",
-        "extends": [
-          "@base"
-        ],
+        "extends": [],
         "get": true,
         "package": "todo-list",
         "resource_name": "root",
