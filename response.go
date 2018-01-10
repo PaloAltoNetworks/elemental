@@ -12,6 +12,7 @@ type Response struct {
 	Data       json.RawMessage `json:"data,omitempty"`
 	Count      int             `json:"count"`
 	Total      int             `json:"total"`
+	Messages   []string        `json:"messages,omitempty"`
 }
 
 // NewResponse returns a new Response
