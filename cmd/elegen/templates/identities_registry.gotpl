@@ -1,0 +1,108 @@
+package {{ .Set.Configuration.Name }}
+
+import "github.com/aporeto-inc/elemental"
+
+func init() {
+    {{ range .Set.Specifications }}
+    elemental.RegisterIdentity({{.EntityName}}Identity){{ end }}
+}
+
+// ModelVersion returns the current version of the model.
+func ModelVersion() float64 { return {{ .Set.APIInfo.Version }} }
+
+// IdentifiableForIdentity returns a new instance of the Identifiable for the given identity name.
+func IdentifiableForIdentity(identity string) elemental.Identifiable{
+
+  switch identity {
+    {{ range .Set.Specifications }}
+      case {{ .EntityName }}Identity.Name:
+        return New{{ .EntityName }}()
+    {{- end }}
+    default:
+      return nil
+  }
+}
+
+// IdentifiableForCategory returns a new instance of the Identifiable for the given category name.
+func IdentifiableForCategory(category string) elemental.Identifiable{
+
+  switch category {
+    {{ range .Set.Specifications }}
+      case {{ .EntityName }}Identity.Category:
+        return New{{ .EntityName }}()
+    {{- end }}
+    default:
+      return nil
+  }
+}
+
+// ContentIdentifiableForIdentity returns a new instance of a ContentIdentifiable for the given identity name.
+func ContentIdentifiableForIdentity(identity string) elemental.ContentIdentifiable{
+
+  switch identity {
+    {{ range .Set.Specifications }}
+      {{ if not .IsRoot -}}
+      case {{ .EntityName }}Identity.Name:
+        return &{{ .EntityNamePlural }}List{}
+      {{- end }}
+    {{- end }}
+    default:
+      return nil
+  }
+}
+
+// ContentIdentifiableForCategory returns a new instance of a ContentIdentifiable for the given category name.
+func ContentIdentifiableForCategory(category string) elemental.ContentIdentifiable{
+
+  switch category {
+    {{ range .Set.Specifications }}
+      {{ if not .IsRoot -}}
+      case {{ .EntityName }}Identity.Category:
+        return &{{ .EntityNamePlural }}List{}
+      {{- end }}
+    {{- end }}
+    default:
+      return nil
+  }
+}
+
+// AllIdentities returns all existing identities.
+func AllIdentities() []elemental.Identity {
+
+  return []elemental.Identity{
+    {{- range .Set.Specifications }}
+      {{ .EntityName }}Identity,
+    {{- end }}
+  }
+}
+
+var aliasesMap = map[string]elemental.Identity {
+  {{- range .Set.Specifications }}
+    {{- $entityName := .EntityName -}}
+    {{ range $i, $alias := .Aliases }}
+    "{{ $alias }}": {{ $entityName }}Identity,
+    {{- end }}
+  {{- end }}
+}
+
+// IdentityFromAlias returns the Identity associated to the given alias.
+func IdentityFromAlias(alias string) elemental.Identity {
+
+  return aliasesMap[alias]
+}
+
+// AliasesForIdentity returns all the aliases for the given identity.
+func AliasesForIdentity(identity elemental.Identity) []string {
+
+  switch identity {
+    {{- range .Set.Specifications }}
+    case {{ .EntityName }}Identity:
+      return []string{ {{ range $i, $alias := .Aliases }}
+        "{{ $alias }}",
+        {{- end }}
+        }
+    {{- end }}
+  }
+
+  return nil
+}

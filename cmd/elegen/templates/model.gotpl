@@ -1,0 +1,422 @@
+package {{ .Set.Configuration.Name }}
+
+import (
+    "fmt"
+    "sync"
+
+    "github.com/aporeto-inc/elemental"
+    {{ range .Spec.TypeProviders -}}
+    "{{ . }}"
+    {{ end -}}
+)
+
+
+{{ range $i, $enum := .Enums }}
+// {{ $enum.Type }} represents the possible values for attribute "{{ $enum.Type }}".
+type {{ $enum.Type }} string
+
+const (
+    {{ range $name, $value := $enum.Values }}
+    // {{ $name }} represents the value {{ $value }}.
+    {{ $name }} {{ $enum.Type }} = "{{ $value }}"
+    {{ end }}
+)
+{{ end }}
+
+// {{ .Spec.EntityName }}Identity represents the Identity of the object.
+var {{ .Spec.EntityName }}Identity = elemental.Identity {
+    Name:     "{{ .Spec.RestName}}",
+    Category: "{{ .Spec.ResourceName }}",
+}
+
+
+{{ if not .Spec.IsRoot }}
+// {{ .Spec.EntityNamePlural }}List represents a list of {{ .Spec.EntityNamePlural }}
+type {{ .Spec.EntityNamePlural }}List []*{{ .Spec.EntityName}}
+
+// ContentIdentity returns the identity of the objects in the list.
+func (o {{ .Spec.EntityNamePlural }}List) ContentIdentity() elemental.Identity {
+
+    return {{ .Spec.EntityName}}Identity
+}
+
+// Copy returns a pointer to a copy the {{ .Spec.EntityNamePlural }}List.
+func (o {{ .Spec.EntityNamePlural }}List) Copy() elemental.ContentIdentifiable {
+
+    copy := append({{ .Spec.EntityNamePlural }}List{}, o...)
+    return &copy
+}
+
+// Append appends the objects to the a new copy of the {{ .Spec.EntityNamePlural }}List.
+func (o {{ .Spec.EntityNamePlural }}List) Append(objects ...elemental.Identifiable) elemental.ContentIdentifiable {
+
+    out := append({{ .Spec.EntityNamePlural }}List{}, o...)
+    for _, obj := range objects {
+        out = append(out, obj.(*{{ .Spec.EntityName}}))
+    }
+
+    return out
+}
+
+// List converts the object to an elemental.IdentifiablesList.
+func (o {{ .Spec.EntityNamePlural }}List) List() elemental.IdentifiablesList {
+
+    out := elemental.IdentifiablesList{}
+    for _, item := range o {
+        out = append(out, item)
+    }
+
+    return out
+}
+
+// DefaultOrder returns the default ordering fields of the content.
+func (o {{ .Spec.EntityNamePlural }}List) DefaultOrder() []string {
+
+    return []string{
+        {{ range .Spec.OrderingAttributes -}}
+        "{{ .Name }}",
+        {{ end }}
+    }
+}
+
+// Version returns the version of the content.
+func (o {{ .Spec.EntityNamePlural }}List) Version() int {
+
+  return {{ .Set.APIInfo.Version }}
+}
+
+{{ end }}
+
+
+// {{ .Spec.EntityName }} represents the model of a {{ .Spec.RestName }}
+type {{ .Spec.EntityName }} struct {
+{{range .Spec.Attributes -}}
+{{ makeAttr . }}
+{{- end }}
+
+    ModelVersion int `json:"-" bson:"_modelversion"`
+
+    sync.Mutex
+}
+
+// New{{ .Spec.EntityName }} returns a new *{{ .Spec.EntityName }}
+func New{{ .Spec.EntityName }}() *{{ .Spec.EntityName }} {
+
+    return &{{ .Spec.EntityName }}{
+        ModelVersion: {{ .Set.APIInfo.Version }},
+        {{ range $name, $constructor := .Spec.AttributeInitializers -}}
+        {{ $name }}: {{ $constructor }},
+        {{ end }}
+    }
+}
+
+// Identity returns the Identity of the object.
+func (o *{{ .Spec.EntityName }}) Identity() elemental.Identity {
+
+    return {{ .Spec.EntityName }}Identity
+}
+
+// Identifier returns the value of the object's unique identifier.
+func (o *{{ .Spec.EntityName }}) Identifier() string {
+
+    {{ if .Spec.Identifier -}}
+    return o.{{ .Spec.Identifier.ConvertedName }}
+    {{- else -}}
+    return ""
+    {{- end }}
+}
+
+// SetIdentifier sets the value of the object's unique identifier.
+func (o *{{ .Spec.EntityName }}) SetIdentifier(id string) {
+
+    {{ if .Spec.Identifier -}}
+    o.{{ .Spec.Identifier.ConvertedName }} = id
+    {{- end }}
+}
+
+// Version returns the hardcoded version of the model.
+func (o *{{ .Spec.EntityName }}) Version() int {
+
+    return {{ .Set.APIInfo.Version }}
+}
+
+// DefaultOrder returns the list of default ordering fields.
+func (o *{{ .Spec.EntityName  }}) DefaultOrder() []string {
+
+    return []string{
+        {{ range .Spec.OrderingAttributes -}}
+        "{{ .Name }}",
+        {{ end }}
+    }
+}
+
+{{ if .Spec.Description }}
+// Doc returns the documentation for the object
+func (o *{{ .Spec.EntityName }}) Doc() string {
+
+    {{ if eq .Spec.Description "[nodoc]" }}
+    return nodocString
+    {{ else }}
+    return `{{ .Spec.Description }}`
+    {{ end }}
+}
+{{ end }}
+
+func  (o *{{ .Spec.EntityName }}) String() string {
+
+    return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
+}
+
+{{ range .Spec.Attributes }}
+{{ if .Getter }}
+// Get{{ .ConvertedName }} returns the {{ .ConvertedName }} of the receiver.
+func (o *{{ $.Spec.EntityName }}) Get{{ .ConvertedName }}() {{ .ConvertedType }} {
+
+    return o.{{ .ConvertedName }}
+}
+
+{{ end }}
+{{ if .Setter }}
+// Set{{ .ConvertedName }} the given {{ .ConvertedName }} of the receiver.
+func (o *{{ $.Spec.EntityName }}) Set{{ .ConvertedName }}({{ .Name }} {{ .ConvertedType }}) {
+
+    o.{{ .ConvertedName }} = {{ .Name }}
+}
+{{ end }}
+{{ end }}
+
+// Validate valides the current information stored into the structure.
+func (o *{{ .Spec.EntityName }}) Validate() error {
+
+    errors := elemental.Errors{}
+    requiredErrors := elemental.Errors{}
+
+    {{ range .Spec.Attributes }}
+    {{ if not .Transient }}
+    {{ if .Exposed }}
+
+    {{ if .Required }}
+    {{ if eq .Type "string" }}
+    if err := elemental.ValidateRequiredString("{{ .Name }}", o.{{ .ConvertedName }}); err != nil {
+        requiredErrors = append(requiredErrors, err)
+    }
+
+    {{ end }}
+    {{ if eq .Type "time" }}
+    if err := elemental.ValidateRequiredTime("{{ .Name }}", o.{{ .ConvertedName }}); err != nil {
+        requiredErrors = append(requiredErrors, err)
+    }
+
+    {{ end }}
+    {{ if eq .Type "external" }}
+    if err := elemental.ValidateRequiredExternal("{{ .Name }}", o.{{ .ConvertedName }}); err != nil {
+        requiredErrors = append(requiredErrors, err)
+    }
+
+    {{ end }}
+    {{ end }}
+
+    {{ if .AllowedChoices }}
+    if err := elemental.ValidateStringInList("{{ .Name }}", string(o.{{ .ConvertedName }}), []string{"{{ join .AllowedChoices `", "` }}"}, {{ .Autogenerated }}); err != nil {
+        errors = append(errors, err)
+    }
+
+    {{ end }}
+
+    {{ if .AllowedChars }}
+    if err := elemental.ValidatePattern("{{ .Name }}", o.{{ .ConvertedName }}, `{{ .AllowedChars }}`, {{ .Required }}); err != nil {
+        errors = append(errors, err)
+    }
+
+    {{ end }}
+
+    {{ if gt .MaxLength 0 }}
+    if err := elemental.ValidateMaximumLength("{{ .Name }}", o.{{ .ConvertedName }}, {{ .MaxLength }}, false); err != nil {
+        errors = append(errors, err)
+    }
+
+    {{ end }}
+
+    {{ if gt .MinLength 0 }}
+    if err := elemental.ValidateMinimumLength("{{ .Name }}", o.{{ .ConvertedName }}, {{ .MinLength }}, false); err != nil {
+        errors = append(errors, err)
+    }
+
+    {{ end }}
+
+    {{ if gt .MaxValue 0.0 }}
+    {{ if eq .Type "float" }}
+    if err := elemental.ValidateMaximumFloat("{{ .Name }}", o.{{ .ConvertedName }}, {{ .MaxValue }}, false); err != nil {
+        errors = append(errors, err)
+    }
+
+    {{ else }}
+    if err := elemental.ValidateMaximumInt("{{ .Name }}", o.{{ .ConvertedName }}, int({{ .MaxValue }}), false); err != nil {
+        errors = append(errors, err)
+    }
+
+    {{ end }}
+    {{ end }}
+
+    {{ if gt .MinValue 0.0 }}
+    {{ if eq .Type "float" }}
+    if err := elemental.ValidateMinimumFloat("{{ .Name }}", o.{{ .ConvertedName }}, {{ .MinValue }}, false); err != nil {
+        errors = append(errors, err)
+    }
+
+    {{ else }}
+    if err := elemental.ValidateMinimumInt("{{ .Name }}", o.{{ .ConvertedName }}, int({{ .MinValue }}), false); err != nil {
+        errors = append(errors, err)
+    }
+
+    {{ end }}
+    {{ end }}
+
+    {{ if .Required }}
+    {{ if eq .Type "string" }}
+    if err := elemental.ValidateRequiredString("{{ .Name }}", o.{{ .ConvertedName }}); err != nil {
+        errors = append(errors, err)
+    }
+
+    {{ end }}
+    {{ if eq .Type "time" }}
+    if err := elemental.ValidateRequiredTime("{{ .Name }}", o.{{ .ConvertedName }}); err != nil {
+        errors = append(errors, err)
+    }
+
+    {{ end }}
+    {{ if eq .Type "external" }}
+    if err := elemental.ValidateRequiredExternal("{{ .Name }}", o.{{ .ConvertedName }}); err != nil {
+        errors = append(errors, err)
+    }
+
+    {{ end }}
+    {{ end }}
+
+    {{ end }}
+    {{ end }}
+    {{ end }}
+
+    if len(requiredErrors) > 0 {
+      return requiredErrors
+    }
+
+    if len(errors) > 0 {
+        return errors
+    }
+
+    return nil
+}
+
+// SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
+func (*{{ .Spec.EntityName }}) SpecificationForAttribute(name string) elemental.AttributeSpecification {
+
+  if v, ok := {{ .Spec.EntityName }}AttributesMap[name]; ok {
+    return v
+  }
+
+  // We could not find it, so let's check on the lower case indexed spec map
+  return {{ .Spec.EntityName }}LowerCaseAttributesMap[name]
+}
+
+// AttributeSpecifications returns the full attribute specifications map.
+func (*{{ .Spec.EntityName }}) AttributeSpecifications() map[string]elemental.AttributeSpecification {
+
+  return {{ .Spec.EntityName }}AttributesMap
+}
+
+// {{ .Spec.EntityName }}AttributesMap represents the map of attribute for {{ .Spec.EntityName }}.
+var {{ .Spec.EntityName }}AttributesMap = map[string]elemental.AttributeSpecification{
+  {{ range .Spec.Attributes }}
+    "{{ .ConvertedName }}": elemental.AttributeSpecification{
+      AllowedChars: `{{ .AllowedChars}}`,
+      AllowedChoices: {{ if .AllowedChoices -}}[]string{"{{ join .AllowedChoices `", "` }}"}{{ else }}[]string{}{{ end }},
+      Autogenerated: {{ .Autogenerated }},
+      Availability: "{{ .Availability }}",
+      Channel: "{{ .Channel }}",
+      CreationOnly: {{ .CreationOnly }},
+      DefaultOrder: {{ .DefaultOrder }},
+      {{ if eq .Type "external" -}}
+      DefaultValue: {{ if .DefaultValue }}{{ .Initializer }}{{ else }}nil{{ end }},
+      {{- else if eq .Type "enum" -}}
+      DefaultValue: {{ if .DefaultValue }}{{ .ConvertedName }}Type{{ capitalize (lower .DefaultValue) }}{{ else }}nil{{ end }},
+      {{- else if eq .Type "string" -}}
+      DefaultValue: {{ if .DefaultValue -}}"{{ .DefaultValue }}"{{ else }}nil{{ end }},
+      {{- else -}}
+      DefaultValue: {{ if .DefaultValue -}}{{ .DefaultValue }}{{ else }}nil {{ end }},
+      {{- end }}
+      Deprecated: {{ .Deprecated }},
+      Description: `{{ .Description }}`,
+      Exposed: {{ .Exposed }},
+      Filterable: {{ .Filterable }},
+      ForeignKey: {{ .ForeignKey }},
+      Format: "{{ .Format }}",
+      Getter: {{ .Getter }},
+      Identifier: {{ .Identifier }},
+      Index: {{ .Index }},
+      MaxLength: {{ .MaxLength }},
+      MaxValue: {{ .MaxValue }},
+      MinLength: {{ .MinLength }},
+      MinValue: {{ .MinValue }},
+      Name: "{{ .Name }}",
+      Orderable: {{ .Orderable }},
+      PrimaryKey: {{ .PrimaryKey }},
+      ReadOnly: {{ .ReadOnly }},
+      Required: {{ .Required }},
+      Setter: {{ .Setter }},
+      Stored: {{ .Stored }},
+      SubType: "{{ .SubType }}",
+      Transient: {{ .Transient }},
+      Type: "{{ .Type }}",
+      Unique: {{.Unique}},
+    },
+  {{ end }}
+}
+
+// {{ .Spec.EntityName }}LowerCaseAttributesMap represents the map of attribute for {{ .Spec.EntityName }}.
+var {{ .Spec.EntityName }}LowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
+  {{ range .Spec.Attributes }}
+    "{{ .Name }}": elemental.AttributeSpecification{
+      AllowedChars: `{{ .AllowedChars}}`,
+      AllowedChoices: {{ if .AllowedChoices -}}[]string{"{{ join .AllowedChoices `", "` }}"}{{ else }}[]string{}{{ end }},
+      Autogenerated: {{ .Autogenerated }},
+      Availability: "{{ .Availability }}",
+      Channel: "{{ .Channel }}",
+      CreationOnly: {{ .CreationOnly }},
+      DefaultOrder: {{ .DefaultOrder }},
+      {{ if eq .Type "external" -}}
+      DefaultValue: {{ if .DefaultValue }}{{ .Initializer }}{{ else }}nil{{ end }},
+      {{- else if eq .Type "enum" -}}
+      DefaultValue: {{ if .DefaultValue }}{{ .ConvertedName }}Type{{ capitalize (lower .DefaultValue) }}{{ else }}nil{{ end }},
+      {{- else if eq .Type "string" -}}
+      DefaultValue: {{ if .DefaultValue -}}"{{ .DefaultValue }}"{{ else }}nil{{ end }},
+      {{- else -}}
+      DefaultValue: {{ if .DefaultValue -}}{{ .DefaultValue }}{{ else }}nil {{ end }},
+      {{- end }}
+      Deprecated: {{ .Deprecated }},
+      Description: `{{ .Description }}`,
+      Exposed: {{ .Exposed }},
+      Filterable: {{ .Filterable }},
+      ForeignKey: {{ .ForeignKey }},
+      Format: "{{ .Format }}",
+      Getter: {{ .Getter }},
+      Identifier: {{ .Identifier }},
+      Index: {{ .Index }},
+      MaxLength: {{ .MaxLength }},
+      MaxValue: {{ .MaxValue }},
+      MinLength: {{ .MinLength }},
+      MinValue: {{ .MinValue }},
+      Name: "{{ .Name }}",
+      Orderable: {{ .Orderable }},
+      PrimaryKey: {{ .PrimaryKey }},
+      ReadOnly: {{ .ReadOnly }},
+      Required: {{ .Required }},
+      Setter: {{ .Setter }},
+      Stored: {{ .Stored }},
+      SubType: "{{ .SubType }}",
+      Transient: {{ .Transient }},
+      Type: "{{ .Type }}",
+      Unique: {{.Unique}},
+    },
+  {{ end }}
+}
