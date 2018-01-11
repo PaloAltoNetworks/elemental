@@ -1,0 +1,69 @@
+package {{ .Set.Configuration.Name }}
+
+import "github.com/aporeto-inc/elemental"
+
+const nodocString = "[nodoc]" // nolint: varcheck,deadcode
+
+
+var relationshipsRegistry elemental.RelationshipsRegistry
+
+// Relationships returns the model relationships.
+func Relationships() elemental.RelationshipsRegistry {
+
+  return relationshipsRegistry
+}
+
+func init() {
+
+  relationshipsRegistry = elemental.RelationshipsRegistry{}
+
+  {{ range $entityName, $relation := .Set.Relationships }}
+  relationshipsRegistry[{{$entityName}}Identity] = &elemental.Relationship{
+    {{- if gt (len $relation.AllowsCreate) 0 }}
+    AllowsCreate: map[string]bool {
+      {{- range $parent := $relation.Get "create" }}
+      "{{ $parent }}" : true,
+      {{- end }}
+    },
+    {{- end }}
+    {{- if gt (len $relation.AllowsUpdate) 0 }}
+    AllowsUpdate: map[string]bool {
+      {{- range $parent := $relation.Get "update" }}
+      "{{ $parent }}" : true,
+      {{- end }}
+    },
+    {{- if eq $relation.Mode "member" }}
+    AllowsPatch: map[string]bool {
+      {{- range $parent := $relation.Allow "update" }}
+      "{{ $parent }}" : true,
+      {{- end }}
+    },
+    {{- end }}
+    {{- end }}
+    {{- if gt (len $relation.AllowsDelete) 0 }}
+    AllowsDelete: map[string]bool {
+      {{- range $parent := $relation.Get "delete" }}
+      "{{ $parent }}" : true,
+      {{- end }}
+    },
+    {{- end }}
+    {{- if gt (len $relation.AllowsGet) 0 }}
+    AllowsRetrieve: map[string]bool {
+      {{- range $parent := $relation.Get "get" }}
+      "{{ $parent }}" : true,
+      {{- end }}
+    },
+    AllowsRetrieveMany: map[string]bool {
+      {{- range $parent := $relation.Get "get" }}
+      "{{ $parent }}" : true,
+      {{- end }}
+    },
+    AllowsInfo: map[string]bool {
+      {{- range $parent := $relation.Get "get" }}
+      "{{ $parent }}" : true,
+      {{- end }}
+    },
+    {{- end }}
+  }
+  {{ end }}
+}
