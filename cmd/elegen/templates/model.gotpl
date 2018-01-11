@@ -6,7 +6,7 @@ import (
 
     "github.com/aporeto-inc/elemental"
     {{ range .Spec.TypeProviders -}}
-    import "{{ . }}"
+    "{{ . }}"
     {{ end -}}
 )
 
