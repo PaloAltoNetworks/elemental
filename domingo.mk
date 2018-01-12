@@ -33,6 +33,7 @@ domingo_lint:
 		--enable=deadcode \
 		--enable=staticcheck \
 		--deadline 5m \
+		--exclude bindata.go \
 		--tests ./...
 
 domingo_unit_tests:
