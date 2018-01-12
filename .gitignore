@@ -1,10 +1,10 @@
 .DS_Store
 .tags
-
-*/debug
-codegen
 *.pyc
 *.egg-info
+*/debug
+codegen
 vendor
 testresults.xml
 cmd/elegen/elegen
+cmd/elegen/build

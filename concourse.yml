@@ -9,6 +9,9 @@ inputs:
 - name: src
   path: go/src/github.com/aporeto-inc/elemental
 
+outputs:
+- name: build
+
 run:
   path: sh
   args:
@@ -22,3 +25,6 @@ run:
       make init || exit 1
       make test || exit 1
       make build || exit 1
+      cd -
+
+      cp -a go/src/github.com/aporeto-inc/elemental/cmd/elegen/build ./build
