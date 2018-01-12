@@ -23,6 +23,7 @@ run:
 
       cd go/src/github.com/aporeto-inc/elemental/cmd/elegen
       make init
+      cd -
 
       cd go/src/github.com/aporeto-inc/elemental/cmd/elegen
       make init || exit 1
