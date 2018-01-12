@@ -5,24 +5,25 @@ import "github.com/aporeto-inc/elemental"
 func init() {
 
 	elemental.RegisterIdentity(ListIdentity)
-	elemental.RegisterIdentity(TaskIdentity)
 	elemental.RegisterIdentity(RootIdentity)
+	elemental.RegisterIdentity(TaskIdentity)
 	elemental.RegisterIdentity(UserIdentity)
 }
 
-// ModelVersion returns the current version of the model
-func ModelVersion() float64 { return 1.0 }
+// ModelVersion returns the current version of the model.
+func ModelVersion() float64 { return 1 }
 
 // IdentifiableForIdentity returns a new instance of the Identifiable for the given identity name.
 func IdentifiableForIdentity(identity string) elemental.Identifiable {
 
 	switch identity {
+
 	case ListIdentity.Name:
 		return NewList()
-	case TaskIdentity.Name:
-		return NewTask()
 	case RootIdentity.Name:
 		return NewRoot()
+	case TaskIdentity.Name:
+		return NewTask()
 	case UserIdentity.Name:
 		return NewUser()
 	default:
@@ -34,12 +35,13 @@ func IdentifiableForIdentity(identity string) elemental.Identifiable {
 func IdentifiableForCategory(category string) elemental.Identifiable {
 
 	switch category {
+
 	case ListIdentity.Category:
 		return NewList()
-	case TaskIdentity.Category:
-		return NewTask()
 	case RootIdentity.Category:
 		return NewRoot()
+	case TaskIdentity.Category:
+		return NewTask()
 	case UserIdentity.Category:
 		return NewUser()
 	default:
@@ -51,8 +53,11 @@ func IdentifiableForCategory(category string) elemental.Identifiable {
 func ContentIdentifiableForIdentity(identity string) elemental.ContentIdentifiable {
 
 	switch identity {
+
 	case ListIdentity.Name:
 		return &ListsList{}
+	case RootIdentity.Name:
+		return &RootsList{}
 	case TaskIdentity.Name:
 		return &TasksList{}
 	case UserIdentity.Name:
@@ -66,8 +71,11 @@ func ContentIdentifiableForIdentity(identity string) elemental.ContentIdentifiab
 func ContentIdentifiableForCategory(category string) elemental.ContentIdentifiable {
 
 	switch category {
+
 	case ListIdentity.Category:
 		return &ListsList{}
+	case RootIdentity.Category:
+		return &RootsList{}
 	case TaskIdentity.Category:
 		return &TasksList{}
 	case UserIdentity.Category:
@@ -82,13 +90,17 @@ func AllIdentities() []elemental.Identity {
 
 	return []elemental.Identity{
 		ListIdentity,
-		TaskIdentity,
 		RootIdentity,
+		TaskIdentity,
 		UserIdentity,
 	}
 }
 
-var aliasesMap = map[string]elemental.Identity{}
+var aliasesMap = map[string]elemental.Identity{
+	"lst": ListIdentity,
+	"tsk": TaskIdentity,
+	"usr": UserIdentity,
+}
 
 // IdentityFromAlias returns the Identity associated to the given alias.
 func IdentityFromAlias(alias string) elemental.Identity {
@@ -101,13 +113,19 @@ func AliasesForIdentity(identity elemental.Identity) []string {
 
 	switch identity {
 	case ListIdentity:
-		return []string{}
-	case TaskIdentity:
-		return []string{}
+		return []string{
+			"lst",
+		}
 	case RootIdentity:
 		return []string{}
+	case TaskIdentity:
+		return []string{
+			"tsk",
+		}
 	case UserIdentity:
-		return []string{}
+		return []string{
+			"usr",
+		}
 	}
 
 	return nil

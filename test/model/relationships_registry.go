@@ -13,6 +13,7 @@ func Relationships() elemental.RelationshipsRegistry {
 }
 
 func init() {
+
 	relationshipsRegistry = elemental.RelationshipsRegistry{}
 
 	relationshipsRegistry[ListIdentity] = &elemental.Relationship{
@@ -35,7 +36,9 @@ func init() {
 			"root": true,
 		},
 	}
+
 	relationshipsRegistry[RootIdentity] = &elemental.Relationship{}
+
 	relationshipsRegistry[TaskIdentity] = &elemental.Relationship{
 		AllowsCreate: map[string]bool{
 			"list": true,
@@ -47,40 +50,46 @@ func init() {
 			"root": true,
 		},
 		AllowsRetrieve: map[string]bool{
-			"root": true,
 			"list": true,
+			"root": true,
 		},
 		AllowsRetrieveMany: map[string]bool{
-			"root": true,
 			"list": true,
+			"root": true,
 		},
 		AllowsInfo: map[string]bool{
-			"root": true,
 			"list": true,
+			"root": true,
 		},
 	}
+
 	relationshipsRegistry[UserIdentity] = &elemental.Relationship{
 		AllowsCreate: map[string]bool{
 			"root": true,
 		},
 		AllowsUpdate: map[string]bool{
-			"root": true,
 			"list": true,
+			"root": true,
+		},
+		AllowsPatch: map[string]bool{
+			"list": true,
+			"root": true,
 		},
 		AllowsDelete: map[string]bool{
 			"root": true,
 		},
 		AllowsRetrieve: map[string]bool{
-			"root": true,
 			"list": true,
+			"root": true,
 		},
 		AllowsRetrieveMany: map[string]bool{
-			"root": true,
 			"list": true,
+			"root": true,
 		},
 		AllowsInfo: map[string]bool{
-			"root": true,
 			"list": true,
+			"root": true,
 		},
 	}
+
 }

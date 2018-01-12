@@ -1,11 +1,13 @@
 package testmodel
 
-import "fmt"
-import "github.com/aporeto-inc/elemental"
+import (
+	"fmt"
+	"sync"
 
-import "sync"
+	"github.com/aporeto-inc/elemental"
+)
 
-// UserIdentity represents the Identity of the object
+// UserIdentity represents the Identity of the object.
 var UserIdentity = elemental.Identity{
 	Name:     "user",
 	Category: "users",
@@ -58,28 +60,28 @@ func (o UsersList) DefaultOrder() []string {
 // Version returns the version of the content.
 func (o UsersList) Version() int {
 
-	return 1.0
+	return 1
 }
 
 // User represents the model of a user
 type User struct {
-	// The identifier
-	ID string `json:"ID" bson:"_id"`
-
 	// The first name
 	FirstName string `json:"firstName" bson:"firstname"`
 
 	// The last name
 	LastName string `json:"lastName" bson:"lastname"`
 
+	// the login
+	UserName string `json:"userName" bson:"username"`
+
+	// The identifier
+	ID string `json:"ID" bson:"_id"`
+
 	// The identifier of the parent of the object
 	ParentID string `json:"parentID" bson:"parentid"`
 
 	// The type of the parent of the object
 	ParentType string `json:"parentType" bson:"parenttype"`
-
-	// the login
-	UserName string `json:"userName" bson:"username"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
@@ -90,7 +92,7 @@ type User struct {
 func NewUser() *User {
 
 	return &User{
-		ModelVersion: 1.0,
+		ModelVersion: 1,
 	}
 }
 
@@ -107,15 +109,15 @@ func (o *User) Identifier() string {
 }
 
 // SetIdentifier sets the value of the object's unique identifier.
-func (o *User) SetIdentifier(ID string) {
+func (o *User) SetIdentifier(id string) {
 
-	o.ID = ID
+	o.ID = id
 }
 
-// Version returns the hardcoded version of the model
+// Version returns the hardcoded version of the model.
 func (o *User) Version() int {
 
-	return 1.0
+	return 1
 }
 
 // DefaultOrder returns the list of default ordering fields.
@@ -205,6 +207,7 @@ var UserAttributesMap = map[string]elemental.AttributeSpecification{
 		Name:           "ID",
 		Orderable:      true,
 		PrimaryKey:     true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
@@ -243,6 +246,7 @@ var UserAttributesMap = map[string]elemental.AttributeSpecification{
 		Format:         "free",
 		Name:           "parentID",
 		Orderable:      true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
@@ -256,6 +260,7 @@ var UserAttributesMap = map[string]elemental.AttributeSpecification{
 		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
@@ -288,6 +293,7 @@ var UserLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Name:           "ID",
 		Orderable:      true,
 		PrimaryKey:     true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
@@ -326,6 +332,7 @@ var UserLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Format:         "free",
 		Name:           "parentID",
 		Orderable:      true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
@@ -339,6 +346,7 @@ var UserLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,

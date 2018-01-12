@@ -34,7 +34,7 @@ func init() {
     },
     {{- if eq $relation.Mode "member" }}
     AllowsPatch: map[string]bool {
-      {{- range $parent := $relation.Allow "update" }}
+      {{- range $parent := $relation.Get "update" }}
       "{{ $parent }}" : true,
       {{- end }}
     },

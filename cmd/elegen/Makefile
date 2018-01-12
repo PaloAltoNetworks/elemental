@@ -1,6 +1,7 @@
 include ../../domingo.mk
 
-build: domingo_write_versions build_linux build_darwin build_windows package
+init: domingo_write_versions
+build: build_linux build_darwin build_windows package
 
 package:
 	mkdir -p ./static

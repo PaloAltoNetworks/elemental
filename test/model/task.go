@@ -1,9 +1,11 @@
 package testmodel
 
-import "fmt"
-import "github.com/aporeto-inc/elemental"
+import (
+	"fmt"
+	"sync"
 
-import "sync"
+	"github.com/aporeto-inc/elemental"
+)
 
 // TaskStatusValue represents the possible values for attribute "status".
 type TaskStatusValue string
@@ -19,7 +21,7 @@ const (
 	TaskStatusTodo TaskStatusValue = "TODO"
 )
 
-// TaskIdentity represents the Identity of the object
+// TaskIdentity represents the Identity of the object.
 var TaskIdentity = elemental.Identity{
 	Name:     "task",
 	Category: "tasks",
@@ -72,28 +74,28 @@ func (o TasksList) DefaultOrder() []string {
 // Version returns the version of the content.
 func (o TasksList) Version() int {
 
-	return 1.0
+	return 1
 }
 
 // Task represents the model of a task
 type Task struct {
-	// The identifier
-	ID string `json:"ID" bson:"_id"`
-
 	// The description
 	Description string `json:"description" bson:"description"`
 
 	// The name
 	Name string `json:"name" bson:"name"`
 
+	// The status of the task
+	Status TaskStatusValue `json:"status" bson:"status"`
+
+	// The identifier
+	ID string `json:"ID" bson:"_id"`
+
 	// The identifier of the parent of the object
 	ParentID string `json:"parentID" bson:"parentid"`
 
 	// The type of the parent of the object
 	ParentType string `json:"parentType" bson:"parenttype"`
-
-	// The status of the task
-	Status TaskStatusValue `json:"status" bson:"status"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
@@ -104,7 +106,7 @@ type Task struct {
 func NewTask() *Task {
 
 	return &Task{
-		ModelVersion: 1.0,
+		ModelVersion: 1,
 		Status:       "TODO",
 	}
 }
@@ -122,15 +124,15 @@ func (o *Task) Identifier() string {
 }
 
 // SetIdentifier sets the value of the object's unique identifier.
-func (o *Task) SetIdentifier(ID string) {
+func (o *Task) SetIdentifier(id string) {
 
-	o.ID = ID
+	o.ID = id
 }
 
-// Version returns the hardcoded version of the model
+// Version returns the hardcoded version of the model.
 func (o *Task) Version() int {
 
-	return 1.0
+	return 1
 }
 
 // DefaultOrder returns the list of default ordering fields.
@@ -147,6 +149,18 @@ func (o *Task) Doc() string {
 func (o *Task) String() string {
 
 	return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
+}
+
+// GetName returns the Name of the receiver.
+func (o *Task) GetName() string {
+
+	return o.Name
+}
+
+// SetName sets the given Name of the receiver.
+func (o *Task) SetName(name string) {
+
+	o.Name = name
 }
 
 // Validate valides the current information stored into the structure.
@@ -208,6 +222,7 @@ var TaskAttributesMap = map[string]elemental.AttributeSpecification{
 		Name:           "ID",
 		Orderable:      true,
 		PrimaryKey:     true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
@@ -229,9 +244,11 @@ var TaskAttributesMap = map[string]elemental.AttributeSpecification{
 		Exposed:        true,
 		Filterable:     true,
 		Format:         "free",
+		Getter:         true,
 		Name:           "name",
 		Orderable:      true,
 		Required:       true,
+		Setter:         true,
 		Stored:         true,
 		Type:           "string",
 	},
@@ -245,6 +262,7 @@ var TaskAttributesMap = map[string]elemental.AttributeSpecification{
 		Format:         "free",
 		Name:           "parentID",
 		Orderable:      true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
@@ -258,13 +276,14 @@ var TaskAttributesMap = map[string]elemental.AttributeSpecification{
 		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
 	},
 	"Status": elemental.AttributeSpecification{
 		AllowedChoices: []string{"DONE", "PROGRESS", "TODO"},
-		DefaultValue:   TaskStatusValue("TODO"),
+		DefaultValue:   TaskStatusTodo,
 		Description:    `The status of the task`,
 		Exposed:        true,
 		Filterable:     true,
@@ -288,6 +307,7 @@ var TaskLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Name:           "ID",
 		Orderable:      true,
 		PrimaryKey:     true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
@@ -309,9 +329,11 @@ var TaskLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Exposed:        true,
 		Filterable:     true,
 		Format:         "free",
+		Getter:         true,
 		Name:           "name",
 		Orderable:      true,
 		Required:       true,
+		Setter:         true,
 		Stored:         true,
 		Type:           "string",
 	},
@@ -325,6 +347,7 @@ var TaskLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Format:         "free",
 		Name:           "parentID",
 		Orderable:      true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
@@ -338,13 +361,14 @@ var TaskLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
 	},
 	"status": elemental.AttributeSpecification{
 		AllowedChoices: []string{"DONE", "PROGRESS", "TODO"},
-		DefaultValue:   TaskStatusValue("TODO"),
+		DefaultValue:   TaskStatusTodo,
 		Description:    `The status of the task`,
 		Exposed:        true,
 		Filterable:     true,
