@@ -1,6 +1,6 @@
 include ../../domingo.mk
 
-build: build_linux build_darwin build_windows package
+build: domingo_write_versions build_linux build_darwin build_windows package
 
 package:
 	mkdir -p ./static
@@ -15,6 +15,6 @@ build_linux: package domingo_build_linux
 	mkdir -p build/linux
 	mv ./elegen build/linux
 
-build_windows: package domingo_build_windows
+build_windows:
 	mkdir -p build/windows
-	mv ./elegen.exe build/windows
+	echo 'echo disabled' > build/windows/elegen
