@@ -21,10 +21,10 @@ run:
       export PATH=$PATH:$GOPATH/bin:$PWD/go/bin
       export GOPATH=$PWD/go:$GOPATH
 
-      cd go/src/github.com/aporeto-inc/elemental
-      cd cmd/elegen
+      cd go/src/github.com/aporeto-inc/elemental/cmd/elegen
       make init
-      cd -
+
+      cd go/src/github.com/aporeto-inc/elemental/cmd/elegen
       make init || exit 1
       make test || exit 1
       make build || exit 1
