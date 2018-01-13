@@ -25,7 +25,7 @@ run:
       make init
       cd -
 
-      cd go/src/github.com/aporeto-inc/elemental/cmd/elegen
+      cd go/src/github.com/aporeto-inc/elemental
       make init || exit 1
       make test || exit 1
       make build || exit 1
