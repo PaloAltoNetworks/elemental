@@ -334,6 +334,9 @@ var {{ .Spec.EntityName }}AttributesMap = map[string]elemental.AttributeSpecific
       {{- if .Channel }}
       Channel: "{{ .Channel }}",
       {{- end }}
+      {{- if .ConvertedName }}
+      ConvertedName: "{{ .ConvertedName }}",
+      {{- end }}
       {{- if .CreationOnly }}
       CreationOnly: {{ .CreationOnly }},
       {{- end }}
@@ -444,6 +447,9 @@ var {{ .Spec.EntityName }}LowerCaseAttributesMap = map[string]elemental.Attribut
       {{- end }}
       {{- if .Channel }}
       Channel: "{{ .Channel }}",
+      {{- end }}
+      {{- if .ConvertedName }}
+      ConvertedName: "{{ .ConvertedName }}",
       {{- end }}
       {{- if .CreationOnly }}
       CreationOnly: {{ .CreationOnly }},
