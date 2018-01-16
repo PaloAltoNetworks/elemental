@@ -25,6 +25,27 @@ func TestError_NewError(t *testing.T) {
 			So(e.Subject, ShouldEqual, "containers")
 			So(e.Title, ShouldEqual, "bad")
 		})
+
+		Convey("Then the string representation should be correct", func() {
+			So(e.Error(), ShouldEqual, "error 42 (containers): bad: something bad")
+		})
+	})
+
+	Convey("Given I create an Error with data", t, func() {
+
+		e := NewErrorWithData("bad", "something bad", "containers", 42, map[string]string{"test": "coucou"})
+
+		Convey("Then the Error should be correctly initialized", func() {
+			So(e.Code, ShouldEqual, 42)
+			So(e.Description, ShouldEqual, "something bad")
+			So(e.Subject, ShouldEqual, "containers")
+			So(e.Title, ShouldEqual, "bad")
+			So(e.Data, ShouldResemble, map[string]string{"test": "coucou"})
+		})
+
+		Convey("Then the string representation should be correct", func() {
+			So(e.Error(), ShouldEqual, "error 42 (containers): bad: something bad")
+		})
 	})
 }
 

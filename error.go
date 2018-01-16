@@ -26,11 +26,18 @@ type Error struct {
 // NewError returns a new Error.
 func NewError(title, description, subject string, code int) Error {
 
+	return NewErrorWithData(title, description, subject, code, nil)
+}
+
+// NewErrorWithData returns a new Error with the given opaque data.
+func NewErrorWithData(title, description, subject string, code int, data interface{}) Error {
+
 	return Error{
 		Code:        code,
 		Description: description,
 		Subject:     subject,
 		Title:       title,
+		Data:        data,
 	}
 }
 
