@@ -161,7 +161,7 @@ func TestPatch_Apply(t *testing.T) {
 			}).Apply(l1)
 
 			Convey("Then err should be correct", func() {
-				So(err.Error(), ShouldEqual, "field 'woops' is invalid")
+				So(err.Error(), ShouldEqual, "error 422 (elemental): Validation Error: field 'woops' is invalid")
 			})
 		})
 	})

@@ -6,6 +6,7 @@ package elemental
 
 import (
 	"fmt"
+	"net/http"
 	"reflect"
 	"strings"
 )
@@ -107,11 +108,11 @@ func (a *Patch) Apply(obj AttributeSpecifiable) error {
 		f := objValue.FieldByName(obj.SpecificationForAttribute(strings.ToLower(k)).ConvertedName)
 
 		if !f.IsValid() {
-			return fmt.Errorf("field '%s' is invalid", k)
+			return NewError("Validation Error", fmt.Sprintf("field '%s' is invalid", k), "elemental", http.StatusUnprocessableEntity)
 		}
 
 		if !f.CanSet() {
-			return fmt.Errorf("field '%s' cannot be set", k)
+			return NewError("Validation Error", fmt.Sprintf("field '%s' cannot be set", k), "elemental", http.StatusUnprocessableEntity)
 		}
 
 		vValue := reflect.ValueOf(v)
