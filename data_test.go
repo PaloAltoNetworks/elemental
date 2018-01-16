@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// ListIdentity represents the Identity of the object
+// ListIdentity represents the Identity of the object.
 var ListIdentity = Identity{
 	Name:     "list",
 	Category: "lists",
@@ -21,10 +21,22 @@ func (o ListsList) ContentIdentity() Identity {
 	return ListIdentity
 }
 
-// Copy returns a copy the ListsList.
+// Copy returns a pointer to a copy the ListsList.
 func (o ListsList) Copy() ContentIdentifiable {
 
-	return append(ListsList{}, o...)
+	copy := append(ListsList{}, o...)
+	return &copy
+}
+
+// Append appends the objects to the a new copy of the ListsList.
+func (o ListsList) Append(objects ...Identifiable) ContentIdentifiable {
+
+	out := append(ListsList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*List))
+	}
+
+	return out
 }
 
 // List converts the object to an IdentifiablesList.
@@ -44,32 +56,19 @@ func (o ListsList) DefaultOrder() []string {
 	return []string{}
 }
 
+// Version returns the version of the content.
 func (o ListsList) Version() int {
 
 	return 1
 }
 
-// Append appends the objects to the a new copy of the ListsList.
-func (o ListsList) Append(objects ...Identifiable) ContentIdentifiable {
-
-	out := append(ListsList{}, o...)
-	for _, obj := range objects {
-		out = append(out, obj.(*List))
-	}
-
-	return out
-}
-
 // List represents the model of a list
 type List struct {
-	// The identifier
-	ID string `json:"ID" bson:"_id"`
-
-	// A creation only only attribute
+	// This attribute is creation only
 	CreationOnly string `json:"creationOnly" bson:"creationonly"`
 
-	// A Date
-	Date time.Time `json:"-" bson:"date"`
+	// The date
+	Date time.Time `json:"date" bson:"date"`
 
 	// The description
 	Description string `json:"description" bson:"description"`
@@ -77,20 +76,23 @@ type List struct {
 	// The name
 	Name string `json:"name" bson:"name"`
 
+	// This attribute is readonly
+	ReadOnly string `json:"readOnly" bson:"readonly"`
+
+	// this is a slice
+	Slice []string `json:"slice" bson:"slice"`
+
+	// This attribute is not exposed
+	Unexposed string `json:"-" bson:"unexposed"`
+
+	// The identifier
+	ID string `json:"ID" bson:"_id"`
+
 	// The identifier of the parent of the object
 	ParentID string `json:"parentID" bson:"parentid"`
 
 	// The type of the parent of the object
 	ParentType string `json:"parentType" bson:"parenttype"`
-
-	// A read only attribute
-	ReadOnly string `json:"readOnly" bson:"readonly"`
-
-	// A Slice
-	Slice []string `json:"-" bson:"slice"`
-
-	// An unexposed attribute
-	Unexposed string `json:"-" bson:"unexposed"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
@@ -101,7 +103,7 @@ type List struct {
 func NewList() *List {
 
 	return &List{
-		ModelVersion: 1.0,
+		ModelVersion: 1,
 	}
 }
 
@@ -118,15 +120,15 @@ func (o *List) Identifier() string {
 }
 
 // SetIdentifier sets the value of the object's unique identifier.
-func (o *List) SetIdentifier(ID string) {
+func (o *List) SetIdentifier(id string) {
 
-	o.ID = ID
+	o.ID = id
 }
 
-// Version returns the hardcoded version of the model
+// Version returns the hardcoded version of the model.
 func (o *List) Version() int {
 
-	return 1.0
+	return 1
 }
 
 // DefaultOrder returns the list of default ordering fields.
@@ -145,39 +147,16 @@ func (o *List) String() string {
 	return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
 }
 
-// GetCreationOnly returns the creationOnly of the receiver
-func (o *List) GetCreationOnly() string {
-	return o.CreationOnly
-}
-
-// GetDate returns the date of the receiver
-func (o *List) GetDate() time.Time {
-	return o.Date
-}
-
-// GetName returns the name of the receiver
+// GetName returns the Name of the receiver.
 func (o *List) GetName() string {
+
 	return o.Name
 }
 
-// SetName set the given name of the receiver
+// SetName sets the given Name of the receiver.
 func (o *List) SetName(name string) {
+
 	o.Name = name
-}
-
-// GetReadOnly returns the readOnly of the receiver
-func (o *List) GetReadOnly() string {
-	return o.ReadOnly
-}
-
-// GetSlice returns the slice of the receiver
-func (o *List) GetSlice() []string {
-	return o.Slice
-}
-
-// GetUnexposed returns the unexposed of the receiver
-func (o *List) GetUnexposed() string {
-	return o.Unexposed
 }
 
 // Validate valides the current information stored into the structure.
@@ -186,27 +165,11 @@ func (o *List) Validate() error {
 	errors := Errors{}
 	requiredErrors := Errors{}
 
-	if err := ValidateRequiredString("creationOnly", o.CreationOnly); err != nil {
-		requiredErrors = append(requiredErrors, err)
-	}
-
-	if err := ValidateRequiredString("creationOnly", o.CreationOnly); err != nil {
-		errors = append(errors, err)
-	}
-
 	if err := ValidateRequiredString("name", o.Name); err != nil {
 		requiredErrors = append(requiredErrors, err)
 	}
 
 	if err := ValidateRequiredString("name", o.Name); err != nil {
-		errors = append(errors, err)
-	}
-
-	if err := ValidateRequiredString("readOnly", o.ReadOnly); err != nil {
-		requiredErrors = append(requiredErrors, err)
-	}
-
-	if err := ValidateRequiredString("readOnly", o.ReadOnly); err != nil {
 		errors = append(errors, err)
 	}
 
@@ -224,7 +187,12 @@ func (o *List) Validate() error {
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
 func (*List) SpecificationForAttribute(name string) AttributeSpecification {
 
-	return ListAttributesMap[name]
+	if v, ok := ListAttributesMap[name]; ok {
+		return v
+	}
+
+	// We could not find it, so let's check on the lower case indexed spec map
+	return ListLowerCaseAttributesMap[name]
 }
 
 // AttributeSpecifications returns the full attribute specifications map.
@@ -238,6 +206,7 @@ var ListAttributesMap = map[string]AttributeSpecification{
 	"ID": AttributeSpecification{
 		AllowedChoices: []string{},
 		Autogenerated:  true,
+		ConvertedName:  "ID",
 		Description:    `The identifier`,
 		Exposed:        true,
 		Filterable:     true,
@@ -246,41 +215,38 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Name:           "ID",
 		Orderable:      true,
 		PrimaryKey:     true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
 	},
 	"CreationOnly": AttributeSpecification{
 		AllowedChoices: []string{},
+		ConvertedName:  "CreationOnly",
 		CreationOnly:   true,
-		Description:    `A creation only only attribute`,
+		Description:    `This attribute is creation only`,
 		Exposed:        true,
 		Filterable:     true,
 		Format:         "free",
-		Getter:         true,
 		Name:           "creationOnly",
 		Orderable:      true,
-		Required:       true,
 		Stored:         true,
 		Type:           "string",
-		Unique:         true,
 	},
 	"Date": AttributeSpecification{
 		AllowedChoices: []string{},
-		CreationOnly:   true,
-		Description:    `A Date`,
+		ConvertedName:  "Date",
+		Description:    `The date`,
+		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
-		Getter:         true,
 		Name:           "date",
 		Orderable:      true,
-		Required:       true,
 		Stored:         true,
 		Type:           "time",
-		Unique:         true,
 	},
 	"Description": AttributeSpecification{
 		AllowedChoices: []string{},
+		ConvertedName:  "Description",
 		Description:    `The description`,
 		Exposed:        true,
 		Filterable:     true,
@@ -292,6 +258,7 @@ var ListAttributesMap = map[string]AttributeSpecification{
 	},
 	"Name": AttributeSpecification{
 		AllowedChoices: []string{},
+		ConvertedName:  "Name",
 		Description:    `The name`,
 		Exposed:        true,
 		Filterable:     true,
@@ -308,6 +275,7 @@ var ListAttributesMap = map[string]AttributeSpecification{
 	"ParentID": AttributeSpecification{
 		AllowedChoices: []string{},
 		Autogenerated:  true,
+		ConvertedName:  "ParentID",
 		Description:    `The identifier of the parent of the object`,
 		Exposed:        true,
 		Filterable:     true,
@@ -315,6 +283,7 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Format:         "free",
 		Name:           "parentID",
 		Orderable:      true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
@@ -322,62 +291,195 @@ var ListAttributesMap = map[string]AttributeSpecification{
 	"ParentType": AttributeSpecification{
 		AllowedChoices: []string{},
 		Autogenerated:  true,
+		ConvertedName:  "ParentType",
 		Description:    `The type of the parent of the object`,
 		Exposed:        true,
 		Filterable:     true,
 		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
 	},
 	"ReadOnly": AttributeSpecification{
 		AllowedChoices: []string{},
-		Description:    `A read only attribute`,
+		ConvertedName:  "ReadOnly",
+		Description:    `This attribute is readonly`,
+		Exposed:        true,
+		Filterable:     true,
+		Format:         "free",
+		Name:           "readOnly",
+		Orderable:      true,
+		ReadOnly:       true,
+		Stored:         true,
+		Type:           "string",
+	},
+	"Slice": AttributeSpecification{
+		AllowedChoices: []string{},
+		ConvertedName:  "Slice",
+		Description:    `this is a slice`,
+		Exposed:        true,
+		Filterable:     true,
+		Name:           "slice",
+		Orderable:      true,
+		Stored:         true,
+		SubType:        "string",
+		Type:           "list",
+	},
+	"Unexposed": AttributeSpecification{
+		AllowedChoices: []string{},
+		ConvertedName:  "Unexposed",
+		Description:    `This attribute is not exposed`,
+		Filterable:     true,
+		Format:         "free",
+		Name:           "unexposed",
+		Orderable:      true,
+		Stored:         true,
+		Type:           "string",
+	},
+}
+
+// ListLowerCaseAttributesMap represents the map of attribute for List.
+var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
+	"id": AttributeSpecification{
+		AllowedChoices: []string{},
+		Autogenerated:  true,
+		ConvertedName:  "ID",
+		Description:    `The identifier`,
+		Exposed:        true,
+		Filterable:     true,
+		Format:         "free",
+		Identifier:     true,
+		Name:           "ID",
+		Orderable:      true,
+		PrimaryKey:     true,
+		ReadOnly:       true,
+		Stored:         true,
+		Type:           "string",
+		Unique:         true,
+	},
+	"creationonly": AttributeSpecification{
+		AllowedChoices: []string{},
+		ConvertedName:  "CreationOnly",
+		CreationOnly:   true,
+		Description:    `This attribute is creation only`,
+		Exposed:        true,
+		Filterable:     true,
+		Format:         "free",
+		Name:           "creationOnly",
+		Orderable:      true,
+		Stored:         true,
+		Type:           "string",
+	},
+	"date": AttributeSpecification{
+		AllowedChoices: []string{},
+		ConvertedName:  "Date",
+		Description:    `The date`,
+		Exposed:        true,
+		Filterable:     true,
+		Name:           "date",
+		Orderable:      true,
+		Stored:         true,
+		Type:           "time",
+	},
+	"description": AttributeSpecification{
+		AllowedChoices: []string{},
+		ConvertedName:  "Description",
+		Description:    `The description`,
+		Exposed:        true,
+		Filterable:     true,
+		Format:         "free",
+		Name:           "description",
+		Orderable:      true,
+		Stored:         true,
+		Type:           "string",
+	},
+	"name": AttributeSpecification{
+		AllowedChoices: []string{},
+		ConvertedName:  "Name",
+		Description:    `The name`,
 		Exposed:        true,
 		Filterable:     true,
 		Format:         "free",
 		Getter:         true,
+		Name:           "name",
+		Orderable:      true,
+		Required:       true,
+		Setter:         true,
+		Stored:         true,
+		Type:           "string",
+		Unique:         true,
+	},
+	"parentid": AttributeSpecification{
+		AllowedChoices: []string{},
+		Autogenerated:  true,
+		ConvertedName:  "ParentID",
+		Description:    `The identifier of the parent of the object`,
+		Exposed:        true,
+		Filterable:     true,
+		ForeignKey:     true,
+		Format:         "free",
+		Name:           "parentID",
+		Orderable:      true,
+		ReadOnly:       true,
+		Stored:         true,
+		Type:           "string",
+		Unique:         true,
+	},
+	"parenttype": AttributeSpecification{
+		AllowedChoices: []string{},
+		Autogenerated:  true,
+		ConvertedName:  "ParentType",
+		Description:    `The type of the parent of the object`,
+		Exposed:        true,
+		Filterable:     true,
+		Format:         "free",
+		Name:           "parentType",
+		Orderable:      true,
+		ReadOnly:       true,
+		Stored:         true,
+		Type:           "string",
+		Unique:         true,
+	},
+	"readonly": AttributeSpecification{
+		AllowedChoices: []string{},
+		ConvertedName:  "ReadOnly",
+		Description:    `This attribute is readonly`,
+		Exposed:        true,
+		Filterable:     true,
+		Format:         "free",
 		Name:           "readOnly",
 		Orderable:      true,
 		ReadOnly:       true,
-		Required:       true,
 		Stored:         true,
 		Type:           "string",
-		Unique:         true,
 	},
-	"Slice": AttributeSpecification{
+	"slice": AttributeSpecification{
 		AllowedChoices: []string{},
-		CreationOnly:   true,
-		Description:    `A Slice`,
+		ConvertedName:  "Slice",
+		Description:    `this is a slice`,
+		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
-		Getter:         true,
 		Name:           "slice",
 		Orderable:      true,
-		Required:       true,
 		Stored:         true,
 		SubType:        "string",
 		Type:           "list",
-		Unique:         true,
 	},
-	"Unexposed": AttributeSpecification{
+	"unexposed": AttributeSpecification{
 		AllowedChoices: []string{},
-		CreationOnly:   true,
-		Description:    `An unexposed attribute`,
+		ConvertedName:  "Unexposed",
+		Description:    `This attribute is not exposed`,
 		Filterable:     true,
 		Format:         "free",
-		Getter:         true,
 		Name:           "unexposed",
 		Orderable:      true,
-		Required:       true,
 		Stored:         true,
 		Type:           "string",
-		Unique:         true,
 	},
 }
-
 // TaskStatusValue represents the possible values for attribute "status".
 type TaskStatusValue string
 
@@ -392,7 +494,7 @@ const (
 	TaskStatusTodo TaskStatusValue = "TODO"
 )
 
-// TaskIdentity represents the Identity of the object
+// TaskIdentity represents the Identity of the object.
 var TaskIdentity = Identity{
 	Name:     "task",
 	Category: "tasks",
@@ -401,16 +503,28 @@ var TaskIdentity = Identity{
 // TasksList represents a list of Tasks
 type TasksList []*Task
 
-// New returns a new empty TasksList.
-func (o TasksList) Copy() ContentIdentifiable {
-
-	return append(TasksList{}, o...)
-}
-
 // ContentIdentity returns the identity of the objects in the list.
 func (o TasksList) ContentIdentity() Identity {
 
 	return TaskIdentity
+}
+
+// Copy returns a pointer to a copy the TasksList.
+func (o TasksList) Copy() ContentIdentifiable {
+
+	copy := append(TasksList{}, o...)
+	return &copy
+}
+
+// Append appends the objects to the a new copy of the TasksList.
+func (o TasksList) Append(objects ...Identifiable) ContentIdentifiable {
+
+	out := append(TasksList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*Task))
+	}
+
+	return out
 }
 
 // List converts the object to an IdentifiablesList.
@@ -430,41 +544,31 @@ func (o TasksList) DefaultOrder() []string {
 	return []string{}
 }
 
+// Version returns the version of the content.
 func (o TasksList) Version() int {
 
 	return 1
 }
 
-// Append appends the objects to the a new copy of the TasksList.
-func (o TasksList) Append(objects ...Identifiable) ContentIdentifiable {
-
-	out := append(TasksList{}, o...)
-	for _, obj := range objects {
-		out = append(out, obj.(*Task))
-	}
-
-	return out
-}
-
 // Task represents the model of a task
 type Task struct {
-	// The identifier
-	ID string `json:"ID" bson:"_id"`
-
 	// The description
 	Description string `json:"description" bson:"description"`
 
 	// The name
 	Name string `json:"name" bson:"name"`
 
+	// The status of the task
+	Status TaskStatusValue `json:"status" bson:"status"`
+
+	// The identifier
+	ID string `json:"ID" bson:"_id"`
+
 	// The identifier of the parent of the object
 	ParentID string `json:"parentID" bson:"parentid"`
 
 	// The type of the parent of the object
 	ParentType string `json:"parentType" bson:"parenttype"`
-
-	// The status of the task
-	Status TaskStatusValue `json:"status" bson:"status"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
@@ -475,7 +579,7 @@ type Task struct {
 func NewTask() *Task {
 
 	return &Task{
-		ModelVersion: 1.0,
+		ModelVersion: 1,
 		Status:       "TODO",
 	}
 }
@@ -493,15 +597,15 @@ func (o *Task) Identifier() string {
 }
 
 // SetIdentifier sets the value of the object's unique identifier.
-func (o *Task) SetIdentifier(ID string) {
+func (o *Task) SetIdentifier(id string) {
 
-	o.ID = ID
+	o.ID = id
 }
 
-// Version returns the hardcoded version of the model
+// Version returns the hardcoded version of the model.
 func (o *Task) Version() int {
 
-	return 1.0
+	return 1
 }
 
 // DefaultOrder returns the list of default ordering fields.
@@ -518,6 +622,18 @@ func (o *Task) Doc() string {
 func (o *Task) String() string {
 
 	return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
+}
+
+// GetName returns the Name of the receiver.
+func (o *Task) GetName() string {
+
+	return o.Name
+}
+
+// SetName sets the given Name of the receiver.
+func (o *Task) SetName(name string) {
+
+	o.Name = name
 }
 
 // Validate valides the current information stored into the structure.
@@ -552,7 +668,12 @@ func (o *Task) Validate() error {
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
 func (*Task) SpecificationForAttribute(name string) AttributeSpecification {
 
-	return TaskAttributesMap[name]
+	if v, ok := TaskAttributesMap[name]; ok {
+		return v
+	}
+
+	// We could not find it, so let's check on the lower case indexed spec map
+	return TaskLowerCaseAttributesMap[name]
 }
 
 // AttributeSpecifications returns the full attribute specifications map.
@@ -566,6 +687,7 @@ var TaskAttributesMap = map[string]AttributeSpecification{
 	"ID": AttributeSpecification{
 		AllowedChoices: []string{},
 		Autogenerated:  true,
+		ConvertedName:  "ID",
 		Description:    `The identifier`,
 		Exposed:        true,
 		Filterable:     true,
@@ -574,12 +696,14 @@ var TaskAttributesMap = map[string]AttributeSpecification{
 		Name:           "ID",
 		Orderable:      true,
 		PrimaryKey:     true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
 	},
 	"Description": AttributeSpecification{
 		AllowedChoices: []string{},
+		ConvertedName:  "Description",
 		Description:    `The description`,
 		Exposed:        true,
 		Filterable:     true,
@@ -591,19 +715,23 @@ var TaskAttributesMap = map[string]AttributeSpecification{
 	},
 	"Name": AttributeSpecification{
 		AllowedChoices: []string{},
+		ConvertedName:  "Name",
 		Description:    `The name`,
 		Exposed:        true,
 		Filterable:     true,
 		Format:         "free",
+		Getter:         true,
 		Name:           "name",
 		Orderable:      true,
 		Required:       true,
+		Setter:         true,
 		Stored:         true,
 		Type:           "string",
 	},
 	"ParentID": AttributeSpecification{
 		AllowedChoices: []string{},
 		Autogenerated:  true,
+		ConvertedName:  "ParentID",
 		Description:    `The identifier of the parent of the object`,
 		Exposed:        true,
 		Filterable:     true,
@@ -611,6 +739,7 @@ var TaskAttributesMap = map[string]AttributeSpecification{
 		Format:         "free",
 		Name:           "parentID",
 		Orderable:      true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
@@ -618,19 +747,22 @@ var TaskAttributesMap = map[string]AttributeSpecification{
 	"ParentType": AttributeSpecification{
 		AllowedChoices: []string{},
 		Autogenerated:  true,
+		ConvertedName:  "ParentType",
 		Description:    `The type of the parent of the object`,
 		Exposed:        true,
 		Filterable:     true,
 		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
 	},
 	"Status": AttributeSpecification{
 		AllowedChoices: []string{"DONE", "PROGRESS", "TODO"},
-		DefaultValue:   TaskStatusValue("TODO"),
+		ConvertedName:  "Status",
+		DefaultValue:   TaskStatusTodo,
 		Description:    `The status of the task`,
 		Exposed:        true,
 		Filterable:     true,
@@ -641,118 +773,12 @@ var TaskAttributesMap = map[string]AttributeSpecification{
 	},
 }
 
-// Root represents the model of a root
-type Root struct {
-	// The identifier
-	ID string `json:"ID" bson:"_id"`
-
-	// The identifier of the parent of the object
-	ParentID string `json:"parentID" bson:"parentid"`
-
-	// The type of the parent of the object
-	ParentType string `json:"parentType" bson:"parenttype"`
-
-	Token        string `json:"APIKey,omitempty"`
-	Organization string `json:"enterprise,omitempty"`
-	ModelVersion int    `json:"-" bson:"_modelversion"`
-
-	sync.Mutex
-}
-
-// NewRoot returns a new *Root
-func NewRoot() *Root {
-
-	return &Root{
-		ModelVersion: 1.0,
-	}
-}
-
-// Identity returns the Identity of the object.
-func (o *Root) Identity() Identity {
-
-	return RootIdentity
-}
-
-// Identifier returns the value of the object's unique identifier.
-func (o *Root) Identifier() string {
-
-	return o.ID
-}
-
-// SetIdentifier sets the value of the object's unique identifier.
-func (o *Root) SetIdentifier(ID string) {
-
-	o.ID = ID
-}
-
-// Version returns the hardcoded version of the model
-func (o *Root) Version() int {
-
-	return 1.0
-}
-
-// DefaultOrder returns the list of default ordering fields.
-func (o *Root) DefaultOrder() []string {
-
-	return []string{}
-}
-
-// Doc returns the documentation for the object
-func (o *Root) Doc() string {
-	return `Root object of the API`
-}
-
-func (o *Root) String() string {
-
-	return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
-}
-
-// Validate valides the current information stored into the structure.
-func (o *Root) Validate() error {
-
-	errors := Errors{}
-	requiredErrors := Errors{}
-
-	if len(requiredErrors) > 0 {
-		return requiredErrors
-	}
-
-	if len(errors) > 0 {
-		return errors
-	}
-
-	return nil
-}
-
-// APIKey returns a the API Key
-func (o *Root) APIKey() string {
-
-	return o.Token
-}
-
-// SetAPIKey sets a the API Key
-func (o *Root) SetAPIKey(key string) {
-
-	o.Token = key
-}
-
-// SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
-func (*Root) SpecificationForAttribute(name string) AttributeSpecification {
-
-	return RootAttributesMap[name]
-}
-
-// AttributeSpecifications returns the full attribute specifications map.
-func (*Root) AttributeSpecifications() map[string]AttributeSpecification {
-
-	return RootAttributesMap
-}
-
-// RootAttributesMap represents the map of attribute for Root.
-var RootAttributesMap = map[string]AttributeSpecification{
-	"ID": AttributeSpecification{
+// TaskLowerCaseAttributesMap represents the map of attribute for Task.
+var TaskLowerCaseAttributesMap = map[string]AttributeSpecification{
+	"id": AttributeSpecification{
 		AllowedChoices: []string{},
 		Autogenerated:  true,
+		ConvertedName:  "ID",
 		Description:    `The identifier`,
 		Exposed:        true,
 		Filterable:     true,
@@ -761,13 +787,42 @@ var RootAttributesMap = map[string]AttributeSpecification{
 		Name:           "ID",
 		Orderable:      true,
 		PrimaryKey:     true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
 	},
-	"ParentID": AttributeSpecification{
+	"description": AttributeSpecification{
+		AllowedChoices: []string{},
+		ConvertedName:  "Description",
+		Description:    `The description`,
+		Exposed:        true,
+		Filterable:     true,
+		Format:         "free",
+		Name:           "description",
+		Orderable:      true,
+		Stored:         true,
+		Type:           "string",
+	},
+	"name": AttributeSpecification{
+		AllowedChoices: []string{},
+		ConvertedName:  "Name",
+		Description:    `The name`,
+		Exposed:        true,
+		Filterable:     true,
+		Format:         "free",
+		Getter:         true,
+		Name:           "name",
+		Orderable:      true,
+		Required:       true,
+		Setter:         true,
+		Stored:         true,
+		Type:           "string",
+	},
+	"parentid": AttributeSpecification{
 		AllowedChoices: []string{},
 		Autogenerated:  true,
+		ConvertedName:  "ParentID",
 		Description:    `The identifier of the parent of the object`,
 		Exposed:        true,
 		Filterable:     true,
@@ -775,26 +830,82 @@ var RootAttributesMap = map[string]AttributeSpecification{
 		Format:         "free",
 		Name:           "parentID",
 		Orderable:      true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
 	},
-	"ParentType": AttributeSpecification{
+	"parenttype": AttributeSpecification{
 		AllowedChoices: []string{},
 		Autogenerated:  true,
+		ConvertedName:  "ParentType",
 		Description:    `The type of the parent of the object`,
 		Exposed:        true,
 		Filterable:     true,
 		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
 	},
+	"status": AttributeSpecification{
+		AllowedChoices: []string{"DONE", "PROGRESS", "TODO"},
+		ConvertedName:  "Status",
+		DefaultValue:   TaskStatusTodo,
+		Description:    `The status of the task`,
+		Exposed:        true,
+		Filterable:     true,
+		Name:           "status",
+		Orderable:      true,
+		Stored:         true,
+		Type:           "enum",
+	},
+}
+var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
+
+// An UnmarshalableList is a List that cannot be marshalled  or unmarshalled.
+type UnmarshalableList struct {
+	List
 }
 
-// UserIdentity represents the Identity of the object
+// NewUnmarshalableList returns a new UnmarshalableList.
+func NewUnmarshalableList() *UnmarshalableList {
+	return &UnmarshalableList{List: List{}}
+}
+
+// Identity returns the identity.
+func (o *UnmarshalableList) Identity() Identity { return UnmarshalableListIdentity }
+
+// UnmarshalJSON makes the UnmarshalableList not unmarshalable.
+func (o *UnmarshalableList) UnmarshalJSON([]byte) error {
+	return fmt.Errorf("error unmarshalling")
+}
+
+// MarshalJSON makes the UnmarshalableList not marshalable.
+func (o *UnmarshalableList) MarshalJSON() ([]byte, error) {
+	return nil, fmt.Errorf("error marshalling")
+}
+
+// Validate validates the data
+func (o *UnmarshalableList) Validate() Errors { return nil }
+
+// An UnmarshalableError is a List that cannot be marshalled or unmarshalled.
+type UnmarshalableError struct {
+	Error
+}
+
+// UnmarshalJSON makes the UnmarshalableError not unmarshalable.
+func (o *UnmarshalableError) UnmarshalJSON([]byte) error {
+	return fmt.Errorf("error unmarshalling")
+}
+
+// MarshalJSON makes the UnmarshalableError not marshalable.
+func (o *UnmarshalableError) MarshalJSON() ([]byte, error) {
+	return nil, fmt.Errorf("error marshalling")
+}
+// UserIdentity represents the Identity of the object.
 var UserIdentity = Identity{
 	Name:     "user",
 	Category: "users",
@@ -809,10 +920,22 @@ func (o UsersList) ContentIdentity() Identity {
 	return UserIdentity
 }
 
-// Copy returns a copy the ListsList.
+// Copy returns a pointer to a copy the UsersList.
 func (o UsersList) Copy() ContentIdentifiable {
 
-	return append(UsersList{}, o...)
+	copy := append(UsersList{}, o...)
+	return &copy
+}
+
+// Append appends the objects to the a new copy of the UsersList.
+func (o UsersList) Append(objects ...Identifiable) ContentIdentifiable {
+
+	out := append(UsersList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*User))
+	}
+
+	return out
 }
 
 // List converts the object to an IdentifiablesList.
@@ -832,41 +955,31 @@ func (o UsersList) DefaultOrder() []string {
 	return []string{}
 }
 
+// Version returns the version of the content.
 func (o UsersList) Version() int {
 
 	return 1
 }
 
-// Append appends the objects to the a new copy of the UsersList.
-func (o UsersList) Append(objects ...Identifiable) ContentIdentifiable {
-
-	out := append(UsersList{}, o...)
-	for _, obj := range objects {
-		out = append(out, obj.(*User))
-	}
-
-	return out
-}
-
 // User represents the model of a user
 type User struct {
-	// The identifier
-	ID string `json:"ID" bson:"_id"`
-
 	// The first name
 	FirstName string `json:"firstName" bson:"firstname"`
 
 	// The last name
 	LastName string `json:"lastName" bson:"lastname"`
 
+	// the login
+	UserName string `json:"userName" bson:"username"`
+
+	// The identifier
+	ID string `json:"ID" bson:"_id"`
+
 	// The identifier of the parent of the object
 	ParentID string `json:"parentID" bson:"parentid"`
 
 	// The type of the parent of the object
 	ParentType string `json:"parentType" bson:"parenttype"`
-
-	// the login
-	UserName string `json:"userName" bson:"username"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
@@ -877,7 +990,7 @@ type User struct {
 func NewUser() *User {
 
 	return &User{
-		ModelVersion: 1.0,
+		ModelVersion: 1,
 	}
 }
 
@@ -894,15 +1007,15 @@ func (o *User) Identifier() string {
 }
 
 // SetIdentifier sets the value of the object's unique identifier.
-func (o *User) SetIdentifier(ID string) {
+func (o *User) SetIdentifier(id string) {
 
-	o.ID = ID
+	o.ID = id
 }
 
-// Version returns the hardcoded version of the model
+// Version returns the hardcoded version of the model.
 func (o *User) Version() int {
 
-	return 1.0
+	return 1
 }
 
 // DefaultOrder returns the list of default ordering fields.
@@ -965,7 +1078,12 @@ func (o *User) Validate() error {
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
 func (*User) SpecificationForAttribute(name string) AttributeSpecification {
 
-	return UserAttributesMap[name]
+	if v, ok := UserAttributesMap[name]; ok {
+		return v
+	}
+
+	// We could not find it, so let's check on the lower case indexed spec map
+	return UserLowerCaseAttributesMap[name]
 }
 
 // AttributeSpecifications returns the full attribute specifications map.
@@ -979,6 +1097,7 @@ var UserAttributesMap = map[string]AttributeSpecification{
 	"ID": AttributeSpecification{
 		AllowedChoices: []string{},
 		Autogenerated:  true,
+		ConvertedName:  "ID",
 		Description:    `The identifier`,
 		Exposed:        true,
 		Filterable:     true,
@@ -987,12 +1106,14 @@ var UserAttributesMap = map[string]AttributeSpecification{
 		Name:           "ID",
 		Orderable:      true,
 		PrimaryKey:     true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
 	},
 	"FirstName": AttributeSpecification{
 		AllowedChoices: []string{},
+		ConvertedName:  "FirstName",
 		Description:    `The first name`,
 		Exposed:        true,
 		Filterable:     true,
@@ -1005,6 +1126,7 @@ var UserAttributesMap = map[string]AttributeSpecification{
 	},
 	"LastName": AttributeSpecification{
 		AllowedChoices: []string{},
+		ConvertedName:  "LastName",
 		Description:    `The last name`,
 		Exposed:        true,
 		Filterable:     true,
@@ -1018,6 +1140,7 @@ var UserAttributesMap = map[string]AttributeSpecification{
 	"ParentID": AttributeSpecification{
 		AllowedChoices: []string{},
 		Autogenerated:  true,
+		ConvertedName:  "ParentID",
 		Description:    `The identifier of the parent of the object`,
 		Exposed:        true,
 		Filterable:     true,
@@ -1025,6 +1148,7 @@ var UserAttributesMap = map[string]AttributeSpecification{
 		Format:         "free",
 		Name:           "parentID",
 		Orderable:      true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
@@ -1032,18 +1156,21 @@ var UserAttributesMap = map[string]AttributeSpecification{
 	"ParentType": AttributeSpecification{
 		AllowedChoices: []string{},
 		Autogenerated:  true,
+		ConvertedName:  "ParentType",
 		Description:    `The type of the parent of the object`,
 		Exposed:        true,
 		Filterable:     true,
 		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
+		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
 		Unique:         true,
 	},
 	"UserName": AttributeSpecification{
 		AllowedChoices: []string{},
+		ConvertedName:  "UserName",
 		Description:    `the login`,
 		Exposed:        true,
 		Filterable:     true,
@@ -1057,109 +1184,264 @@ var UserAttributesMap = map[string]AttributeSpecification{
 	},
 }
 
-const nodocString = "[nodoc]" // nolint: varcheck
-
-var relationshipsRegistry RelationshipsRegistry
-
-// Relationships returns the model relationships.
-func Relationships() RelationshipsRegistry {
-
-	return relationshipsRegistry
+// UserLowerCaseAttributesMap represents the map of attribute for User.
+var UserLowerCaseAttributesMap = map[string]AttributeSpecification{
+	"id": AttributeSpecification{
+		AllowedChoices: []string{},
+		Autogenerated:  true,
+		ConvertedName:  "ID",
+		Description:    `The identifier`,
+		Exposed:        true,
+		Filterable:     true,
+		Format:         "free",
+		Identifier:     true,
+		Name:           "ID",
+		Orderable:      true,
+		PrimaryKey:     true,
+		ReadOnly:       true,
+		Stored:         true,
+		Type:           "string",
+		Unique:         true,
+	},
+	"firstname": AttributeSpecification{
+		AllowedChoices: []string{},
+		ConvertedName:  "FirstName",
+		Description:    `The first name`,
+		Exposed:        true,
+		Filterable:     true,
+		Format:         "free",
+		Name:           "firstName",
+		Orderable:      true,
+		Required:       true,
+		Stored:         true,
+		Type:           "string",
+	},
+	"lastname": AttributeSpecification{
+		AllowedChoices: []string{},
+		ConvertedName:  "LastName",
+		Description:    `The last name`,
+		Exposed:        true,
+		Filterable:     true,
+		Format:         "free",
+		Name:           "lastName",
+		Orderable:      true,
+		Required:       true,
+		Stored:         true,
+		Type:           "string",
+	},
+	"parentid": AttributeSpecification{
+		AllowedChoices: []string{},
+		Autogenerated:  true,
+		ConvertedName:  "ParentID",
+		Description:    `The identifier of the parent of the object`,
+		Exposed:        true,
+		Filterable:     true,
+		ForeignKey:     true,
+		Format:         "free",
+		Name:           "parentID",
+		Orderable:      true,
+		ReadOnly:       true,
+		Stored:         true,
+		Type:           "string",
+		Unique:         true,
+	},
+	"parenttype": AttributeSpecification{
+		AllowedChoices: []string{},
+		Autogenerated:  true,
+		ConvertedName:  "ParentType",
+		Description:    `The type of the parent of the object`,
+		Exposed:        true,
+		Filterable:     true,
+		Format:         "free",
+		Name:           "parentType",
+		Orderable:      true,
+		ReadOnly:       true,
+		Stored:         true,
+		Type:           "string",
+		Unique:         true,
+	},
+	"username": AttributeSpecification{
+		AllowedChoices: []string{},
+		ConvertedName:  "UserName",
+		Description:    `the login`,
+		Exposed:        true,
+		Filterable:     true,
+		Format:         "free",
+		Name:           "userName",
+		Orderable:      true,
+		Required:       true,
+		Stored:         true,
+		Type:           "string",
+		Unique:         true,
+	},
 }
 
-func init() {
-	relationshipsRegistry = RelationshipsRegistry{}
+// RootsList represents a list of Roots
+type RootsList []*Root
 
-	relationshipsRegistry[ListIdentity] = &Relationship{
-		AllowsCreate: map[string]bool{
-			"root": true,
-		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
-		},
-		AllowsDelete: map[string]bool{
-			"root": true,
-		},
-		AllowsRetrieve: map[string]bool{
-			"root": true,
-		},
-		AllowsRetrieveMany: map[string]bool{
-			"root": true,
-		},
-		AllowsInfo: map[string]bool{
-			"root": true,
-		},
+// ContentIdentity returns the identity of the objects in the list.
+func (o RootsList) ContentIdentity() Identity {
+
+	return RootIdentity
+}
+
+// Copy returns a pointer to a copy the RootsList.
+func (o RootsList) Copy() ContentIdentifiable {
+
+	copy := append(RootsList{}, o...)
+	return &copy
+}
+
+// Append appends the objects to the a new copy of the RootsList.
+func (o RootsList) Append(objects ...Identifiable) ContentIdentifiable {
+
+	out := append(RootsList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*Root))
 	}
-	relationshipsRegistry[TaskIdentity] = &Relationship{
-		AllowsCreate: map[string]bool{
-			"list": true,
-		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
-		},
-		AllowsDelete: map[string]bool{
-			"root": true,
-		},
-		AllowsRetrieve: map[string]bool{
-			"list": true,
-			"root": true,
-		},
-		AllowsRetrieveMany: map[string]bool{
-			"list": true,
-			"root": true,
-		},
-		AllowsInfo: map[string]bool{
-			"list": true,
-			"root": true,
-		},
+
+	return out
+}
+
+// List converts the object to an IdentifiablesList.
+func (o RootsList) List() IdentifiablesList {
+
+	out := IdentifiablesList{}
+	for _, item := range o {
+		out = append(out, item)
 	}
-	relationshipsRegistry[RootIdentity] = &Relationship{}
-	relationshipsRegistry[UserIdentity] = &Relationship{
-		AllowsCreate: map[string]bool{
-			"root": true,
-		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
-			"list": true,
-		},
-		AllowsDelete: map[string]bool{
-			"root": true,
-		},
-		AllowsRetrieve: map[string]bool{
-			"list": true,
-			"root": true,
-		},
-		AllowsRetrieveMany: map[string]bool{
-			"list": true,
-			"root": true,
-		},
-		AllowsInfo: map[string]bool{
-			"list": true,
-			"root": true,
-		},
+
+	return out
+}
+
+// DefaultOrder returns the default ordering fields of the content.
+func (o RootsList) DefaultOrder() []string {
+
+	return []string{}
+}
+
+// Version returns the version of the content.
+func (o RootsList) Version() int {
+
+	return 1
+}
+
+// Root represents the model of a root
+type Root struct {
+	ModelVersion int `json:"-" bson:"_modelversion"`
+
+	sync.Mutex
+}
+
+// NewRoot returns a new *Root
+func NewRoot() *Root {
+
+	return &Root{
+		ModelVersion: 1,
 	}
 }
+
+// Identity returns the Identity of the object.
+func (o *Root) Identity() Identity {
+
+	return RootIdentity
+}
+
+// Identifier returns the value of the object's unique identifier.
+func (o *Root) Identifier() string {
+
+	return ""
+}
+
+// SetIdentifier sets the value of the object's unique identifier.
+func (o *Root) SetIdentifier(id string) {
+
+}
+
+// Version returns the hardcoded version of the model.
+func (o *Root) Version() int {
+
+	return 1
+}
+
+// DefaultOrder returns the list of default ordering fields.
+func (o *Root) DefaultOrder() []string {
+
+	return []string{}
+}
+
+// Doc returns the documentation for the object
+func (o *Root) Doc() string {
+	return `Root object of the API`
+}
+
+func (o *Root) String() string {
+
+	return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
+}
+
+// Validate valides the current information stored into the structure.
+func (o *Root) Validate() error {
+
+	errors := Errors{}
+	requiredErrors := Errors{}
+
+	if len(requiredErrors) > 0 {
+		return requiredErrors
+	}
+
+	if len(errors) > 0 {
+		return errors
+	}
+
+	return nil
+}
+
+// SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
+func (*Root) SpecificationForAttribute(name string) AttributeSpecification {
+
+	if v, ok := RootAttributesMap[name]; ok {
+		return v
+	}
+
+	// We could not find it, so let's check on the lower case indexed spec map
+	return RootLowerCaseAttributesMap[name]
+}
+
+// AttributeSpecifications returns the full attribute specifications map.
+func (*Root) AttributeSpecifications() map[string]AttributeSpecification {
+
+	return RootAttributesMap
+}
+
+// RootAttributesMap represents the map of attribute for Root.
+var RootAttributesMap = map[string]AttributeSpecification{}
+
+// RootLowerCaseAttributesMap represents the map of attribute for Root.
+var RootLowerCaseAttributesMap = map[string]AttributeSpecification{}
+
 func init() {
 
+	RegisterIdentity(ListIdentity)
 	RegisterIdentity(RootIdentity)
 	RegisterIdentity(TaskIdentity)
-	RegisterIdentity(ListIdentity)
 	RegisterIdentity(UserIdentity)
 }
 
-// ModelVersion returns the current version of the model
-func ModelVersion() int { return 1.0 }
+// ModelVersion returns the current version of the model.
+func ModelVersion() float64 { return 1 }
 
 // IdentifiableForIdentity returns a new instance of the Identifiable for the given identity name.
 func IdentifiableForIdentity(identity string) Identifiable {
 
 	switch identity {
+
+	case ListIdentity.Name:
+		return NewList()
 	case RootIdentity.Name:
 		return NewRoot()
 	case TaskIdentity.Name:
 		return NewTask()
-	case ListIdentity.Name:
-		return NewList()
 	case UserIdentity.Name:
 		return NewUser()
 	default:
@@ -1171,12 +1453,13 @@ func IdentifiableForIdentity(identity string) Identifiable {
 func IdentifiableForCategory(category string) Identifiable {
 
 	switch category {
+
+	case ListIdentity.Category:
+		return NewList()
 	case RootIdentity.Category:
 		return NewRoot()
 	case TaskIdentity.Category:
 		return NewTask()
-	case ListIdentity.Category:
-		return NewList()
 	case UserIdentity.Category:
 		return NewUser()
 	default:
@@ -1188,10 +1471,13 @@ func IdentifiableForCategory(category string) Identifiable {
 func ContentIdentifiableForIdentity(identity string) ContentIdentifiable {
 
 	switch identity {
-	case TaskIdentity.Name:
-		return &TasksList{}
+
 	case ListIdentity.Name:
 		return &ListsList{}
+	case RootIdentity.Name:
+		return &RootsList{}
+	case TaskIdentity.Name:
+		return &TasksList{}
 	case UserIdentity.Name:
 		return &UsersList{}
 	default:
@@ -1203,10 +1489,13 @@ func ContentIdentifiableForIdentity(identity string) ContentIdentifiable {
 func ContentIdentifiableForCategory(category string) ContentIdentifiable {
 
 	switch category {
-	case TaskIdentity.Category:
-		return &TasksList{}
+
 	case ListIdentity.Category:
 		return &ListsList{}
+	case RootIdentity.Category:
+		return &RootsList{}
+	case TaskIdentity.Category:
+		return &TasksList{}
 	case UserIdentity.Category:
 		return &UsersList{}
 	default:
@@ -1218,14 +1507,18 @@ func ContentIdentifiableForCategory(category string) ContentIdentifiable {
 func AllIdentities() []Identity {
 
 	return []Identity{
+		ListIdentity,
 		RootIdentity,
 		TaskIdentity,
-		ListIdentity,
 		UserIdentity,
 	}
 }
 
-var aliasesMap = map[string]Identity{}
+var aliasesMap = map[string]Identity{
+	"lst": ListIdentity,
+	"tsk": TaskIdentity,
+	"usr": UserIdentity,
+}
 
 // IdentityFromAlias returns the Identity associated to the given alias.
 func IdentityFromAlias(alias string) Identity {
@@ -1237,37 +1530,21 @@ func IdentityFromAlias(alias string) Identity {
 func AliasesForIdentity(identity Identity) []string {
 
 	switch identity {
+	case ListIdentity:
+		return []string{
+			"lst",
+		}
 	case RootIdentity:
 		return []string{}
 	case TaskIdentity:
-		return []string{}
-	case ListIdentity:
-		return []string{}
+		return []string{
+			"tsk",
+		}
 	case UserIdentity:
-		return []string{}
+		return []string{
+			"usr",
+		}
 	}
 
 	return nil
 }
-
-var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
-
-type UnmarshalableList struct {
-	List
-}
-
-func NewUnmarshalableList() *UnmarshalableList {
-	return &UnmarshalableList{List: List{}}
-}
-
-func (o *UnmarshalableList) Identity() Identity { return UnmarshalableListIdentity }
-
-func (o *UnmarshalableList) UnmarshalJSON([]byte) error {
-	return fmt.Errorf("error unmarshalling")
-}
-
-func (o *UnmarshalableList) MarshalJSON() ([]byte, error) {
-	return nil, fmt.Errorf("error marshalling")
-}
-
-func (o *UnmarshalableList) Validate() Errors { return nil }

@@ -4,7 +4,11 @@
 
 package elemental
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+	"strings"
+)
 
 // internalPatchIdentity is the Identity of an patch.
 var internalPatchIdentity = Identity{
@@ -86,4 +90,33 @@ func (a *Patch) Validate() error {
 	}
 
 	return errors
+}
+
+// Apply applies the patch the the given AttributeSpecifiable.
+// obj must be an pointer to an AttributeSpecifiable or Apply will panic.
+func (a *Patch) Apply(obj AttributeSpecifiable) error {
+
+	objValue := reflect.ValueOf(obj)
+	if objValue.Kind() != reflect.Ptr {
+		panic("A pointer to elemental.AttributeSpecifiable must be passed to Apply")
+	}
+	objValue = objValue.Elem()
+
+	for k, v := range a.Data {
+
+		f := objValue.FieldByName(obj.SpecificationForAttribute(strings.ToLower(k)).ConvertedName)
+
+		if !f.IsValid() {
+			return fmt.Errorf("field '%s' is invalid", k)
+		}
+
+		if !f.CanSet() {
+			return fmt.Errorf("field '%s' cannot be set", k)
+		}
+
+		vValue := reflect.ValueOf(v)
+		f.Set(vValue)
+	}
+
+	return nil
 }
