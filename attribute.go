@@ -47,7 +47,7 @@ type AttributeSpecification struct {
 	Availability string
 
 	// ConvertedName contains the name after local conversion.
-	ConvertedName strings
+	ConvertedName string
 
 	// Channel is reserved for later use.
 	Channel string
