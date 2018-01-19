@@ -41,7 +41,7 @@ func Test() {
 }
 
 // ElegenBinarize inlines the elegen templates into a binary file.
-func ElegenBinarize() error {
+func Binarize() error {
 
 	if err := os.Chdir("cmd/elegen"); err != nil {
 		return err
@@ -64,32 +64,10 @@ func ElegenBinarize() error {
 	return sh.Run("mv", "./bindata.go", "./static/bindata.go")
 }
 
-func ElegenLinux() error { return elegenBuild("linux", domingo.BuildLinux) }
-
-func ElegenDarwin() error { return elegenBuild("darwin", domingo.BuildDarwin) }
-
-func Elegen() {
+func Build() {
 	mg.SerialDeps(
-		ElegenBinarize,
-		ElegenLinux,
-		ElegenDarwin,
+		Binarize,
+		func() error { return domingo.BuildFor("linux", domingo.BuildLinux) },
+		func() error { return domingo.BuildFor("darwin", domingo.BuildDarwin) },
 	)
-}
-
-func elegenBuild(platform string, buildFunc func() error) error {
-
-	if err := os.Chdir("cmd/elegen"); err != nil {
-		return err
-	}
-	defer os.Chdir(baseDir)
-
-	if err := os.MkdirAll("./build/"+platform, 0755); err != nil {
-		return err
-	}
-
-	if err := buildFunc(); err != nil {
-		return err
-	}
-
-	return sh.Run("mv", "elegen", "build/"+platform+"/elegen")
 }
