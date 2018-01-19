@@ -38,6 +38,11 @@ func Test() {
 		domingo.Lint,
 		domingo.Test,
 	)
+
+	if err := os.Chdir("cmd/elegen"); err != nil {
+		return err
+	}
+	defer os.Chdir(baseDir)
 }
 
 // ElegenBinarize inlines the elegen templates into a binary file.
