@@ -67,7 +67,7 @@ func ValidateValueInMap(attribute string, value interface{}, enums map[interface
 		return nil
 	}
 
-	if _, ok := enums[attribute]; ok {
+	if _, ok := enums[value]; ok {
 		return nil
 	}
 
