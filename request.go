@@ -264,28 +264,46 @@ func (r *Request) StartTracing() {
 	}
 
 	r.span.SetTag("elemental.request.api_version", r.Version)
-	r.span.SetTag("elemental.request.external_tracking_id", r.ExternalTrackingID)
-	r.span.SetTag("elemental.request.external_tracking_type", r.ExternalTrackingType)
-	r.span.SetTag("elemental.request.headers", safeHeaders)
-	r.span.SetTag("elemental.request.claims", r.extractClaims())
 	r.span.SetTag("elemental.request.id", r.RequestID)
 	r.span.SetTag("elemental.request.identity", r.Identity.Name)
-	r.span.SetTag("elemental.request.namespace", r.Namespace)
-	r.span.SetTag("elemental.request.object.id", r.ObjectID)
-	r.span.SetTag("elemental.request.operation", r.Operation)
-	r.span.SetTag("elemental.request.order_by", r.Order)
-	r.span.SetTag("elemental.request.override_protection", r.OverrideProtection)
-	r.span.SetTag("elemental.request.page.number", r.Page)
-	r.span.SetTag("elemental.request.page.size", r.PageSize)
-	r.span.SetTag("elemental.request.parameters", safeParameters)
-	r.span.SetTag("elemental.request.parent.id", r.ParentID)
-	r.span.SetTag("elemental.request.parent.identity", r.ParentIdentity.Name)
 	r.span.SetTag("elemental.request.recursive", r.Recursive)
-	r.span.SetTag("elemental.request.client_ip", r.ClientIP)
+	r.span.SetTag("elemental.request.operation", r.Operation)
+	r.span.SetTag("elemental.request.override_protection", r.OverrideProtection)
 
-	if r.Data != nil {
-		r.span.LogFields(log.Object("payload", string(r.Data)))
+	if r.ExternalTrackingID != "" {
+		r.span.SetTag("elemental.request.external_tracking_id", r.ExternalTrackingID)
 	}
+
+	if r.ExternalTrackingType != "" {
+		r.span.SetTag("elemental.request.external_tracking_type", r.ExternalTrackingType)
+	}
+
+	if r.Namespace != "" {
+		r.span.SetTag("elemental.request.namespace", r.Namespace)
+	}
+
+	if r.ObjectID != "" {
+		r.span.SetTag("elemental.request.object.id", r.ObjectID)
+	}
+
+	if r.ParentID != "" {
+		r.span.SetTag("elemental.request.parent.id", r.ParentID)
+	}
+
+	if !r.ParentIdentity.IsEmpty() {
+		r.span.SetTag("elemental.request.parent.identity", r.ParentIdentity.Name)
+	}
+
+	r.span.LogFields(
+		log.Int("elemental.request.page.number", r.Page),
+		log.Int("elemental.request.page.size", r.PageSize),
+		log.Object("elemental.request.headers", safeHeaders),
+		log.Object("elemental.request.claims", r.extractClaims()),
+		log.Object("elemental.request.client_ip", r.ClientIP),
+		log.Object("elemental.request.parameters", safeParameters),
+		log.Object("elemental.request.order_by", r.Order),
+		log.String("elemental.request.payload", string(r.Data)),
+	)
 }
 
 // FinishTracing will finish the request tracing.
