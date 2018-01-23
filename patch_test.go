@@ -109,7 +109,7 @@ func TestPatch_Apply(t *testing.T) {
 
 			Convey("Then the patch should be applied", func() {
 				So(l1.CreationOnly, ShouldEqual, "not-patched")
-				So(l1.Date, ShouldEqual, now)
+				So(l1.Date, ShouldResemble, now)
 				So(l1.Description, ShouldEqual, "not-patched")
 				So(l1.ID, ShouldEqual, "not-patched")
 				So(l1.Name, ShouldEqual, "patched")
