@@ -28,9 +28,9 @@ func main() {
 	}
 }
 
-func generator(set *spec.SpecificationSet) error {
+func generator(set *spec.SpecificationSet, out string) error {
 
-	outFolder := path.Join(set.Configuration.Output, "elemental")
+	outFolder := path.Join(out, "elemental")
 	if err := os.MkdirAll(outFolder, 0755); err != nil && !os.IsExist(err) {
 		return err
 	}
