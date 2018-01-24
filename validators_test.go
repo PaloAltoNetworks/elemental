@@ -714,3 +714,70 @@ func TestValidator_ValidatePattern(t *testing.T) {
 		})
 	})
 }
+
+func TestValidator_ValidateFloatInMap(t *testing.T) {
+
+	Convey("Given I call the method ValidateFloatInMap with a valid float", t, func() {
+
+		validationError := ValidateFloatInMap("age", 18.1, map[float64]interface{}{float64(18.1): true})
+
+		Convey("Then I should get nil in return", func() {
+
+			So(validationError, ShouldBeNil)
+		})
+	})
+
+	Convey("Given I call the method ValidateFloatInMap with a unvalid float", t, func() {
+
+		validationError := ValidateFloatInMap("age", 18.3, map[float64]interface{}{float64(32.1): true}).(Error)
+
+		Convey("Then I should not get nil in return", func() {
+			So(validationError, ShouldNotBeNil)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
+		})
+	})
+}
+
+func TestValidator_ValidateIntInMap(t *testing.T) {
+
+	Convey("Given I call the method ValidateIntInMap with a valid float", t, func() {
+
+		validationError := ValidateIntInMap("age", 666, map[int]interface{}{666: true})
+
+		Convey("Then I should get nil in return", func() {
+			So(validationError, ShouldBeNil)
+		})
+	})
+
+	Convey("Given I call the method ValidateIntInMap with a unvalid float", t, func() {
+
+		validationError := ValidateIntInMap("age", 666, map[int]interface{}{}).(Error)
+
+		Convey("Then I should not get nil in return", func() {
+			So(validationError, ShouldNotBeNil)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
+		})
+	})
+}
+
+func TestValidator_StringInMap(t *testing.T) {
+
+	Convey("Given I call the method ValidateStringInMap with a valid float", t, func() {
+
+		validationError := ValidateStringInMap("age", "666", map[string]interface{}{"666": true}, false)
+
+		Convey("Then I should get nil in return", func() {
+			So(validationError, ShouldBeNil)
+		})
+	})
+
+	Convey("Given I call the method ValidateStringInMap with a unvalid float", t, func() {
+
+		validationError := ValidateStringInMap("age", "666", map[string]interface{}{}, false).(Error)
+
+		Convey("Then I should not get nil in return", func() {
+			So(validationError, ShouldNotBeNil)
+			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
+		})
+	})
+}
