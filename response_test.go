@@ -5,6 +5,7 @@
 package elemental
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -15,7 +16,7 @@ func TestResponse_NewResponse(t *testing.T) {
 
 	Convey("Given I create a new response", t, func() {
 
-		r := NewResponse()
+		r := NewResponse(context.TODO())
 
 		Convey("Then it should be correctly initialized", func() {
 			So(r, ShouldNotBeNil)
@@ -26,7 +27,7 @@ func TestResponse_NewResponse(t *testing.T) {
 func TestResponse_EncodeDecode(t *testing.T) {
 
 	Convey("Given I create a new response", t, func() {
-		r := NewResponse()
+		r := NewResponse(context.TODO())
 
 		Convey("When I encode an object into the response", func() {
 

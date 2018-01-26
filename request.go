@@ -51,7 +51,7 @@ type Request struct {
 	TLSConnectionState *tls.ConnectionState
 
 	span        opentracing.Span
-	wireContext opentracing.SpanContext
+	spanContext opentracing.SpanContext
 	context     context.Context
 }
 
@@ -191,6 +191,12 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		override = true
 	}
 
+	tracer := opentracing.GlobalTracer()
+	var spanContext opentracing.SpanContext
+	if tracer != nil {
+		spanContext, _ = tracer.Extract(opentracing.TextMap, opentracing.HTTPHeadersCarrier(req.Header))
+	}
+
 	return &Request{
 		RequestID:            uuid.Must(uuid.NewV4()).String(),
 		Namespace:            req.Header.Get("X-Namespace"),
@@ -216,6 +222,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
 		Order:                req.URL.Query()["order"],
 		ClientIP:             req.RemoteAddr,
+		spanContext:          spanContext,
 		context:              req.Context(),
 	}, nil
 }
@@ -224,12 +231,23 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 func (r *Request) StartTracing() {
 
 	tracer := opentracing.GlobalTracer()
-	if tracer == nil || r.wireContext != nil {
+	if tracer == nil {
 		return
 	}
 
-	r.wireContext, _ = tracer.Extract(opentracing.TextMap, opentracing.TextMapCarrier(r.TrackingData))
-	r.span, r.context = opentracing.StartSpanFromContext(r.context, r.tracingName(), ext.RPCServerOption(r.wireContext))
+	if r.spanContext != nil {
+		r.spanContext, _ = tracer.Extract(
+			opentracing.TextMap,
+			opentracing.TextMapCarrier(r.TrackingData),
+		)
+	}
+
+	span, subctx := opentracing.StartSpanFromContext(
+		r.context,
+		r.tracingName(),
+		ext.RPCServerOption(r.spanContext),
+	)
+	r.context = subctx
 
 	// Remove sensitive information from parameters.
 	safeParameters := url.Values{}
@@ -253,38 +271,38 @@ func (r *Request) StartTracing() {
 		safeHeaders[k] = v
 	}
 
-	r.span.SetTag("elemental.request.api_version", r.Version)
-	r.span.SetTag("elemental.request.id", r.RequestID)
-	r.span.SetTag("elemental.request.identity", r.Identity.Name)
-	r.span.SetTag("elemental.request.recursive", r.Recursive)
-	r.span.SetTag("elemental.request.operation", r.Operation)
-	r.span.SetTag("elemental.request.override_protection", r.OverrideProtection)
+	span.SetTag("elemental.request.api_version", r.Version)
+	span.SetTag("elemental.request.id", r.RequestID)
+	span.SetTag("elemental.request.identity", r.Identity.Name)
+	span.SetTag("elemental.request.recursive", r.Recursive)
+	span.SetTag("elemental.request.operation", r.Operation)
+	span.SetTag("elemental.request.override_protection", r.OverrideProtection)
 
 	if r.ExternalTrackingID != "" {
-		r.span.SetTag("elemental.request.external_tracking_id", r.ExternalTrackingID)
+		span.SetTag("elemental.request.external_tracking_id", r.ExternalTrackingID)
 	}
 
 	if r.ExternalTrackingType != "" {
-		r.span.SetTag("elemental.request.external_tracking_type", r.ExternalTrackingType)
+		span.SetTag("elemental.request.external_tracking_type", r.ExternalTrackingType)
 	}
 
 	if r.Namespace != "" {
-		r.span.SetTag("elemental.request.namespace", r.Namespace)
+		span.SetTag("elemental.request.namespace", r.Namespace)
 	}
 
 	if r.ObjectID != "" {
-		r.span.SetTag("elemental.request.object.id", r.ObjectID)
+		span.SetTag("elemental.request.object.id", r.ObjectID)
 	}
 
 	if r.ParentID != "" {
-		r.span.SetTag("elemental.request.parent.id", r.ParentID)
+		span.SetTag("elemental.request.parent.id", r.ParentID)
 	}
 
 	if !r.ParentIdentity.IsEmpty() {
-		r.span.SetTag("elemental.request.parent.identity", r.ParentIdentity.Name)
+		span.SetTag("elemental.request.parent.identity", r.ParentIdentity.Name)
 	}
 
-	r.span.LogFields(
+	span.LogFields(
 		log.Int("elemental.request.page.number", r.Page),
 		log.Int("elemental.request.page.size", r.PageSize),
 		log.Object("elemental.request.headers", safeHeaders),
@@ -299,17 +317,12 @@ func (r *Request) StartTracing() {
 // FinishTracing will finish the request tracing.
 func (r *Request) FinishTracing() {
 
-	if r.span == nil {
+	span := opentracing.SpanFromContext(r.context)
+	if span == nil {
 		return
 	}
 
-	r.span.Finish()
-}
-
-// Span returns the current span.
-func (r *Request) Span() opentracing.Span {
-
-	return r.span
+	span.Finish()
 }
 
 // Duplicate duplicates the Request.
@@ -332,8 +345,7 @@ func (r *Request) Duplicate() *Request {
 	req.Version = r.Version
 	req.OverrideProtection = r.OverrideProtection
 	req.TLSConnectionState = r.TLSConnectionState
-	req.span = r.span
-	req.wireContext = r.wireContext
+	req.spanContext = r.spanContext
 	req.ExternalTrackingID = r.ExternalTrackingID
 	req.ExternalTrackingType = r.ExternalTrackingType
 	req.ClientIP = r.ClientIP
