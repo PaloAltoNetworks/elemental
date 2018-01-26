@@ -191,12 +191,6 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		override = true
 	}
 
-	tracer := opentracing.GlobalTracer()
-	var wireContext opentracing.SpanContext
-	if tracer != nil {
-		wireContext, _ = tracer.Extract(opentracing.TextMap, opentracing.HTTPHeadersCarrier(req.Header))
-	}
-
 	return &Request{
 		RequestID:            uuid.Must(uuid.NewV4()).String(),
 		Namespace:            req.Header.Get("X-Namespace"),
@@ -220,7 +214,6 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		TrackingData:         opentracing.TextMapCarrier{},
 		ExternalTrackingID:   req.Header.Get("X-External-Tracking-ID"),
 		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
-		wireContext:          wireContext,
 		Order:                req.URL.Query()["order"],
 		ClientIP:             req.RemoteAddr,
 		context:              req.Context(),
@@ -231,15 +224,12 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 func (r *Request) StartTracing() {
 
 	tracer := opentracing.GlobalTracer()
-	if tracer == nil {
+	if tracer == nil || r.wireContext != nil {
 		return
 	}
 
-	if r.wireContext == nil {
-		r.wireContext, _ = tracer.Extract(opentracing.TextMap, opentracing.TextMapCarrier(r.TrackingData))
-	}
-
-	r.span = opentracing.StartSpan(r.tracingName(), ext.RPCServerOption(r.wireContext))
+	r.wireContext, _ = tracer.Extract(opentracing.TextMap, opentracing.TextMapCarrier(r.TrackingData))
+	r.span, r.context = opentracing.StartSpanFromContext(r.context, r.tracingName(), ext.RPCServerOption(r.wireContext))
 
 	// Remove sensitive information from parameters.
 	safeParameters := url.Values{}
@@ -320,16 +310,6 @@ func (r *Request) FinishTracing() {
 func (r *Request) Span() opentracing.Span {
 
 	return r.span
-}
-
-// NewChildSpan return a new child tracing span.
-func (r *Request) NewChildSpan(name string) opentracing.Span {
-
-	if r.span == nil {
-		return opentracing.StartSpan(name)
-	}
-
-	return opentracing.StartSpan(name, opentracing.ChildOf(r.span.Context()))
 }
 
 // Duplicate duplicates the Request.
