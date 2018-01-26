@@ -1,7 +1,6 @@
 package elemental
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 )
@@ -14,21 +13,12 @@ type Response struct {
 	Total      int             `json:"total"`
 	Messages   []string        `json:"messages,omitempty"`
 	Redirect   string          `json:"redirect,omitempty"`
-
-	context context.Context
 }
 
 // NewResponse returns a new Response
-func NewResponse(ctx context.Context) *Response {
+func NewResponse() *Response {
 
-	return &Response{
-		context: ctx,
-	}
-}
-
-// Context returns the response context.Context.
-func (r *Response) Context() context.Context {
-	return r.context
+	return &Response{}
 }
 
 // Encode encodes the given identifiable into the request.

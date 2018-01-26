@@ -1,11 +1,6 @@
-// Author: Antoine Mercadal
-// See LICENSE file for full LICENSE
-// Copyright 2016 Aporeto.
-
 package elemental
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -16,7 +11,7 @@ func TestResponse_NewResponse(t *testing.T) {
 
 	Convey("Given I create a new response", t, func() {
 
-		r := NewResponse(context.TODO())
+		r := NewResponse()
 
 		Convey("Then it should be correctly initialized", func() {
 			So(r, ShouldNotBeNil)
@@ -27,7 +22,7 @@ func TestResponse_NewResponse(t *testing.T) {
 func TestResponse_EncodeDecode(t *testing.T) {
 
 	Convey("Given I create a new response", t, func() {
-		r := NewResponse(context.TODO())
+		r := NewResponse()
 
 		Convey("When I encode an object into the response", func() {
 
