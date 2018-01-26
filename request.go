@@ -1,9 +1,7 @@
 package elemental
 
 import (
-	"context"
 	"crypto/tls"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -13,13 +11,9 @@ import (
 	"strings"
 
 	"github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/ext"
-	"github.com/opentracing/opentracing-go/log"
 
 	uuid "github.com/satori/go.uuid"
 )
-
-var snipSlice = []string{"[snip]"}
 
 // A Request represents an abstract request on an elemental model.
 type Request struct {
@@ -49,20 +43,10 @@ type Request struct {
 
 	ClientIP           string
 	TLSConnectionState *tls.ConnectionState
-
-	span        opentracing.Span
-	wireContext opentracing.SpanContext
-	context     context.Context
 }
 
 // NewRequest returns a new Request.
 func NewRequest() *Request {
-
-	return NewRequestWithContext(context.Background())
-}
-
-// NewRequestWithContext returns a new Request with the given context.Context.
-func NewRequestWithContext(ctx context.Context) *Request {
 
 	return &Request{
 		RequestID:    uuid.Must(uuid.NewV4()).String(),
@@ -70,7 +54,6 @@ func NewRequestWithContext(ctx context.Context) *Request {
 		Headers:      http.Header{},
 		Metadata:     map[string]interface{}{},
 		TrackingData: opentracing.TextMapCarrier{},
-		context:      ctx,
 	}
 }
 
@@ -191,12 +174,6 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		override = true
 	}
 
-	tracer := opentracing.GlobalTracer()
-	var wireContext opentracing.SpanContext
-	if tracer != nil {
-		wireContext, _ = tracer.Extract(opentracing.TextMap, opentracing.HTTPHeadersCarrier(req.Header))
-	}
-
 	return &Request{
 		RequestID:            uuid.Must(uuid.NewV4()).String(),
 		Namespace:            req.Header.Get("X-Namespace"),
@@ -220,116 +197,9 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		TrackingData:         opentracing.TextMapCarrier{},
 		ExternalTrackingID:   req.Header.Get("X-External-Tracking-ID"),
 		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
-		wireContext:          wireContext,
 		Order:                req.URL.Query()["order"],
 		ClientIP:             req.RemoteAddr,
-		context:              req.Context(),
 	}, nil
-}
-
-// StartTracing starts tracing the request.
-func (r *Request) StartTracing() {
-
-	tracer := opentracing.GlobalTracer()
-	if tracer == nil {
-		return
-	}
-
-	if r.wireContext == nil {
-		r.wireContext, _ = tracer.Extract(opentracing.TextMap, opentracing.TextMapCarrier(r.TrackingData))
-	}
-
-	r.span = opentracing.StartSpan(r.tracingName(), ext.RPCServerOption(r.wireContext))
-
-	// Remove sensitive information from parameters.
-	safeParameters := url.Values{}
-	for k, v := range r.Parameters {
-		lk := strings.ToLower(k)
-		if lk == "token" || lk == "password" {
-			safeParameters[k] = snipSlice
-			continue
-		}
-		safeParameters[k] = v
-	}
-
-	// Remove sensitive information from headers.
-	safeHeaders := http.Header{}
-	for k, v := range r.Headers {
-		lk := strings.ToLower(k)
-		if lk == "authorization" {
-			safeHeaders[k] = snipSlice
-			continue
-		}
-		safeHeaders[k] = v
-	}
-
-	r.span.SetTag("elemental.request.api_version", r.Version)
-	r.span.SetTag("elemental.request.id", r.RequestID)
-	r.span.SetTag("elemental.request.identity", r.Identity.Name)
-	r.span.SetTag("elemental.request.recursive", r.Recursive)
-	r.span.SetTag("elemental.request.operation", r.Operation)
-	r.span.SetTag("elemental.request.override_protection", r.OverrideProtection)
-
-	if r.ExternalTrackingID != "" {
-		r.span.SetTag("elemental.request.external_tracking_id", r.ExternalTrackingID)
-	}
-
-	if r.ExternalTrackingType != "" {
-		r.span.SetTag("elemental.request.external_tracking_type", r.ExternalTrackingType)
-	}
-
-	if r.Namespace != "" {
-		r.span.SetTag("elemental.request.namespace", r.Namespace)
-	}
-
-	if r.ObjectID != "" {
-		r.span.SetTag("elemental.request.object.id", r.ObjectID)
-	}
-
-	if r.ParentID != "" {
-		r.span.SetTag("elemental.request.parent.id", r.ParentID)
-	}
-
-	if !r.ParentIdentity.IsEmpty() {
-		r.span.SetTag("elemental.request.parent.identity", r.ParentIdentity.Name)
-	}
-
-	r.span.LogFields(
-		log.Int("elemental.request.page.number", r.Page),
-		log.Int("elemental.request.page.size", r.PageSize),
-		log.Object("elemental.request.headers", safeHeaders),
-		log.Object("elemental.request.claims", r.extractClaims()),
-		log.Object("elemental.request.client_ip", r.ClientIP),
-		log.Object("elemental.request.parameters", safeParameters),
-		log.Object("elemental.request.order_by", r.Order),
-		log.String("elemental.request.payload", string(r.Data)),
-	)
-}
-
-// FinishTracing will finish the request tracing.
-func (r *Request) FinishTracing() {
-
-	if r.span == nil {
-		return
-	}
-
-	r.span.Finish()
-}
-
-// Span returns the current span.
-func (r *Request) Span() opentracing.Span {
-
-	return r.span
-}
-
-// NewChildSpan return a new child tracing span.
-func (r *Request) NewChildSpan(name string) opentracing.Span {
-
-	if r.span == nil {
-		return opentracing.StartSpan(name)
-	}
-
-	return opentracing.StartSpan(name, opentracing.ChildOf(r.span.Context()))
 }
 
 // Duplicate duplicates the Request.
@@ -352,13 +222,10 @@ func (r *Request) Duplicate() *Request {
 	req.Version = r.Version
 	req.OverrideProtection = r.OverrideProtection
 	req.TLSConnectionState = r.TLSConnectionState
-	req.span = r.span
-	req.wireContext = r.wireContext
 	req.ExternalTrackingID = r.ExternalTrackingID
 	req.ExternalTrackingType = r.ExternalTrackingType
 	req.ClientIP = r.ClientIP
 	req.Order = append([]string{}, r.Order...)
-	req.context = r.context
 
 	for k, v := range r.Headers {
 		req.Headers[k] = v
@@ -398,11 +265,6 @@ func (r *Request) Decode(dst interface{}) error {
 	return UnmarshalJSON(r.Data, &dst)
 }
 
-// Context returns the request context.Context.
-func (r *Request) Context() context.Context {
-	return r.context
-}
-
 func (r *Request) String() string {
 
 	return fmt.Sprintf("<request id:%s operation:%s namespace:%s recursive:%v identity:%s objectid:%s parentidentity:%s parentid:%s version:%d>",
@@ -416,48 +278,4 @@ func (r *Request) String() string {
 		r.ParentID,
 		r.Version,
 	)
-}
-
-func (r *Request) tracingName() string {
-
-	switch r.Operation {
-
-	case OperationCreate:
-		return fmt.Sprintf("elemental.request.create.%s", r.Identity.Category)
-
-	case OperationRetrieveMany:
-		return fmt.Sprintf("elemental.request.retrieve_many.%s", r.Identity.Category)
-
-	case OperationInfo:
-		return fmt.Sprintf("elemental.request.info.%s", r.Identity.Category)
-
-	case OperationUpdate:
-		return fmt.Sprintf("elemental.request.update.%s", r.Identity.Category)
-
-	case OperationDelete:
-		return fmt.Sprintf("elemental.request.delete.%s", r.Identity.Category)
-
-	case OperationRetrieve:
-		return fmt.Sprintf("elemental.request.retrieve.%s", r.Identity.Category)
-
-	case OperationPatch:
-		return fmt.Sprintf("elemental.request.patch.%s", r.Identity.Category)
-	}
-
-	return fmt.Sprintf("Unknown operation: %s", r.Operation)
-}
-
-func (r *Request) extractClaims() string {
-
-	tokenParts := strings.SplitN(r.Password, ".", 3)
-	if len(tokenParts) != 3 {
-		return "{}"
-	}
-
-	identity, err := base64.RawStdEncoding.DecodeString(tokenParts[1])
-	if err != nil {
-		return "{}"
-	}
-
-	return string(identity)
 }

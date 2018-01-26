@@ -7,12 +7,12 @@ import (
 
 // A Response contains the response from a Request.
 type Response struct {
-	Request    *Request        `json:"request"`
 	StatusCode int             `json:"statusCode"`
 	Data       json.RawMessage `json:"data,omitempty"`
 	Count      int             `json:"count"`
 	Total      int             `json:"total"`
 	Messages   []string        `json:"messages,omitempty"`
+	Redirect   string          `json:"redirect,omitempty"`
 }
 
 // NewResponse returns a new Response
