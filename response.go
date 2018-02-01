@@ -13,12 +13,19 @@ type Response struct {
 	Total      int             `json:"total"`
 	Messages   []string        `json:"messages,omitempty"`
 	Redirect   string          `json:"redirect,omitempty"`
+	RequestID  string          `json:"requestID"`
+
+	// TODO: this is kept for backward compat
+	Request *Request `json:"request,omitempty"`
 }
 
 // NewResponse returns a new Response
-func NewResponse() *Response {
+func NewResponse(req *Request) *Response {
 
-	return &Response{}
+	return &Response{
+		RequestID: req.RequestID,
+		Request:   req,
+	}
 }
 
 // Encode encodes the given identifiable into the request.

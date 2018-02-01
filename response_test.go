@@ -11,10 +11,11 @@ func TestResponse_NewResponse(t *testing.T) {
 
 	Convey("Given I create a new response", t, func() {
 
-		r := NewResponse()
+		r := NewResponse(&Request{RequestID: "x"})
 
 		Convey("Then it should be correctly initialized", func() {
 			So(r, ShouldNotBeNil)
+			So(r.RequestID, ShouldEqual, "x")
 		})
 	})
 }
@@ -22,7 +23,7 @@ func TestResponse_NewResponse(t *testing.T) {
 func TestResponse_EncodeDecode(t *testing.T) {
 
 	Convey("Given I create a new response", t, func() {
-		r := NewResponse()
+		r := NewResponse(&Request{RequestID: "x"})
 
 		Convey("When I encode an object into the response", func() {
 
