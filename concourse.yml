@@ -20,9 +20,7 @@ run:
 
       go get -u github.com/magefile/mage github.com/aporeto-inc/domingo/golang
 
-      echo ">>>>>> $CODECOV_TOKEN"
       cd go/src/github.com/aporeto-inc/elemental
       mage init || exit 1
       mage test || exit 1
       bash <(curl -s https://codecov.io/bash) || exit 0
-      cd -
