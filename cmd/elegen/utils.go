@@ -95,12 +95,13 @@ func attrToField(attr *spec.Attribute) string {
 	}
 
 	return fmt.Sprintf(
-		"// %s\n    %s %s `json:\"%s\" bson:\"%s\"`\n\n",
+		"// %s\n    %s %s `json:\"%s\" bson:\"%s\" mapstructure:\"%s,omitempty\"`\n\n",
 		attr.Description,
 		attr.ConvertedName,
 		attr.ConvertedType,
 		json,
 		bson,
+		json,
 	)
 }
 
