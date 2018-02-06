@@ -1,0 +1,35 @@
+[[constraint]]
+  name = "github.com/Sirupsen/logrus"
+  version = "1.x"
+
+[[constraint]]
+  name = "github.com/aporeto-inc/domingo"
+  version = "3.x"
+
+[[constraint]]
+  name = "github.com/aporeto-inc/regolithe"
+  version = "1.x"
+
+[[constraint]]
+  name = "github.com/magefile/mage"
+  version = "2.x"
+
+[[constraint]]
+  name = "github.com/opentracing/opentracing-go"
+  version = "1.x"
+
+[[constraint]]
+  name = "github.com/satori/go.uuid"
+  revision = "36e9d2ebbde5e3f13ab2e25625fd453271d6522e"
+
+[[constraint]]
+  name = "go.uber.org/zap"
+  version = "1.x"
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/sync"
+
+[prune]
+  go-tests = true
+  unused-packages = true
