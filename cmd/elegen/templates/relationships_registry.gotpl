@@ -51,13 +51,15 @@ func init() {
       "{{ $parent }}" : true,
       {{- end }}
     },
+    {{- end }}
+    {{- if gt (len $relation.AllowsGetMany) 0 }}
     AllowsRetrieveMany: map[string]bool {
-      {{- range $parent := $relation.Get "get" }}
+      {{- range $parent := $relation.Get "getmany" }}
       "{{ $parent }}" : true,
       {{- end }}
     },
     AllowsInfo: map[string]bool {
-      {{- range $parent := $relation.Get "get" }}
+      {{- range $parent := $relation.Get "getmany" }}
       "{{ $parent }}" : true,
       {{- end }}
     },
