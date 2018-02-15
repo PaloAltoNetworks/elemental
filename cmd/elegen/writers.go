@@ -55,7 +55,7 @@ func writeModel(set *spec.SpecificationSet, name string, outFolder string) error
 
 	p, err := format.Source(buf.Bytes())
 	if err != nil {
-		return fmt.Errorf("Unable to format mode %s code:%s", name, err)
+		return fmt.Errorf("Unable to format model %s code:%s", name, err)
 	}
 
 	if err := writeFile(path.Join(outFolder, name+".go"), p); err != nil {
