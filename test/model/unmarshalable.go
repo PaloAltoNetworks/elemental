@@ -9,6 +9,58 @@ import (
 // UnmarshalableListIdentity represents the Identity of the object.
 var UnmarshalableListIdentity = elemental.Identity{Name: "list", Category: "lists"}
 
+// UnmarshalableListsList represents a list of UnmarshalableLists
+type UnmarshalableListsList []*UnmarshalableList
+
+// ContentIdentity returns the identity of the objects in the list.
+func (o UnmarshalableListsList) ContentIdentity() elemental.Identity {
+
+	return UnmarshalableListIdentity
+}
+
+// Copy returns a pointer to a copy the UnmarshalableListsList.
+func (o UnmarshalableListsList) Copy() elemental.ContentIdentifiable {
+
+	copy := append(UnmarshalableListsList{}, o...)
+	return &copy
+}
+
+// Append appends the objects to the a new copy of the UnmarshalableListsList.
+func (o UnmarshalableListsList) Append(objects ...elemental.Identifiable) elemental.ContentIdentifiable {
+
+	out := append(UnmarshalableListsList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*UnmarshalableList))
+	}
+
+	return out
+}
+
+// List converts the object to an elemental.IdentifiablesList.
+func (o UnmarshalableListsList) List() elemental.IdentifiablesList {
+
+	out := elemental.IdentifiablesList{}
+	for _, item := range o {
+		out = append(out, item)
+	}
+
+	return out
+}
+
+// DefaultOrder returns the default ordering fields of the content.
+func (o UnmarshalableListsList) DefaultOrder() []string {
+
+	return []string{
+		"flagDefaultOrderingKey",
+	}
+}
+
+// Version returns the version of the content.
+func (o UnmarshalableListsList) Version() int {
+
+	return 1
+}
+
 // An UnmarshalableList is a List that cannot be marshalled  or unmarshalled.
 type UnmarshalableList struct {
 	List
