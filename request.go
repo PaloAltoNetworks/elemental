@@ -39,10 +39,11 @@ type Request struct {
 	ExternalTrackingID   string                     `json:"externalTrackingID,omitempty"`
 	ExternalTrackingType string                     `json:"externalTrackingType,omitempty"`
 
-	Metadata map[string]interface{}
+	Metadata           map[string]interface{} `json:"-"`
+	ClientIP           string                 `json:"-"`
+	TLSConnectionState *tls.ConnectionState   `json:"-"`
 
-	ClientIP           string
-	TLSConnectionState *tls.ConnectionState
+	req *http.Request
 }
 
 // NewRequest returns a new Request.
@@ -199,6 +200,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
 		Order:                req.URL.Query()["order"],
 		ClientIP:             req.RemoteAddr,
+		req:                  req,
 	}, nil
 }
 
@@ -226,6 +228,7 @@ func (r *Request) Duplicate() *Request {
 	req.ExternalTrackingType = r.ExternalTrackingType
 	req.ClientIP = r.ClientIP
 	req.Order = append([]string{}, r.Order...)
+	req.req = r.req
 
 	for k, v := range r.Headers {
 		req.Headers[k] = v
@@ -263,6 +266,11 @@ func (r *Request) Encode(entity Identifiable) error {
 func (r *Request) Decode(dst interface{}) error {
 
 	return UnmarshalJSON(r.Data, &dst)
+}
+
+// HTTPRequest returns the native http.Request, if any.
+func (r *Request) HTTPRequest() *http.Request {
+	return r.req
 }
 
 func (r *Request) String() string {
