@@ -7,7 +7,6 @@ import (
 	"net/url"
 	"testing"
 
-	opentracing "github.com/opentracing/opentracing-go"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -751,7 +750,6 @@ func TestRequest_Duplicate(t *testing.T) {
 		req.Version = 12
 		req.Order = []string{"key1", "key2"}
 		req.ClientIP = "1.2.3.4"
-		req.TrackingData = opentracing.TextMapCarrier{"a": "b"}
 		req.Metadata = map[string]interface{}{"a": 1}
 
 		Convey("When I use Duplicate()", func() {
@@ -777,7 +775,6 @@ func TestRequest_Duplicate(t *testing.T) {
 				So(req2.Version, ShouldEqual, req.Version)
 				So(req2.Order, ShouldResemble, req.Order)
 				So(req2.ClientIP, ShouldResemble, req.ClientIP)
-				So(req2.TrackingData, ShouldResemble, req.TrackingData)
 				So(req2.Metadata, ShouldResemble, req.Metadata)
 			})
 		})

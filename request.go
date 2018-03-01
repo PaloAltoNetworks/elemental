@@ -10,34 +10,31 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/opentracing/opentracing-go"
-
 	uuid "github.com/satori/go.uuid"
 )
 
 // A Request represents an abstract request on an elemental model.
 type Request struct {
-	RequestID            string                     `json:"rid"`
-	Namespace            string                     `json:"namespace"`
-	Recursive            bool                       `json:"recursive"`
-	Operation            Operation                  `json:"operation"`
-	Identity             Identity                   `json:"identity"`
-	Order                []string                   `json:"order"`
-	ObjectID             string                     `json:"objectID"`
-	ParentIdentity       Identity                   `json:"parentIdentity"`
-	ParentID             string                     `json:"parentID"`
-	Data                 json.RawMessage            `json:"data,omitempty"`
-	Parameters           url.Values                 `json:"parameters,omitempty"`
-	Headers              http.Header                `json:"headers,omitempty"`
-	Username             string                     `json:"username,omitempty"`
-	Password             string                     `json:"password,omitempty"`
-	Page                 int                        `json:"page,omitempty"`
-	PageSize             int                        `json:"pageSize,omitempty"`
-	OverrideProtection   bool                       `json:"overrideProtection,omitempty"`
-	Version              int                        `json:"version,omitempty"`
-	TrackingData         opentracing.TextMapCarrier `json:"trackingData,omitempty"`
-	ExternalTrackingID   string                     `json:"externalTrackingID,omitempty"`
-	ExternalTrackingType string                     `json:"externalTrackingType,omitempty"`
+	RequestID            string          `json:"rid"`
+	Namespace            string          `json:"namespace"`
+	Recursive            bool            `json:"recursive"`
+	Operation            Operation       `json:"operation"`
+	Identity             Identity        `json:"identity"`
+	Order                []string        `json:"order"`
+	ObjectID             string          `json:"objectID"`
+	ParentIdentity       Identity        `json:"parentIdentity"`
+	ParentID             string          `json:"parentID"`
+	Data                 json.RawMessage `json:"data,omitempty"`
+	Parameters           url.Values      `json:"parameters,omitempty"`
+	Headers              http.Header     `json:"headers,omitempty"`
+	Username             string          `json:"username,omitempty"`
+	Password             string          `json:"password,omitempty"`
+	Page                 int             `json:"page,omitempty"`
+	PageSize             int             `json:"pageSize,omitempty"`
+	OverrideProtection   bool            `json:"overrideProtection,omitempty"`
+	Version              int             `json:"version,omitempty"`
+	ExternalTrackingID   string          `json:"externalTrackingID,omitempty"`
+	ExternalTrackingType string          `json:"externalTrackingType,omitempty"`
 
 	Metadata           map[string]interface{} `json:"-"`
 	ClientIP           string                 `json:"-"`
@@ -50,11 +47,10 @@ type Request struct {
 func NewRequest() *Request {
 
 	return &Request{
-		RequestID:    uuid.Must(uuid.NewV4()).String(),
-		Parameters:   url.Values{},
-		Headers:      http.Header{},
-		Metadata:     map[string]interface{}{},
-		TrackingData: opentracing.TextMapCarrier{},
+		RequestID:  uuid.Must(uuid.NewV4()).String(),
+		Parameters: url.Values{},
+		Headers:    http.Header{},
+		Metadata:   map[string]interface{}{},
 	}
 }
 
@@ -195,7 +191,6 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 		OverrideProtection:   override,
 		Metadata:             map[string]interface{}{},
 		Version:              version,
-		TrackingData:         opentracing.TextMapCarrier{},
 		ExternalTrackingID:   req.Header.Get("X-External-Tracking-ID"),
 		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
 		Order:                req.URL.Query()["order"],
@@ -240,10 +235,6 @@ func (r *Request) Duplicate() *Request {
 
 	for k, v := range r.Metadata {
 		req.Metadata[k] = v
-	}
-
-	for k, v := range r.TrackingData {
-		req.TrackingData[k] = v
 	}
 
 	return req
