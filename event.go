@@ -5,9 +5,10 @@
 package elemental
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 // EventType is the type of an event.
@@ -26,17 +27,17 @@ const (
 
 // An Event represents a computational event.
 type Event struct {
-	Entity    json.RawMessage `json:"entity"`
-	Identity  string          `json:"identity"`
-	Type      EventType       `json:"type"`
-	Timestamp time.Time       `json:"timestamp"`
-	UserInfo  interface{}     `json:"userInfo,omitempty"`
+	Entity    jsoniter.RawMessage `json:"entity"`
+	Identity  string              `json:"identity"`
+	Type      EventType           `json:"type"`
+	Timestamp time.Time           `json:"timestamp"`
+	UserInfo  interface{}         `json:"userInfo,omitempty"`
 }
 
 // NewEvent returns a new Event.
 func NewEvent(t EventType, o Identifiable) *Event {
 
-	data, err := json.Marshal(o)
+	data, err := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(o)
 	if err != nil {
 		panic(err)
 	}
@@ -52,7 +53,7 @@ func NewEvent(t EventType, o Identifiable) *Event {
 // Decode decodes the data into the given destination.
 func (e *Event) Decode(dst interface{}) error {
 
-	return json.Unmarshal(e.Entity, &dst)
+	return jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal(e.Entity, &dst)
 }
 
 func (e *Event) String() string {
