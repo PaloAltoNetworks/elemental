@@ -99,37 +99,3 @@ func TestResponse_EncodeDecode(t *testing.T) {
 		})
 	})
 }
-
-// Encode 1000 identifiables
-// json:              1539060 ns/op
-// jsoniter:           925631 ns/op
-func Benchmark_RequestEncode(b *testing.B) {
-
-	r := NewResponse(&Request{RequestID: "x"})
-	o := make(ListsList, 1000)
-	for i := 0; i < 1000; i++ {
-		o[i] = &List{ID: "1", Name: "hello"}
-	}
-
-	for i := 0; i < b.N; i++ {
-		_ = r.Encode(o)
-	}
-}
-
-// Decode 1000 identifiables
-// json:                3890001 ns/op
-// jsoniter:             946838 ns/op
-func Benchmark_RequestDecode(b *testing.B) {
-
-	r := NewResponse(&Request{RequestID: "x"})
-	o := make(ListsList, 1000)
-	for i := 0; i < 1000; i++ {
-		o[i] = &List{ID: "1", Name: "hello"}
-	}
-	_ = r.Encode(o)
-
-	o = make(ListsList, 1000)
-	for i := 0; i < b.N; i++ {
-		r.Decode(&o)
-	}
-}
