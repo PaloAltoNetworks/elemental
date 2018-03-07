@@ -243,7 +243,7 @@ func (r *Request) Duplicate() *Request {
 // Encode encodes the given identifiable into the request.
 func (r *Request) Encode(entity Identifiable) error {
 
-	data, err := jsoniter.Marshal(entity)
+	data, err := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(entity)
 	if err != nil {
 		return err
 	}

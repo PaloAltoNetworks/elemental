@@ -18,7 +18,7 @@ func TestEvent_NewEvent(t *testing.T) {
 		e := NewEvent(EventCreate, list)
 
 		Convey("Then the Error should be correctly initialized", func() {
-			d, _ := jsoniter.Marshal(list)
+			d, _ := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(list)
 			So(e.Identity, ShouldEqual, "list")
 			So(e.Type, ShouldEqual, EventCreate)
 			So(e.Entity, ShouldResemble, jsoniter.RawMessage(d))
@@ -41,7 +41,7 @@ func TestEvent_Decode(t *testing.T) {
 
 		list := &List{Name: "t1"}
 		e := NewEvent(EventCreate, list)
-		d, _ := jsoniter.Marshal(list)
+		d, _ := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(list)
 		e.Entity = d
 
 		Convey("When I decode the data", func() {

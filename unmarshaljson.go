@@ -29,7 +29,7 @@ func UnmarshalJSON(data []byte, i interface{}) error {
 	errors := Errors{}
 
 	var d map[string]interface{}
-	err := jsoniter.Unmarshal(data, &d)
+	err := jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal(data, &d)
 
 	if err != nil {
 		errors = append(errors, NewError("Bad Request", invalidJSON, "elemental", http.StatusBadRequest))
@@ -50,7 +50,7 @@ func UnmarshalJSON(data []byte, i interface{}) error {
 		}
 	}
 
-	err = jsoniter.Unmarshal(data, i)
+	err = jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal(data, i)
 
 	if err == nil {
 		return nil
@@ -65,7 +65,7 @@ func UnmarshalJSON(data []byte, i interface{}) error {
 			continue
 		}
 
-		b, err := jsoniter.MarshalIndent(v, "", "")
+		b, err := jsoniter.ConfigCompatibleWithStandardLibrary.MarshalIndent(v, "", "")
 
 		// Should not go there
 		if err != nil {
@@ -74,7 +74,7 @@ func UnmarshalJSON(data []byte, i interface{}) error {
 		}
 
 		j := fmt.Sprintf(`{ "%s" : %s}`, k, string(b))
-		err = jsoniter.Unmarshal([]byte(j), i)
+		err = jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal([]byte(j), i)
 
 		if err == nil {
 			continue

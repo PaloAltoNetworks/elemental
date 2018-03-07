@@ -32,7 +32,7 @@ func NewResponse(req *Request) *Response {
 // Encode encodes the given identifiable into the request.
 func (r *Response) Encode(obj interface{}) error {
 
-	data, err := jsoniter.Marshal(obj)
+	data, err := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(obj)
 	if err != nil {
 		return err
 	}
@@ -49,5 +49,5 @@ func (r *Response) Decode(dst interface{}) error {
 		return nil
 	}
 
-	return jsoniter.Unmarshal(r.Data, &dst)
+	return jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal(r.Data, &dst)
 }

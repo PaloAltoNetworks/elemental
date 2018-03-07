@@ -37,7 +37,7 @@ type Event struct {
 // NewEvent returns a new Event.
 func NewEvent(t EventType, o Identifiable) *Event {
 
-	data, err := jsoniter.Marshal(o)
+	data, err := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(o)
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +53,7 @@ func NewEvent(t EventType, o Identifiable) *Event {
 // Decode decodes the data into the given destination.
 func (e *Event) Decode(dst interface{}) error {
 
-	return jsoniter.Unmarshal(e.Entity, &dst)
+	return jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal(e.Entity, &dst)
 }
 
 func (e *Event) String() string {

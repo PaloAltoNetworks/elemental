@@ -103,7 +103,7 @@ func (e Errors) At(i int) Error {
 func DecodeErrors(data []byte) (Errors, error) {
 
 	es := []Error{}
-	if err := jsoniter.Unmarshal(data, &es); err != nil {
+	if err := jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal(data, &es); err != nil {
 		return nil, err
 	}
 
