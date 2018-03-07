@@ -1,14 +1,11 @@
-// Author: Antoine Mercadal
-// See LICENSE file for full LICENSE
-// Copyright 2016 Aporeto.
-
 package elemental
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 // An Error represents a computational error.
@@ -106,7 +103,7 @@ func (e Errors) At(i int) Error {
 func DecodeErrors(data []byte) (Errors, error) {
 
 	es := []Error{}
-	if err := json.Unmarshal(data, &es); err != nil {
+	if err := jsoniter.Unmarshal(data, &es); err != nil {
 		return nil, err
 	}
 

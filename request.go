@@ -2,7 +2,6 @@ package elemental
 
 import (
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -10,31 +9,32 @@ import (
 	"strconv"
 	"strings"
 
+	jsoniter "github.com/json-iterator/go"
 	uuid "github.com/satori/go.uuid"
 )
 
 // A Request represents an abstract request on an elemental model.
 type Request struct {
-	RequestID            string          `json:"rid"`
-	Namespace            string          `json:"namespace"`
-	Recursive            bool            `json:"recursive"`
-	Operation            Operation       `json:"operation"`
-	Identity             Identity        `json:"identity"`
-	Order                []string        `json:"order"`
-	ObjectID             string          `json:"objectID"`
-	ParentIdentity       Identity        `json:"parentIdentity"`
-	ParentID             string          `json:"parentID"`
-	Data                 json.RawMessage `json:"data,omitempty"`
-	Parameters           url.Values      `json:"parameters,omitempty"`
-	Headers              http.Header     `json:"headers,omitempty"`
-	Username             string          `json:"username,omitempty"`
-	Password             string          `json:"password,omitempty"`
-	Page                 int             `json:"page,omitempty"`
-	PageSize             int             `json:"pageSize,omitempty"`
-	OverrideProtection   bool            `json:"overrideProtection,omitempty"`
-	Version              int             `json:"version,omitempty"`
-	ExternalTrackingID   string          `json:"externalTrackingID,omitempty"`
-	ExternalTrackingType string          `json:"externalTrackingType,omitempty"`
+	RequestID            string              `json:"rid"`
+	Namespace            string              `json:"namespace"`
+	Recursive            bool                `json:"recursive"`
+	Operation            Operation           `json:"operation"`
+	Identity             Identity            `json:"identity"`
+	Order                []string            `json:"order"`
+	ObjectID             string              `json:"objectID"`
+	ParentIdentity       Identity            `json:"parentIdentity"`
+	ParentID             string              `json:"parentID"`
+	Data                 jsoniter.RawMessage `json:"data,omitempty"`
+	Parameters           url.Values          `json:"parameters,omitempty"`
+	Headers              http.Header         `json:"headers,omitempty"`
+	Username             string              `json:"username,omitempty"`
+	Password             string              `json:"password,omitempty"`
+	Page                 int                 `json:"page,omitempty"`
+	PageSize             int                 `json:"pageSize,omitempty"`
+	OverrideProtection   bool                `json:"overrideProtection,omitempty"`
+	Version              int                 `json:"version,omitempty"`
+	ExternalTrackingID   string              `json:"externalTrackingID,omitempty"`
+	ExternalTrackingType string              `json:"externalTrackingType,omitempty"`
 
 	Metadata           map[string]interface{} `json:"-"`
 	ClientIP           string                 `json:"-"`
@@ -243,7 +243,7 @@ func (r *Request) Duplicate() *Request {
 // Encode encodes the given identifiable into the request.
 func (r *Request) Encode(entity Identifiable) error {
 
-	data, err := json.Marshal(entity)
+	data, err := jsoniter.Marshal(entity)
 	if err != nil {
 		return err
 	}

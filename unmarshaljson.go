@@ -1,7 +1,6 @@
 package elemental
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -9,6 +8,8 @@ import (
 	"strings"
 	"sync"
 	"unicode"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 const (
@@ -28,7 +29,7 @@ func UnmarshalJSON(data []byte, i interface{}) error {
 	errors := Errors{}
 
 	var d map[string]interface{}
-	err := json.Unmarshal(data, &d)
+	err := jsoniter.Unmarshal(data, &d)
 
 	if err != nil {
 		errors = append(errors, NewError("Bad Request", invalidJSON, "elemental", http.StatusBadRequest))
@@ -49,7 +50,7 @@ func UnmarshalJSON(data []byte, i interface{}) error {
 		}
 	}
 
-	err = json.Unmarshal(data, i)
+	err = jsoniter.Unmarshal(data, i)
 
 	if err == nil {
 		return nil
@@ -64,7 +65,7 @@ func UnmarshalJSON(data []byte, i interface{}) error {
 			continue
 		}
 
-		b, err := json.MarshalIndent(v, "", "")
+		b, err := jsoniter.MarshalIndent(v, "", "")
 
 		// Should not go there
 		if err != nil {
@@ -73,7 +74,7 @@ func UnmarshalJSON(data []byte, i interface{}) error {
 		}
 
 		j := fmt.Sprintf(`{ "%s" : %s}`, k, string(b))
-		err = json.Unmarshal([]byte(j), i)
+		err = jsoniter.Unmarshal([]byte(j), i)
 
 		if err == nil {
 			continue

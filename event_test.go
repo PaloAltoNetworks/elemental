@@ -5,24 +5,23 @@
 package elemental
 
 import (
-	"encoding/json"
 	"testing"
 
+	jsoniter "github.com/json-iterator/go"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestEvent_NewEvent(t *testing.T) {
-
 	Convey("Given I create an Event", t, func() {
 
 		list := &List{}
 		e := NewEvent(EventCreate, list)
 
 		Convey("Then the Error should be correctly initialized", func() {
-			d, _ := json.Marshal(list)
+			d, _ := jsoniter.Marshal(list)
 			So(e.Identity, ShouldEqual, "list")
 			So(e.Type, ShouldEqual, EventCreate)
-			So(e.Entity, ShouldResemble, json.RawMessage(d))
+			So(e.Entity, ShouldResemble, jsoniter.RawMessage(d))
 		})
 	})
 
@@ -42,7 +41,7 @@ func TestEvent_Decode(t *testing.T) {
 
 		list := &List{Name: "t1"}
 		e := NewEvent(EventCreate, list)
-		d, _ := json.Marshal(list)
+		d, _ := jsoniter.Marshal(list)
 		e.Entity = d
 
 		Convey("When I decode the data", func() {

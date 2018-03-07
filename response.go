@@ -1,19 +1,20 @@
 package elemental
 
 import (
-	"encoding/json"
 	"net/http"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 // A Response contains the response from a Request.
 type Response struct {
-	StatusCode int             `json:"statusCode"`
-	Data       json.RawMessage `json:"data,omitempty"`
-	Count      int             `json:"count"`
-	Total      int             `json:"total"`
-	Messages   []string        `json:"messages,omitempty"`
-	Redirect   string          `json:"redirect,omitempty"`
-	RequestID  string          `json:"requestID"`
+	StatusCode int                 `json:"statusCode"`
+	Data       jsoniter.RawMessage `json:"data,omitempty"`
+	Count      int                 `json:"count"`
+	Total      int                 `json:"total"`
+	Messages   []string            `json:"messages,omitempty"`
+	Redirect   string              `json:"redirect,omitempty"`
+	RequestID  string              `json:"requestID"`
 
 	// TODO: this is kept for backward compat
 	Request *Request `json:"request,omitempty"`
@@ -31,7 +32,7 @@ func NewResponse(req *Request) *Response {
 // Encode encodes the given identifiable into the request.
 func (r *Response) Encode(obj interface{}) error {
 
-	data, err := json.Marshal(obj)
+	data, err := jsoniter.Marshal(obj)
 	if err != nil {
 		return err
 	}
@@ -48,5 +49,5 @@ func (r *Response) Decode(dst interface{}) error {
 		return nil
 	}
 
-	return json.Unmarshal(r.Data, &dst)
+	return jsoniter.Unmarshal(r.Data, &dst)
 }
