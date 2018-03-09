@@ -24,6 +24,8 @@ func extractFieldNames(obj interface{}) []string {
 	return fields
 }
 
+var reflectedTimeType = reflect.ValueOf(time.Time{}).Type()
+
 // areFieldValuesEqual checks if the value of the given field name are
 // equal in both given objects using reflection.
 func areFieldValuesEqual(field string, o1, o2 interface{}) bool {
@@ -31,18 +33,29 @@ func areFieldValuesEqual(field string, o1, o2 interface{}) bool {
 	field1 := reflect.ValueOf(o1).Elem().FieldByName(field)
 	field2 := reflect.ValueOf(o2).Elem().FieldByName(field)
 
-	// This is to handle time structure whatever their timezone
-	if field1.Type() == reflect.ValueOf(time.Now()).Type() {
-		return field1.Interface().(time.Time).Unix() == field2.Interface().(time.Time).Unix()
-	}
-
 	if isFieldValueZero(field, o1) && isFieldValueZero(field, o2) {
 		return true
 	}
 
+	// This is to handle time structure whatever their timezone
+	if field1.Type() == reflectedTimeType {
+		return field1.Interface().(time.Time).Unix() == field2.Interface().(time.Time).Unix()
+	}
+
 	if field1.Kind() == reflect.Slice || field1.Kind() == reflect.Array {
+
 		if field1.Len() != field2.Len() {
 			return false
+		}
+
+		// Same stuff we need to check all time element.
+		if field1.Type().Elem() == reflectedTimeType {
+			for i := 0; i < field1.Len(); i++ {
+				if field1.Index(i).Interface().(time.Time).Unix() != field2.Index(i).Interface().(time.Time).Unix() {
+					return false
+				}
+			}
+			return true
 		}
 
 		return reflect.DeepEqual(field1.Interface(), field2.Interface())
@@ -56,9 +69,8 @@ func isFieldValueZero(field string, o interface{}) bool {
 
 	v := reflect.ValueOf(o).Elem().FieldByName(field)
 
-	var defaultTime time.Time
-	if v.Type() == reflect.TypeOf(defaultTime) {
-		return defaultTime.Equal(v.Interface().(time.Time))
+	if v.Type() == reflectedTimeType {
+		return time.Time{}.Equal(v.Interface().(time.Time))
 	}
 
 	switch v.Kind() {
@@ -70,6 +82,7 @@ func isFieldValueZero(field string, o interface{}) bool {
 }
 
 func areFieldsValueEqualValue(f string, obj interface{}, value interface{}) bool {
+
 	field := reflect.ValueOf(obj).Elem().FieldByName(f)
 
 	if value == nil {

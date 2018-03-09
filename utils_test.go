@@ -1,10 +1,7 @@
-// Author: Antoine Mercadal
-// See LICENSE file for full LICENSE
-// Copyright 2016 Aporeto.
-
 package elemental
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
@@ -305,6 +302,205 @@ func TestUtils_isFieldValueZero(t *testing.T) {
 
 			Convey("Then isFieldValueZero on T should return false", func() {
 				So(isFieldValueZero("T", s), ShouldBeFalse)
+			})
+		})
+	})
+}
+
+type timeList struct {
+	Time    time.Time
+	Times   []time.Time
+	String  string
+	Strings []string
+	Int     int
+	Ints    []int
+	Bool    bool
+	Bools   []bool
+}
+
+func TestVerify_areFieldValuesEqualWithEncoding(t *testing.T) {
+
+	Convey("Given I have 2 structs with list of time", t, func() {
+
+		now := time.Now()
+		s1 := &timeList{
+			Time:    now,
+			Times:   []time.Time{now, now},
+			String:  "A",
+			Strings: []string{"a", "b"},
+			Int:     42,
+			Ints:    []int{1, 2},
+			Bool:    true,
+			Bools:   []bool{true, false},
+		}
+		d1, _ := json.Marshal(s1)
+		_ = json.Unmarshal(d1, s1)
+
+		time.Local = time.FixedZone("PST", 0)
+		s2 := &timeList{
+			Time:    now,
+			Times:   []time.Time{now, now},
+			String:  "A",
+			Strings: []string{"a", "b"},
+			Int:     42,
+			Ints:    []int{1, 2},
+			Bool:    true,
+			Bools:   []bool{true, false},
+		}
+		d2, _ := json.Marshal(s2)
+		_ = json.Unmarshal(d2, s2)
+
+		Convey("When I call areFieldValuesEqual on Time", func() {
+
+			ok := areFieldValuesEqual("Time", s1, s2)
+
+			Convey("Then ok should be true", func() {
+				So(ok, ShouldBeTrue)
+			})
+
+			Convey("When I change one value and call areFieldValuesEqual again", func() {
+
+				// delta < 1s precision is lost during encoding.
+				s1.Time = s1.Time.Add(1 * time.Second)
+				ok := areFieldValuesEqual("Time", s1, s2)
+
+				Convey("Then ok should be false", func() {
+					So(ok, ShouldBeFalse)
+				})
+			})
+		})
+
+		Convey("When I call areFieldValuesEqual on Times", func() {
+
+			ok := areFieldValuesEqual("Times", s1, s2)
+
+			Convey("Then ok should be true", func() {
+				So(ok, ShouldBeTrue)
+			})
+
+			Convey("When I change one value and call areFieldValuesEqual again", func() {
+
+				// delta < 1s precision is lost during encoding.
+				s1.Times[1] = s1.Times[1].Add(1 * time.Second)
+				ok := areFieldValuesEqual("Times", s1, s2)
+
+				Convey("Then ok should be false", func() {
+					So(ok, ShouldBeFalse)
+				})
+			})
+		})
+
+		Convey("When I call areFieldValuesEqual on String", func() {
+
+			ok := areFieldValuesEqual("String", s1, s2)
+
+			Convey("Then ok should be true", func() {
+				So(ok, ShouldBeTrue)
+			})
+
+			Convey("When I change one value and call areFieldValuesEqual again", func() {
+
+				s1.String = "B"
+				ok := areFieldValuesEqual("String", s1, s2)
+
+				Convey("Then ok should be false", func() {
+					So(ok, ShouldBeFalse)
+				})
+			})
+		})
+
+		Convey("When I call areFieldValuesEqual on Strings", func() {
+
+			ok := areFieldValuesEqual("Strings", s1, s2)
+
+			Convey("Then ok should be true", func() {
+				So(ok, ShouldBeTrue)
+			})
+
+			Convey("When I change one value and call areFieldValuesEqual again", func() {
+
+				s1.Strings[0] = "B"
+				ok := areFieldValuesEqual("Strings", s1, s2)
+
+				Convey("Then ok should be false", func() {
+					So(ok, ShouldBeFalse)
+				})
+			})
+		})
+
+		Convey("When I call areFieldValuesEqual on Int", func() {
+
+			ok := areFieldValuesEqual("Int", s1, s2)
+
+			Convey("Then ok should be true", func() {
+				So(ok, ShouldBeTrue)
+			})
+
+			Convey("When I change one value and call areFieldValuesEqual again", func() {
+
+				s1.Int++
+				ok := areFieldValuesEqual("Int", s1, s2)
+
+				Convey("Then ok should be false", func() {
+					So(ok, ShouldBeFalse)
+				})
+			})
+		})
+
+		Convey("When I call areFieldValuesEqual on Ints", func() {
+
+			ok := areFieldValuesEqual("Ints", s1, s2)
+
+			Convey("Then ok should be true", func() {
+				So(ok, ShouldBeTrue)
+			})
+
+			Convey("When I change one value and call areFieldValuesEqual again", func() {
+
+				s1.Ints[0]++
+				ok := areFieldValuesEqual("Ints", s1, s2)
+
+				Convey("Then ok should be false", func() {
+					So(ok, ShouldBeFalse)
+				})
+			})
+		})
+
+		Convey("When I call areFieldValuesEqual on Bool", func() {
+
+			ok := areFieldValuesEqual("Bool", s1, s2)
+
+			Convey("Then ok should be true", func() {
+				So(ok, ShouldBeTrue)
+			})
+
+			Convey("When I change one value and call areFieldValuesEqual again", func() {
+
+				s1.Bool = !s1.Bool
+				ok := areFieldValuesEqual("Bool", s1, s2)
+
+				Convey("Then ok should be false", func() {
+					So(ok, ShouldBeFalse)
+				})
+			})
+		})
+
+		Convey("When I call areFieldValuesEqual on Bools", func() {
+
+			ok := areFieldValuesEqual("Bools", s1, s2)
+
+			Convey("Then ok should be true", func() {
+				So(ok, ShouldBeTrue)
+			})
+
+			Convey("When I change one value and call areFieldValuesEqual again", func() {
+
+				s1.Bools[0] = !s1.Bools[0]
+				ok := areFieldValuesEqual("Bools", s1, s2)
+
+				Convey("Then ok should be false", func() {
+					So(ok, ShouldBeFalse)
+				})
 			})
 		})
 	})
