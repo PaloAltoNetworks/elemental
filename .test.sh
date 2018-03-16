@@ -23,5 +23,5 @@ gometalinter \
 
 for d in $(go list ./... | grep -v vendor); do
     go test -race -coverprofile=profile.out -covermode=atomic "$d"
-    [ -f profile.out ]; cat profile.out >> coverage.txt && rm profile.out
+    [ -f profile.out ] && cat profile.out >> coverage.txt && rm profile.out
 done
