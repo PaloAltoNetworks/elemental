@@ -20,4 +20,4 @@ run:
       cd go/src/github.com/aporeto-inc/elemental
       dep ensure -v
       ./.test.sh
-      # bash <(curl -s https://codecov.io/bash)
+      bash <(curl -s https://codecov.io/bash)
