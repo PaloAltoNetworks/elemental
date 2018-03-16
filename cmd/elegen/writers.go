@@ -33,7 +33,7 @@ func writeModel(set *spec.SpecificationSet, name string, outFolder string) error
 	for _, attr := range s.Attributes {
 
 		if attr.Type == spec.AttributeTypeEnum {
-			enums = append(enums, buildEnum(s.EntityName, attr))
+			enums = append(enums, buildEnum(s.Model.EntityName, attr))
 		}
 	}
 
