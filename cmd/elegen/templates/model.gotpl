@@ -320,7 +320,7 @@ func (*{{ .Spec.Model.EntityName }}) AttributeSpecifications() map[string]elemen
 // {{ .Spec.Model.EntityName }}AttributesMap represents the map of attribute for {{ .Spec.Model.EntityName }}.
 var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSpecification{
 
-  {{- range .Spec.OriginalSortedAttributes }}
+  {{- range .Spec.SortedAttributes }}
     "{{ .ConvertedName }}": elemental.AttributeSpecification{
       {{- if .AllowedChars }}
       AllowedChars: `{{ .AllowedChars}}`,
@@ -425,7 +425,7 @@ var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSp
 // {{ .Spec.Model.EntityName }}LowerCaseAttributesMap represents the map of attribute for {{ .Spec.Model.EntityName }}.
 var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 
-  {{- range .Spec.OriginalSortedAttributes }}
+  {{- range .Spec.SortedAttributes }}
     "{{ lower .Name }}": elemental.AttributeSpecification{
       {{- if .AllowedChars }}
       AllowedChars: `{{ .AllowedChars}}`,
