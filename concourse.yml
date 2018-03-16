@@ -20,5 +20,5 @@ run:
 
       cd go/src/github.com/aporeto-inc/elemental
       dep ensure -v
-      ./test.sh
+      ./.test.sh
       bash <(curl -s https://codecov.io/bash) || exit 0
