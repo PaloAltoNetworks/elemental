@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 gometalinter \
     --exclude bindata.go \
@@ -20,4 +21,7 @@ gometalinter \
     --deadline 5m \
     --tests ./...
 
-go test -race -cover ./...
+for d in $(go list ./... | grep -v vendor); do
+    go test -race -coverprofile=profile.out -covermode=atomic "$d"
+    [ -f profile.out ]; cat profile.out >> coverage.txt && rm profile.out
+done

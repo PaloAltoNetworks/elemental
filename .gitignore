@@ -5,6 +5,6 @@
 */debug
 codegen
 vendor
-testresults.xml
 cmd/elegen/elegen
 cmd/elegen/build
+coverage.txt
