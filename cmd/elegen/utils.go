@@ -96,7 +96,7 @@ func attrToField(attr *spec.Attribute) string {
 
 	descLines := strings.Split(attr.Description, "\n")
 	for i := 0; i < len(descLines); i++ {
-		descLines[i] = "// " + descLines[i]
+		descLines[i] = "// " + escapeBackticks(descLines[i])
 	}
 
 	return fmt.Sprintf(
@@ -108,6 +108,10 @@ func attrToField(attr *spec.Attribute) string {
 		bson,
 		json,
 	)
+}
+
+func escapeBackticks(str string) string {
+	return strings.Replace(str, "`", "`+\"`\"+`", -1)
 }
 
 func buildEnum(entityName string, attr *spec.Attribute) Enum {

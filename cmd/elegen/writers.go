@@ -13,11 +13,12 @@ import (
 )
 
 var functions = template.FuncMap{
-	"upper":      strings.ToUpper,
-	"lower":      strings.ToLower,
-	"capitalize": strings.Title,
-	"join":       strings.Join,
-	"makeAttr":   attrToField,
+	"upper":        strings.ToUpper,
+	"lower":        strings.ToLower,
+	"capitalize":   strings.Title,
+	"join":         strings.Join,
+	"makeAttr":     attrToField,
+	"escBackticks": escapeBackticks,
 }
 
 func writeModel(set *spec.SpecificationSet, name string, outFolder string) error {
@@ -56,14 +57,13 @@ func writeModel(set *spec.SpecificationSet, name string, outFolder string) error
 
 	p, err := format.Source(buf.Bytes())
 	if err != nil {
-		var stubs []string
 		if errs, ok := err.(scanner.ErrorList); ok {
 			lines := strings.Split(buf.String(), "\n")
 			for i := 0; i < errs.Len(); i++ {
-				stubs = append(stubs, fmt.Sprintf("Error near: %s", lines[errs[i].Pos.Line]))
+				fmt.Printf("Error in '%s' near:\n\n\t%s\n\n", name, lines[errs[i].Pos.Line-1])
 			}
 		}
-		return fmt.Errorf("Unable to format model '%s': %s\n\n%s", name, err, stubs)
+		return fmt.Errorf("Unable to format model '%s': %s", name, err)
 	}
 
 	if err := writeFile(path.Join(outFolder, name+".go"), p); err != nil {

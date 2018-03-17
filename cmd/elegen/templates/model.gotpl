@@ -158,7 +158,7 @@ func (o *{{ .Spec.Model.EntityName }}) Doc() string {
     {{- if eq .Spec.Model.Description "[nodoc]" -}}
     return nodocString
     {{- else }}
-    return `{{ .Spec.Model.Description }}`
+    return `{{ escBackticks .Spec.Model.Description }}`
     {{- end }}
 }
 {{ end }}
@@ -353,7 +353,7 @@ var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSp
       Deprecated: {{ .Deprecated }},
       {{- end }}
       {{- if .Description }}
-      Description: `{{ .Description }}`,
+      Description: `{{ escBackticks .Description }}`,
       {{- end }}
       {{- if .Exposed }}
       Exposed: {{ .Exposed }},
@@ -458,7 +458,7 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
       Deprecated: {{ .Deprecated }},
       {{- end }}
       {{- if .Description }}
-      Description: `{{ .Description }}`,
+      Description: `{{ escBackticks .Description }}`,
       {{- end }}
       {{- if .Exposed }}
       Exposed: {{ .Exposed }},
