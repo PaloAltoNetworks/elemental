@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"go/format"
+	"go/scanner"
 	"path"
 	"strings"
 	"text/template"
@@ -50,12 +51,19 @@ func writeModel(set *spec.SpecificationSet, name string, outFolder string) error
 			Spec:  s,
 			Enums: enums,
 		}); err != nil {
-		return fmt.Errorf("Unable to generate model %s code:%s", name, err)
+		return fmt.Errorf("Unable to generate model '%s': %s", name, err)
 	}
 
 	p, err := format.Source(buf.Bytes())
 	if err != nil {
-		return fmt.Errorf("Unable to format model %s code:%s", name, err)
+		var stubs []string
+		if errs, ok := err.(scanner.ErrorList); ok {
+			lines := strings.Split(buf.String(), "\n")
+			for i := 0; i < errs.Len(); i++ {
+				stubs = append(stubs, fmt.Sprintf("Error near: %s", lines[errs[i].Pos.Line]))
+			}
+		}
+		return fmt.Errorf("Unable to format model '%s': %s\n\n%s", name, err, stubs)
 	}
 
 	if err := writeFile(path.Join(outFolder, name+".go"), p); err != nil {
