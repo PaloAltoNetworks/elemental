@@ -94,9 +94,14 @@ func attrToField(attr *spec.Attribute) string {
 		bson = "_" + bson
 	}
 
+	descLines := strings.Split(attr.Description, "\n")
+	for i := 0; i < len(descLines); i++ {
+		descLines[i] = "// " + descLines[i]
+	}
+
 	return fmt.Sprintf(
-		"// %s\n    %s %s `json:\"%s\" bson:\"%s\" mapstructure:\"%s,omitempty\"`\n\n",
-		attr.Description,
+		"%s\n    %s %s `json:\"%s\" bson:\"%s\" mapstructure:\"%s,omitempty\"`\n\n",
+		strings.Join(descLines, "\n"),
 		attr.ConvertedName,
 		attr.ConvertedType,
 		json,
