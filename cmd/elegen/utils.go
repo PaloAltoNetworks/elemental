@@ -120,7 +120,7 @@ func buildEnum(entityName string, attr *spec.Attribute) Enum {
 
 	values := map[string]string{}
 	for _, v := range attr.AllowedChoices {
-		k := fmt.Sprintf("%s%s%s", entityName, attr.ConvertedName, strings.Title(strings.ToLower(v)))
+		k := fmt.Sprintf("%s%s%s", entityName, attr.ConvertedName, v)
 		values[k] = v
 	}
 
