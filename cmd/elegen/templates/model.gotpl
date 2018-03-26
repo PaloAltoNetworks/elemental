@@ -280,7 +280,6 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
 
     {{ end }}
     {{ end }}
-    {{ end }}
 
     if len(requiredErrors) > 0 {
       return requiredErrors
