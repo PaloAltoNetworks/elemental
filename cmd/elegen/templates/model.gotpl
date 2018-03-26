@@ -264,20 +264,7 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
     }
     {{ end }}
     {{ end }}
-
-    {{ if eq .Type "time" }}
-    if err := elemental.ValidateRequiredTime("{{ .Name }}", o.{{ .ConvertedName }}); err != nil {
-        errors = append(errors, err)
-    }
     {{ end }}
-
-    {{ if eq .Type "external" }}
-    if err := elemental.ValidateRequiredExternal("{{ .Name }}", o.{{ .ConvertedName }}); err != nil {
-        errors = append(errors, err)
-    }
-    {{ end }}
-    {{ end }}
-
     {{ end }}
     {{ end }}
 
