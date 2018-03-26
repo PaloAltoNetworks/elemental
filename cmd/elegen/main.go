@@ -5,7 +5,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"path"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/aporeto-inc/elemental/cmd/elegen/versions"
@@ -34,7 +33,7 @@ func generator(sets []*spec.SpecificationSet, out string) error {
 
 	set := sets[0]
 
-	outFolder := path.Join(out, "elemental")
+	outFolder := out
 	if err := os.MkdirAll(outFolder, 0755); err != nil && !os.IsExist(err) {
 		return err
 	}
