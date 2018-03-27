@@ -47,7 +47,7 @@ func generator(sets []*spec.SpecificationSet, out string) error {
 	for _, s := range set.Specifications() {
 		func(restName string) {
 			g.Go(func() error { return writeModel(set, restName, outFolder) })
-		}(s.Model.RestName)
+		}(s.Model().RestName)
 	}
 
 	return g.Wait()

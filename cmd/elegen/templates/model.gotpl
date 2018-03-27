@@ -10,6 +10,7 @@ import (
     {{ end -}}
 )
 
+{{ $latestVersion := .Spec.LatestVersion }}
 
 {{ range $i, $enum := .Enums }}
 // {{ $enum.Type }} represents the possible values for attribute "{{ $enum.AttributeName }}".
@@ -74,7 +75,7 @@ func (o {{ .Spec.Model.EntityNamePlural }}List) List() elemental.IdentifiablesLi
 func (o {{ .Spec.Model.EntityNamePlural }}List) DefaultOrder() []string {
 
     return []string{
-        {{ range .Spec.OrderingAttributes -}}
+        {{ range .Spec.OrderingAttributes $latestVersion -}}
         "{{ .Name }}",
         {{ end }}
     }
@@ -91,7 +92,7 @@ func (o {{ .Spec.Model.EntityNamePlural }}List) Version() int {
 
 // {{ .Spec.Model.EntityName }} represents the model of a {{ .Spec.Model.RestName }}
 type {{ .Spec.Model.EntityName }} struct {
-{{range .Spec.Attributes -}}
+{{range .Spec.Attributes $latestVersion -}}
 {{ makeAttr . }}
 {{- end }}
 
@@ -105,7 +106,7 @@ func New{{ .Spec.Model.EntityName }}() *{{ .Spec.Model.EntityName }} {
 
     return &{{ .Spec.Model.EntityName }}{
         ModelVersion: {{ .Set.APIInfo.Version }},
-        {{ range $name, $constructor := .Spec.AttributeInitializers -}}
+        {{ range $name, $constructor := .Spec.AttributeInitializers $latestVersion -}}
         {{ $name }}: {{ $constructor }},
         {{ end }}
     }
@@ -145,7 +146,7 @@ func (o *{{ .Spec.Model.EntityName }}) Version() int {
 func (o *{{ .Spec.Model.EntityName  }}) DefaultOrder() []string {
 
     return []string{
-        {{ range .Spec.OrderingAttributes -}}
+        {{ range .Spec.OrderingAttributes $latestVersion -}}
         "{{ .Name }}",
         {{ end }}
     }
@@ -168,7 +169,7 @@ func  (o *{{ .Spec.Model.EntityName }}) String() string {
     return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
 }
 
-{{ range .Spec.Attributes }}
+{{ range .Spec.Attributes $latestVersion }}
 {{ if .Getter }}
 // Get{{ .ConvertedName }} returns the {{ .ConvertedName }} of the receiver.
 func (o *{{ $.Spec.Model.EntityName }}) Get{{ .ConvertedName }}() {{ .ConvertedType }} {
@@ -192,7 +193,7 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
     errors := elemental.Errors{}
     requiredErrors := elemental.Errors{}
 
-    {{ range .Spec.Attributes }}
+    {{ range .Spec.Attributes $latestVersion }}
     {{ if not .Transient }}
     {{ if .Exposed }}
 
@@ -299,7 +300,7 @@ func (*{{ .Spec.Model.EntityName }}) AttributeSpecifications() map[string]elemen
 // {{ .Spec.Model.EntityName }}AttributesMap represents the map of attribute for {{ .Spec.Model.EntityName }}.
 var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSpecification{
 
-  {{- range .Spec.SortedAttributes }}
+  {{- range .Spec.Attributes $latestVersion }}
     "{{ .ConvertedName }}": elemental.AttributeSpecification{
       {{- if .AllowedChars }}
       AllowedChars: `{{ .AllowedChars}}`,
@@ -404,7 +405,7 @@ var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSp
 // {{ .Spec.Model.EntityName }}LowerCaseAttributesMap represents the map of attribute for {{ .Spec.Model.EntityName }}.
 var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 
-  {{- range .Spec.SortedAttributes }}
+  {{- range .Spec.Attributes $latestVersion }}
     "{{ lower .Name }}": elemental.AttributeSpecification{
       {{- if .AllowedChars }}
       AllowedChars: `{{ .AllowedChars}}`,
