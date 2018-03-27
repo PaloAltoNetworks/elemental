@@ -7,7 +7,6 @@ import (
 	"os"
 	"path"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/aporeto-inc/elemental/cmd/elegen/versions"
 	"github.com/aporeto-inc/regolithe"
 	"github.com/aporeto-inc/regolithe/spec"
@@ -26,7 +25,8 @@ func main() {
 	cmd := regolithe.NewCommand(generatorName, generatorDescription, version, attributeNameConverter, attributeTypeConverter, generationName, generator)
 
 	if err := cmd.Execute(); err != nil {
-		logrus.WithError(err).Fatal("Error during generation")
+		fmt.Fprint(os.Stderr, err)
+		os.Exit(1)
 	}
 }
 
