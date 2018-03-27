@@ -21,7 +21,7 @@ var functions = template.FuncMap{
 	"escBackticks": escapeBackticks,
 }
 
-func writeModel(set *spec.SpecificationSet, name string, outFolder string) error {
+func writeModel(set spec.SpecificationSet, name string, outFolder string) error {
 
 	tmpl, err := makeTemplate("templates/model.gotpl")
 	if err != nil {
@@ -32,7 +32,7 @@ func writeModel(set *spec.SpecificationSet, name string, outFolder string) error
 
 	// Build enums
 	var enums []Enum
-	for _, attr := range s.Attributes(s.LatestVersion()) {
+	for _, attr := range s.Attributes(s.LatestAttributeVersion()) {
 
 		if attr.Type == spec.AttributeTypeEnum {
 			enums = append(enums, buildEnum(s.Model().EntityName, attr))
@@ -44,7 +44,7 @@ func writeModel(set *spec.SpecificationSet, name string, outFolder string) error
 	if err = tmpl.Execute(
 		&buf,
 		struct {
-			Set   *spec.SpecificationSet
+			Set   spec.SpecificationSet
 			Spec  spec.Specification
 			Enums []Enum
 		}{
@@ -73,7 +73,7 @@ func writeModel(set *spec.SpecificationSet, name string, outFolder string) error
 	return nil
 }
 
-func writeIdentitiesRegistry(set *spec.SpecificationSet, outFolder string) error {
+func writeIdentitiesRegistry(set spec.SpecificationSet, outFolder string) error {
 
 	tmpl, err := makeTemplate("templates/identities_registry.gotpl")
 	if err != nil {
@@ -85,7 +85,7 @@ func writeIdentitiesRegistry(set *spec.SpecificationSet, outFolder string) error
 	if err = tmpl.Execute(
 		&buf,
 		struct {
-			Set *spec.SpecificationSet
+			Set spec.SpecificationSet
 		}{
 			Set: set,
 		}); err != nil {
@@ -104,7 +104,7 @@ func writeIdentitiesRegistry(set *spec.SpecificationSet, outFolder string) error
 	return nil
 }
 
-func writeRelationshipsRegistry(set *spec.SpecificationSet, outFolder string) error {
+func writeRelationshipsRegistry(set spec.SpecificationSet, outFolder string) error {
 
 	tmpl, err := makeTemplate("templates/relationships_registry.gotpl")
 	if err != nil {
@@ -116,7 +116,7 @@ func writeRelationshipsRegistry(set *spec.SpecificationSet, outFolder string) er
 	if err = tmpl.Execute(
 		&buf,
 		struct {
-			Set *spec.SpecificationSet
+			Set spec.SpecificationSet
 		}{
 			Set: set,
 		}); err != nil {

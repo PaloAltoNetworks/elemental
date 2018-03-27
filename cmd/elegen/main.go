@@ -30,7 +30,7 @@ func main() {
 	}
 }
 
-func generator(sets []*spec.SpecificationSet, out string) error {
+func generator(sets []spec.SpecificationSet, out string) error {
 
 	set := sets[0]
 
