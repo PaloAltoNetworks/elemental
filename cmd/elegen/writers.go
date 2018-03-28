@@ -19,6 +19,7 @@ var functions = template.FuncMap{
 	"join":         strings.Join,
 	"makeAttr":     attrToField,
 	"escBackticks": escapeBackticks,
+	"buildEnums":   buildEnums,
 }
 
 func writeModel(set spec.SpecificationSet, name string, outFolder string) error {
@@ -30,27 +31,25 @@ func writeModel(set spec.SpecificationSet, name string, outFolder string) error 
 
 	s := set.Specification(name)
 
-	// Build enums
-	var enums []Enum
-	for _, attr := range s.Attributes(s.LatestAttributeVersion()) {
+	// // Build enums
+	// var enums []Enum
+	// for _, attr := range s.Attributes(s.LatestAttributeVersion()) {
 
-		if attr.Type == spec.AttributeTypeEnum {
-			enums = append(enums, buildEnum(s.Model().EntityName, attr))
-		}
-	}
+	// 	if attr.Type == spec.AttributeTypeEnum {
+	// 		enums = append(enums, buildEnum(s.Model().EntityName, attr))
+	// 	}
+	// }
 
 	var buf bytes.Buffer
 
 	if err = tmpl.Execute(
 		&buf,
 		struct {
-			Set   spec.SpecificationSet
-			Spec  spec.Specification
-			Enums []Enum
+			Set  spec.SpecificationSet
+			Spec spec.Specification
 		}{
-			Set:   set,
-			Spec:  s,
-			Enums: enums,
+			Set:  set,
+			Spec: s,
 		}); err != nil {
 		return fmt.Errorf("Unable to generate model '%s': %s", name, err)
 	}

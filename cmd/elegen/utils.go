@@ -114,19 +114,31 @@ func escapeBackticks(str string) string {
 	return strings.Replace(str, "`", "`+\"`\"+`", -1)
 }
 
-func buildEnum(entityName string, attr *spec.Attribute) Enum {
+func buildEnums(s spec.Specification, version string) []Enum {
 
-	attr.ConvertedType = fmt.Sprintf("%s%sValue", entityName, attr.ConvertedName)
+	var enums []Enum
+	attributes := s.Attributes(version)
 
-	values := map[string]string{}
-	for _, v := range attr.AllowedChoices {
-		k := fmt.Sprintf("%s%s%s", entityName, attr.ConvertedName, v)
-		values[k] = v
+	for _, attr := range attributes {
+
+		if attr.Type != spec.AttributeTypeEnum {
+			continue
+		}
+
+		attr.ConvertedType = fmt.Sprintf("%s%sValue", s.Model().EntityName, attr.ConvertedName)
+
+		values := map[string]string{}
+		for _, v := range attr.AllowedChoices {
+			k := fmt.Sprintf("%s%s%s", s.Model().EntityName, attr.ConvertedName, v)
+			values[k] = v
+		}
+
+		enums = append(enums, Enum{
+			Type:          attr.ConvertedType,
+			Values:        values,
+			AttributeName: attr.Name,
+		})
 	}
 
-	return Enum{
-		Type:          attr.ConvertedType,
-		Values:        values,
-		AttributeName: attr.Name, // TODO: put converted name
-	}
+	return enums
 }

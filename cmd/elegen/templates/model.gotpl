@@ -12,7 +12,7 @@ import (
 
 {{ $latestVersion := .Spec.LatestAttributeVersion }}
 
-{{ range $i, $enum := .Enums }}
+{{ range $i, $enum := buildEnums .Spec $latestVersion }}
 // {{ $enum.Type }} represents the possible values for attribute "{{ $enum.AttributeName }}".
 type {{ $enum.Type }} string
 
