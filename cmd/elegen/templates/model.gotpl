@@ -322,7 +322,7 @@ var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSp
       {{ if eq .Type "external" -}}
       DefaultValue: {{ if .DefaultValue }}{{ .Initializer }}{{ else }}nil{{ end }},
       {{- else if eq .Type "enum" -}}
-      DefaultValue: {{ if .DefaultValue }}{{ $.Spec.Model.EntityName }}{{ .ConvertedName }}{{ capitalize (lower .DefaultValue) }}{{ else }}nil{{ end }},
+      DefaultValue: {{ if .DefaultValue }}{{ $.Spec.Model.EntityName }}{{ .ConvertedName }}{{ .DefaultValue }}{{ else }}nil{{ end }},
       {{- else if eq .Type "string" -}}
       DefaultValue: {{ if .DefaultValue -}}"{{ .DefaultValue }}"{{ else }}nil{{ end }},
       {{- else -}}
@@ -427,7 +427,7 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
       {{ if eq .Type "external" -}}
       DefaultValue: {{ if .DefaultValue }}{{ .Initializer }}{{ else }}nil{{ end }},
       {{- else if eq .Type "enum" -}}
-      DefaultValue: {{ if .DefaultValue }}{{ $.Spec.Model.EntityName }}{{ .ConvertedName }}{{ capitalize (lower .DefaultValue) }}{{ else }}nil{{ end }},
+      DefaultValue: {{ if .DefaultValue }}{{ $.Spec.Model.EntityName }}{{ .ConvertedName }}{{ .DefaultValue }}{{ else }}nil{{ end }},
       {{- else if eq .Type "string" -}}
       DefaultValue: {{ if .DefaultValue -}}"{{ .DefaultValue }}"{{ else }}nil{{ end }},
       {{- else -}}
