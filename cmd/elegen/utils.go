@@ -88,6 +88,10 @@ func attrToField(attr *spec.Attribute) string {
 		json = "-"
 	}
 
+	if attr.OmitEmpty {
+		json += ",omitempty"
+	}
+
 	if !attr.Stored {
 		bson = "-"
 	} else if attr.Identifier {
