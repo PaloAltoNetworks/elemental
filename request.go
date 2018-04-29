@@ -47,7 +47,7 @@ type Request struct {
 func NewRequest() *Request {
 
 	return &Request{
-		RequestID:  uuid.Must(uuid.NewV4()).String(),
+		RequestID:  uuid.NewV4().String(),
 		Parameters: url.Values{},
 		Headers:    http.Header{},
 		Metadata:   map[string]interface{}{},
@@ -172,7 +172,7 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 	}
 
 	return &Request{
-		RequestID:            uuid.Must(uuid.NewV4()).String(),
+		RequestID:            uuid.NewV4().String(),
 		Namespace:            req.Header.Get("X-Namespace"),
 		Recursive:            recursive,
 		Page:                 page,
