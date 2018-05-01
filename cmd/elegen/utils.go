@@ -79,7 +79,7 @@ func attributeNameConverter(attrName string) string {
 	return strings.Title(attrName)
 }
 
-func attrToField(attr *spec.Attribute) string {
+func attrToField(attr *spec.Attribute, publicMode bool) string {
 
 	json := attr.Name
 	bson := strings.ToLower(attr.Name)
@@ -145,4 +145,84 @@ func buildEnums(s spec.Specification, version string) []Enum {
 	}
 
 	return enums
+}
+
+func shouldGenerateGetter(attr *spec.Attribute, publicMode bool) bool {
+
+	if publicMode {
+		return attr.Getter && attr.Exposed
+	}
+
+	return attr.Getter
+}
+
+func shouldGenerateSetter(attr *spec.Attribute, publicMode bool) bool {
+
+	if publicMode {
+		return attr.Setter && attr.Exposed
+	}
+
+	return attr.Setter
+}
+
+func shouldWriteInitializer(s spec.Specification, attrConvertedName string, version string, publicMode bool) bool {
+
+	var attr *spec.Attribute
+	for _, a := range s.Attributes(version) {
+		if a.ConvertedName == attrConvertedName {
+			attr = a
+			break
+		}
+	}
+
+	if publicMode {
+		return attr.Exposed
+	}
+
+	return true
+}
+
+func shouldWriteAttributeMap(attr *spec.Attribute, publicMode bool) bool {
+
+	if publicMode {
+		return attr.Exposed
+	}
+
+	return true
+}
+
+func shouldRegisterSpecification(s spec.Specification, publicMode bool) bool {
+
+	if publicMode {
+		return !s.Model().Private
+	}
+
+	return true
+}
+
+func shouldRegisterRelationship(set spec.SpecificationSet, entityName string, publicMode bool) bool {
+
+	var s spec.Specification
+	for _, i := range set.Specifications() {
+		if i.Model().EntityName == entityName {
+			s = i
+		}
+	}
+
+	if publicMode {
+		return !s.Model().Private
+	}
+
+	return true
+}
+
+func shouldRegisterInnerRelationship(set spec.SpecificationSet, restName string, publicMode bool) bool {
+
+	s := set.Specification(restName)
+
+	if publicMode {
+		return !s.Model().Private
+	}
+
+	return true
 }

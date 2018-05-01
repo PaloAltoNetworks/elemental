@@ -10,60 +10,76 @@ var relationshipsRegistry elemental.RelationshipsRegistry
 // Relationships returns the model relationships.
 func Relationships() elemental.RelationshipsRegistry {
 
-  return relationshipsRegistry
+    return relationshipsRegistry
 }
 
 func init() {
 
-  relationshipsRegistry = elemental.RelationshipsRegistry{}
+    relationshipsRegistry = elemental.RelationshipsRegistry{}
 
-  {{ range $entityName, $relation := .Set.Relationships }}
-  relationshipsRegistry[{{$entityName}}Identity] = &elemental.Relationship{
-    {{- if gt (len $relation.AllowsCreate) 0 }}
-    AllowsCreate: map[string]bool {
-      {{- range $parent := $relation.Get "create" }}
-      "{{ $parent }}" : true,
-      {{- end }}
-    },
+    {{ range $entityName, $relation := .Set.Relationships }}
+    {{- if shouldRegisterRelationship $.Set $entityName $.PublicMode}}
+    relationshipsRegistry[{{ $entityName }}Identity] = &elemental.Relationship{
+        {{- if gt (len $relation.AllowsCreate) 0 }}
+        AllowsCreate: map[string]bool {
+            {{- range $parent := $relation.Get "create" }}
+            {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
+            "{{ $parent }}" : true,
+            {{- end }}
+            {{- end }}
+        },
+        {{- end }}
+        {{- if gt (len $relation.AllowsUpdate) 0 }}
+        AllowsUpdate: map[string]bool {
+            {{- range $parent := $relation.Get "update" }}
+            {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
+            "{{ $parent }}" : true,
+            {{- end }}
+            {{- end }}
+        },
+        AllowsPatch: map[string]bool {
+            {{- range $parent := $relation.Get "update" }}
+            {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
+            "{{ $parent }}" : true,
+            {{- end }}
+            {{- end }}
+        },
+        {{- end }}
+        {{- if gt (len $relation.AllowsDelete) 0 }}
+        AllowsDelete: map[string]bool {
+            {{- range $parent := $relation.Get "delete" }}
+            {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
+            "{{ $parent }}" : true,
+            {{- end }}
+            {{- end }}
+        },
+        {{- end }}
+        {{- if gt (len $relation.AllowsGet) 0 }}
+        AllowsRetrieve: map[string]bool {
+            {{- range $parent := $relation.Get "get" }}
+            {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
+            "{{ $parent }}" : true,
+            {{- end }}
+            {{- end }}
+        },
+        {{- end }}
+        {{- if gt (len $relation.AllowsGetMany) 0 }}
+        AllowsRetrieveMany: map[string]bool {
+            {{- range $parent := $relation.Get "getmany" }}
+            {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
+            "{{ $parent }}" : true,
+            {{- end }}
+            {{- end }}
+        },
+        AllowsInfo: map[string]bool {
+            {{- range $parent := $relation.Get "getmany" }}
+            {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
+            "{{ $parent }}" : true,
+            {{- end }}
+            {{- end }}
+        },
+        {{- end }}
+    }
     {{- end }}
-    {{- if gt (len $relation.AllowsUpdate) 0 }}
-    AllowsUpdate: map[string]bool {
-      {{- range $parent := $relation.Get "update" }}
-      "{{ $parent }}" : true,
-      {{- end }}
-    },
-    AllowsPatch: map[string]bool {
-      {{- range $parent := $relation.Get "update" }}
-      "{{ $parent }}" : true,
-      {{- end }}
-    },
-    {{- end }}
-    {{- if gt (len $relation.AllowsDelete) 0 }}
-    AllowsDelete: map[string]bool {
-      {{- range $parent := $relation.Get "delete" }}
-      "{{ $parent }}" : true,
-      {{- end }}
-    },
-    {{- end }}
-    {{- if gt (len $relation.AllowsGet) 0 }}
-    AllowsRetrieve: map[string]bool {
-      {{- range $parent := $relation.Get "get" }}
-      "{{ $parent }}" : true,
-      {{- end }}
-    },
-    {{- end }}
-    {{- if gt (len $relation.AllowsGetMany) 0 }}
-    AllowsRetrieveMany: map[string]bool {
-      {{- range $parent := $relation.Get "getmany" }}
-      "{{ $parent }}" : true,
-      {{- end }}
-    },
-    AllowsInfo: map[string]bool {
-      {{- range $parent := $relation.Get "getmany" }}
-      "{{ $parent }}" : true,
-      {{- end }}
-    },
-    {{- end }}
-  }
-  {{ end }}
+    {{ end }}
 }

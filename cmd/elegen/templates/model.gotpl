@@ -92,8 +92,8 @@ func (o {{ .Spec.Model.EntityNamePlural }}List) Version() int {
 
 // {{ .Spec.Model.EntityName }} represents the model of a {{ .Spec.Model.RestName }}
 type {{ .Spec.Model.EntityName }} struct {
-{{range .Spec.Attributes $latestVersion -}}
-{{ makeAttr . }}
+{{ range .Spec.Attributes $latestVersion -}}
+{{ makeAttr . $.PublicMode }}
 {{- end }}
 
     ModelVersion int `json:"-" bson:"_modelversion"`
@@ -107,7 +107,7 @@ func New{{ .Spec.Model.EntityName }}() *{{ .Spec.Model.EntityName }} {
     return &{{ .Spec.Model.EntityName }}{
         ModelVersion: {{ .Set.APIInfo.Version }},
         {{ range $name, $constructor := .Spec.AttributeInitializers $latestVersion -}}
-        {{ $name }}: {{ $constructor }},
+        {{ if shouldWriteInitializer $.Spec $name $latestVersion $.PublicMode }}{{ $name }}: {{ $constructor }},{{ end }}
         {{ end }}
     }
 }
@@ -170,7 +170,7 @@ func  (o *{{ .Spec.Model.EntityName }}) String() string {
 }
 
 {{ range .Spec.Attributes $latestVersion }}
-{{ if .Getter }}
+{{ if shouldGenerateGetter . $.PublicMode }}
 // Get{{ .ConvertedName }} returns the {{ .ConvertedName }} of the receiver.
 func (o *{{ $.Spec.Model.EntityName }}) Get{{ .ConvertedName }}() {{ .ConvertedType }} {
 
@@ -178,7 +178,7 @@ func (o *{{ $.Spec.Model.EntityName }}) Get{{ .ConvertedName }}() {{ .ConvertedT
 }
 
 {{ end }}
-{{ if .Setter }}
+{{ if shouldGenerateSetter . $.PublicMode }}
 // Set{{ .ConvertedName }} sets the given {{ .ConvertedName }} of the receiver.
 func (o *{{ $.Spec.Model.EntityName }}) Set{{ .ConvertedName }}({{ .Name }} {{ .ConvertedType }}) {
 
@@ -314,6 +314,7 @@ func (*{{ .Spec.Model.EntityName }}) AttributeSpecifications() map[string]elemen
 var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSpecification{
 
   {{- range .Spec.Attributes $latestVersion }}
+    {{ if shouldWriteAttributeMap . $.PublicMode -}}
     "{{ .ConvertedName }}": elemental.AttributeSpecification{
       {{- if .AllowedChars }}
       AllowedChars: `{{ .AllowedChars}}`,
@@ -413,12 +414,14 @@ var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSp
       {{- end }}
     },
   {{- end }}
+  {{- end }}
 }
 
 // {{ .Spec.Model.EntityName }}LowerCaseAttributesMap represents the map of attribute for {{ .Spec.Model.EntityName }}.
 var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 
   {{- range .Spec.Attributes $latestVersion }}
+    {{ if shouldWriteAttributeMap . $.PublicMode -}}
     "{{ lower .Name }}": elemental.AttributeSpecification{
       {{- if .AllowedChars }}
       AllowedChars: `{{ .AllowedChars}}`,
@@ -517,5 +520,6 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
       Type: "{{ .Type }}",
       {{- end }}
     },
+  {{- end }}
   {{- end }}
 }

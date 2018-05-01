@@ -13,16 +13,23 @@ import (
 )
 
 var functions = template.FuncMap{
-	"upper":        strings.ToUpper,
-	"lower":        strings.ToLower,
-	"capitalize":   strings.Title,
-	"join":         strings.Join,
-	"makeAttr":     attrToField,
-	"escBackticks": escapeBackticks,
-	"buildEnums":   buildEnums,
+	"upper":                           strings.ToUpper,
+	"lower":                           strings.ToLower,
+	"capitalize":                      strings.Title,
+	"join":                            strings.Join,
+	"makeAttr":                        attrToField,
+	"escBackticks":                    escapeBackticks,
+	"buildEnums":                      buildEnums,
+	"shouldGenerateGetter":            shouldGenerateGetter,
+	"shouldGenerateSetter":            shouldGenerateSetter,
+	"shouldWriteInitializer":          shouldWriteInitializer,
+	"shouldWriteAttributeMap":         shouldWriteAttributeMap,
+	"shouldRegisterSpecification":     shouldRegisterSpecification,
+	"shouldRegisterRelationship":      shouldRegisterRelationship,
+	"shouldRegisterInnerRelationship": shouldRegisterInnerRelationship,
 }
 
-func writeModel(set spec.SpecificationSet, name string, outFolder string) error {
+func writeModel(set spec.SpecificationSet, name string, outFolder string, publicMode bool) error {
 
 	tmpl, err := makeTemplate("templates/model.gotpl")
 	if err != nil {
@@ -31,25 +38,22 @@ func writeModel(set spec.SpecificationSet, name string, outFolder string) error 
 
 	s := set.Specification(name)
 
-	// // Build enums
-	// var enums []Enum
-	// for _, attr := range s.Attributes(s.LatestAttributesVersion()) {
-
-	// 	if attr.Type == spec.AttributeTypeEnum {
-	// 		enums = append(enums, buildEnum(s.Model().EntityName, attr))
-	// 	}
-	// }
+	if s.Model().Private && publicMode {
+		return nil
+	}
 
 	var buf bytes.Buffer
 
 	if err = tmpl.Execute(
 		&buf,
 		struct {
-			Set  spec.SpecificationSet
-			Spec spec.Specification
+			PublicMode bool
+			Set        spec.SpecificationSet
+			Spec       spec.Specification
 		}{
-			Set:  set,
-			Spec: s,
+			PublicMode: publicMode,
+			Set:        set,
+			Spec:       s,
 		}); err != nil {
 		return fmt.Errorf("Unable to generate model '%s': %s", name, err)
 	}
@@ -72,7 +76,7 @@ func writeModel(set spec.SpecificationSet, name string, outFolder string) error 
 	return nil
 }
 
-func writeIdentitiesRegistry(set spec.SpecificationSet, outFolder string) error {
+func writeIdentitiesRegistry(set spec.SpecificationSet, outFolder string, publicMode bool) error {
 
 	tmpl, err := makeTemplate("templates/identities_registry.gotpl")
 	if err != nil {
@@ -84,9 +88,11 @@ func writeIdentitiesRegistry(set spec.SpecificationSet, outFolder string) error 
 	if err = tmpl.Execute(
 		&buf,
 		struct {
-			Set spec.SpecificationSet
+			PublicMode bool
+			Set        spec.SpecificationSet
 		}{
-			Set: set,
+			PublicMode: publicMode,
+			Set:        set,
 		}); err != nil {
 		return fmt.Errorf("Unable to generate identities_registry code:%s", err)
 	}
@@ -103,7 +109,7 @@ func writeIdentitiesRegistry(set spec.SpecificationSet, outFolder string) error 
 	return nil
 }
 
-func writeRelationshipsRegistry(set spec.SpecificationSet, outFolder string) error {
+func writeRelationshipsRegistry(set spec.SpecificationSet, outFolder string, publicMode bool) error {
 
 	tmpl, err := makeTemplate("templates/relationships_registry.gotpl")
 	if err != nil {
@@ -115,9 +121,11 @@ func writeRelationshipsRegistry(set spec.SpecificationSet, outFolder string) err
 	if err = tmpl.Execute(
 		&buf,
 		struct {
-			Set spec.SpecificationSet
+			PublicMode bool
+			Set        spec.SpecificationSet
 		}{
-			Set: set,
+			PublicMode: publicMode,
+			Set:        set,
 		}); err != nil {
 		return fmt.Errorf("Unable to generate relationships_registry code:%s", err)
 	}

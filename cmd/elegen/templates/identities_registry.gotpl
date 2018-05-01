@@ -3,8 +3,11 @@ package {{ .Set.Configuration.Name }}
 import "github.com/aporeto-inc/elemental"
 
 func init() {
-    {{ range .Set.Specifications }}
-    elemental.RegisterIdentity({{.Model.EntityName}}Identity){{ end }}
+    {{- range .Set.Specifications }}
+    {{- if shouldRegisterSpecification . $.PublicMode }}
+    elemental.RegisterIdentity({{.Model.EntityName}}Identity)
+    {{- end }}
+    {{- end }}
 }
 
 // ModelVersion returns the current version of the model.
@@ -15,8 +18,10 @@ func IdentifiableForIdentity(identity string) elemental.Identifiable{
 
   switch identity {
     {{ range .Set.Specifications }}
+      {{- if shouldRegisterSpecification . $.PublicMode }}
       case {{ .Model.EntityName }}Identity.Name:
         return New{{ .Model.EntityName }}()
+      {{- end }}
     {{- end }}
     default:
       return nil
@@ -28,8 +33,10 @@ func IdentifiableForCategory(category string) elemental.Identifiable{
 
   switch category {
     {{ range .Set.Specifications }}
+      {{- if shouldRegisterSpecification . $.PublicMode }}
       case {{ .Model.EntityName }}Identity.Category:
         return New{{ .Model.EntityName }}()
+      {{- end }}
     {{- end }}
     default:
       return nil
@@ -41,9 +48,11 @@ func ContentIdentifiableForIdentity(identity string) elemental.ContentIdentifiab
 
   switch identity {
     {{ range .Set.Specifications }}
-      {{ if not .Model.IsRoot -}}
+      {{- if not .Model.IsRoot }}
+      {{- if shouldRegisterSpecification . $.PublicMode }}
       case {{ .Model.EntityName }}Identity.Name:
         return &{{ .Model.EntityNamePlural }}List{}
+      {{- end }}
       {{- end }}
     {{- end }}
     default:
@@ -56,9 +65,11 @@ func ContentIdentifiableForCategory(category string) elemental.ContentIdentifiab
 
   switch category {
     {{ range .Set.Specifications }}
-      {{ if not .Model.IsRoot -}}
+      {{- if not .Model.IsRoot }}
+      {{- if shouldRegisterSpecification . $.PublicMode }}
       case {{ .Model.EntityName }}Identity.Category:
         return &{{ .Model.EntityNamePlural }}List{}
+      {{- end }}
       {{- end }}
     {{- end }}
     default:
@@ -71,16 +82,20 @@ func AllIdentities() []elemental.Identity {
 
   return []elemental.Identity{
     {{- range .Set.Specifications }}
+      {{- if shouldRegisterSpecification . $.PublicMode }}
       {{ .Model.EntityName }}Identity,
+      {{- end }}
     {{- end }}
   }
 }
 
 var aliasesMap = map[string]elemental.Identity {
   {{- range .Set.Specifications }}
+    {{- if shouldRegisterSpecification . $.PublicMode }}
     {{- $entityName := .Model.EntityName -}}
     {{ range $i, $alias := .Model.Aliases }}
     "{{ $alias }}": {{ $entityName }}Identity,
+    {{- end }}
     {{- end }}
   {{- end }}
 }
@@ -96,11 +111,13 @@ func AliasesForIdentity(identity elemental.Identity) []string {
 
   switch identity {
     {{- range .Set.Specifications }}
+    {{- if shouldRegisterSpecification . $.PublicMode }}
     case {{ .Model.EntityName }}Identity:
       return []string{ {{ range $i, $alias := .Model.Aliases }}
         "{{ $alias }}",
         {{- end }}
         }
+    {{- end }}
     {{- end }}
   }
 
