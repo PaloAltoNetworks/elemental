@@ -24,6 +24,7 @@ EOF
     tail -n +10 model/user.go;
     tail -n +16 model/root.go;
     tail -n +5 model/identities_registry.go;
+    tail -n +4 model/relationships_registry.go;
 }>> ../data_test.go
 
 sed -i '' 's/elemental\.//g' ../data_test.go

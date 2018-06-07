@@ -35,6 +35,9 @@ type IdentifiableFactory interface {
 
 	// IdentityFromAny returns the Identity from the given name, category or alias.
 	IdentityFromAny(string) Identity
+
+	// Relationships return the model's elemental.RelationshipsRegistry.
+	Relationships() RelationshipsRegistry
 }
 
 // An IdentifiablesList is a list of objects implementing the Identifiable interface.

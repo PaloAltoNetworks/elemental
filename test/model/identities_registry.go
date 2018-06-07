@@ -99,9 +99,12 @@ func (f identifiableFactory) ContentIdentifiableFromString(any string) elemental
 	return f.ContentIdentifiable(f.IdentityFromAny(any))
 }
 
-var (
-	ifactory = identifiableFactory{}
-)
+func (f identifiableFactory) Relationships() elemental.RelationshipsRegistry {
+
+	return relationshipsRegistry
+}
+
+var ifactory = identifiableFactory{}
 
 // Factory returns the model elemental.IdentifiableFactory.
 func Factory() elemental.IdentifiableFactory { return ifactory }

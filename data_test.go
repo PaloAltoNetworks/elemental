@@ -469,7 +469,6 @@ var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Type:           "string",
 	},
 }
-
 // TaskStatusValue represents the possible values for attribute "status".
 type TaskStatusValue string
 
@@ -938,7 +937,6 @@ func (o *UnmarshalableError) UnmarshalJSON([]byte) error {
 func (o *UnmarshalableError) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("error marshalling")
 }
-
 // UserIdentity represents the Identity of the object.
 var UserIdentity = Identity{
 	Name:     "user",
@@ -1481,9 +1479,12 @@ func (f identifiableFactory) ContentIdentifiableFromString(any string) ContentId
 	return f.ContentIdentifiable(f.IdentityFromAny(any))
 }
 
-var (
-	ifactory = identifiableFactory{}
-)
+func (f identifiableFactory) Relationships() RelationshipsRegistry {
+
+	return relationshipsRegistry
+}
+
+var ifactory = identifiableFactory{}
 
 // Factory returns the model IdentifiableFactory.
 func Factory() IdentifiableFactory { return ifactory }
@@ -1520,4 +1521,90 @@ func AliasesForIdentity(identity Identity) []string {
 	}
 
 	return nil
+}
+
+const nodocString = "[nodoc]" // nolint: varcheck,deadcode
+
+var relationshipsRegistry RelationshipsRegistry
+
+func init() {
+
+	relationshipsRegistry = RelationshipsRegistry{}
+
+	relationshipsRegistry[ListIdentity] = &Relationship{
+		AllowsCreate: map[string]bool{
+			"root": true,
+		},
+		AllowsUpdate: map[string]bool{
+			"root": true,
+		},
+		AllowsPatch: map[string]bool{
+			"root": true,
+		},
+		AllowsDelete: map[string]bool{
+			"root": true,
+		},
+		AllowsRetrieve: map[string]bool{
+			"root": true,
+		},
+		AllowsRetrieveMany: map[string]bool{
+			"root": true,
+		},
+		AllowsInfo: map[string]bool{
+			"root": true,
+		},
+	}
+
+	relationshipsRegistry[RootIdentity] = &Relationship{}
+
+	relationshipsRegistry[TaskIdentity] = &Relationship{
+		AllowsCreate: map[string]bool{
+			"list": true,
+		},
+		AllowsUpdate: map[string]bool{
+			"root": true,
+		},
+		AllowsPatch: map[string]bool{
+			"root": true,
+		},
+		AllowsDelete: map[string]bool{
+			"root": true,
+		},
+		AllowsRetrieve: map[string]bool{
+			"root": true,
+		},
+		AllowsRetrieveMany: map[string]bool{
+			"list": true,
+		},
+		AllowsInfo: map[string]bool{
+			"list": true,
+		},
+	}
+
+	relationshipsRegistry[UserIdentity] = &Relationship{
+		AllowsCreate: map[string]bool{
+			"root": true,
+		},
+		AllowsUpdate: map[string]bool{
+			"root": true,
+		},
+		AllowsPatch: map[string]bool{
+			"root": true,
+		},
+		AllowsDelete: map[string]bool{
+			"root": true,
+		},
+		AllowsRetrieve: map[string]bool{
+			"root": true,
+		},
+		AllowsRetrieveMany: map[string]bool{
+			"list": true,
+			"root": true,
+		},
+		AllowsInfo: map[string]bool{
+			"list": true,
+			"root": true,
+		},
+	}
+
 }
