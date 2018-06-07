@@ -16,21 +16,21 @@ var ListIdentity = Identity{
 // ListsList represents a list of Lists
 type ListsList []*List
 
-// ContentIdentity returns the identity of the objects in the list.
-func (o ListsList) ContentIdentity() Identity {
+// Identity returns the identity of the objects in the list.
+func (o ListsList) Identity() Identity {
 
 	return ListIdentity
 }
 
 // Copy returns a pointer to a copy the ListsList.
-func (o ListsList) Copy() ContentIdentifiable {
+func (o ListsList) Copy() Identifiables {
 
 	copy := append(ListsList{}, o...)
 	return &copy
 }
 
 // Append appends the objects to the a new copy of the ListsList.
-func (o ListsList) Append(objects ...Identifiable) ContentIdentifiable {
+func (o ListsList) Append(objects ...Identifiable) Identifiables {
 
 	out := append(ListsList{}, o...)
 	for _, obj := range objects {
@@ -493,21 +493,21 @@ var TaskIdentity = Identity{
 // TasksList represents a list of Tasks
 type TasksList []*Task
 
-// ContentIdentity returns the identity of the objects in the list.
-func (o TasksList) ContentIdentity() Identity {
+// Identity returns the identity of the objects in the list.
+func (o TasksList) Identity() Identity {
 
 	return TaskIdentity
 }
 
 // Copy returns a pointer to a copy the TasksList.
-func (o TasksList) Copy() ContentIdentifiable {
+func (o TasksList) Copy() Identifiables {
 
 	copy := append(TasksList{}, o...)
 	return &copy
 }
 
 // Append appends the objects to the a new copy of the TasksList.
-func (o TasksList) Append(objects ...Identifiable) ContentIdentifiable {
+func (o TasksList) Append(objects ...Identifiable) Identifiables {
 
 	out := append(TasksList{}, o...)
 	for _, obj := range objects {
@@ -848,21 +848,21 @@ var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
 // UnmarshalableListsList represents a list of UnmarshalableLists
 type UnmarshalableListsList []*UnmarshalableList
 
-// ContentIdentity returns the identity of the objects in the list.
-func (o UnmarshalableListsList) ContentIdentity() Identity {
+// Identity returns the identity of the objects in the list.
+func (o UnmarshalableListsList) Identity() Identity {
 
 	return UnmarshalableListIdentity
 }
 
 // Copy returns a pointer to a copy the UnmarshalableListsList.
-func (o UnmarshalableListsList) Copy() ContentIdentifiable {
+func (o UnmarshalableListsList) Copy() Identifiables {
 
 	copy := append(UnmarshalableListsList{}, o...)
 	return &copy
 }
 
 // Append appends the objects to the a new copy of the UnmarshalableListsList.
-func (o UnmarshalableListsList) Append(objects ...Identifiable) ContentIdentifiable {
+func (o UnmarshalableListsList) Append(objects ...Identifiable) Identifiables {
 
 	out := append(UnmarshalableListsList{}, o...)
 	for _, obj := range objects {
@@ -947,21 +947,21 @@ var UserIdentity = Identity{
 // UsersList represents a list of Users
 type UsersList []*User
 
-// ContentIdentity returns the identity of the objects in the list.
-func (o UsersList) ContentIdentity() Identity {
+// Identity returns the identity of the objects in the list.
+func (o UsersList) Identity() Identity {
 
 	return UserIdentity
 }
 
 // Copy returns a pointer to a copy the UsersList.
-func (o UsersList) Copy() ContentIdentifiable {
+func (o UsersList) Copy() Identifiables {
 
 	copy := append(UsersList{}, o...)
 	return &copy
 }
 
 // Append appends the objects to the a new copy of the UsersList.
-func (o UsersList) Append(objects ...Identifiable) ContentIdentifiable {
+func (o UsersList) Append(objects ...Identifiable) Identifiables {
 
 	out := append(UsersList{}, o...)
 	for _, obj := range objects {
@@ -1459,7 +1459,7 @@ func (f modelManager) IdentifiableFromString(any string) Identifiable {
 	return f.Identifiable(f.IdentityFromAny(any))
 }
 
-func (f modelManager) ContentIdentifiable(identity Identity) ContentIdentifiable {
+func (f modelManager) Identifiables(identity Identity) Identifiables {
 
 	switch identity {
 
@@ -1474,9 +1474,9 @@ func (f modelManager) ContentIdentifiable(identity Identity) ContentIdentifiable
 	}
 }
 
-func (f modelManager) ContentIdentifiableFromString(any string) ContentIdentifiable {
+func (f modelManager) IdentifiablesFromString(any string) Identifiables {
 
-	return f.ContentIdentifiable(f.IdentityFromAny(any))
+	return f.Identifiables(f.IdentityFromAny(any))
 }
 
 func (f modelManager) Relationships() RelationshipsRegistry {

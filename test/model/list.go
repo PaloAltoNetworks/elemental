@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/aporeto-inc/elemental"
 	"time"
+
+	"github.com/aporeto-inc/elemental"
 )
 
 // ListIdentity represents the Identity of the object.
@@ -18,21 +19,21 @@ var ListIdentity = elemental.Identity{
 // ListsList represents a list of Lists
 type ListsList []*List
 
-// ContentIdentity returns the identity of the objects in the list.
-func (o ListsList) ContentIdentity() elemental.Identity {
+// Identity returns the identity of the objects in the list.
+func (o ListsList) Identity() elemental.Identity {
 
 	return ListIdentity
 }
 
 // Copy returns a pointer to a copy the ListsList.
-func (o ListsList) Copy() elemental.ContentIdentifiable {
+func (o ListsList) Copy() elemental.Identifiables {
 
 	copy := append(ListsList{}, o...)
 	return &copy
 }
 
 // Append appends the objects to the a new copy of the ListsList.
-func (o ListsList) Append(objects ...elemental.Identifiable) elemental.ContentIdentifiable {
+func (o ListsList) Append(objects ...elemental.Identifiable) elemental.Identifiables {
 
 	out := append(ListsList{}, o...)
 	for _, obj := range objects {

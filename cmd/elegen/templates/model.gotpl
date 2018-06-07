@@ -36,21 +36,21 @@ var {{ .Spec.Model.EntityName }}Identity = elemental.Identity {
 // {{ .Spec.Model.EntityNamePlural }}List represents a list of {{ .Spec.Model.EntityNamePlural }}
 type {{ .Spec.Model.EntityNamePlural }}List []*{{ .Spec.Model.EntityName}}
 
-// ContentIdentity returns the identity of the objects in the list.
-func (o {{ .Spec.Model.EntityNamePlural }}List) ContentIdentity() elemental.Identity {
+// Identity returns the identity of the objects in the list.
+func (o {{ .Spec.Model.EntityNamePlural }}List) Identity() elemental.Identity {
 
     return {{ .Spec.Model.EntityName}}Identity
 }
 
 // Copy returns a pointer to a copy the {{ .Spec.Model.EntityNamePlural }}List.
-func (o {{ .Spec.Model.EntityNamePlural }}List) Copy() elemental.ContentIdentifiable {
+func (o {{ .Spec.Model.EntityNamePlural }}List) Copy() elemental.Identifiables {
 
     copy := append({{ .Spec.Model.EntityNamePlural }}List{}, o...)
     return &copy
 }
 
 // Append appends the objects to the a new copy of the {{ .Spec.Model.EntityNamePlural }}List.
-func (o {{ .Spec.Model.EntityNamePlural }}List) Append(objects ...elemental.Identifiable) elemental.ContentIdentifiable {
+func (o {{ .Spec.Model.EntityNamePlural }}List) Append(objects ...elemental.Identifiable) elemental.Identifiables {
 
     out := append({{ .Spec.Model.EntityNamePlural }}List{}, o...)
     for _, obj := range objects {

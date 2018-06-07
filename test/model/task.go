@@ -31,21 +31,21 @@ var TaskIdentity = elemental.Identity{
 // TasksList represents a list of Tasks
 type TasksList []*Task
 
-// ContentIdentity returns the identity of the objects in the list.
-func (o TasksList) ContentIdentity() elemental.Identity {
+// Identity returns the identity of the objects in the list.
+func (o TasksList) Identity() elemental.Identity {
 
 	return TaskIdentity
 }
 
 // Copy returns a pointer to a copy the TasksList.
-func (o TasksList) Copy() elemental.ContentIdentifiable {
+func (o TasksList) Copy() elemental.Identifiables {
 
 	copy := append(TasksList{}, o...)
 	return &copy
 }
 
 // Append appends the objects to the a new copy of the TasksList.
-func (o TasksList) Append(objects ...elemental.Identifiable) elemental.ContentIdentifiable {
+func (o TasksList) Append(objects ...elemental.Identifiable) elemental.Identifiables {
 
 	out := append(TasksList{}, o...)
 	for _, obj := range objects {

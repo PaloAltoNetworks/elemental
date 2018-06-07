@@ -7,7 +7,7 @@ package elemental
 import "fmt"
 
 // An ModelManager is the interface allows to search Identities
-// and create Identifiable and ContentIdentifiable.
+// and create Identifiable and Identifiables.
 type ModelManager interface {
 
 	// Identifiable returns an Identifiable with the given identity.
@@ -17,12 +17,12 @@ type ModelManager interface {
 	// string. The string can be an Identity name, category or alias.
 	IdentifiableFromString(any string) Identifiable
 
-	// ContentIdentifiable returns an ContentIdentifiable with the given identity.
-	ContentIdentifiable(identity Identity) ContentIdentifiable
+	// Identifiables returns an Identifiables with the given identity.
+	Identifiables(identity Identity) Identifiables
 
-	// ContentIdentifiableFrom returns an ContentIdentifiable from the given
+	// IdentifiablesFrom returns an Identifiables from the given
 	// string. The string can be an Identity name, category or alias.
-	ContentIdentifiableFromString(any string) ContentIdentifiable
+	IdentifiablesFromString(any string) Identifiables
 
 	// IdentityFromName returns the Identity from the given name.
 	IdentityFromName(string) Identity
@@ -120,13 +120,13 @@ var RootIdentity = Identity{
 	Category: "root",
 }
 
-// ContentIdentifiable is the interface of a list of Identifiable that can
+// Identifiables is the interface of a list of Identifiable that can
 // returns the Identity of the objects it contains.
-type ContentIdentifiable interface {
-	ContentIdentity() Identity
+type Identifiables interface {
+	Identity() Identity
 	List() IdentifiablesList
-	Copy() ContentIdentifiable
-	Append(...Identifiable) ContentIdentifiable
+	Copy() Identifiables
+	Append(...Identifiable) Identifiables
 	Versionable
 }
 

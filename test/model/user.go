@@ -17,21 +17,21 @@ var UserIdentity = elemental.Identity{
 // UsersList represents a list of Users
 type UsersList []*User
 
-// ContentIdentity returns the identity of the objects in the list.
-func (o UsersList) ContentIdentity() elemental.Identity {
+// Identity returns the identity of the objects in the list.
+func (o UsersList) Identity() elemental.Identity {
 
 	return UserIdentity
 }
 
 // Copy returns a pointer to a copy the UsersList.
-func (o UsersList) Copy() elemental.ContentIdentifiable {
+func (o UsersList) Copy() elemental.Identifiables {
 
 	copy := append(UsersList{}, o...)
 	return &copy
 }
 
 // Append appends the objects to the a new copy of the UsersList.
-func (o UsersList) Append(objects ...elemental.Identifiable) elemental.ContentIdentifiable {
+func (o UsersList) Append(objects ...elemental.Identifiable) elemental.Identifiables {
 
 	out := append(UsersList{}, o...)
 	for _, obj := range objects {
