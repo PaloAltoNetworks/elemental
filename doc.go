@@ -15,7 +15,7 @@
 // instantiate objects based on their Identity.
 //
 // Elemental also contains some Request/Response structures representing various Operation on Identifiable or
-// Identifiables as well as a bunch of validators to enforce specification constraints on attributes like max lenght,
+// Identifiables as well as a bunch of validators to enforce specification constraints on attributes like max length,
 // pattern etc.
 // There is also an Event structure that can be used to notify clients of the the result of an Operation sent through
 // a Request.
