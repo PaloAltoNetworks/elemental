@@ -6,11 +6,36 @@ package elemental
 
 import "fmt"
 
-// IdentifiableFactory is the type of a function that can return an Identifiable from the given identity name.
-type IdentifiableFactory func(identity string, version int) Identifiable
+// An IdentifiableFactory is the interface allows to search Identities
+// and create Identifiable and ContentIdentifiable.
+type IdentifiableFactory interface {
 
-// ContentIdentifiableFactory is the type of a function that can return an ContentIdentifiable from the given identity name.
-type ContentIdentifiableFactory func(identity string, version int) ContentIdentifiable
+	// Identifiable returns an Identifiable with the given identity.
+	Identifiable(identity Identity) Identifiable
+
+	// IdentifiableFromString returns an Identifiable from the given
+	// string. The string can be an Identity name, category or alias.
+	IdentifiableFromString(any string) Identifiable
+
+	// ContentIdentifiable returns an ContentIdentifiable with the given identity.
+	ContentIdentifiable(identity Identity) ContentIdentifiable
+
+	// ContentIdentifiableFrom returns an ContentIdentifiable from the given
+	// string. The string can be an Identity name, category or alias.
+	ContentIdentifiableFromString(any string) ContentIdentifiable
+
+	// IdentityFromName returns the Identity from the given name.
+	IdentityFromName(string) Identity
+
+	// IdentityFromCategory returns the Identity from the given category.
+	IdentityFromCategory(string) Identity
+
+	// IdentityFromAlias returns the Identity from the given alias.
+	IdentityFromAlias(string) Identity
+
+	// IdentityFromAny returns the Identity from the given name, category or alias.
+	IdentityFromAny(string) Identity
+}
 
 // An IdentifiablesList is a list of objects implementing the Identifiable interface.
 type IdentifiablesList []Identifiable

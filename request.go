@@ -55,7 +55,7 @@ func NewRequest() *Request {
 }
 
 // NewRequestFromHTTPRequest returns a new Request from the given http.Request.
-func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
+func NewRequestFromHTTPRequest(req *http.Request, factory IdentifiableFactory) (*Request, error) {
 
 	if req.URL == nil || req.URL.String() == "" {
 		return nil, fmt.Errorf("request must have an url")
@@ -95,14 +95,14 @@ func NewRequestFromHTTPRequest(req *http.Request) (*Request, error) {
 
 	switch len(components) {
 	case 1:
-		identity = IdentityFromCategory(components[0])
+		identity = factory.IdentityFromCategory(components[0])
 	case 2:
-		identity = IdentityFromCategory(components[0])
+		identity = factory.IdentityFromCategory(components[0])
 		ID = components[1]
 	case 3:
-		parentIdentity = IdentityFromCategory(components[0])
+		parentIdentity = factory.IdentityFromCategory(components[0])
 		parentID = components[1]
-		identity = IdentityFromCategory(components[2])
+		identity = factory.IdentityFromCategory(components[2])
 	default:
 		return nil, fmt.Errorf("%s is not a valid elemental request path", req.URL)
 	}
