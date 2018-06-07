@@ -6,8 +6,8 @@ package elemental
 
 import "fmt"
 
-// An ModelManager is the interface allows to search Identities
-// and create Identifiable and Identifiables.
+// An ModelManager is the interface that allows to search Identities
+// and create Identifiable and Identifiables from Identities.
 type ModelManager interface {
 
 	// Identifiable returns an Identifiable with the given identity.
