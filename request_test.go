@@ -96,7 +96,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 		Convey("When I create a new elemental Request from it", func() {
 
-			r, err := NewRequestFromHTTPRequest(req, Factory())
+			r, err := NewRequestFromHTTPRequest(req, Manager())
 
 			Convey("Then r should not be nil", func() {
 				So(r, ShouldNotBeNil)
@@ -185,7 +185,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 		Convey("When I create a new elemental Request from it", func() {
 
-			r, err := NewRequestFromHTTPRequest(req, Factory())
+			r, err := NewRequestFromHTTPRequest(req, Manager())
 
 			Convey("Then r should not be nil", func() {
 				So(r, ShouldNotBeNil)
@@ -250,7 +250,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 		Convey("When I create a new elemental Request from it", func() {
 
-			r, err := NewRequestFromHTTPRequest(req, Factory())
+			r, err := NewRequestFromHTTPRequest(req, Manager())
 
 			Convey("Then r should not be nil", func() {
 				So(r, ShouldNotBeNil)
@@ -319,7 +319,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 		Convey("When I create a new elemental Request from it", func() {
 
-			r, err := NewRequestFromHTTPRequest(req, Factory())
+			r, err := NewRequestFromHTTPRequest(req, Manager())
 
 			Convey("Then r should not be nil", func() {
 				So(r, ShouldNotBeNil)
@@ -387,7 +387,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 		Convey("When I create a new elemental Request from it", func() {
 
-			r, err := NewRequestFromHTTPRequest(req, Factory())
+			r, err := NewRequestFromHTTPRequest(req, Manager())
 
 			Convey("Then r should not be nil", func() {
 				So(r, ShouldNotBeNil)
@@ -452,7 +452,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 		Convey("When I create a new elemental Request from it", func() {
 
-			r, err := NewRequestFromHTTPRequest(req, Factory())
+			r, err := NewRequestFromHTTPRequest(req, Manager())
 
 			Convey("Then r should not be nil", func() {
 				So(r, ShouldNotBeNil)
@@ -516,7 +516,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 		Convey("When I create a new elemental Request from it", func() {
 
-			r, err := NewRequestFromHTTPRequest(req, Factory())
+			r, err := NewRequestFromHTTPRequest(req, Manager())
 
 			Convey("Then r should not be nil", func() {
 				So(r, ShouldNotBeNil)
@@ -580,7 +580,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 		Convey("When I create a new elemental Request from it", func() {
 
-			r, err := NewRequestFromHTTPRequest(req, Factory())
+			r, err := NewRequestFromHTTPRequest(req, Manager())
 
 			Convey("Then r should not be nil", func() {
 				So(r, ShouldNotBeNil)
@@ -642,7 +642,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 		Convey("When I create a new elemental Request from it", func() {
 
-			r, err := NewRequestFromHTTPRequest(req, Factory())
+			r, err := NewRequestFromHTTPRequest(req, Manager())
 
 			Convey("Then r should be nil", func() {
 				So(r, ShouldBeNil)
@@ -660,7 +660,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 		Convey("When I create a new elemental Request from it", func() {
 
-			r, err := NewRequestFromHTTPRequest(req, Factory())
+			r, err := NewRequestFromHTTPRequest(req, Manager())
 
 			Convey("Then r should be nil", func() {
 				So(r, ShouldBeNil)
@@ -678,7 +678,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 		Convey("When I create a new elemental Request from it", func() {
 
-			r, err := NewRequestFromHTTPRequest(req, Factory())
+			r, err := NewRequestFromHTTPRequest(req, Manager())
 
 			Convey("Then r should be nil", func() {
 				So(r, ShouldBeNil)
@@ -696,7 +696,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 		Convey("When I create a new elemental Request from it", func() {
 
-			r, err := NewRequestFromHTTPRequest(req, Factory())
+			r, err := NewRequestFromHTTPRequest(req, Manager())
 
 			Convey("Then r should be nil", func() {
 				So(r, ShouldBeNil)
@@ -715,7 +715,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 		Convey("When I create a new elemental Request from it", func() {
 
-			r, err := NewRequestFromHTTPRequest(req, Factory())
+			r, err := NewRequestFromHTTPRequest(req, Manager())
 
 			Convey("Then r should be nil", func() {
 				So(r, ShouldBeNil)

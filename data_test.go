@@ -1407,24 +1407,24 @@ var (
 // ModelVersion returns the current version of the model.
 func ModelVersion() float64 { return 1 }
 
-type identifiableFactory struct{}
+type modelManager struct{}
 
-func (f identifiableFactory) IdentityFromName(name string) Identity {
+func (f modelManager) IdentityFromName(name string) Identity {
 
 	return identityNamesMap[name]
 }
 
-func (f identifiableFactory) IdentityFromCategory(category string) Identity {
+func (f modelManager) IdentityFromCategory(category string) Identity {
 
 	return identitycategoriesMap[category]
 }
 
-func (f identifiableFactory) IdentityFromAlias(alias string) Identity {
+func (f modelManager) IdentityFromAlias(alias string) Identity {
 
 	return aliasesMap[alias]
 }
 
-func (f identifiableFactory) IdentityFromAny(any string) (i Identity) {
+func (f modelManager) IdentityFromAny(any string) (i Identity) {
 
 	if i = f.IdentityFromName(any); !i.IsEmpty() {
 		return i
@@ -1437,7 +1437,7 @@ func (f identifiableFactory) IdentityFromAny(any string) (i Identity) {
 	return f.IdentityFromAlias(any)
 }
 
-func (f identifiableFactory) Identifiable(identity Identity) Identifiable {
+func (f modelManager) Identifiable(identity Identity) Identifiable {
 
 	switch identity {
 
@@ -1454,12 +1454,12 @@ func (f identifiableFactory) Identifiable(identity Identity) Identifiable {
 	}
 }
 
-func (f identifiableFactory) IdentifiableFromString(any string) Identifiable {
+func (f modelManager) IdentifiableFromString(any string) Identifiable {
 
 	return f.Identifiable(f.IdentityFromAny(any))
 }
 
-func (f identifiableFactory) ContentIdentifiable(identity Identity) ContentIdentifiable {
+func (f modelManager) ContentIdentifiable(identity Identity) ContentIdentifiable {
 
 	switch identity {
 
@@ -1474,20 +1474,20 @@ func (f identifiableFactory) ContentIdentifiable(identity Identity) ContentIdent
 	}
 }
 
-func (f identifiableFactory) ContentIdentifiableFromString(any string) ContentIdentifiable {
+func (f modelManager) ContentIdentifiableFromString(any string) ContentIdentifiable {
 
 	return f.ContentIdentifiable(f.IdentityFromAny(any))
 }
 
-func (f identifiableFactory) Relationships() RelationshipsRegistry {
+func (f modelManager) Relationships() RelationshipsRegistry {
 
 	return relationshipsRegistry
 }
 
-var ifactory = identifiableFactory{}
+var manager = modelManager{}
 
-// Factory returns the model IdentifiableFactory.
-func Factory() IdentifiableFactory { return ifactory }
+// Manager returns the model ModelManager.
+func Manager() ModelManager { return manager }
 
 // AllIdentities returns all existing identities.
 func AllIdentities() []Identity {

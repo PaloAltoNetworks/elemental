@@ -6,9 +6,9 @@ package elemental
 
 import "fmt"
 
-// An IdentifiableFactory is the interface allows to search Identities
+// An ModelManager is the interface allows to search Identities
 // and create Identifiable and ContentIdentifiable.
-type IdentifiableFactory interface {
+type ModelManager interface {
 
 	// Identifiable returns an Identifiable with the given identity.
 	Identifiable(identity Identity) Identifiable
