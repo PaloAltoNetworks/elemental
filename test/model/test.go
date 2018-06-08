@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/aporeto-inc/elemental"
 	"time"
+
+	"github.com/aporeto-inc/elemental"
 )
 
 // TestTypEnumValue represents the possible values for attribute "typEnum".
@@ -28,21 +29,21 @@ var TestIdentity = elemental.Identity{
 // TestsList represents a list of Tests
 type TestsList []*Test
 
-// ContentIdentity returns the identity of the objects in the list.
-func (o TestsList) ContentIdentity() elemental.Identity {
+// Identity returns the identity of the objects in the list.
+func (o TestsList) Identity() elemental.Identity {
 
 	return TestIdentity
 }
 
 // Copy returns a pointer to a copy the TestsList.
-func (o TestsList) Copy() elemental.ContentIdentifiable {
+func (o TestsList) Copy() elemental.Identifiables {
 
 	copy := append(TestsList{}, o...)
 	return &copy
 }
 
 // Append appends the objects to the a new copy of the TestsList.
-func (o TestsList) Append(objects ...elemental.Identifiable) elemental.ContentIdentifiable {
+func (o TestsList) Append(objects ...elemental.Identifiable) elemental.Identifiables {
 
 	out := append(TestsList{}, o...)
 	for _, obj := range objects {

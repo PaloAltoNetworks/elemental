@@ -391,15 +391,14 @@ func dominantField(fields []field) (field, bool) {
 	return fields[0], true
 }
 
-// TagName is the default tagName for this lib
-const TagName = "json"
+const tagName = "json"
 
 // tagOptions is the string following a comma in a struct field's
 // tag, or the empty string. It does not include the leading comma.
 type tagOptions string
 
 func tagForField(sf reflect.StructField) string {
-	return sf.Tag.Get(TagName)
+	return sf.Tag.Get(tagName)
 }
 
 // parseTag splits a struct field's tag into its name and

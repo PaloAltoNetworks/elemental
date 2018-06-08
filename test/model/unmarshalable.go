@@ -12,21 +12,21 @@ var UnmarshalableListIdentity = elemental.Identity{Name: "list", Category: "list
 // UnmarshalableListsList represents a list of UnmarshalableLists
 type UnmarshalableListsList []*UnmarshalableList
 
-// ContentIdentity returns the identity of the objects in the list.
-func (o UnmarshalableListsList) ContentIdentity() elemental.Identity {
+// Identity returns the identity of the objects in the list.
+func (o UnmarshalableListsList) Identity() elemental.Identity {
 
 	return UnmarshalableListIdentity
 }
 
 // Copy returns a pointer to a copy the UnmarshalableListsList.
-func (o UnmarshalableListsList) Copy() elemental.ContentIdentifiable {
+func (o UnmarshalableListsList) Copy() elemental.Identifiables {
 
 	copy := append(UnmarshalableListsList{}, o...)
 	return &copy
 }
 
 // Append appends the objects to the a new copy of the UnmarshalableListsList.
-func (o UnmarshalableListsList) Append(objects ...elemental.Identifiable) elemental.ContentIdentifiable {
+func (o UnmarshalableListsList) Append(objects ...elemental.Identifiable) elemental.Identifiables {
 
 	out := append(UnmarshalableListsList{}, o...)
 	for _, obj := range objects {

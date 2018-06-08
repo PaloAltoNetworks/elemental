@@ -6,11 +6,39 @@ package elemental
 
 import "fmt"
 
-// IdentifiableFactory is the type of a function that can return an Identifiable from the given identity name.
-type IdentifiableFactory func(identity string, version int) Identifiable
+// An ModelManager is the interface that allows to search Identities
+// and create Identifiable and Identifiables from Identities.
+type ModelManager interface {
 
-// ContentIdentifiableFactory is the type of a function that can return an ContentIdentifiable from the given identity name.
-type ContentIdentifiableFactory func(identity string, version int) ContentIdentifiable
+	// Identifiable returns an Identifiable with the given identity.
+	Identifiable(identity Identity) Identifiable
+
+	// IdentifiableFromString returns an Identifiable from the given
+	// string. The string can be an Identity name, category or alias.
+	IdentifiableFromString(any string) Identifiable
+
+	// Identifiables returns an Identifiables with the given identity.
+	Identifiables(identity Identity) Identifiables
+
+	// IdentifiablesFrom returns an Identifiables from the given
+	// string. The string can be an Identity name, category or alias.
+	IdentifiablesFromString(any string) Identifiables
+
+	// IdentityFromName returns the Identity from the given name.
+	IdentityFromName(string) Identity
+
+	// IdentityFromCategory returns the Identity from the given category.
+	IdentityFromCategory(string) Identity
+
+	// IdentityFromAlias returns the Identity from the given alias.
+	IdentityFromAlias(string) Identity
+
+	// IdentityFromAny returns the Identity from the given name, category or alias.
+	IdentityFromAny(string) Identity
+
+	// Relationships return the model's elemental.RelationshipsRegistry.
+	Relationships() RelationshipsRegistry
+}
 
 // An IdentifiablesList is a list of objects implementing the Identifiable interface.
 type IdentifiablesList []Identifiable
@@ -92,13 +120,13 @@ var RootIdentity = Identity{
 	Category: "root",
 }
 
-// ContentIdentifiable is the interface of a list of Identifiable that can
+// Identifiables is the interface of a list of Identifiable that can
 // returns the Identity of the objects it contains.
-type ContentIdentifiable interface {
-	ContentIdentity() Identity
+type Identifiables interface {
+	Identity() Identity
 	List() IdentifiablesList
-	Copy() ContentIdentifiable
-	Append(...Identifiable) ContentIdentifiable
+	Copy() Identifiables
+	Append(...Identifiable) Identifiables
 	Versionable
 }
 

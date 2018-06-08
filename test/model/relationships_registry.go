@@ -6,12 +6,6 @@ const nodocString = "[nodoc]" // nolint: varcheck,deadcode
 
 var relationshipsRegistry elemental.RelationshipsRegistry
 
-// Relationships returns the model relationships.
-func Relationships() elemental.RelationshipsRegistry {
-
-	return relationshipsRegistry
-}
-
 func init() {
 
 	relationshipsRegistry = elemental.RelationshipsRegistry{}
@@ -56,16 +50,13 @@ func init() {
 			"root": true,
 		},
 		AllowsRetrieve: map[string]bool{
-			"list": true,
 			"root": true,
 		},
 		AllowsRetrieveMany: map[string]bool{
 			"list": true,
-			"root": true,
 		},
 		AllowsInfo: map[string]bool{
 			"list": true,
-			"root": true,
 		},
 	}
 
@@ -74,18 +65,15 @@ func init() {
 			"root": true,
 		},
 		AllowsUpdate: map[string]bool{
-			"list": true,
 			"root": true,
 		},
 		AllowsPatch: map[string]bool{
-			"list": true,
 			"root": true,
 		},
 		AllowsDelete: map[string]bool{
 			"root": true,
 		},
 		AllowsRetrieve: map[string]bool{
-			"list": true,
 			"root": true,
 		},
 		AllowsRetrieveMany: map[string]bool{

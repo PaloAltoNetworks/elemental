@@ -60,7 +60,6 @@ func TestAttribute_SpecificationForAttribute(t *testing.T) {
 				So(spec.Stored, ShouldBeTrue)
 				So(spec.SubType, ShouldBeEmpty)
 				So(spec.Transient, ShouldBeFalse)
-				So(spec.Unique, ShouldBeTrue)
 			})
 		})
 	})

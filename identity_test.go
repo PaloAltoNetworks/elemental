@@ -51,9 +51,9 @@ func TestIdentity_String(t *testing.T) {
 	})
 }
 
-func TestIdentity_ContentIdentity_Copy(t *testing.T) {
+func TestIdentity_Identity_Copy(t *testing.T) {
 
-	Convey("Given I create I have a ContentIdentifiable with 2 Identifiable", t, func() {
+	Convey("Given I create I have a Identifiables with 2 Identifiable", t, func() {
 
 		l1 := NewList()
 		l1.ID = "x"

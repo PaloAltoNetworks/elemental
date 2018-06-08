@@ -2,88 +2,112 @@ package testmodel
 
 import "github.com/aporeto-inc/elemental"
 
-func init() {
+var (
+	identityNamesMap = map[string]elemental.Identity{
+		"list": ListIdentity,
+		"root": RootIdentity,
+		"task": TaskIdentity,
+		"user": UserIdentity,
+	}
 
-	elemental.RegisterIdentity(ListIdentity)
-	elemental.RegisterIdentity(RootIdentity)
-	elemental.RegisterIdentity(TaskIdentity)
-	elemental.RegisterIdentity(UserIdentity)
-}
+	identitycategoriesMap = map[string]elemental.Identity{
+		"lists": ListIdentity,
+		"root":  RootIdentity,
+		"tasks": TaskIdentity,
+		"users": UserIdentity,
+	}
+
+	aliasesMap = map[string]elemental.Identity{
+		"lst": ListIdentity,
+		"tsk": TaskIdentity,
+		"usr": UserIdentity,
+	}
+)
 
 // ModelVersion returns the current version of the model.
 func ModelVersion() float64 { return 1 }
 
-// IdentifiableForIdentity returns a new instance of the Identifiable for the given identity name.
-func IdentifiableForIdentity(identity string) elemental.Identifiable {
+type modelManager struct{}
+
+func (f modelManager) IdentityFromName(name string) elemental.Identity {
+
+	return identityNamesMap[name]
+}
+
+func (f modelManager) IdentityFromCategory(category string) elemental.Identity {
+
+	return identitycategoriesMap[category]
+}
+
+func (f modelManager) IdentityFromAlias(alias string) elemental.Identity {
+
+	return aliasesMap[alias]
+}
+
+func (f modelManager) IdentityFromAny(any string) (i elemental.Identity) {
+
+	if i = f.IdentityFromName(any); !i.IsEmpty() {
+		return i
+	}
+
+	if i = f.IdentityFromCategory(any); !i.IsEmpty() {
+		return i
+	}
+
+	return f.IdentityFromAlias(any)
+}
+
+func (f modelManager) Identifiable(identity elemental.Identity) elemental.Identifiable {
 
 	switch identity {
 
-	case ListIdentity.Name:
+	case ListIdentity:
 		return NewList()
-	case RootIdentity.Name:
+	case RootIdentity:
 		return NewRoot()
-	case TaskIdentity.Name:
+	case TaskIdentity:
 		return NewTask()
-	case UserIdentity.Name:
+	case UserIdentity:
 		return NewUser()
 	default:
 		return nil
 	}
 }
 
-// IdentifiableForCategory returns a new instance of the Identifiable for the given category name.
-func IdentifiableForCategory(category string) elemental.Identifiable {
+func (f modelManager) IdentifiableFromString(any string) elemental.Identifiable {
 
-	switch category {
-
-	case ListIdentity.Category:
-		return NewList()
-	case RootIdentity.Category:
-		return NewRoot()
-	case TaskIdentity.Category:
-		return NewTask()
-	case UserIdentity.Category:
-		return NewUser()
-	default:
-		return nil
-	}
+	return f.Identifiable(f.IdentityFromAny(any))
 }
 
-// ContentIdentifiableForIdentity returns a new instance of a ContentIdentifiable for the given identity name.
-func ContentIdentifiableForIdentity(identity string) elemental.ContentIdentifiable {
+func (f modelManager) Identifiables(identity elemental.Identity) elemental.Identifiables {
 
 	switch identity {
 
-	case ListIdentity.Name:
+	case ListIdentity:
 		return &ListsList{}
-	case RootIdentity.Name:
-		return &RootsList{}
-	case TaskIdentity.Name:
+	case TaskIdentity:
 		return &TasksList{}
-	case UserIdentity.Name:
+	case UserIdentity:
 		return &UsersList{}
 	default:
 		return nil
 	}
 }
 
-// ContentIdentifiableForCategory returns a new instance of a ContentIdentifiable for the given category name.
-func ContentIdentifiableForCategory(category string) elemental.ContentIdentifiable {
+func (f modelManager) IdentifiablesFromString(any string) elemental.Identifiables {
 
-	switch category {
-
-	case ListIdentity.Category:
-		return &ListsList{}
-	case RootIdentity.Category:
-		return &RootsList{}
-	case TaskIdentity.Category:
-		return &TasksList{}
-	case UserIdentity.Category:
-		return &UsersList{}
-	default:
-		return nil
-	}
+	return f.Identifiables(f.IdentityFromAny(any))
 }
+
+func (f modelManager) Relationships() elemental.RelationshipsRegistry {
+
+	return relationshipsRegistry
+}
+
+var manager = modelManager{}
+
+// Manager returns the model elemental.ModelManager.
+func Manager() elemental.ModelManager { return manager }
 
 // AllIdentities returns all existing identities.
 func AllIdentities() []elemental.Identity {
@@ -94,18 +118,6 @@ func AllIdentities() []elemental.Identity {
 		TaskIdentity,
 		UserIdentity,
 	}
-}
-
-var aliasesMap = map[string]elemental.Identity{
-	"lst": ListIdentity,
-	"tsk": TaskIdentity,
-	"usr": UserIdentity,
-}
-
-// IdentityFromAlias returns the Identity associated to the given alias.
-func IdentityFromAlias(alias string) elemental.Identity {
-
-	return aliasesMap[alias]
 }
 
 // AliasesForIdentity returns all the aliases for the given identity.
