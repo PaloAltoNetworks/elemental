@@ -7,8 +7,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/aporeto-inc/elemental/cmd/elegen/static"
-	"github.com/aporeto-inc/regolithe/spec"
+	"go.aporeto.io/elemental/cmd/elegen/static"
+	"go.aporeto.io/regolithe/spec"
 )
 
 // An Enum represents an enum.

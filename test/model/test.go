@@ -6,7 +6,7 @@ import (
 
 	"time"
 
-	"github.com/aporeto-inc/elemental"
+	"go.aporeto.io/elemental"
 )
 
 // TestTypEnumValue represents the possible values for attribute "typEnum".

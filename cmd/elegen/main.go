@@ -7,10 +7,10 @@ import (
 	"os"
 	"path"
 
-	"github.com/aporeto-inc/elemental/cmd/elegen/versions"
-	"github.com/aporeto-inc/regolithe"
-	"github.com/aporeto-inc/regolithe/spec"
 	"github.com/spf13/viper"
+	"go.aporeto.io/elemental/cmd/elegen/versions"
+	"go.aporeto.io/regolithe"
+	"go.aporeto.io/regolithe/spec"
 	"golang.org/x/sync/errgroup"
 )
 

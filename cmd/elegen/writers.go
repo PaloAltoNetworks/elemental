@@ -9,7 +9,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/aporeto-inc/regolithe/spec"
+	"go.aporeto.io/regolithe/spec"
 )
 
 var functions = template.FuncMap{

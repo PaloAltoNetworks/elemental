@@ -3,7 +3,7 @@ package testmodel
 import (
 	"fmt"
 
-	"github.com/aporeto-inc/elemental"
+	"go.aporeto.io/elemental"
 )
 
 // UnmarshalableListIdentity represents the Identity of the object.

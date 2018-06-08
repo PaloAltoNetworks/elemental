@@ -1,6 +1,6 @@
 package testmodel
 
-import "github.com/aporeto-inc/elemental"
+import "go.aporeto.io/elemental"
 
 const nodocString = "[nodoc]" // nolint: varcheck,deadcode
 

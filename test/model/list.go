@@ -6,7 +6,7 @@ import (
 
 	"time"
 
-	"github.com/aporeto-inc/elemental"
+	"go.aporeto.io/elemental"
 )
 
 // ListIdentity represents the Identity of the object.
