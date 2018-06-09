@@ -180,7 +180,7 @@ func TestPatch_Apply(t *testing.T) {
 
 		Convey("When I apply the patch on a object that is not a pointer", func() {
 			Convey("Then it should should panic", func() {
-				So(func() { NewPatch(0, PatchData{}).Apply(attrSpecifiable{}) }, ShouldPanicWith, "A pointer to elemental.AttributeSpecifiable must be passed to Apply")
+				So(func() { _ = NewPatch(0, PatchData{}).Apply(attrSpecifiable{}) }, ShouldPanicWith, "A pointer to elemental.AttributeSpecifiable must be passed to Apply")
 			})
 		})
 
