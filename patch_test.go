@@ -12,7 +12,7 @@ import (
 )
 
 type attrSpecifiable struct {
-	unexported string
+	unexported string // nolint: structcheck
 }
 
 func (attrSpecifiable) SpecificationForAttribute(string) AttributeSpecification {
