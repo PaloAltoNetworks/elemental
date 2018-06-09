@@ -760,7 +760,7 @@ func TestValidator_ValidateIntInMap(t *testing.T) {
 	})
 }
 
-func TestValidator_StringInMap(t *testing.T) {
+func TestValidator_ValidateStringInMap(t *testing.T) {
 
 	Convey("Given I call the method ValidateStringInMap with a valid float", t, func() {
 
@@ -778,6 +778,15 @@ func TestValidator_StringInMap(t *testing.T) {
 		Convey("Then I should not get nil in return", func() {
 			So(validationError, ShouldNotBeNil)
 			So(validationError.Code, ShouldEqual, http.StatusUnprocessableEntity)
+		})
+	})
+
+	Convey("Given I call the method ValidateStringInMap with an empty value and mark it as autogen", t, func() {
+
+		validationError := ValidateStringInMap("age", "", map[string]interface{}{}, true)
+
+		Convey("Then I should get nil in return", func() {
+			So(validationError, ShouldBeNil)
 		})
 	})
 }

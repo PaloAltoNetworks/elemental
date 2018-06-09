@@ -140,3 +140,22 @@ func TestVerify_BackportUnexposedFields(t *testing.T) {
 		})
 	})
 }
+
+func TestVerify_ResetDefaultForZeroValues(t *testing.T) {
+
+	Convey("Given I have a task with an empty string as status", t, func() {
+
+		task := NewTask()
+		task.Status = ""
+
+		Convey("When I call ResetDefaultForZeroValues", func() {
+
+			ResetDefaultForZeroValues(task)
+
+			Convey("Then the stats should be reset", func() {
+				So(task.Status, ShouldEqual, "TODO")
+			})
+		})
+
+	})
+}

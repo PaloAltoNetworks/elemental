@@ -174,6 +174,9 @@ func TestRequest_FromHttp(t *testing.T) {
 				So(r.OverrideProtection, ShouldBeTrue)
 			})
 
+			Convey("Then I can retrieve the original request", func() {
+				So(r.HTTPRequest(), ShouldEqual, req)
+			})
 		})
 	})
 
@@ -708,10 +711,63 @@ func TestRequest_FromHttp(t *testing.T) {
 		})
 	})
 
-	Convey("Given I have a http request with bad version ", t, func() {
+	Convey("Given I have a http request with a page that is not a number", t, func() {
 
-		req, _ := http.NewRequest(http.MethodPut, "", nil)
-		req.Header.Set("x-api-version", "nope")
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/tasks?page=not-int", nil)
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a http request with a pagesize that is not a number", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/tasks?pagesize=not-int", nil)
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a http request with a version that is not a number", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/v/A/lists/xx/tasks", nil)
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a http request with a bad path", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/tasks/yy/what?", nil)
 
 		Convey("When I create a new elemental Request from it", func() {
 

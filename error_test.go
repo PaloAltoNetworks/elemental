@@ -263,3 +263,43 @@ func TestError_IsValidationError(t *testing.T) {
 		})
 	})
 }
+
+func TestError_DecodeError(t *testing.T) {
+
+	Convey("Given I have some valid json data", t, func() {
+
+		data := `[{"title":"t1","code":42,"description":"coucou"},{"title":"t1","code":42,"description":"coucou"}]`
+
+		Convey("When I call DecodeErrors", func() {
+
+			errs, err := DecodeErrors([]byte(data))
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then errs should be correct", func() {
+				So(len(errs), ShouldEqual, 2)
+			})
+		})
+	})
+
+	Convey("Given I have some invalid json data", t, func() {
+
+		data := `[{"title":"t1"]`
+
+		Convey("When I call DecodeErrors", func() {
+
+			errs, err := DecodeErrors([]byte(data))
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, "invalid character ']' after object key:value pair")
+			})
+
+			Convey("Then errs should be correct", func() {
+				So(errs, ShouldBeNil)
+			})
+		})
+	})
+}

@@ -14,19 +14,7 @@ type Relationship struct {
 	AllowsUpdate       map[string]bool
 	AllowsDelete       map[string]bool
 	AllowsPatch        map[string]bool
-
-	// Children RelationshipsRegistry
 }
-
-// // AddChild adds a new child Relationship.
-// func (r *Relationship) AddChild(identity Identity, relationship *Relationship) {
-//
-// 	if r.Children == nil {
-// 		r.Children = RelationshipsRegistry{}
-// 	}
-//
-// 	r.Children[identity] = relationship
-// }
 
 // IsRetrieveAllowed returns true if retrieving the given identity is allowed.
 func IsRetrieveAllowed(registry RelationshipsRegistry, i Identity) bool {

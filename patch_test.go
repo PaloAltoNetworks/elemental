@@ -11,6 +11,19 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+type attrSpecifiable struct {
+	unexported string
+}
+
+func (attrSpecifiable) SpecificationForAttribute(string) AttributeSpecification {
+	return AttributeSpecification{
+		ConvertedName: "unexported",
+	}
+}
+func (attrSpecifiable) AttributeSpecifications() map[string]AttributeSpecification {
+	return nil
+}
+
 func TestPatch_NewPatch(t *testing.T) {
 
 	Convey("Given I create a new Patch", t, func() {
@@ -162,6 +175,23 @@ func TestPatch_Apply(t *testing.T) {
 
 			Convey("Then err should be correct", func() {
 				So(err.Error(), ShouldEqual, "error 422 (elemental): Validation Error: field 'woops' is invalid")
+			})
+		})
+
+		Convey("When I apply the patch on a object that is not a pointer", func() {
+			Convey("Then it should should panic", func() {
+				So(func() { NewPatch(0, PatchData{}).Apply(attrSpecifiable{}) }, ShouldPanicWith, "A pointer to elemental.AttributeSpecifiable must be passed to Apply")
+			})
+		})
+
+		Convey("When I apply the patch on a object on a field that is not settable", func() {
+
+			err := NewPatch(0, PatchData{
+				"unexported": "patched",
+			}).Apply(&attrSpecifiable{})
+
+			Convey("Then err should be correct", func() {
+				So(err.Error(), ShouldEqual, "error 422 (elemental): Validation Error: field 'unexported' cannot be set")
 			})
 		})
 	})
