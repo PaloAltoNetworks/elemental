@@ -10,6 +10,7 @@ import (
 	"text/template"
 
 	"go.aporeto.io/regolithe/spec"
+	"golang.org/x/tools/imports"
 )
 
 var functions = template.FuncMap{
@@ -67,6 +68,11 @@ func writeModel(set spec.SpecificationSet, name string, outFolder string, public
 			}
 		}
 		return fmt.Errorf("Unable to format model '%s': %s", name, err)
+	}
+
+	p, err = imports.Process("", p, nil)
+	if err != nil {
+		return err
 	}
 
 	if err := writeFile(path.Join(outFolder, name+".go"), p); err != nil {
