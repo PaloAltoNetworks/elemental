@@ -96,7 +96,6 @@ func TestEvent_Duplicate(t *testing.T) {
 
 		list := &List{}
 		e1 := NewEvent(EventCreate, list)
-		e1.UserInfo = "hello"
 
 		Convey("When I Duplicate ", func() {
 
@@ -107,7 +106,6 @@ func TestEvent_Duplicate(t *testing.T) {
 				So(e2.Entity, ShouldResemble, e1.Entity)
 				So(e2.Identity, ShouldEqual, e1.Identity)
 				So(e2.Timestamp, ShouldEqual, e1.Timestamp)
-				So(e2.UserInfo, ShouldResemble, e1.UserInfo)
 			})
 		})
 	})

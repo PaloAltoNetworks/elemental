@@ -18,16 +18,18 @@ func TestError_NewError(t *testing.T) {
 	Convey("Given I create an Error", t, func() {
 
 		e := NewError("bad", "something bad", "containers", 42)
+		e.Trace = "xyz"
 
 		Convey("Then the Error should be correctly initialized", func() {
 			So(e.Code, ShouldEqual, 42)
 			So(e.Description, ShouldEqual, "something bad")
 			So(e.Subject, ShouldEqual, "containers")
 			So(e.Title, ShouldEqual, "bad")
+			So(e.Trace, ShouldEqual, "xyz")
 		})
 
 		Convey("Then the string representation should be correct", func() {
-			So(e.Error(), ShouldEqual, "error 42 (containers): bad: something bad")
+			So(e.Error(), ShouldEqual, "error 42 (containers): bad: something bad [trace: xyz]")
 		})
 	})
 
