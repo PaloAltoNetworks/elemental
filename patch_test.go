@@ -37,6 +37,7 @@ func TestPatch_NewPatch(t *testing.T) {
 		Convey("Then the patch should be correctly initialized", func() {
 			So(a.Type, ShouldEqual, PatchTypeSet)
 			So(a.Data, ShouldResemble, data)
+			So(a.Version(), ShouldEqual, 1)
 		})
 
 		Convey("Then the identity should be InternalPatchIdentity", func() {

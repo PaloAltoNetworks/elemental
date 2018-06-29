@@ -256,7 +256,11 @@ func (r *Request) Encode(entity Identifiable) error {
 // Decode decodes the data into the given destination
 func (r *Request) Decode(dst interface{}) error {
 
-	return UnmarshalJSON(r.Data, &dst)
+	if err := json.Unmarshal(r.Data, &dst); err != nil {
+		return NewError("Bad Request", err.Error(), "elemental", http.StatusBadRequest)
+	}
+
+	return nil
 }
 
 // HTTPRequest returns the native http.Request, if any.
