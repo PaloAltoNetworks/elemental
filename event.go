@@ -30,7 +30,6 @@ type Event struct {
 	Identity  string          `json:"identity"`
 	Type      EventType       `json:"type"`
 	Timestamp time.Time       `json:"timestamp"`
-	UserInfo  interface{}     `json:"userInfo,omitempty"`
 }
 
 // NewEvent returns a new Event.
@@ -68,7 +67,6 @@ func (e *Event) Duplicate() *Event {
 		Entity:    e.Entity,
 		Identity:  e.Identity,
 		Timestamp: e.Timestamp,
-		UserInfo:  e.UserInfo,
 	}
 }
 
