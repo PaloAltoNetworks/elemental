@@ -79,7 +79,7 @@ func attributeNameConverter(attrName string) string {
 	return strings.Title(attrName)
 }
 
-func attrToField(attr *spec.Attribute, publicMode bool) string {
+func attrToField(attr *spec.Attribute) string {
 
 	json := attr.Name
 	bson := strings.ToLower(attr.Name)

@@ -93,7 +93,7 @@ func (o {{ .Spec.Model.EntityNamePlural }}List) Version() int {
 // {{ .Spec.Model.EntityName }} represents the model of a {{ .Spec.Model.RestName }}
 type {{ .Spec.Model.EntityName }} struct {
 {{ range .Spec.Attributes $latestVersion -}}
-{{ makeAttr . $.PublicMode }}
+{{ makeAttr . }}
 {{- end }}
 
     ModelVersion int `json:"-" bson:"_modelversion"`
