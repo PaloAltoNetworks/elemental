@@ -28,7 +28,7 @@ func main() {
 	cmd.PersistentFlags().Bool("public", false, "If set to true, only exposed attributes and public objects will be generated")
 
 	if err := cmd.Execute(); err != nil {
-		fmt.Fprint(os.Stderr, err)
+		fmt.Fprint(os.Stderr, err) // nolint
 		os.Exit(1)
 	}
 }
