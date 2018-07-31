@@ -21,10 +21,11 @@ func init() {
                 {{- if $action.Deprecated }}
                 Deprecated: true,
                 {{- end }}
-                {{- if gt (len $action.RequiredParameters) 0 }}
+                {{- if $action.ParameterDefinition }}
+                {{- if gt (len $action.ParameterDefinition.Required) 0 }}
                 RequiredParameters: elemental.NewParametersRequirement(
                     [][][]string{
-                        {{- range $i, $l1 := $action.RequiredParameters }}
+                        {{- range $i, $l1 := $action.ParameterDefinition.Required }}
                         {{- if gt (len $l1) 0 }}
                         [][]string{
                             {{- range $i, $l2 := $l1 }}
@@ -42,9 +43,9 @@ func init() {
                     },
                 ),
                 {{- end }}
-                {{- if gt (len $action.Parameters) 0 }}
+                {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
                 Parameters: []elemental.ParameterDefinition{
-                {{- range $i, $p := $action.Parameters }}
+                {{- range $i, $p := $action.ParameterDefinition.Entries }}
                      elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
@@ -69,6 +70,7 @@ func init() {
                 {{- end }}
                 },
                 {{- end }}
+                {{- end }}
             },
             {{- end }}
             {{- end }}
@@ -82,10 +84,11 @@ func init() {
                 {{- if $action.Deprecated }}
                 Deprecated: true,
                 {{- end }}
-                {{- if gt (len $action.RequiredParameters) 0 }}
+                {{- if $action.ParameterDefinition }}
+                {{- if gt (len $action.ParameterDefinition.Required) 0 }}
                 RequiredParameters: elemental.NewParametersRequirement(
                     [][][]string{
-                        {{- range $i, $l1 := $action.RequiredParameters }}
+                        {{- range $i, $l1 := $action.ParameterDefinition.Required }}
                         {{- if gt (len $l1) 0 }}
                         [][]string{
                             {{- range $i, $l2 := $l1 }}
@@ -103,9 +106,9 @@ func init() {
                     },
                 ),
                 {{- end }}
-                {{- if gt (len $action.Parameters) 0 }}
+                {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
                 Parameters: []elemental.ParameterDefinition{
-                {{- range $i, $p := $action.Parameters }}
+                {{- range $i, $p := $action.ParameterDefinition.Entries }}
                     elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
@@ -129,6 +132,7 @@ func init() {
                     },
                 {{- end }}
                 },
+                {{- end }}
                 {{- end }}
             },
             {{- end }}
@@ -141,10 +145,11 @@ func init() {
                 {{- if $action.Deprecated }}
                 Deprecated: true,
                 {{- end }}
-                {{- if gt (len $action.RequiredParameters) 0 }}
+                {{- if $action.ParameterDefinition }}
+                {{- if gt (len $action.ParameterDefinition.Required) 0 }}
                 RequiredParameters: elemental.NewParametersRequirement(
                     [][][]string{
-                        {{- range $i, $l1 := $action.RequiredParameters }}
+                        {{- range $i, $l1 := $action.ParameterDefinition.Required }}
                         {{- if gt (len $l1) 0 }}
                         [][]string{
                             {{- range $i, $l2 := $l1 }}
@@ -162,9 +167,9 @@ func init() {
                     },
                 ),
                 {{- end }}
-                {{- if gt (len $action.Parameters) 0 }}
+                {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
                 Parameters: []elemental.ParameterDefinition{
-                {{- range $i, $p := $action.Parameters }}
+                {{- range $i, $p := $action.ParameterDefinition.Entries }}
                     elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
@@ -188,6 +193,7 @@ func init() {
                     },
                 {{- end }}
                 },
+                {{- end }}
                 {{- end }}
             },
             {{- end }}
@@ -202,10 +208,11 @@ func init() {
                 {{- if $action.Deprecated }}
                 Deprecated: true,
                 {{- end }}
-                {{- if gt (len $action.RequiredParameters) 0 }}
+                {{- if $action.ParameterDefinition }}
+                {{- if gt (len $action.ParameterDefinition.Required) 0 }}
                 RequiredParameters: elemental.NewParametersRequirement(
                     [][][]string{
-                        {{- range $i, $l1 := $action.RequiredParameters }}
+                        {{- range $i, $l1 := $action.ParameterDefinition.Required }}
                         {{- if gt (len $l1) 0 }}
                         [][]string{
                             {{- range $i, $l2 := $l1 }}
@@ -223,9 +230,9 @@ func init() {
                     },
                 ),
                 {{- end }}
-                {{- if gt (len $action.Parameters) 0 }}
+                {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
                 Parameters: []elemental.ParameterDefinition{
-                {{- range $i, $p := $action.Parameters }}
+                {{- range $i, $p := $action.ParameterDefinition.Entries }}
                     elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
@@ -249,6 +256,7 @@ func init() {
                     },
                 {{- end }}
                 },
+                {{- end }}
                 {{- end }}
             },
             {{- end }}
@@ -263,10 +271,11 @@ func init() {
                 {{- if $action.Deprecated }}
                 Deprecated: true,
                 {{- end }}
-                {{- if gt (len $action.RequiredParameters) 0 }}
+                {{- if $action.ParameterDefinition }}
+                {{- if gt (len $action.ParameterDefinition.Required) 0 }}
                 RequiredParameters: elemental.NewParametersRequirement(
                     [][][]string{
-                        {{- range $i, $l1 := $action.RequiredParameters }}
+                        {{- range $i, $l1 := $action.ParameterDefinition.Required }}
                         {{- if gt (len $l1) 0 }}
                         [][]string{
                             {{- range $i, $l2 := $l1 }}
@@ -284,9 +293,9 @@ func init() {
                     },
                 ),
                 {{- end }}
-                {{- if gt (len $action.Parameters) 0 }}
+                {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
                 Parameters: []elemental.ParameterDefinition{
-                {{- range $i, $p := $action.Parameters }}
+                {{- range $i, $p := $action.ParameterDefinition.Entries }}
                     elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
@@ -310,6 +319,7 @@ func init() {
                     },
                 {{- end }}
                 },
+                {{- end }}
                 {{- end }}
             },
             {{- end }}
@@ -324,10 +334,11 @@ func init() {
                 {{- if $action.Deprecated }}
                 Deprecated: true,
                 {{- end }}
-                {{- if gt (len $action.RequiredParameters) 0 }}
+                {{- if $action.ParameterDefinition }}
+                {{- if gt (len $action.ParameterDefinition.Required) 0 }}
                 RequiredParameters: elemental.NewParametersRequirement(
                     [][][]string{
-                        {{- range $i, $l1 := $action.RequiredParameters }}
+                        {{- range $i, $l1 := $action.ParameterDefinition.Required }}
                         {{- if gt (len $l1) 0 }}
                         [][]string{
                             {{- range $i, $l2 := $l1 }}
@@ -345,9 +356,9 @@ func init() {
                     },
                 ),
                 {{- end }}
-                {{- if gt (len $action.Parameters) 0 }}
+                {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
                 Parameters: []elemental.ParameterDefinition{
-                {{- range $i, $p := $action.Parameters }}
+                {{- range $i, $p := $action.ParameterDefinition.Entries }}
                     elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
@@ -371,6 +382,7 @@ func init() {
                     },
                 {{- end }}
                 },
+                {{- end }}
                 {{- end }}
             },
             {{- end }}
@@ -383,10 +395,11 @@ func init() {
                 {{- if $action.Deprecated }}
                 Deprecated: true,
                 {{- end }}
-                {{- if gt (len $action.RequiredParameters) 0 }}
+                {{- if $action.ParameterDefinition }}
+                {{- if gt (len $action.ParameterDefinition.Required) 0 }}
                 RequiredParameters: elemental.NewParametersRequirement(
                     [][][]string{
-                        {{- range $i, $l1 := $action.RequiredParameters }}
+                        {{- range $i, $l1 := $action.ParameterDefinition.Required }}
                         {{- if gt (len $l1) 0 }}
                         [][]string{
                             {{- range $i, $l2 := $l1 }}
@@ -404,9 +417,9 @@ func init() {
                     },
                 ),
                 {{- end }}
-                {{- if gt (len $action.Parameters) 0 }}
+                {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
                 Parameters: []elemental.ParameterDefinition{
-                {{- range $i, $p := $action.Parameters }}
+                {{- range $i, $p := $action.ParameterDefinition.Entries }}
                     elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
@@ -430,6 +443,7 @@ func init() {
                     },
                 {{- end }}
                 },
+                {{- end }}
                 {{- end }}
             },
             {{- end }}
