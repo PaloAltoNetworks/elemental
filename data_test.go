@@ -1534,78 +1534,78 @@ func init() {
 	relationshipsRegistry = RelationshipsRegistry{}
 
 	relationshipsRegistry[ListIdentity] = &Relationship{
-		AllowsCreate: map[string]bool{
-			"root": true,
+		Create: map[string]*RelationshipInfo{
+			"root": (&RelationshipInfo{}).Build(),
 		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
+		Update: map[string]*RelationshipInfo{
+			"root": (&RelationshipInfo{}).Build(),
 		},
-		AllowsPatch: map[string]bool{
-			"root": true,
+		Patch: map[string]*RelationshipInfo{
+			"root": (&RelationshipInfo{}).Build(),
 		},
-		AllowsDelete: map[string]bool{
-			"root": true,
+		Delete: map[string]*RelationshipInfo{
+			"root": (&RelationshipInfo{}).Build(),
 		},
-		AllowsRetrieve: map[string]bool{
-			"root": true,
+		Retrieve: map[string]*RelationshipInfo{
+			"root": (&RelationshipInfo{}).Build(),
 		},
-		AllowsRetrieveMany: map[string]bool{
-			"root": true,
+		RetrieveMany: map[string]*RelationshipInfo{
+			"root": (&RelationshipInfo{}).Build(),
 		},
-		AllowsInfo: map[string]bool{
-			"root": true,
+		Info: map[string]*RelationshipInfo{
+			"root": (&RelationshipInfo{}).Build(),
 		},
 	}
 
 	relationshipsRegistry[RootIdentity] = &Relationship{}
 
 	relationshipsRegistry[TaskIdentity] = &Relationship{
-		AllowsCreate: map[string]bool{
-			"list": true,
+		Create: map[string]*RelationshipInfo{
+			"list": (&RelationshipInfo{}).Build(),
 		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
+		Update: map[string]*RelationshipInfo{
+			"root": (&RelationshipInfo{}).Build(),
 		},
-		AllowsPatch: map[string]bool{
-			"root": true,
+		Patch: map[string]*RelationshipInfo{
+			"root": (&RelationshipInfo{}).Build(),
 		},
-		AllowsDelete: map[string]bool{
-			"root": true,
+		Delete: map[string]*RelationshipInfo{
+			"root": (&RelationshipInfo{}).Build(),
 		},
-		AllowsRetrieve: map[string]bool{
-			"root": true,
+		Retrieve: map[string]*RelationshipInfo{
+			"root": (&RelationshipInfo{}).Build(),
 		},
-		AllowsRetrieveMany: map[string]bool{
-			"list": true,
+		RetrieveMany: map[string]*RelationshipInfo{
+			"list": (&RelationshipInfo{}).Build(),
 		},
-		AllowsInfo: map[string]bool{
-			"list": true,
+		Info: map[string]*RelationshipInfo{
+			"list": (&RelationshipInfo{}).Build(),
 		},
 	}
 
 	relationshipsRegistry[UserIdentity] = &Relationship{
-		AllowsCreate: map[string]bool{
-			"root": true,
+		Create: map[string]*RelationshipInfo{
+			"root": (&RelationshipInfo{}).Build(),
 		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
+		Update: map[string]*RelationshipInfo{
+			"root": (&RelationshipInfo{}).Build(),
 		},
-		AllowsPatch: map[string]bool{
-			"root": true,
+		Patch: map[string]*RelationshipInfo{
+			"root": (&RelationshipInfo{}).Build(),
 		},
-		AllowsDelete: map[string]bool{
-			"root": true,
+		Delete: map[string]*RelationshipInfo{
+			"root": (&RelationshipInfo{}).Build(),
 		},
-		AllowsRetrieve: map[string]bool{
-			"root": true,
+		Retrieve: map[string]*RelationshipInfo{
+			"root": (&RelationshipInfo{}).Build(),
 		},
-		AllowsRetrieveMany: map[string]bool{
-			"list": true,
-			"root": true,
+		RetrieveMany: map[string]*RelationshipInfo{
+			"list": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{}).Build(),
 		},
-		AllowsInfo: map[string]bool{
-			"list": true,
-			"root": true,
+		Info: map[string]*RelationshipInfo{
+			"list": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{}).Build(),
 		},
 	}
 

@@ -11,78 +11,78 @@ func init() {
 	relationshipsRegistry = elemental.RelationshipsRegistry{}
 
 	relationshipsRegistry[ListIdentity] = &elemental.Relationship{
-		AllowsCreate: map[string]bool{
-			"root": true,
+		Create: map[string]*elemental.RelationshipInfo{
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
+		Update: map[string]*elemental.RelationshipInfo{
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsPatch: map[string]bool{
-			"root": true,
+		Patch: map[string]*elemental.RelationshipInfo{
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsDelete: map[string]bool{
-			"root": true,
+		Delete: map[string]*elemental.RelationshipInfo{
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsRetrieve: map[string]bool{
-			"root": true,
+		Retrieve: map[string]*elemental.RelationshipInfo{
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsRetrieveMany: map[string]bool{
-			"root": true,
+		RetrieveMany: map[string]*elemental.RelationshipInfo{
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsInfo: map[string]bool{
-			"root": true,
+		Info: map[string]*elemental.RelationshipInfo{
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
 	}
 
 	relationshipsRegistry[RootIdentity] = &elemental.Relationship{}
 
 	relationshipsRegistry[TaskIdentity] = &elemental.Relationship{
-		AllowsCreate: map[string]bool{
-			"list": true,
+		Create: map[string]*elemental.RelationshipInfo{
+			"list": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
+		Update: map[string]*elemental.RelationshipInfo{
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsPatch: map[string]bool{
-			"root": true,
+		Patch: map[string]*elemental.RelationshipInfo{
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsDelete: map[string]bool{
-			"root": true,
+		Delete: map[string]*elemental.RelationshipInfo{
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsRetrieve: map[string]bool{
-			"root": true,
+		Retrieve: map[string]*elemental.RelationshipInfo{
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsRetrieveMany: map[string]bool{
-			"list": true,
+		RetrieveMany: map[string]*elemental.RelationshipInfo{
+			"list": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsInfo: map[string]bool{
-			"list": true,
+		Info: map[string]*elemental.RelationshipInfo{
+			"list": (&elemental.RelationshipInfo{}).Build(),
 		},
 	}
 
 	relationshipsRegistry[UserIdentity] = &elemental.Relationship{
-		AllowsCreate: map[string]bool{
-			"root": true,
+		Create: map[string]*elemental.RelationshipInfo{
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
+		Update: map[string]*elemental.RelationshipInfo{
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsPatch: map[string]bool{
-			"root": true,
+		Patch: map[string]*elemental.RelationshipInfo{
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsDelete: map[string]bool{
-			"root": true,
+		Delete: map[string]*elemental.RelationshipInfo{
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsRetrieve: map[string]bool{
-			"root": true,
+		Retrieve: map[string]*elemental.RelationshipInfo{
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsRetrieveMany: map[string]bool{
-			"list": true,
-			"root": true,
+		RetrieveMany: map[string]*elemental.RelationshipInfo{
+			"list": (&elemental.RelationshipInfo{}).Build(),
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
-		AllowsInfo: map[string]bool{
-			"list": true,
-			"root": true,
+		Info: map[string]*elemental.RelationshipInfo{
+			"list": (&elemental.RelationshipInfo{}).Build(),
+			"root": (&elemental.RelationshipInfo{}).Build(),
 		},
 	}
 

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
 
@@ -15,26 +14,26 @@ import (
 
 // A Request represents an abstract request on an elemental model.
 type Request struct {
-	RequestID            string          `json:"rid"`
-	Namespace            string          `json:"namespace"`
-	Recursive            bool            `json:"recursive"`
-	Operation            Operation       `json:"operation"`
-	Identity             Identity        `json:"identity"`
-	Order                []string        `json:"order"`
-	ObjectID             string          `json:"objectID"`
-	ParentIdentity       Identity        `json:"parentIdentity"`
-	ParentID             string          `json:"parentID"`
-	Data                 json.RawMessage `json:"data,omitempty"`
-	Parameters           url.Values      `json:"parameters,omitempty"`
-	Headers              http.Header     `json:"headers,omitempty"`
-	Username             string          `json:"username,omitempty"`
-	Password             string          `json:"password,omitempty"`
-	Page                 int             `json:"page,omitempty"`
-	PageSize             int             `json:"pageSize,omitempty"`
-	OverrideProtection   bool            `json:"overrideProtection,omitempty"`
-	Version              int             `json:"version,omitempty"`
-	ExternalTrackingID   string          `json:"externalTrackingID,omitempty"`
-	ExternalTrackingType string          `json:"externalTrackingType,omitempty"`
+	RequestID            string               `json:"rid"`
+	Namespace            string               `json:"namespace"`
+	Recursive            bool                 `json:"recursive"`
+	Operation            Operation            `json:"operation"`
+	Identity             Identity             `json:"identity"`
+	Order                []string             `json:"order"`
+	ObjectID             string               `json:"objectID"`
+	ParentIdentity       Identity             `json:"parentIdentity"`
+	ParentID             string               `json:"parentID"`
+	Data                 json.RawMessage      `json:"data,omitempty"`
+	Parameters           map[string]Parameter `json:"parameters,omitempty"`
+	Headers              http.Header          `json:"headers,omitempty"`
+	Username             string               `json:"username,omitempty"`
+	Password             string               `json:"password,omitempty"`
+	Page                 int                  `json:"page,omitempty"`
+	PageSize             int                  `json:"pageSize,omitempty"`
+	OverrideProtection   bool                 `json:"overrideProtection,omitempty"`
+	Version              int                  `json:"version,omitempty"`
+	ExternalTrackingID   string               `json:"externalTrackingID,omitempty"`
+	ExternalTrackingType string               `json:"externalTrackingType,omitempty"`
 
 	Metadata           map[string]interface{} `json:"-"`
 	ClientIP           string                 `json:"-"`
@@ -48,7 +47,7 @@ func NewRequest() *Request {
 
 	return &Request{
 		RequestID:  uuid.NewV4().String(),
-		Parameters: url.Values{},
+		Parameters: map[string]Parameter{},
 		Headers:    http.Header{},
 		Metadata:   map[string]interface{}{},
 	}
@@ -149,40 +148,45 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	var page, pageSize int
 	var recursive, override bool
 
-	if v := req.URL.Query().Get("page"); v != "" {
+	q := req.URL.Query()
+	if v := q.Get("page"); v != "" {
 		page, err = strconv.Atoi(v)
 		if err != nil {
 			return nil, err
 		}
+		q.Del("page")
 	}
 
-	if v := req.URL.Query().Get("pagesize"); v != "" {
+	if v := q.Get("pagesize"); v != "" {
 		pageSize, err = strconv.Atoi(v)
 		if err != nil {
 			return nil, err
 		}
+		q.Del("pagesize")
 	}
 
-	if v := req.URL.Query().Get("recursive"); v != "" {
+	if v := q.Get("recursive"); v != "" {
 		recursive = true
+		q.Del("recursive")
 	}
 
-	if v := req.URL.Query().Get("override"); v != "" {
+	if v := q.Get("override"); v != "" {
 		override = true
+		q.Del("override")
 	}
 
 	return &Request{
-		RequestID:            uuid.NewV4().String(),
-		Namespace:            req.Header.Get("X-Namespace"),
-		Recursive:            recursive,
-		Page:                 page,
-		PageSize:             pageSize,
-		Operation:            operation,
-		Identity:             identity,
-		ObjectID:             ID,
-		ParentID:             parentID,
-		ParentIdentity:       parentIdentity,
-		Parameters:           req.URL.Query(),
+		RequestID:      uuid.NewV4().String(),
+		Namespace:      req.Header.Get("X-Namespace"),
+		Recursive:      recursive,
+		Page:           page,
+		PageSize:       pageSize,
+		Operation:      operation,
+		Identity:       identity,
+		ObjectID:       ID,
+		ParentID:       parentID,
+		ParentIdentity: parentIdentity,
+		// Parameters:           req.URL.Query(),
 		Username:             username,
 		Password:             password,
 		Data:                 data,

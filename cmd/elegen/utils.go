@@ -120,7 +120,7 @@ func escapeBackticks(str string) string {
 
 func buildEnums(s spec.Specification, version string) []Enum {
 
-	var enums []Enum
+	var enums []Enum // nolint
 	attributes := s.Attributes(version)
 
 	for _, attr := range attributes {
