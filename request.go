@@ -14,30 +14,30 @@ import (
 
 // A Request represents an abstract request on an elemental model.
 type Request struct {
-	RequestID            string               `json:"rid"`
-	Namespace            string               `json:"namespace"`
-	Recursive            bool                 `json:"recursive"`
-	Operation            Operation            `json:"operation"`
-	Identity             Identity             `json:"identity"`
-	Order                []string             `json:"order"`
-	ObjectID             string               `json:"objectID"`
-	ParentIdentity       Identity             `json:"parentIdentity"`
-	ParentID             string               `json:"parentID"`
-	Data                 json.RawMessage      `json:"data,omitempty"`
-	Parameters           map[string]Parameter `json:"parameters,omitempty"`
-	Headers              http.Header          `json:"headers,omitempty"`
-	Username             string               `json:"username,omitempty"`
-	Password             string               `json:"password,omitempty"`
-	Page                 int                  `json:"page,omitempty"`
-	PageSize             int                  `json:"pageSize,omitempty"`
-	OverrideProtection   bool                 `json:"overrideProtection,omitempty"`
-	Version              int                  `json:"version,omitempty"`
-	ExternalTrackingID   string               `json:"externalTrackingID,omitempty"`
-	ExternalTrackingType string               `json:"externalTrackingType,omitempty"`
+	RequestID            string
+	Namespace            string
+	Recursive            bool
+	Operation            Operation
+	Identity             Identity
+	Order                []string
+	ObjectID             string
+	ParentIdentity       Identity
+	ParentID             string
+	Data                 json.RawMessage
+	Parameters           Parameters
+	Headers              http.Header
+	Username             string
+	Password             string
+	Page                 int
+	PageSize             int
+	OverrideProtection   bool
+	Version              int
+	ExternalTrackingID   string
+	ExternalTrackingType string
 
-	Metadata           map[string]interface{} `json:"-"`
-	ClientIP           string                 `json:"-"`
-	TLSConnectionState *tls.ConnectionState   `json:"-"`
+	Metadata           map[string]interface{}
+	ClientIP           string
+	TLSConnectionState *tls.ConnectionState
 
 	req *http.Request
 }
@@ -47,7 +47,7 @@ func NewRequest() *Request {
 
 	return &Request{
 		RequestID:  uuid.NewV4().String(),
-		Parameters: map[string]Parameter{},
+		Parameters: Parameters{},
 		Headers:    http.Header{},
 		Metadata:   map[string]interface{}{},
 	}
@@ -177,13 +177,20 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		q.Del("override")
 	}
 
-	paramsMap := map[string]Parameter{}
+	paramsMap := Parameters{}
 	for _, pdef := range ParametersForOperation(manager.Relationships(), identity, parentIdentity, operation) {
 		p, err := pdef.Parse(q[pdef.Name])
 		if err != nil {
 			return nil, err
 		}
 		paramsMap[pdef.Name] = *p
+	}
+
+	rel := RelationshipInfoForOperation(manager.Relationships(), identity, parentIdentity, operation)
+	if rel != nil {
+		if err := paramsMap.Validate(rel.RequiredParameters); err != nil {
+			return nil, err
+		}
 	}
 
 	return &Request{

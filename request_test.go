@@ -768,7 +768,7 @@ func TestRequest_Duplicate(t *testing.T) {
 		req.Operation = OperationPatch
 		req.Page = 1
 		req.PageSize = 2
-		req.Parameters = map[string]Parameter{
+		req.Parameters = Parameters{
 			"p1": Parameter{
 				ptype:  ParameterTypeString,
 				values: []interface{}{"A"},
@@ -834,7 +834,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 			})
 
 			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, map[string]Parameter{
+				So(r.Parameters, ShouldResemble, Parameters{
 					"rlgmp1": Parameter{
 						ptype:  ParameterTypeString,
 						values: []interface{}{"A"},
@@ -884,7 +884,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 			})
 
 			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, map[string]Parameter{
+				So(r.Parameters, ShouldResemble, Parameters{
 					"rlgmp1": Parameter{
 						ptype:  ParameterTypeString,
 						values: []interface{}{"A"},
@@ -935,7 +935,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 			})
 
 			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, map[string]Parameter{
+				So(r.Parameters, ShouldResemble, Parameters{
 					"lup1": Parameter{
 						ptype:  ParameterTypeString,
 						values: []interface{}{"A"},
@@ -987,7 +987,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 			})
 
 			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, map[string]Parameter{
+				So(r.Parameters, ShouldResemble, Parameters{
 					"rlcp1": Parameter{
 						ptype:  ParameterTypeString,
 						values: []interface{}{"A"},
@@ -1038,7 +1038,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 			})
 
 			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, map[string]Parameter{
+				So(r.Parameters, ShouldResemble, Parameters{
 					"lgp1": Parameter{
 						ptype:  ParameterTypeString,
 						values: []interface{}{"A"},
@@ -1089,7 +1089,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 			})
 
 			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, map[string]Parameter{
+				So(r.Parameters, ShouldResemble, Parameters{
 					"lup1": Parameter{
 						ptype:  ParameterTypeString,
 						values: []interface{}{"A"},
@@ -1140,7 +1140,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 			})
 
 			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, map[string]Parameter{
+				So(r.Parameters, ShouldResemble, Parameters{
 					"ldp1": Parameter{
 						ptype:  ParameterTypeString,
 						values: []interface{}{"A"},
@@ -1190,7 +1190,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 			})
 
 			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, map[string]Parameter{
+				So(r.Parameters, ShouldResemble, Parameters{
 					"ltgp1": Parameter{
 						ptype:  ParameterTypeString,
 						values: []interface{}{"A"},
@@ -1240,7 +1240,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 			})
 
 			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, map[string]Parameter{
+				So(r.Parameters, ShouldResemble, Parameters{
 					"rlgmp1": Parameter{
 						ptype:  ParameterTypeString,
 						values: nil,

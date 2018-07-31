@@ -501,3 +501,208 @@ func TestParameters_Value(t *testing.T) {
 		})
 	})
 }
+
+func TestParameters_NewParameter(t *testing.T) {
+
+	Convey("Given I call NewParameter", t, func() {
+
+		p := NewParameter(ParameterTypeString, "a", "b")
+
+		Convey("Then the parameter should be correct", func() {
+			So(p.StringValue(), ShouldEqual, "a")
+			So(p.Values(), ShouldResemble, []interface{}{"a", "b"})
+		})
+	})
+}
+
+func TestParameters_Requirements(t *testing.T) {
+
+	Convey("Given I have an empty parameter requirement", t, func() {
+		req := NewParametersRequirement([][][]string{})
+
+		Convey("When I call Validate params a and b and 1", func() {
+
+			params := Parameters{
+				"a": NewParameter(ParameterTypeString, "a"),
+				"b": NewParameter(ParameterTypeString, "b"),
+				"1": NewParameter(ParameterTypeString, "1"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+
+		Convey("When I call Validate no params", func() {
+
+			params := Parameters{}
+
+			err := params.Validate(req)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a single parameter requirement", t, func() {
+
+		req := NewParametersRequirement([][][]string{
+			[][]string{
+				[]string{"a", "b"},
+				[]string{"c", "d"},
+			},
+		})
+
+		Convey("When I call Validate params a and b and 1", func() {
+
+			params := Parameters{
+				"a": NewParameter(ParameterTypeString, "a"),
+				"b": NewParameter(ParameterTypeString, "b"),
+				"1": NewParameter(ParameterTypeString, "1"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+
+		Convey("When I call Validate params c and d and 1 ", func() {
+
+			params := Parameters{
+				"c": NewParameter(ParameterTypeString, "c"),
+				"d": NewParameter(ParameterTypeString, "d"),
+				"1": NewParameter(ParameterTypeString, "1"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+
+		Convey("When I call Validate params a and 1 ", func() {
+
+			params := Parameters{
+				"a": NewParameter(ParameterTypeString, "a"),
+				"1": NewParameter(ParameterTypeString, "1"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+			})
+		})
+
+		Convey("When I call Validate params b and c ", func() {
+
+			params := Parameters{
+				"b": NewParameter(ParameterTypeString, "a"),
+				"c": NewParameter(ParameterTypeString, "c"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a multiple parameter requirement", t, func() {
+
+		req := NewParametersRequirement([][][]string{
+			[][]string{
+				[]string{"a", "b"},
+				[]string{"c", "d"},
+			},
+			[][]string{
+				[]string{"1", "2"},
+			},
+		})
+
+		Convey("When I call Validate params a and b and 1 and 2", func() {
+
+			params := Parameters{
+				"a": NewParameter(ParameterTypeString, "a"),
+				"b": NewParameter(ParameterTypeString, "b"),
+				"1": NewParameter(ParameterTypeString, "1"),
+				"2": NewParameter(ParameterTypeString, "2"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+
+		Convey("When I call Validate params c and d and 1 and 2", func() {
+
+			params := Parameters{
+				"c": NewParameter(ParameterTypeString, "c"),
+				"d": NewParameter(ParameterTypeString, "d"),
+				"1": NewParameter(ParameterTypeString, "1"),
+				"2": NewParameter(ParameterTypeString, "2"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+
+		Convey("When I call Validate params a and d and 1 and 2", func() {
+
+			params := Parameters{
+				"a": NewParameter(ParameterTypeString, "a"),
+				"d": NewParameter(ParameterTypeString, "d"),
+				"1": NewParameter(ParameterTypeString, "1"),
+				"2": NewParameter(ParameterTypeString, "2"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+			})
+		})
+
+		Convey("When I call Validate params a and b and 1", func() {
+
+			params := Parameters{
+				"a": NewParameter(ParameterTypeString, "a"),
+				"b": NewParameter(ParameterTypeString, "b"),
+				"1": NewParameter(ParameterTypeString, "1"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+			})
+		})
+
+		Convey("When I call Validate params a and 1 and 2", func() {
+
+			params := Parameters{
+				"a": NewParameter(ParameterTypeString, "a"),
+				"1": NewParameter(ParameterTypeString, "1"),
+				"2": NewParameter(ParameterTypeString, "2"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+			})
+		})
+	})
+}

@@ -181,10 +181,77 @@ func (p *ParameterDefinition) Parse(values []string) (*Parameter, error) {
 	}, nil
 }
 
+// Parameters represents a set of Parameters.
+type Parameters map[string]Parameter
+
+// Get returns the Parameter with the given name
+func (p Parameters) Get(name string) (Parameter, bool) {
+	param, ok := p[name]
+	return param, ok
+}
+
+// Validate validates if the Parameters matches the given requirement.
+func (p Parameters) Validate(r ParametersRequirement) error {
+
+	if len(r.match) == 0 {
+		return nil
+	}
+
+	var innerMatch int
+	var outerMatch int
+
+	for _, clauses := range r.match {
+
+		for _, ands := range clauses {
+
+			innerMatch = 0
+
+			for _, k := range ands {
+
+				if _, ok := p[k]; ok {
+					innerMatch++
+				}
+
+				if innerMatch == len(ands) {
+					outerMatch++
+				}
+			}
+		}
+	}
+
+	if outerMatch == len(r.match) {
+		return nil
+	}
+
+	return NewError("Bad Request", "Some required parameters are missing", "elemental", http.StatusBadRequest)
+}
+
+// A ParametersRequirement represents a list of ands of list of ors
+// that must be passed together.
+type ParametersRequirement struct {
+	match [][][]string
+}
+
+// NewParametersRequirement returns a new ParametersRequirement.
+func NewParametersRequirement(match [][][]string) ParametersRequirement {
+	return ParametersRequirement{
+		match: match,
+	}
+}
+
 // A Parameter represent one parameter that can be sent with a query.
 type Parameter struct {
 	ptype  ParameterType
 	values []interface{}
+}
+
+// NewParameter returns a new Parameter.
+func NewParameter(ptype ParameterType, values ...interface{}) Parameter {
+
+	return Parameter{
+		ptype:  ptype,
+		values: values,
+	}
 }
 
 // StringValue returns the value as a string.

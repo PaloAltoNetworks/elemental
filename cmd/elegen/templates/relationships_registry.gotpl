@@ -17,16 +17,51 @@ func init() {
         Create: map[string]*elemental.RelationshipInfo {
             {{- range $parent, $action := $relation.Create }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : (&elemental.RelationshipInfo{
+            "{{ $parent }}" : &elemental.RelationshipInfo{
                 {{- if $action.Deprecated }}
                 Deprecated: true,
+                {{- end }}
+                {{- if gt (len $action.RequiredParameters) 0 }}
+                RequiredParameters: elemental.NewParametersRequirement(
+                    [][][]string{
+                        {{- range $i, $l1 := $action.RequiredParameters }}
+                        {{- if gt (len $l1) 0 }}
+                        [][]string{
+                            {{- range $i, $l2 := $l1 }}
+                            {{- if gt (len $l2) 0 }}
+                            []string{
+                                {{- range $i, $l3 := $l2 }}
+                                "{{ $l3 }}",
+                                {{- end}}
+                            },
+                            {{- end}}
+                            {{- end}}
+                        },
+                        {{- end}}
+                        {{- end}}
+                    },
+                ),
                 {{- end }}
                 {{- if gt (len $action.Parameters) 0 }}
                 Parameters: []elemental.ParameterDefinition{
                 {{- range $i, $p := $action.Parameters }}
-                    elemental.ParameterDefinition{
-                        Name: "{{$p.Name}}",
+                     elemental.ParameterDefinition{
+                        Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
+                        {{- if $p.DefaultValue }}
+                        {{- if eq $p.Type "string" }}
+                        DefaultValue: "{{ $p.DefaultValue }}",
+                        {{- else }}
+                        DefaultValue: {{ $p.DefaultValue }},
+                        {{- end }}
+                        {{- end }}
+                        {{- if eq $p.Type "enum" }}
+                        AllowedChoices: []string{
+                            {{- range $j, $v := $p.AllowedChoices }}
+                            "{{ $v }}",
+                            {{- end }}
+                        },
+                        {{- end }}
                         {{- if $p.Multiple }}
                         Multiple: true,
                         {{- end }}
@@ -34,7 +69,7 @@ func init() {
                 {{- end }}
                 },
                 {{- end }}
-            }),
+            },
             {{- end }}
             {{- end }}
         },
@@ -43,9 +78,30 @@ func init() {
         Update: map[string]*elemental.RelationshipInfo {
             {{- range $parent, $action := $relation.Update }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : (&elemental.RelationshipInfo{
+            "{{ $parent }}" : &elemental.RelationshipInfo{
                 {{- if $action.Deprecated }}
                 Deprecated: true,
+                {{- end }}
+                {{- if gt (len $action.RequiredParameters) 0 }}
+                RequiredParameters: elemental.NewParametersRequirement(
+                    [][][]string{
+                        {{- range $i, $l1 := $action.RequiredParameters }}
+                        {{- if gt (len $l1) 0 }}
+                        [][]string{
+                            {{- range $i, $l2 := $l1 }}
+                            {{- if gt (len $l2) 0 }}
+                            []string{
+                                {{- range $i, $l3 := $l2 }}
+                                "{{ $l3 }}",
+                                {{- end}}
+                            },
+                            {{- end}}
+                            {{- end}}
+                        },
+                        {{- end}}
+                        {{- end}}
+                    },
+                ),
                 {{- end }}
                 {{- if gt (len $action.Parameters) 0 }}
                 Parameters: []elemental.ParameterDefinition{
@@ -67,9 +123,6 @@ func init() {
                             {{- end }}
                         },
                         {{- end }}
-                        {{- if $p.Required }}
-                        Required: true,
-                        {{- end }}
                         {{- if $p.Multiple }}
                         Multiple: true,
                         {{- end }}
@@ -77,16 +130,37 @@ func init() {
                 {{- end }}
                 },
                 {{- end }}
-            }),
+            },
             {{- end }}
             {{- end }}
         },
         Patch: map[string]*elemental.RelationshipInfo {
             {{- range $parent, $action := $relation.Update }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : (&elemental.RelationshipInfo{
+            "{{ $parent }}" : &elemental.RelationshipInfo{
                 {{- if $action.Deprecated }}
                 Deprecated: true,
+                {{- end }}
+                {{- if gt (len $action.RequiredParameters) 0 }}
+                RequiredParameters: elemental.NewParametersRequirement(
+                    [][][]string{
+                        {{- range $i, $l1 := $action.RequiredParameters }}
+                        {{- if gt (len $l1) 0 }}
+                        [][]string{
+                            {{- range $i, $l2 := $l1 }}
+                            {{- if gt (len $l2) 0 }}
+                            []string{
+                                {{- range $i, $l3 := $l2 }}
+                                "{{ $l3 }}",
+                                {{- end}}
+                            },
+                            {{- end}}
+                            {{- end}}
+                        },
+                        {{- end}}
+                        {{- end}}
+                    },
+                ),
                 {{- end }}
                 {{- if gt (len $action.Parameters) 0 }}
                 Parameters: []elemental.ParameterDefinition{
@@ -108,9 +182,6 @@ func init() {
                             {{- end }}
                         },
                         {{- end }}
-                        {{- if $p.Required }}
-                        Required: true,
-                        {{- end }}
                         {{- if $p.Multiple }}
                         Multiple: true,
                         {{- end }}
@@ -118,7 +189,7 @@ func init() {
                 {{- end }}
                 },
                 {{- end }}
-            }),
+            },
             {{- end }}
             {{- end }}
         },
@@ -127,9 +198,30 @@ func init() {
         Delete: map[string]*elemental.RelationshipInfo {
             {{- range $parent, $action := $relation.Delete }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : (&elemental.RelationshipInfo{
+            "{{ $parent }}" : &elemental.RelationshipInfo{
                 {{- if $action.Deprecated }}
                 Deprecated: true,
+                {{- end }}
+                {{- if gt (len $action.RequiredParameters) 0 }}
+                RequiredParameters: elemental.NewParametersRequirement(
+                    [][][]string{
+                        {{- range $i, $l1 := $action.RequiredParameters }}
+                        {{- if gt (len $l1) 0 }}
+                        [][]string{
+                            {{- range $i, $l2 := $l1 }}
+                            {{- if gt (len $l2) 0 }}
+                            []string{
+                                {{- range $i, $l3 := $l2 }}
+                                "{{ $l3 }}",
+                                {{- end}}
+                            },
+                            {{- end}}
+                            {{- end}}
+                        },
+                        {{- end}}
+                        {{- end}}
+                    },
+                ),
                 {{- end }}
                 {{- if gt (len $action.Parameters) 0 }}
                 Parameters: []elemental.ParameterDefinition{
@@ -151,9 +243,6 @@ func init() {
                             {{- end }}
                         },
                         {{- end }}
-                        {{- if $p.Required }}
-                        Required: true,
-                        {{- end }}
                         {{- if $p.Multiple }}
                         Multiple: true,
                         {{- end }}
@@ -161,7 +250,7 @@ func init() {
                 {{- end }}
                 },
                 {{- end }}
-            }),
+            },
             {{- end }}
             {{- end }}
         },
@@ -170,9 +259,30 @@ func init() {
         Retrieve: map[string]*elemental.RelationshipInfo {
             {{- range $parent, $action := $relation.Get }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : (&elemental.RelationshipInfo{
+            "{{ $parent }}" : &elemental.RelationshipInfo{
                 {{- if $action.Deprecated }}
                 Deprecated: true,
+                {{- end }}
+                {{- if gt (len $action.RequiredParameters) 0 }}
+                RequiredParameters: elemental.NewParametersRequirement(
+                    [][][]string{
+                        {{- range $i, $l1 := $action.RequiredParameters }}
+                        {{- if gt (len $l1) 0 }}
+                        [][]string{
+                            {{- range $i, $l2 := $l1 }}
+                            {{- if gt (len $l2) 0 }}
+                            []string{
+                                {{- range $i, $l3 := $l2 }}
+                                "{{ $l3 }}",
+                                {{- end}}
+                            },
+                            {{- end}}
+                            {{- end}}
+                        },
+                        {{- end}}
+                        {{- end}}
+                    },
+                ),
                 {{- end }}
                 {{- if gt (len $action.Parameters) 0 }}
                 Parameters: []elemental.ParameterDefinition{
@@ -194,9 +304,6 @@ func init() {
                             {{- end }}
                         },
                         {{- end }}
-                        {{- if $p.Required }}
-                        Required: true,
-                        {{- end }}
                         {{- if $p.Multiple }}
                         Multiple: true,
                         {{- end }}
@@ -204,7 +311,7 @@ func init() {
                 {{- end }}
                 },
                 {{- end }}
-            }),
+            },
             {{- end }}
             {{- end }}
         },
@@ -213,9 +320,30 @@ func init() {
         RetrieveMany: map[string]*elemental.RelationshipInfo {
             {{- range $parent, $action := $relation.GetMany }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : (&elemental.RelationshipInfo{
+            "{{ $parent }}" : &elemental.RelationshipInfo{
                 {{- if $action.Deprecated }}
                 Deprecated: true,
+                {{- end }}
+                {{- if gt (len $action.RequiredParameters) 0 }}
+                RequiredParameters: elemental.NewParametersRequirement(
+                    [][][]string{
+                        {{- range $i, $l1 := $action.RequiredParameters }}
+                        {{- if gt (len $l1) 0 }}
+                        [][]string{
+                            {{- range $i, $l2 := $l1 }}
+                            {{- if gt (len $l2) 0 }}
+                            []string{
+                                {{- range $i, $l3 := $l2 }}
+                                "{{ $l3 }}",
+                                {{- end}}
+                            },
+                            {{- end}}
+                            {{- end}}
+                        },
+                        {{- end}}
+                        {{- end}}
+                    },
+                ),
                 {{- end }}
                 {{- if gt (len $action.Parameters) 0 }}
                 Parameters: []elemental.ParameterDefinition{
@@ -237,9 +365,6 @@ func init() {
                             {{- end }}
                         },
                         {{- end }}
-                        {{- if $p.Required }}
-                        Required: true,
-                        {{- end }}
                         {{- if $p.Multiple }}
                         Multiple: true,
                         {{- end }}
@@ -247,16 +372,37 @@ func init() {
                 {{- end }}
                 },
                 {{- end }}
-            }),
+            },
             {{- end }}
             {{- end }}
         },
         Info: map[string]*elemental.RelationshipInfo {
             {{- range $parent, $action := $relation.GetMany }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : (&elemental.RelationshipInfo{
+            "{{ $parent }}" : &elemental.RelationshipInfo{
                 {{- if $action.Deprecated }}
                 Deprecated: true,
+                {{- end }}
+                {{- if gt (len $action.RequiredParameters) 0 }}
+                RequiredParameters: elemental.NewParametersRequirement(
+                    [][][]string{
+                        {{- range $i, $l1 := $action.RequiredParameters }}
+                        {{- if gt (len $l1) 0 }}
+                        [][]string{
+                            {{- range $i, $l2 := $l1 }}
+                            {{- if gt (len $l2) 0 }}
+                            []string{
+                                {{- range $i, $l3 := $l2 }}
+                                "{{ $l3 }}",
+                                {{- end}}
+                            },
+                            {{- end}}
+                            {{- end}}
+                        },
+                        {{- end}}
+                        {{- end}}
+                    },
+                ),
                 {{- end }}
                 {{- if gt (len $action.Parameters) 0 }}
                 Parameters: []elemental.ParameterDefinition{
@@ -278,9 +424,6 @@ func init() {
                             {{- end }}
                         },
                         {{- end }}
-                        {{- if $p.Required }}
-                        Required: true,
-                        {{- end }}
                         {{- if $p.Multiple }}
                         Multiple: true,
                         {{- end }}
@@ -288,7 +431,7 @@ func init() {
                 {{- end }}
                 },
                 {{- end }}
-            }),
+            },
             {{- end }}
             {{- end }}
         },

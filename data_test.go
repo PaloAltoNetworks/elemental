@@ -1535,7 +1535,7 @@ func init() {
 
 	relationshipsRegistry[ListIdentity] = &Relationship{
 		Create: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{
+			"root": &RelationshipInfo{
 				Parameters: []ParameterDefinition{
 					ParameterDefinition{
 						Name: "rlcp1",
@@ -1546,10 +1546,10 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Update: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{
+			"root": &RelationshipInfo{
 				Parameters: []ParameterDefinition{
 					ParameterDefinition{
 						Name: "lup1",
@@ -1560,10 +1560,10 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Patch: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{
+			"root": &RelationshipInfo{
 				Parameters: []ParameterDefinition{
 					ParameterDefinition{
 						Name: "lup1",
@@ -1574,10 +1574,10 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Delete: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{
+			"root": &RelationshipInfo{
 				Parameters: []ParameterDefinition{
 					ParameterDefinition{
 						Name: "ldp1",
@@ -1588,10 +1588,10 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Retrieve: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{
+			"root": &RelationshipInfo{
 				Parameters: []ParameterDefinition{
 					ParameterDefinition{
 						Name: "lgp1",
@@ -1602,10 +1602,10 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		RetrieveMany: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{
+			"root": &RelationshipInfo{
 				Parameters: []ParameterDefinition{
 					ParameterDefinition{
 						Name: "rlgmp1",
@@ -1616,10 +1616,10 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Info: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{
+			"root": &RelationshipInfo{
 				Parameters: []ParameterDefinition{
 					ParameterDefinition{
 						Name: "rlgmp1",
@@ -1630,7 +1630,7 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 	}
 
@@ -1638,7 +1638,7 @@ func init() {
 
 	relationshipsRegistry[TaskIdentity] = &Relationship{
 		Create: map[string]*RelationshipInfo{
-			"list": (&RelationshipInfo{
+			"list": &RelationshipInfo{
 				Parameters: []ParameterDefinition{
 					ParameterDefinition{
 						Name: "ltcp1",
@@ -1649,22 +1649,22 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Update: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}),
+			"root": &RelationshipInfo{},
 		},
 		Patch: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}),
+			"root": &RelationshipInfo{},
 		},
 		Delete: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}),
+			"root": &RelationshipInfo{},
 		},
 		Retrieve: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}),
+			"root": &RelationshipInfo{},
 		},
 		RetrieveMany: map[string]*RelationshipInfo{
-			"list": (&RelationshipInfo{
+			"list": &RelationshipInfo{
 				Parameters: []ParameterDefinition{
 					ParameterDefinition{
 						Name: "ltgp1",
@@ -1675,10 +1675,10 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Info: map[string]*RelationshipInfo{
-			"list": (&RelationshipInfo{
+			"list": &RelationshipInfo{
 				Parameters: []ParameterDefinition{
 					ParameterDefinition{
 						Name: "ltgp1",
@@ -1689,13 +1689,27 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 	}
 
 	relationshipsRegistry[UserIdentity] = &Relationship{
 		Create: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{
+			"root": &RelationshipInfo{
+				RequiredParameters: NewParametersRequirement(
+					[][][]string{
+						[][]string{
+							[]string{
+								"a",
+								"b",
+							},
+							[]string{
+								"c",
+								"d",
+							},
+						},
+					},
+				),
 				Parameters: []ParameterDefinition{
 					ParameterDefinition{
 						Name: "rucp1",
@@ -1706,23 +1720,23 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Update: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}),
+			"root": &RelationshipInfo{},
 		},
 		Patch: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}),
+			"root": &RelationshipInfo{},
 		},
 		Delete: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}),
+			"root": &RelationshipInfo{},
 		},
 		Retrieve: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}),
+			"root": &RelationshipInfo{},
 		},
 		RetrieveMany: map[string]*RelationshipInfo{
-			"list": (&RelationshipInfo{}),
-			"root": (&RelationshipInfo{
+			"list": &RelationshipInfo{},
+			"root": &RelationshipInfo{
 				Parameters: []ParameterDefinition{
 					ParameterDefinition{
 						Name: "rugmp1",
@@ -1733,11 +1747,11 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Info: map[string]*RelationshipInfo{
-			"list": (&RelationshipInfo{}),
-			"root": (&RelationshipInfo{
+			"list": &RelationshipInfo{},
+			"root": &RelationshipInfo{
 				Parameters: []ParameterDefinition{
 					ParameterDefinition{
 						Name: "rugmp1",
@@ -1748,7 +1762,7 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 	}
 

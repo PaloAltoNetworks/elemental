@@ -12,7 +12,7 @@ func init() {
 
 	relationshipsRegistry[ListIdentity] = &elemental.Relationship{
 		Create: map[string]*elemental.RelationshipInfo{
-			"root": (&elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
 				Parameters: []elemental.ParameterDefinition{
 					elemental.ParameterDefinition{
 						Name: "rlcp1",
@@ -23,10 +23,10 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Update: map[string]*elemental.RelationshipInfo{
-			"root": (&elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
 				Parameters: []elemental.ParameterDefinition{
 					elemental.ParameterDefinition{
 						Name: "lup1",
@@ -37,10 +37,10 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Patch: map[string]*elemental.RelationshipInfo{
-			"root": (&elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
 				Parameters: []elemental.ParameterDefinition{
 					elemental.ParameterDefinition{
 						Name: "lup1",
@@ -51,10 +51,10 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Delete: map[string]*elemental.RelationshipInfo{
-			"root": (&elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
 				Parameters: []elemental.ParameterDefinition{
 					elemental.ParameterDefinition{
 						Name: "ldp1",
@@ -65,10 +65,10 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Retrieve: map[string]*elemental.RelationshipInfo{
-			"root": (&elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
 				Parameters: []elemental.ParameterDefinition{
 					elemental.ParameterDefinition{
 						Name: "lgp1",
@@ -79,10 +79,10 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		RetrieveMany: map[string]*elemental.RelationshipInfo{
-			"root": (&elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
 				Parameters: []elemental.ParameterDefinition{
 					elemental.ParameterDefinition{
 						Name: "rlgmp1",
@@ -93,10 +93,10 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Info: map[string]*elemental.RelationshipInfo{
-			"root": (&elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
 				Parameters: []elemental.ParameterDefinition{
 					elemental.ParameterDefinition{
 						Name: "rlgmp1",
@@ -107,7 +107,7 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 	}
 
@@ -115,7 +115,7 @@ func init() {
 
 	relationshipsRegistry[TaskIdentity] = &elemental.Relationship{
 		Create: map[string]*elemental.RelationshipInfo{
-			"list": (&elemental.RelationshipInfo{
+			"list": &elemental.RelationshipInfo{
 				Parameters: []elemental.ParameterDefinition{
 					elemental.ParameterDefinition{
 						Name: "ltcp1",
@@ -126,22 +126,22 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Update: map[string]*elemental.RelationshipInfo{
-			"root": (&elemental.RelationshipInfo{}),
+			"root": &elemental.RelationshipInfo{},
 		},
 		Patch: map[string]*elemental.RelationshipInfo{
-			"root": (&elemental.RelationshipInfo{}),
+			"root": &elemental.RelationshipInfo{},
 		},
 		Delete: map[string]*elemental.RelationshipInfo{
-			"root": (&elemental.RelationshipInfo{}),
+			"root": &elemental.RelationshipInfo{},
 		},
 		Retrieve: map[string]*elemental.RelationshipInfo{
-			"root": (&elemental.RelationshipInfo{}),
+			"root": &elemental.RelationshipInfo{},
 		},
 		RetrieveMany: map[string]*elemental.RelationshipInfo{
-			"list": (&elemental.RelationshipInfo{
+			"list": &elemental.RelationshipInfo{
 				Parameters: []elemental.ParameterDefinition{
 					elemental.ParameterDefinition{
 						Name: "ltgp1",
@@ -152,10 +152,10 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Info: map[string]*elemental.RelationshipInfo{
-			"list": (&elemental.RelationshipInfo{
+			"list": &elemental.RelationshipInfo{
 				Parameters: []elemental.ParameterDefinition{
 					elemental.ParameterDefinition{
 						Name: "ltgp1",
@@ -166,13 +166,27 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 	}
 
 	relationshipsRegistry[UserIdentity] = &elemental.Relationship{
 		Create: map[string]*elemental.RelationshipInfo{
-			"root": (&elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
+				RequiredParameters: elemental.NewParametersRequirement(
+					[][][]string{
+						[][]string{
+							[]string{
+								"a",
+								"b",
+							},
+							[]string{
+								"c",
+								"d",
+							},
+						},
+					},
+				),
 				Parameters: []elemental.ParameterDefinition{
 					elemental.ParameterDefinition{
 						Name: "rucp1",
@@ -183,23 +197,23 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Update: map[string]*elemental.RelationshipInfo{
-			"root": (&elemental.RelationshipInfo{}),
+			"root": &elemental.RelationshipInfo{},
 		},
 		Patch: map[string]*elemental.RelationshipInfo{
-			"root": (&elemental.RelationshipInfo{}),
+			"root": &elemental.RelationshipInfo{},
 		},
 		Delete: map[string]*elemental.RelationshipInfo{
-			"root": (&elemental.RelationshipInfo{}),
+			"root": &elemental.RelationshipInfo{},
 		},
 		Retrieve: map[string]*elemental.RelationshipInfo{
-			"root": (&elemental.RelationshipInfo{}),
+			"root": &elemental.RelationshipInfo{},
 		},
 		RetrieveMany: map[string]*elemental.RelationshipInfo{
-			"list": (&elemental.RelationshipInfo{}),
-			"root": (&elemental.RelationshipInfo{
+			"list": &elemental.RelationshipInfo{},
+			"root": &elemental.RelationshipInfo{
 				Parameters: []elemental.ParameterDefinition{
 					elemental.ParameterDefinition{
 						Name: "rugmp1",
@@ -210,11 +224,11 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 		Info: map[string]*elemental.RelationshipInfo{
-			"list": (&elemental.RelationshipInfo{}),
-			"root": (&elemental.RelationshipInfo{
+			"list": &elemental.RelationshipInfo{},
+			"root": &elemental.RelationshipInfo{
 				Parameters: []elemental.ParameterDefinition{
 					elemental.ParameterDefinition{
 						Name: "rugmp1",
@@ -225,7 +239,7 @@ func init() {
 						Type: "boolean",
 					},
 				},
-			}),
+			},
 		},
 	}
 
