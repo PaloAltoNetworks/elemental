@@ -78,6 +78,22 @@ func init() {
 						Name: "lgp2",
 						Type: "boolean",
 					},
+					elemental.ParameterDefinition{
+						Name: "sAp1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "sAp2",
+						Type: "boolean",
+					},
+					elemental.ParameterDefinition{
+						Name: "sBp1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "sBp2",
+						Type: "boolean",
+					},
 				},
 			},
 		},
@@ -173,20 +189,6 @@ func init() {
 	relationshipsRegistry[UserIdentity] = &elemental.Relationship{
 		Create: map[string]*elemental.RelationshipInfo{
 			"root": &elemental.RelationshipInfo{
-				RequiredParameters: elemental.NewParametersRequirement(
-					[][][]string{
-						[][]string{
-							[]string{
-								"a",
-								"b",
-							},
-							[]string{
-								"c",
-								"d",
-							},
-						},
-					},
-				),
 				Parameters: []elemental.ParameterDefinition{
 					elemental.ParameterDefinition{
 						Name: "rucp1",

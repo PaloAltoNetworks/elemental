@@ -1025,7 +1025,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 
 	Convey("Given I have a get http request on /lists/xx with good params", t, func() {
 
-		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx?lgp1=A&lgp2=true", nil)
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx?lgp1=A&lgp2=true&sAp1=ok&sAp2=true&sBp1=ok&sBp2=true", nil)
 		req.Header.Add("X-Namespace", "ns")
 		req.Header.Add("Authorization", "user pass")
 
@@ -1044,6 +1044,22 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 						values: []interface{}{"A"},
 					},
 					"lgp2": Parameter{
+						ptype:  ParameterTypeBool,
+						values: []interface{}{true},
+					},
+					"sAp1": Parameter{
+						ptype:  ParameterTypeString,
+						values: []interface{}{"ok"},
+					},
+					"sAp2": Parameter{
+						ptype:  ParameterTypeBool,
+						values: []interface{}{true},
+					},
+					"sBp1": Parameter{
+						ptype:  ParameterTypeString,
+						values: []interface{}{"ok"},
+					},
+					"sBp2": Parameter{
 						ptype:  ParameterTypeBool,
 						values: []interface{}{true},
 					},

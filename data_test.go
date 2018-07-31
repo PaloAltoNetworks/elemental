@@ -1601,6 +1601,22 @@ func init() {
 						Name: "lgp2",
 						Type: "boolean",
 					},
+					ParameterDefinition{
+						Name: "sAp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "sAp2",
+						Type: "boolean",
+					},
+					ParameterDefinition{
+						Name: "sBp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "sBp2",
+						Type: "boolean",
+					},
 				},
 			},
 		},
@@ -1696,20 +1712,6 @@ func init() {
 	relationshipsRegistry[UserIdentity] = &Relationship{
 		Create: map[string]*RelationshipInfo{
 			"root": &RelationshipInfo{
-				RequiredParameters: NewParametersRequirement(
-					[][][]string{
-						[][]string{
-							[]string{
-								"a",
-								"b",
-							},
-							[]string{
-								"c",
-								"d",
-							},
-						},
-					},
-				),
 				Parameters: []ParameterDefinition{
 					ParameterDefinition{
 						Name: "rucp1",
