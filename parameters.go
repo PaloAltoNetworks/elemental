@@ -26,8 +26,9 @@ const (
 	ParameterTypeDuration ParameterType = "duration"
 )
 
-// A Parameter represent one parameter that can be sent with a query
-type Parameter struct {
+// A ParameterDefinition represent a parameter definition that can
+// be transformed into a Parameter.
+type ParameterDefinition struct {
 	Name           string
 	Type           ParameterType
 	AllowedChoices []string
@@ -35,82 +36,16 @@ type Parameter struct {
 	Required       bool
 	Multiple       bool
 
-	value []interface{}
-}
-
-// StringValue returns the value as a string.
-func (p *Parameter) StringValue() string {
-
-	if len(p.value) == 0 || (p.Type != ParameterTypeString && p.Type != ParameterTypeEnum) {
-		return ""
-	}
-
-	return p.value[0].(string)
-}
-
-// IntValue returns the value as a int.
-func (p *Parameter) IntValue() int {
-
-	if len(p.value) == 0 || p.Type != ParameterTypeInt {
-		return 0
-	}
-
-	return p.value[0].(int)
-}
-
-// FloatValue returns the value as a float.
-func (p *Parameter) FloatValue() float64 {
-
-	if len(p.value) == 0 || p.Type != ParameterTypeFloat {
-		return 0.0
-	}
-
-	return p.value[0].(float64)
-}
-
-// BoolValue returns the value as a bool.
-func (p *Parameter) BoolValue() bool {
-
-	if len(p.value) == 0 || p.Type != ParameterTypeBool {
-		return false
-	}
-
-	return p.value[0].(bool)
-}
-
-// DurationValue returns the value as a time.Duration.
-func (p *Parameter) DurationValue() time.Duration {
-
-	if len(p.value) == 0 || p.Type != ParameterTypeDuration {
-		return 0
-	}
-
-	return p.value[0].(time.Duration)
-}
-
-// TimeValue returns the value as a time.Time.
-func (p *Parameter) TimeValue() time.Time {
-
-	if len(p.value) == 0 || p.Type != ParameterTypeTime {
-		return time.Time{}
-	}
-
-	return p.value[0].(time.Time)
-}
-
-// Values returns all the parsed values
-func (p *Parameter) Values() []interface{} {
-
-	return p.value
+	values []interface{}
 }
 
 // Parse parses the given value against the parameter definition
-func (p *Parameter) Parse(values []string) (err error) {
+func (p *ParameterDefinition) Parse(values []string) (*Parameter, error) {
 
 	if !p.Multiple && len(values) > 1 {
-		return NewError(
+		return nil, NewError(
 			invalidParamMsg,
-			fmt.Sprintf("Parameter '%s' must be send only once", p.Name),
+			fmt.Sprintf("Parameter '%s' must be sent only once", p.Name),
 			"elemental",
 			http.StatusBadRequest,
 		)
@@ -119,7 +54,7 @@ func (p *Parameter) Parse(values []string) (err error) {
 	if p.Required {
 
 		if len(values) == 0 {
-			return NewError(
+			return nil, NewError(
 				invalidParamMsg,
 				fmt.Sprintf("Parameter '%s' is required", p.Name),
 				"elemental",
@@ -129,7 +64,7 @@ func (p *Parameter) Parse(values []string) (err error) {
 
 		for _, v := range values {
 			if v == "" {
-				return NewError(
+				return nil, NewError(
 					invalidParamMsg,
 					fmt.Sprintf("Parameter '%s' is required", p.Name),
 					"elemental",
@@ -139,48 +74,50 @@ func (p *Parameter) Parse(values []string) (err error) {
 		}
 	}
 
+	var vs []interface{}
+
 	for _, v := range values {
 		switch p.Type {
 
 		case ParameterTypeString:
-			p.value = append(p.value, v)
+			vs = append(vs, v)
 
 		case ParameterTypeInt:
 			parsed, err := strconv.Atoi(v)
 			if err != nil {
-				return NewError(
+				return nil, NewError(
 					invalidParamMsg,
 					fmt.Sprintf("Parameter '%s' must be an integer", p.Name),
 					"elemental",
 					http.StatusBadRequest,
 				)
 			}
-			p.value = append(p.value, parsed)
+			vs = append(vs, parsed)
 
 		case ParameterTypeFloat:
 
 			parsed, err := strconv.ParseFloat(v, 64)
 			if err != nil {
-				return NewError(
+				return nil, NewError(
 					invalidParamMsg,
-					fmt.Sprintf("Parameter '%s' must be an float", p.Name),
+					fmt.Sprintf("Parameter '%s' must be a float", p.Name),
 					"elemental",
 					http.StatusBadRequest,
 				)
 			}
-			p.value = append(p.value, parsed)
+			vs = append(vs, parsed)
 
 		case ParameterTypeBool:
 
 			switch strings.ToLower(v) {
 			case "true", "yes", "1", "":
-				p.value = append(p.value, true)
+				vs = append(vs, true)
 			case "false", "no", "0":
-				p.value = append(p.value, false)
+				vs = append(vs, false)
 			default:
-				return NewError(
+				return nil, NewError(
 					invalidParamMsg,
-					fmt.Sprintf("Parameter '%s' must be an boolean", p.Name),
+					fmt.Sprintf("Parameter '%s' must be a boolean", p.Name),
 					"elemental",
 					http.StatusBadRequest,
 				)
@@ -197,46 +134,121 @@ func (p *Parameter) Parse(values []string) (err error) {
 			}
 
 			if !matched {
-				return NewError(
+				return nil, NewError(
 					invalidParamMsg,
-					fmt.Sprintf("Parameter '%s' must one of '%s'", p.Name, strings.Join(p.AllowedChoices, ", ")),
+					fmt.Sprintf("Parameter '%s' must be one of '%s'", p.Name, strings.Join(p.AllowedChoices, ", ")),
 					"elemental",
 					http.StatusBadRequest,
 				)
 			}
 
-			p.value = append(p.value, v)
+			vs = append(vs, v)
 
 		case ParameterTypeDuration:
 			d, err := time.ParseDuration(v)
 			if err != nil {
-				return NewError(
+				return nil, NewError(
 					invalidParamMsg,
-					fmt.Sprintf("Parameter '%s' must a valid duration", p.Name),
+					fmt.Sprintf("Parameter '%s' must be a valid duration", p.Name),
 					"elemental",
 					http.StatusBadRequest,
 				)
 			}
 
-			p.value = append(p.value, d)
+			vs = append(vs, d)
 
 		case ParameterTypeTime:
 			t, err := dateparse.ParseAny(v)
 			if err != nil {
-				return NewError(
+				return nil, NewError(
 					invalidParamMsg,
-					fmt.Sprintf("Parameter '%s' must a valid date", p.Name),
+					fmt.Sprintf("Parameter '%s' must be a valid date", p.Name),
 					"elemental",
 					http.StatusBadRequest,
 				)
 			}
 
-			p.value = append(p.value, t)
+			vs = append(vs, t)
 
 		default:
 			panic(fmt.Sprintf("unknown parameter type: '%s'", p.Type))
 		}
 	}
 
-	return nil
+	return &Parameter{
+		ptype:  p.Type,
+		values: vs,
+	}, nil
+}
+
+// A Parameter represent one parameter that can be sent with a query.
+type Parameter struct {
+	ptype  ParameterType
+	values []interface{}
+}
+
+// StringValue returns the value as a string.
+func (p Parameter) StringValue() string {
+
+	if len(p.values) == 0 || (p.ptype != ParameterTypeString && p.ptype != ParameterTypeEnum) {
+		return ""
+	}
+
+	return p.values[0].(string)
+}
+
+// IntValue returns the value as a int.
+func (p Parameter) IntValue() int {
+
+	if len(p.values) == 0 || p.ptype != ParameterTypeInt {
+		return 0
+	}
+
+	return p.values[0].(int)
+}
+
+// FloatValue returns the value as a float.
+func (p Parameter) FloatValue() float64 {
+
+	if len(p.values) == 0 || p.ptype != ParameterTypeFloat {
+		return 0.0
+	}
+
+	return p.values[0].(float64)
+}
+
+// BoolValue returns the value as a bool.
+func (p Parameter) BoolValue() bool {
+
+	if len(p.values) == 0 || p.ptype != ParameterTypeBool {
+		return false
+	}
+
+	return p.values[0].(bool)
+}
+
+// DurationValue returns the value as a time.Duration.
+func (p Parameter) DurationValue() time.Duration {
+
+	if len(p.values) == 0 || p.ptype != ParameterTypeDuration {
+		return 0
+	}
+
+	return p.values[0].(time.Duration)
+}
+
+// TimeValue returns the value as a time.Time.
+func (p Parameter) TimeValue() time.Time {
+
+	if len(p.values) == 0 || p.ptype != ParameterTypeTime {
+		return time.Time{}
+	}
+
+	return p.values[0].(time.Time)
+}
+
+// Values returns all the parsed values
+func (p Parameter) Values() []interface{} {
+
+	return p.values
 }

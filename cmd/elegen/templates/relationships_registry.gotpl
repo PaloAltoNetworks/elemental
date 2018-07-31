@@ -22,9 +22,9 @@ func init() {
                 Deprecated: true,
                 {{- end }}
                 {{- if gt (len $action.Parameters) 0 }}
-                Parameters: []elemental.Parameter{
+                Parameters: []elemental.ParameterDefinition{
                 {{- range $i, $p := $action.Parameters }}
-                    elemental.Parameter{
+                    elemental.ParameterDefinition{
                         Name: "{{$p.Name}}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.Multiple }}
@@ -34,7 +34,7 @@ func init() {
                 {{- end }}
                 },
                 {{- end }}
-            }).Build(),
+            }),
             {{- end }}
             {{- end }}
         },
@@ -48,9 +48,9 @@ func init() {
                 Deprecated: true,
                 {{- end }}
                 {{- if gt (len $action.Parameters) 0 }}
-                Parameters: []elemental.Parameter{
+                Parameters: []elemental.ParameterDefinition{
                 {{- range $i, $p := $action.Parameters }}
-                    elemental.Parameter{
+                    elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
@@ -77,7 +77,7 @@ func init() {
                 {{- end }}
                 },
                 {{- end }}
-            }).Build(),
+            }),
             {{- end }}
             {{- end }}
         },
@@ -89,9 +89,9 @@ func init() {
                 Deprecated: true,
                 {{- end }}
                 {{- if gt (len $action.Parameters) 0 }}
-                Parameters: []elemental.Parameter{
+                Parameters: []elemental.ParameterDefinition{
                 {{- range $i, $p := $action.Parameters }}
-                    elemental.Parameter{
+                    elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
@@ -118,7 +118,7 @@ func init() {
                 {{- end }}
                 },
                 {{- end }}
-            }).Build(),
+            }),
             {{- end }}
             {{- end }}
         },
@@ -132,9 +132,9 @@ func init() {
                 Deprecated: true,
                 {{- end }}
                 {{- if gt (len $action.Parameters) 0 }}
-                Parameters: []elemental.Parameter{
+                Parameters: []elemental.ParameterDefinition{
                 {{- range $i, $p := $action.Parameters }}
-                    elemental.Parameter{
+                    elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
@@ -161,7 +161,7 @@ func init() {
                 {{- end }}
                 },
                 {{- end }}
-            }).Build(),
+            }),
             {{- end }}
             {{- end }}
         },
@@ -175,9 +175,9 @@ func init() {
                 Deprecated: true,
                 {{- end }}
                 {{- if gt (len $action.Parameters) 0 }}
-                Parameters: []elemental.Parameter{
+                Parameters: []elemental.ParameterDefinition{
                 {{- range $i, $p := $action.Parameters }}
-                    elemental.Parameter{
+                    elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
@@ -204,7 +204,7 @@ func init() {
                 {{- end }}
                 },
                 {{- end }}
-            }).Build(),
+            }),
             {{- end }}
             {{- end }}
         },
@@ -218,9 +218,9 @@ func init() {
                 Deprecated: true,
                 {{- end }}
                 {{- if gt (len $action.Parameters) 0 }}
-                Parameters: []elemental.Parameter{
+                Parameters: []elemental.ParameterDefinition{
                 {{- range $i, $p := $action.Parameters }}
-                    elemental.Parameter{
+                    elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
@@ -247,7 +247,7 @@ func init() {
                 {{- end }}
                 },
                 {{- end }}
-            }).Build(),
+            }),
             {{- end }}
             {{- end }}
         },
@@ -259,9 +259,9 @@ func init() {
                 Deprecated: true,
                 {{- end }}
                 {{- if gt (len $action.Parameters) 0 }}
-                Parameters: []elemental.Parameter{
+                Parameters: []elemental.ParameterDefinition{
                 {{- range $i, $p := $action.Parameters }}
-                    elemental.Parameter{
+                    elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
@@ -288,7 +288,7 @@ func init() {
                 {{- end }}
                 },
                 {{- end }}
-            }).Build(),
+            }),
             {{- end }}
             {{- end }}
         },

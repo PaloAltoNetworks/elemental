@@ -94,8 +94,10 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 
 	switch len(components) {
 	case 1:
+		parentIdentity = RootIdentity
 		identity = manager.IdentityFromCategory(components[0])
 	case 2:
+		parentIdentity = RootIdentity
 		identity = manager.IdentityFromCategory(components[0])
 		ID = components[1]
 	case 3:
@@ -175,18 +177,27 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		q.Del("override")
 	}
 
+	paramsMap := map[string]Parameter{}
+	for _, pdef := range ParametersForOperation(manager.Relationships(), identity, parentIdentity, operation) {
+		p, err := pdef.Parse(q[pdef.Name])
+		if err != nil {
+			return nil, err
+		}
+		paramsMap[pdef.Name] = *p
+	}
+
 	return &Request{
-		RequestID:      uuid.NewV4().String(),
-		Namespace:      req.Header.Get("X-Namespace"),
-		Recursive:      recursive,
-		Page:           page,
-		PageSize:       pageSize,
-		Operation:      operation,
-		Identity:       identity,
-		ObjectID:       ID,
-		ParentID:       parentID,
-		ParentIdentity: parentIdentity,
-		// Parameters:           req.URL.Query(),
+		RequestID:            uuid.NewV4().String(),
+		Namespace:            req.Header.Get("X-Namespace"),
+		Recursive:            recursive,
+		Page:                 page,
+		PageSize:             pageSize,
+		Operation:            operation,
+		Identity:             identity,
+		ObjectID:             ID,
+		ParentID:             parentID,
+		ParentIdentity:       parentIdentity,
+		Parameters:           paramsMap,
 		Username:             username,
 		Password:             password,
 		Data:                 data,

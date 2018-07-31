@@ -1535,25 +1535,102 @@ func init() {
 
 	relationshipsRegistry[ListIdentity] = &Relationship{
 		Create: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rlcp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rlcp2",
+						Type: "boolean",
+					},
+				},
+			}),
 		},
 		Update: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "lup1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "lup2",
+						Type: "boolean",
+					},
+				},
+			}),
 		},
 		Patch: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "lup1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "lup2",
+						Type: "boolean",
+					},
+				},
+			}),
 		},
 		Delete: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "ldp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "ldp2",
+						Type: "boolean",
+					},
+				},
+			}),
 		},
 		Retrieve: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "lgp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "lgp2",
+						Type: "boolean",
+					},
+				},
+			}),
 		},
 		RetrieveMany: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rlgmp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rlgmp2",
+						Type: "boolean",
+					},
+				},
+			}),
 		},
 		Info: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rlgmp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rlgmp2",
+						Type: "boolean",
+					},
+				},
+			}),
 		},
 	}
 
@@ -1561,51 +1638,117 @@ func init() {
 
 	relationshipsRegistry[TaskIdentity] = &Relationship{
 		Create: map[string]*RelationshipInfo{
-			"list": (&RelationshipInfo{}).Build(),
+			"list": (&RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "ltcp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "ltcp2",
+						Type: "boolean",
+					},
+				},
+			}),
 		},
 		Update: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{}),
 		},
 		Patch: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{}),
 		},
 		Delete: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{}),
 		},
 		Retrieve: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{}),
 		},
 		RetrieveMany: map[string]*RelationshipInfo{
-			"list": (&RelationshipInfo{}).Build(),
+			"list": (&RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "ltgp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "ltgp2",
+						Type: "boolean",
+					},
+				},
+			}),
 		},
 		Info: map[string]*RelationshipInfo{
-			"list": (&RelationshipInfo{}).Build(),
+			"list": (&RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "ltgp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "ltgp2",
+						Type: "boolean",
+					},
+				},
+			}),
 		},
 	}
 
 	relationshipsRegistry[UserIdentity] = &Relationship{
 		Create: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rucp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rucp2",
+						Type: "boolean",
+					},
+				},
+			}),
 		},
 		Update: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{}),
 		},
 		Patch: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{}),
 		},
 		Delete: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{}),
 		},
 		Retrieve: map[string]*RelationshipInfo{
-			"root": (&RelationshipInfo{}).Build(),
+			"root": (&RelationshipInfo{}),
 		},
 		RetrieveMany: map[string]*RelationshipInfo{
-			"list": (&RelationshipInfo{}).Build(),
-			"root": (&RelationshipInfo{}).Build(),
+			"list": (&RelationshipInfo{}),
+			"root": (&RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rugmp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rugmp2",
+						Type: "boolean",
+					},
+				},
+			}),
 		},
 		Info: map[string]*RelationshipInfo{
-			"list": (&RelationshipInfo{}).Build(),
-			"root": (&RelationshipInfo{}).Build(),
+			"list": (&RelationshipInfo{}),
+			"root": (&RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rugmp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rugmp2",
+						Type: "boolean",
+					},
+				},
+			}),
 		},
 	}
 
