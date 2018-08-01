@@ -74,6 +74,8 @@ func IsOperationAllowed(registry RelationshipsRegistry, i Identity, pid Identity
 		_, ok = r.RetrieveMany[pid.Name]
 	case OperationUpdate:
 		_, ok = r.Update[pid.Name]
+	default:
+		return false
 	}
 
 	return ok

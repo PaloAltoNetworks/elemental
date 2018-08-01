@@ -174,8 +174,9 @@ func (p *ParameterDefinition) Parse(values []string) (*Parameter, error) {
 	}
 
 	return &Parameter{
-		ptype:  p.Type,
-		values: vs,
+		ptype:        p.Type,
+		values:       vs,
+		defaultValue: p.DefaultValue,
 	}, nil
 }
 
@@ -274,8 +275,9 @@ func (r ParametersRequirement) String() string {
 
 // A Parameter represent one parameter that can be sent with a query.
 type Parameter struct {
-	ptype  ParameterType
-	values []interface{}
+	ptype        ParameterType
+	values       []interface{}
+	defaultValue interface{}
 }
 
 // NewParameter returns a new Parameter.

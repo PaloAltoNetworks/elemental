@@ -713,3 +713,40 @@ func TestRelationship_IsOperationAllowed_Create(t *testing.T) {
 		})
 	})
 }
+
+func TestRelationship_IsOperationAllowed_UnknownOperation(t *testing.T) {
+
+	Convey("Given I have some relationships that allows create", t, func() {
+
+		registry := RelationshipsRegistry{
+			ListIdentity: &Relationship{},
+			TaskIdentity: &Relationship{
+				Create: map[string]*RelationshipInfo{
+					ListIdentity.Name: &RelationshipInfo{
+						Parameters: []ParameterDefinition{
+							ParameterDefinition{Name: "toto"},
+						},
+					},
+				},
+			},
+		}
+
+		Convey("When I call IsOperationAllowed", func() {
+
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, Operation("unknown"))
+
+			Convey("Then retrieve should be false", func() {
+				So(ok, ShouldBeFalse)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, ListIdentity, RootIdentity, Operation("unknown"))
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
+			})
+		})
+	})
+}
