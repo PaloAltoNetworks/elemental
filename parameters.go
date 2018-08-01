@@ -185,9 +185,14 @@ func (p *ParameterDefinition) Parse(values []string) (*Parameter, error) {
 type Parameters map[string]Parameter
 
 // Get returns the Parameter with the given name
-func (p Parameters) Get(name string) (Parameter, bool) {
-	param, ok := p[name]
-	return param, ok
+func (p Parameters) Get(name string) Parameter {
+	return p[name]
+}
+
+// Exists if true if the parameter exists.
+func (p Parameters) Exists(name string) bool {
+	_, ok := p[name]
+	return ok
 }
 
 // Validate validates if the Parameters matches the given requirement.
@@ -264,6 +269,21 @@ func (p Parameter) StringValue() string {
 	return p.values[0].(string)
 }
 
+// StringValues returns all the values as a []string.
+func (p Parameter) StringValues() []string {
+
+	if len(p.values) == 0 || (p.ptype != ParameterTypeString && p.ptype != ParameterTypeEnum) {
+		return nil
+	}
+
+	out := make([]string, len(p.values))
+	for i := range p.values {
+		out[i] = p.values[i].(string)
+	}
+
+	return out
+}
+
 // IntValue returns the value as a int.
 func (p Parameter) IntValue() int {
 
@@ -272,6 +292,21 @@ func (p Parameter) IntValue() int {
 	}
 
 	return p.values[0].(int)
+}
+
+// IntValues returns all the values as a []int.
+func (p Parameter) IntValues() []int {
+
+	if len(p.values) == 0 || p.ptype != ParameterTypeInt {
+		return nil
+	}
+
+	out := make([]int, len(p.values))
+	for i := range p.values {
+		out[i] = p.values[i].(int)
+	}
+
+	return out
 }
 
 // FloatValue returns the value as a float.
@@ -284,6 +319,21 @@ func (p Parameter) FloatValue() float64 {
 	return p.values[0].(float64)
 }
 
+// FloatValues returns all the values as a []float64.
+func (p Parameter) FloatValues() []float64 {
+
+	if len(p.values) == 0 || p.ptype != ParameterTypeFloat {
+		return nil
+	}
+
+	out := make([]float64, len(p.values))
+	for i := range p.values {
+		out[i] = p.values[i].(float64)
+	}
+
+	return out
+}
+
 // BoolValue returns the value as a bool.
 func (p Parameter) BoolValue() bool {
 
@@ -292,6 +342,21 @@ func (p Parameter) BoolValue() bool {
 	}
 
 	return p.values[0].(bool)
+}
+
+// BoolValues returns all the values as a []bool.
+func (p Parameter) BoolValues() []bool {
+
+	if len(p.values) == 0 || p.ptype != ParameterTypeBool {
+		return nil
+	}
+
+	out := make([]bool, len(p.values))
+	for i := range p.values {
+		out[i] = p.values[i].(bool)
+	}
+
+	return out
 }
 
 // DurationValue returns the value as a time.Duration.
@@ -304,6 +369,21 @@ func (p Parameter) DurationValue() time.Duration {
 	return p.values[0].(time.Duration)
 }
 
+// DurationValues returns all the values as a []time.Duration.
+func (p Parameter) DurationValues() []time.Duration {
+
+	if len(p.values) == 0 || p.ptype != ParameterTypeDuration {
+		return nil
+	}
+
+	out := make([]time.Duration, len(p.values))
+	for i := range p.values {
+		out[i] = p.values[i].(time.Duration)
+	}
+
+	return out
+}
+
 // TimeValue returns the value as a time.Time.
 func (p Parameter) TimeValue() time.Time {
 
@@ -312,6 +392,21 @@ func (p Parameter) TimeValue() time.Time {
 	}
 
 	return p.values[0].(time.Time)
+}
+
+// TimeValues returns all the values as a []time.Time.
+func (p Parameter) TimeValues() []time.Time {
+
+	if len(p.values) == 0 || p.ptype != ParameterTypeTime {
+		return nil
+	}
+
+	out := make([]time.Time, len(p.values))
+	for i := range p.values {
+		out[i] = p.values[i].(time.Time)
+	}
+
+	return out
 }
 
 // Values returns all the parsed values

@@ -345,6 +345,11 @@ func TestParameters_Value(t *testing.T) {
 			Convey("Then the first value should be accessible", func() {
 				So(pp.StringValue(), ShouldResemble, "a")
 			})
+
+			Convey("Then the multiple values should be accessible", func() {
+				So(pp.StringValues(), ShouldResemble, []string{"a", "b"})
+			})
+
 			Convey("Then the all values should be accessible", func() {
 				So(pp.Values(), ShouldResemble, []interface{}{"a", "b"})
 			})
@@ -370,6 +375,11 @@ func TestParameters_Value(t *testing.T) {
 			Convey("Then the first value should be accessible", func() {
 				So(pp.StringValue(), ShouldResemble, "A")
 			})
+
+			Convey("Then the multiple values should be accessible", func() {
+				So(pp.StringValues(), ShouldResemble, []string{"A", "B"})
+			})
+
 			Convey("Then the all values should be accessible", func() {
 				So(pp.Values(), ShouldResemble, []interface{}{"A", "B"})
 			})
@@ -394,6 +404,11 @@ func TestParameters_Value(t *testing.T) {
 			Convey("Then the first value should be accessible", func() {
 				So(pp.IntValue(), ShouldResemble, 1)
 			})
+
+			Convey("Then the multiple values should be accessible", func() {
+				So(pp.IntValues(), ShouldResemble, []int{1, 2})
+			})
+
 			Convey("Then the all values should be accessible", func() {
 				So(pp.Values(), ShouldResemble, []interface{}{1, 2})
 			})
@@ -418,6 +433,11 @@ func TestParameters_Value(t *testing.T) {
 			Convey("Then the first value should be accessible", func() {
 				So(pp.FloatValue(), ShouldResemble, 1.1)
 			})
+
+			Convey("Then the multiple values should be accessible", func() {
+				So(pp.FloatValues(), ShouldResemble, []float64{1.1, 2.2})
+			})
+
 			Convey("Then the all values should be accessible", func() {
 				So(pp.Values(), ShouldResemble, []interface{}{1.1, 2.2})
 			})
@@ -442,6 +462,11 @@ func TestParameters_Value(t *testing.T) {
 			Convey("Then the first value should be accessible", func() {
 				So(pp.BoolValue(), ShouldResemble, true)
 			})
+
+			Convey("Then the multiple values should be accessible", func() {
+				So(pp.BoolValues(), ShouldResemble, []bool{true, false, true})
+			})
+
 			Convey("Then the all values should be accessible", func() {
 				So(pp.Values(), ShouldResemble, []interface{}{true, false, true})
 			})
@@ -466,6 +491,11 @@ func TestParameters_Value(t *testing.T) {
 			Convey("Then the first value should be accessible", func() {
 				So(pp.DurationValue(), ShouldResemble, 2*time.Second)
 			})
+
+			Convey("Then the multiple values should be accessible", func() {
+				So(pp.DurationValues(), ShouldResemble, []time.Duration{2 * time.Second, 2 * time.Hour})
+			})
+
 			Convey("Then the all values should be accessible", func() {
 				So(pp.Values(), ShouldResemble, []interface{}{2 * time.Second, 2 * time.Hour})
 			})
@@ -493,6 +523,13 @@ func TestParameters_Value(t *testing.T) {
 			Convey("Then the first value should be accessible", func() {
 				So(pp.TimeValue().Format(time.RFC3339), ShouldResemble, t1.Format(time.RFC3339))
 			})
+
+			Convey("Then the multiple values should be accessible", func() {
+				So(len(pp.TimeValues()), ShouldEqual, 2)
+				So(pp.TimeValues()[0].Format(time.RFC3339), ShouldResemble, t1.Format(time.RFC3339))
+				So(pp.TimeValues()[1].Format(time.RFC3339), ShouldResemble, t2.Format(time.RFC3339))
+			})
+
 			Convey("Then the all values should be accessible", func() {
 				So(len(pp.Values()), ShouldEqual, 2)
 				So(pp.Values()[0].(time.Time).Format(time.RFC3339), ShouldResemble, t1.Format(time.RFC3339))
