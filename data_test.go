@@ -469,7 +469,6 @@ var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Type:           "string",
 	},
 }
-
 // TaskStatusValue represents the possible values for attribute "status".
 type TaskStatusValue string
 
@@ -938,7 +937,6 @@ func (o *UnmarshalableError) UnmarshalJSON([]byte) error {
 func (o *UnmarshalableError) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("error marshalling")
 }
-
 // UserIdentity represents the Identity of the object.
 var UserIdentity = Identity{
 	Name:     "user",
@@ -1731,7 +1729,23 @@ func init() {
 			"root": &RelationshipInfo{},
 		},
 		Delete: map[string]*RelationshipInfo{
-			"root": &RelationshipInfo{},
+			"root": &RelationshipInfo{
+				RequiredParameters: NewParametersRequirement(
+					[][][]string{
+						[][]string{
+							[]string{
+								"required",
+							},
+						},
+					},
+				),
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "confirm",
+						Type: "boolean",
+					},
+				},
+			},
 		},
 		Retrieve: map[string]*RelationshipInfo{
 			"root": &RelationshipInfo{},

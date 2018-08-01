@@ -1271,5 +1271,27 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 			})
 		})
 	})
+}
 
+func TestRequest_RequiredParameters(t *testing.T) {
+
+	Convey("Given I have a delete http request on /lists with no params", t, func() {
+
+		req, _ := http.NewRequest(http.MethodDelete, "http://server/v/10/users/id", nil)
+		req.Header.Set("X-Namespace", "ns")
+		req.RemoteAddr = "42.42.42.42"
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+			})
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+		})
+	})
 }

@@ -208,7 +208,23 @@ func init() {
 			"root": &elemental.RelationshipInfo{},
 		},
 		Delete: map[string]*elemental.RelationshipInfo{
-			"root": &elemental.RelationshipInfo{},
+			"root": &elemental.RelationshipInfo{
+				RequiredParameters: elemental.NewParametersRequirement(
+					[][][]string{
+						[][]string{
+							[]string{
+								"required",
+							},
+						},
+					},
+				),
+				Parameters: []elemental.ParameterDefinition{
+					elemental.ParameterDefinition{
+						Name: "confirm",
+						Type: "boolean",
+					},
+				},
+			},
 		},
 		Retrieve: map[string]*elemental.RelationshipInfo{
 			"root": &elemental.RelationshipInfo{},
