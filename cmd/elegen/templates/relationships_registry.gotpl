@@ -49,13 +49,7 @@ func init() {
                      elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
-                        {{- if $p.DefaultValue }}
-                        {{- if or (eq $p.Type "string") (eq $p.Type "enum") (eq $p.Type "duration") }}
                         DefaultValue: "{{ $p.DefaultValue }}",
-                        {{- else }}
-                        DefaultValue: {{ $p.DefaultValue }},
-                        {{- end }}
-                        {{- end }}
                         {{- if eq $p.Type "enum" }}
                         AllowedChoices: []string{
                             {{- range $j, $v := $p.AllowedChoices }}
@@ -112,13 +106,7 @@ func init() {
                     elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
-                        {{- if $p.DefaultValue }}
-                        {{- if or (eq $p.Type "string") (eq $p.Type "enum") (eq $p.Type "duration") }}
                         DefaultValue: "{{ $p.DefaultValue }}",
-                        {{- else }}
-                        DefaultValue: {{ $p.DefaultValue }},
-                        {{- end }}
-                        {{- end }}
                         {{- if eq $p.Type "enum" }}
                         AllowedChoices: []string{
                             {{- range $j, $v := $p.AllowedChoices }}
@@ -173,13 +161,7 @@ func init() {
                     elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
-                        {{- if $p.DefaultValue }}
-                        {{- if or (eq $p.Type "string") (eq $p.Type "enum") (eq $p.Type "duration") }}
                         DefaultValue: "{{ $p.DefaultValue }}",
-                        {{- else }}
-                        DefaultValue: {{ $p.DefaultValue }},
-                        {{- end }}
-                        {{- end }}
                         {{- if eq $p.Type "enum" }}
                         AllowedChoices: []string{
                             {{- range $j, $v := $p.AllowedChoices }}
@@ -236,13 +218,7 @@ func init() {
                     elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
-                        {{- if $p.DefaultValue }}
-                        {{- if or (eq $p.Type "string") (eq $p.Type "enum") (eq $p.Type "duration") }}
                         DefaultValue: "{{ $p.DefaultValue }}",
-                        {{- else }}
-                        DefaultValue: {{ $p.DefaultValue }},
-                        {{- end }}
-                        {{- end }}
                         {{- if eq $p.Type "enum" }}
                         AllowedChoices: []string{
                             {{- range $j, $v := $p.AllowedChoices }}
@@ -299,13 +275,7 @@ func init() {
                     elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
-                        {{- if $p.DefaultValue }}
-                        {{- if or (eq $p.Type "string") (eq $p.Type "enum") (eq $p.Type "duration") }}
                         DefaultValue: "{{ $p.DefaultValue }}",
-                        {{- else }}
-                        DefaultValue: {{ $p.DefaultValue }},
-                        {{- end }}
-                        {{- end }}
                         {{- if eq $p.Type "enum" }}
                         AllowedChoices: []string{
                             {{- range $j, $v := $p.AllowedChoices }}
@@ -362,13 +332,7 @@ func init() {
                     elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
-                        {{- if $p.DefaultValue }}
-                        {{- if or (eq $p.Type "string") (eq $p.Type "enum") (eq $p.Type "duration") }}
                         DefaultValue: "{{ $p.DefaultValue }}",
-                        {{- else }}
-                        DefaultValue: {{ $p.DefaultValue }},
-                        {{- end }}
-                        {{- end }}
                         {{- if eq $p.Type "enum" }}
                         AllowedChoices: []string{
                             {{- range $j, $v := $p.AllowedChoices }}
@@ -423,13 +387,7 @@ func init() {
                     elemental.ParameterDefinition{
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
-                        {{- if $p.DefaultValue }}
-                        {{- if or (eq $p.Type "string") (eq $p.Type "enum") (eq $p.Type "duration") }}
                         DefaultValue: "{{ $p.DefaultValue }}",
-                        {{- else }}
-                        DefaultValue: {{ $p.DefaultValue }},
-                        {{- end }}
-                        {{- end }}
                         {{- if eq $p.Type "enum" }}
                         AllowedChoices: []string{
                             {{- range $j, $v := $p.AllowedChoices }}

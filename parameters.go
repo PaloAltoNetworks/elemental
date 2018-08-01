@@ -32,8 +32,7 @@ type ParameterDefinition struct {
 	Name           string
 	Type           ParameterType
 	AllowedChoices []string
-	DefaultValue   interface{}
-	Required       bool
+	DefaultValue   string
 	Multiple       bool
 }
 
@@ -49,134 +48,28 @@ func (p *ParameterDefinition) Parse(values []string) (*Parameter, error) {
 		)
 	}
 
-	if p.Required {
-
-		if len(values) == 0 {
-			return nil, NewError(
-				invalidParamMsg,
-				fmt.Sprintf("Parameter '%s' is required", p.Name),
-				"elemental",
-				http.StatusBadRequest,
-			)
+	var vs []interface{} // nolint: prealloc
+	for _, v := range values {
+		out, err := parse(p.Type, p.Name, v, p.AllowedChoices)
+		if err != nil {
+			return nil, err
 		}
-
-		for _, v := range values {
-			if v == "" {
-				return nil, NewError(
-					invalidParamMsg,
-					fmt.Sprintf("Parameter '%s' is required", p.Name),
-					"elemental",
-					http.StatusBadRequest,
-				)
-			}
-		}
+		vs = append(vs, out)
 	}
 
-	var vs []interface{}
-
-	for _, v := range values {
-		switch p.Type {
-
-		case ParameterTypeString:
-			vs = append(vs, v)
-
-		case ParameterTypeInt:
-			parsed, err := strconv.Atoi(v)
-			if err != nil {
-				return nil, NewError(
-					invalidParamMsg,
-					fmt.Sprintf("Parameter '%s' must be an integer", p.Name),
-					"elemental",
-					http.StatusBadRequest,
-				)
-			}
-			vs = append(vs, parsed)
-
-		case ParameterTypeFloat:
-
-			parsed, err := strconv.ParseFloat(v, 64)
-			if err != nil {
-				return nil, NewError(
-					invalidParamMsg,
-					fmt.Sprintf("Parameter '%s' must be a float", p.Name),
-					"elemental",
-					http.StatusBadRequest,
-				)
-			}
-			vs = append(vs, parsed)
-
-		case ParameterTypeBool:
-
-			switch strings.ToLower(v) {
-			case "true", "yes", "1", "":
-				vs = append(vs, true)
-			case "false", "no", "0":
-				vs = append(vs, false)
-			default:
-				return nil, NewError(
-					invalidParamMsg,
-					fmt.Sprintf("Parameter '%s' must be a boolean", p.Name),
-					"elemental",
-					http.StatusBadRequest,
-				)
-			}
-
-		case ParameterTypeEnum:
-
-			var matched bool
-			for _, allowed := range p.AllowedChoices {
-				if v == allowed {
-					matched = true
-					break
-				}
-			}
-
-			if !matched {
-				return nil, NewError(
-					invalidParamMsg,
-					fmt.Sprintf("Parameter '%s' must be one of '%s'", p.Name, strings.Join(p.AllowedChoices, ", ")),
-					"elemental",
-					http.StatusBadRequest,
-				)
-			}
-
-			vs = append(vs, v)
-
-		case ParameterTypeDuration:
-			d, err := time.ParseDuration(v)
-			if err != nil {
-				return nil, NewError(
-					invalidParamMsg,
-					fmt.Sprintf("Parameter '%s' must be a valid duration", p.Name),
-					"elemental",
-					http.StatusBadRequest,
-				)
-			}
-
-			vs = append(vs, d)
-
-		case ParameterTypeTime:
-			t, err := dateparse.ParseAny(v)
-			if err != nil {
-				return nil, NewError(
-					invalidParamMsg,
-					fmt.Sprintf("Parameter '%s' must be a valid date", p.Name),
-					"elemental",
-					http.StatusBadRequest,
-				)
-			}
-
-			vs = append(vs, t)
-
-		default:
-			panic(fmt.Sprintf("unknown parameter type: '%s'", p.Type))
+	var dv interface{}
+	if p.DefaultValue != "" && len(vs) == 0 {
+		out, err := parse(p.Type, p.Name, p.DefaultValue, p.AllowedChoices)
+		if err != nil {
+			return nil, err
 		}
+		dv = out
 	}
 
 	return &Parameter{
 		ptype:        p.Type,
 		values:       vs,
-		defaultValue: p.DefaultValue,
+		defaultValue: dv,
 	}, nil
 }
 
@@ -461,4 +354,104 @@ func (p Parameter) TimeValues() []time.Time {
 func (p Parameter) Values() []interface{} {
 
 	return p.values
+}
+
+func parse(ptype ParameterType, pname string, v string, allowedChoices []string) (out interface{}, err error) {
+
+	switch ptype {
+
+	case ParameterTypeString:
+		return v, nil
+
+	case ParameterTypeInt:
+		parsed, err := strconv.Atoi(v)
+		if err != nil {
+			return nil, NewError(
+				invalidParamMsg,
+				fmt.Sprintf("Parameter '%s' must be an integer", pname),
+				"elemental",
+				http.StatusBadRequest,
+			)
+		}
+		return parsed, nil
+
+	case ParameterTypeFloat:
+
+		parsed, err := strconv.ParseFloat(v, 64)
+		if err != nil {
+			return nil, NewError(
+				invalidParamMsg,
+				fmt.Sprintf("Parameter '%s' must be a float", pname),
+				"elemental",
+				http.StatusBadRequest,
+			)
+		}
+		return parsed, nil
+
+	case ParameterTypeBool:
+
+		switch strings.ToLower(v) {
+		case "true", "yes", "1", "":
+			return true, nil
+		case "false", "no", "0":
+			return false, nil
+		default:
+			return nil, NewError(
+				invalidParamMsg,
+				fmt.Sprintf("Parameter '%s' must be a boolean", pname),
+				"elemental",
+				http.StatusBadRequest,
+			)
+		}
+
+	case ParameterTypeEnum:
+
+		var matched bool
+		for _, allowed := range allowedChoices {
+			if v == allowed {
+				matched = true
+				break
+			}
+		}
+
+		if !matched {
+			return nil, NewError(
+				invalidParamMsg,
+				fmt.Sprintf("Parameter '%s' must be one of '%s'", pname, strings.Join(allowedChoices, ", ")),
+				"elemental",
+				http.StatusBadRequest,
+			)
+		}
+
+		return v, nil
+
+	case ParameterTypeDuration:
+		d, err := time.ParseDuration(v)
+		if err != nil {
+			return nil, NewError(
+				invalidParamMsg,
+				fmt.Sprintf("Parameter '%s' must be a valid duration", pname),
+				"elemental",
+				http.StatusBadRequest,
+			)
+		}
+
+		return d, nil
+
+	case ParameterTypeTime:
+		t, err := dateparse.ParseAny(v)
+		if err != nil {
+			return nil, NewError(
+				invalidParamMsg,
+				fmt.Sprintf("Parameter '%s' must be a valid date", pname),
+				"elemental",
+				http.StatusBadRequest,
+			)
+		}
+
+		return t, nil
+
+	default:
+		panic(fmt.Sprintf("unknown parameter type: '%s'", ptype))
+	}
 }

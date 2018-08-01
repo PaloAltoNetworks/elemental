@@ -14,8 +14,7 @@ func TestParameter_Validate(t *testing.T) {
 		Name           string
 		Type           ParameterType
 		AllowedChoices []string
-		DefaultValue   interface{}
-		Required       bool
+		DefaultValue   string
 		Multiple       bool
 	}
 	type args struct {
@@ -41,48 +40,10 @@ func TestParameter_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"missing required",
-			fields{
-				Name:     "param",
-				Required: true,
-			},
-			args{
-				[]string{},
-			},
-			nil,
-			true,
-		},
-		{
-			"missing required with nil",
-			fields{
-				Name:     "param",
-				Required: true,
-			},
-			args{
-				nil,
-			},
-			nil,
-			true,
-		},
-		{
-			"missing required with empty",
-			fields{
-				Name:     "param",
-				Required: true,
-				Type:     ParameterTypeBool,
-			},
-			args{
-				[]string{""},
-			},
-			nil,
-			true,
-		},
-		{
 			"valid string",
 			fields{
-				Name:     "param",
-				Required: true,
-				Type:     ParameterTypeString,
+				Name: "param",
+				Type: ParameterTypeString,
 			},
 			args{
 				[]string{"string"},
@@ -96,9 +57,8 @@ func TestParameter_Validate(t *testing.T) {
 		{
 			"valid int",
 			fields{
-				Name:     "param",
-				Required: true,
-				Type:     ParameterTypeInt,
+				Name: "param",
+				Type: ParameterTypeInt,
 			},
 			args{
 				[]string{"1"},
@@ -112,9 +72,8 @@ func TestParameter_Validate(t *testing.T) {
 		{
 			"invalid int",
 			fields{
-				Name:     "param",
-				Required: true,
-				Type:     ParameterTypeInt,
+				Name: "param",
+				Type: ParameterTypeInt,
 			},
 			args{
 				[]string{"not1"},
@@ -126,7 +85,6 @@ func TestParameter_Validate(t *testing.T) {
 			"valid bools",
 			fields{
 				Name:     "param",
-				Required: true,
 				Type:     ParameterTypeBool,
 				Multiple: true,
 			},
@@ -142,9 +100,8 @@ func TestParameter_Validate(t *testing.T) {
 		{
 			"invalid bool",
 			fields{
-				Name:     "param",
-				Required: true,
-				Type:     ParameterTypeBool,
+				Name: "param",
+				Type: ParameterTypeBool,
 			},
 			args{
 				[]string{"NOTTRUE"},
@@ -155,9 +112,8 @@ func TestParameter_Validate(t *testing.T) {
 		{
 			"valid float",
 			fields{
-				Name:     "param",
-				Required: true,
-				Type:     ParameterTypeFloat,
+				Name: "param",
+				Type: ParameterTypeFloat,
 			},
 			args{
 				[]string{"1.004"},
@@ -171,9 +127,8 @@ func TestParameter_Validate(t *testing.T) {
 		{
 			"valid float",
 			fields{
-				Name:     "param",
-				Required: true,
-				Type:     ParameterTypeFloat,
+				Name: "param",
+				Type: ParameterTypeFloat,
 			},
 			args{
 				[]string{"1"},
@@ -187,9 +142,8 @@ func TestParameter_Validate(t *testing.T) {
 		{
 			"invalid float",
 			fields{
-				Name:     "param",
-				Required: true,
-				Type:     ParameterTypeFloat,
+				Name: "param",
+				Type: ParameterTypeFloat,
 			},
 			args{
 				[]string{"not1.0"},
@@ -201,7 +155,6 @@ func TestParameter_Validate(t *testing.T) {
 			"valid enum",
 			fields{
 				Name:           "param",
-				Required:       true,
 				Type:           ParameterTypeEnum,
 				AllowedChoices: []string{"A", "B"},
 			},
@@ -218,7 +171,6 @@ func TestParameter_Validate(t *testing.T) {
 			"invalid enum",
 			fields{
 				Name:           "param",
-				Required:       true,
 				Type:           ParameterTypeEnum,
 				AllowedChoices: []string{"A", "B"},
 			},
@@ -231,9 +183,8 @@ func TestParameter_Validate(t *testing.T) {
 		{
 			"valid duration",
 			fields{
-				Name:     "param",
-				Required: true,
-				Type:     ParameterTypeDuration,
+				Name: "param",
+				Type: ParameterTypeDuration,
 			},
 			args{
 				[]string{"3s"},
@@ -247,9 +198,8 @@ func TestParameter_Validate(t *testing.T) {
 		{
 			"invalid duration",
 			fields{
-				Name:     "param",
-				Required: true,
-				Type:     ParameterTypeDuration,
+				Name: "param",
+				Type: ParameterTypeDuration,
 			},
 			args{
 				[]string{"3apples"},
@@ -261,7 +211,6 @@ func TestParameter_Validate(t *testing.T) {
 			"valid date",
 			fields{
 				Name:     "param",
-				Required: true,
 				Type:     ParameterTypeTime,
 				Multiple: true,
 			},
@@ -283,9 +232,8 @@ func TestParameter_Validate(t *testing.T) {
 		{
 			"invalid date",
 			fields{
-				Name:     "param",
-				Required: true,
-				Type:     ParameterTypeTime,
+				Name: "param",
+				Type: ParameterTypeTime,
 			},
 			args{
 				[]string{"not date"},
@@ -301,7 +249,6 @@ func TestParameter_Validate(t *testing.T) {
 				Type:           tt.fields.Type,
 				AllowedChoices: tt.fields.AllowedChoices,
 				DefaultValue:   tt.fields.DefaultValue,
-				Required:       tt.fields.Required,
 				Multiple:       tt.fields.Multiple,
 			}
 			if p, err := p.Parse(tt.args.values); (err != nil) != tt.wantErr {
@@ -481,22 +428,22 @@ func TestParameters_Value(t *testing.T) {
 
 		Convey("When I parse it", func() {
 
-			pp, err := p.Parse([]string{"2s", "2h"})
+			pp, err := p.Parse([]string{"-2s", "2h"})
 
 			Convey("Then err should be nil", func() {
 				So(err, ShouldBeNil)
 			})
 
 			Convey("Then the first value should be accessible", func() {
-				So(pp.DurationValue(), ShouldResemble, 2*time.Second)
+				So(pp.DurationValue(), ShouldResemble, -2*time.Second)
 			})
 
 			Convey("Then the multiple values should be accessible", func() {
-				So(pp.DurationValues(), ShouldResemble, []time.Duration{2 * time.Second, 2 * time.Hour})
+				So(pp.DurationValues(), ShouldResemble, []time.Duration{-2 * time.Second, 2 * time.Hour})
 			})
 
 			Convey("Then the all values should be accessible", func() {
-				So(pp.Values(), ShouldResemble, []interface{}{2 * time.Second, 2 * time.Hour})
+				So(pp.Values(), ShouldResemble, []interface{}{-2 * time.Second, 2 * time.Hour})
 			})
 		})
 	})
@@ -1060,6 +1007,506 @@ func TestParameters_Get(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.p.Get(tt.args.name); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Parameters.Get() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_parse(t *testing.T) {
+
+	type args struct {
+		ptype          ParameterType
+		pname          string
+		v              string
+		allowedChoices []string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantOut interface{}
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotOut, err := parse(tt.args.ptype, tt.args.pname, tt.args.v, tt.args.allowedChoices)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("parse() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotOut, tt.wantOut) {
+				t.Errorf("parse() = %v, want %v", gotOut, tt.wantOut)
+			}
+		})
+	}
+}
+
+func TestParameterDefinition_Parse(t *testing.T) {
+	type fields struct {
+		Name           string
+		Type           ParameterType
+		AllowedChoices []string
+		DefaultValue   string
+		Multiple       bool
+	}
+	type args struct {
+		values []string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *Parameter
+		wantErr bool
+	}{
+		{
+			"test multiple values while not allowed",
+			fields{
+				Name:     "p",
+				Type:     ParameterTypeString,
+				Multiple: false,
+			},
+			args{
+				[]string{"a", "b"},
+			},
+			nil,
+			true,
+		},
+
+		// strings
+		{
+			"test set type string",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeString,
+				DefaultValue: "default",
+			},
+			args{
+				[]string{"a"},
+			},
+			&Parameter{
+				defaultValue: nil,
+				values:       []interface{}{"a"},
+				ptype:        ParameterTypeString,
+			},
+			false,
+		},
+		{
+			"test not set type string",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeString,
+				DefaultValue: "default",
+			},
+			args{
+				[]string{},
+			},
+			&Parameter{
+				defaultValue: "default",
+				values:       nil,
+				ptype:        ParameterTypeString,
+			},
+			false,
+		},
+
+		// int
+		{
+			"test set type int",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeInt,
+				DefaultValue: "42",
+			},
+			args{
+				[]string{"43"},
+			},
+			&Parameter{
+				defaultValue: nil,
+				values:       []interface{}{43},
+				ptype:        ParameterTypeInt,
+			},
+			false,
+		},
+		{
+			"test not set type int",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeInt,
+				DefaultValue: "42",
+			},
+			args{
+				[]string{},
+			},
+			&Parameter{
+				defaultValue: 42,
+				values:       nil,
+				ptype:        ParameterTypeInt,
+			},
+			false,
+		},
+		{
+			"test bad set type int",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeInt,
+				DefaultValue: "42",
+			},
+			args{
+				[]string{"not int"},
+			},
+			nil,
+			true,
+		},
+		{
+			"test bad set default type int",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeInt,
+				DefaultValue: "not int",
+			},
+			args{},
+			nil,
+			true,
+		},
+
+		// float
+		{
+			"test set type float",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeFloat,
+				DefaultValue: "42.42",
+			},
+			args{
+				[]string{"43.43"},
+			},
+			&Parameter{
+				defaultValue: nil,
+				values:       []interface{}{43.43},
+				ptype:        ParameterTypeFloat,
+			},
+			false,
+		},
+		{
+			"test not set type float",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeFloat,
+				DefaultValue: "42.43",
+			},
+			args{
+				[]string{},
+			},
+			&Parameter{
+				defaultValue: 42.43,
+				values:       nil,
+				ptype:        ParameterTypeFloat,
+			},
+			false,
+		},
+		{
+			"test bad set type float",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeFloat,
+				DefaultValue: "42",
+			},
+			args{
+				[]string{"not float"},
+			},
+			nil,
+			true,
+		},
+		{
+			"test bad set default type float",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeFloat,
+				DefaultValue: "not float",
+			},
+			args{},
+			nil,
+			true,
+		},
+
+		// bool
+		{
+			"test set type bool true",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeBool,
+				DefaultValue: "false",
+			},
+			args{
+				[]string{"true"},
+			},
+			&Parameter{
+				defaultValue: nil,
+				values:       []interface{}{true},
+				ptype:        ParameterTypeBool,
+			},
+			false,
+		},
+		{
+			"test set type bool false",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeBool,
+				DefaultValue: "true",
+			},
+			args{
+				[]string{"false"},
+			},
+			&Parameter{
+				defaultValue: nil,
+				values:       []interface{}{false},
+				ptype:        ParameterTypeBool,
+			},
+			false,
+		},
+		{
+			"test not set type bool",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeBool,
+				DefaultValue: "true",
+			},
+			args{
+				[]string{},
+			},
+			&Parameter{
+				defaultValue: true,
+				values:       nil,
+				ptype:        ParameterTypeBool,
+			},
+			false,
+		},
+		{
+			"test bad set type bool",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeBool,
+				DefaultValue: "true",
+			},
+			args{
+				[]string{"not bool"},
+			},
+			nil,
+			true,
+		},
+		{
+			"test bad set default type bool",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeBool,
+				DefaultValue: "not bool",
+			},
+			args{},
+			nil,
+			true,
+		},
+
+		// enum
+		{
+			"test set type enum",
+			fields{
+				Name:           "p",
+				Type:           ParameterTypeEnum,
+				DefaultValue:   "hello",
+				AllowedChoices: []string{"hello", "bye"},
+			},
+			args{
+				[]string{"bye"},
+			},
+			&Parameter{
+				defaultValue: nil,
+				values:       []interface{}{"bye"},
+				ptype:        ParameterTypeEnum,
+			},
+			false,
+		},
+		{
+			"test not set type enum",
+			fields{
+				Name:           "p",
+				Type:           ParameterTypeEnum,
+				DefaultValue:   "bye",
+				AllowedChoices: []string{"hello", "bye"},
+			},
+			args{
+				[]string{},
+			},
+			&Parameter{
+				defaultValue: "bye",
+				values:       nil,
+				ptype:        ParameterTypeEnum,
+			},
+			false,
+		},
+		{
+			"test bad set type enum",
+			fields{
+				Name:           "p",
+				Type:           ParameterTypeEnum,
+				DefaultValue:   "bye",
+				AllowedChoices: []string{"hello", "bye"},
+			},
+			args{
+				[]string{"not good"},
+			},
+			nil,
+			true,
+		},
+		{
+			"test bad set default type enum",
+			fields{
+				Name:           "p",
+				Type:           ParameterTypeEnum,
+				DefaultValue:   "not good",
+				AllowedChoices: []string{"hello", "bye"},
+			},
+			args{},
+			nil,
+			true,
+		},
+
+		// duration
+		{
+			"test set type duration",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeDuration,
+				DefaultValue: "42s",
+			},
+			args{
+				[]string{"43s"},
+			},
+			&Parameter{
+				defaultValue: nil,
+				values:       []interface{}{43 * time.Second},
+				ptype:        ParameterTypeDuration,
+			},
+			false,
+		},
+		{
+			"test not set type duration",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeDuration,
+				DefaultValue: "42s",
+			},
+			args{
+				[]string{},
+			},
+			&Parameter{
+				defaultValue: 42 * time.Second,
+				values:       nil,
+				ptype:        ParameterTypeDuration,
+			},
+			false,
+		},
+		{
+			"test bad set type duration",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeDuration,
+				DefaultValue: "42s",
+			},
+			args{
+				[]string{"not duration"},
+			},
+			nil,
+			true,
+		},
+		{
+			"test bad set default type duration",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeFloat,
+				DefaultValue: "not duration",
+			},
+			args{},
+			nil,
+			true,
+		},
+
+		// time
+		{
+			"test set type time",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeTime,
+				DefaultValue: "oct 7, 1970",
+			},
+			args{
+				[]string{"May 8, 2009 5:57:51 PM"},
+			},
+			&Parameter{
+				defaultValue: nil,
+				values:       []interface{}{dateparse.MustParse("May 8, 2009 5:57:51 PM")},
+				ptype:        ParameterTypeTime,
+			},
+			false,
+		},
+		{
+			"test not set type time",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeTime,
+				DefaultValue: "oct 7, 1970",
+			},
+			args{
+				[]string{},
+			},
+			&Parameter{
+				defaultValue: dateparse.MustParse("oct 7, 1970"),
+				values:       nil,
+				ptype:        ParameterTypeTime,
+			},
+			false,
+		},
+		{
+			"test bad set type time",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeTime,
+				DefaultValue: "oct 7, 1970",
+			},
+			args{
+				[]string{"not time"},
+			},
+			nil,
+			true,
+		},
+		{
+			"test bad set default type time",
+			fields{
+				Name:         "p",
+				Type:         ParameterTypeTime,
+				DefaultValue: "not time",
+			},
+			args{},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := &ParameterDefinition{
+				Name:           tt.fields.Name,
+				Type:           tt.fields.Type,
+				AllowedChoices: tt.fields.AllowedChoices,
+				DefaultValue:   tt.fields.DefaultValue,
+				Multiple:       tt.fields.Multiple,
+			}
+			got, err := p.Parse(tt.args.values)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ParameterDefinition.Parse() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ParameterDefinition.Parse() = %v, want %v", got, tt.want)
 			}
 		})
 	}
