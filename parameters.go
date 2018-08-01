@@ -188,12 +188,6 @@ func (p Parameters) Get(name string) Parameter {
 	return p[name]
 }
 
-// Exists if true if the parameter exists.
-func (p Parameters) Exists(name string) bool {
-	_, ok := p[name]
-	return ok
-}
-
 // Validate validates if the Parameters matches the given requirement.
 func (p Parameters) Validate(r ParametersRequirement) error {
 
