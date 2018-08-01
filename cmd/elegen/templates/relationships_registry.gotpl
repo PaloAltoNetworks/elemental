@@ -50,7 +50,7 @@ func init() {
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
-                        {{- if eq $p.Type "string" }}
+                        {{- if or (eq $p.Type "string") (eq $p.Type "enum") (eq $p.Type "duration") }}
                         DefaultValue: "{{ $p.DefaultValue }}",
                         {{- else }}
                         DefaultValue: {{ $p.DefaultValue }},
@@ -113,7 +113,7 @@ func init() {
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
-                        {{- if eq $p.Type "string" }}
+                        {{- if or (eq $p.Type "string") (eq $p.Type "enum") (eq $p.Type "duration") }}
                         DefaultValue: "{{ $p.DefaultValue }}",
                         {{- else }}
                         DefaultValue: {{ $p.DefaultValue }},
@@ -174,7 +174,7 @@ func init() {
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
-                        {{- if eq $p.Type "string" }}
+                        {{- if or (eq $p.Type "string") (eq $p.Type "enum") (eq $p.Type "duration") }}
                         DefaultValue: "{{ $p.DefaultValue }}",
                         {{- else }}
                         DefaultValue: {{ $p.DefaultValue }},
@@ -237,7 +237,7 @@ func init() {
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
-                        {{- if eq $p.Type "string" }}
+                        {{- if or (eq $p.Type "string") (eq $p.Type "enum") (eq $p.Type "duration") }}
                         DefaultValue: "{{ $p.DefaultValue }}",
                         {{- else }}
                         DefaultValue: {{ $p.DefaultValue }},
@@ -300,7 +300,7 @@ func init() {
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
-                        {{- if eq $p.Type "string" }}
+                        {{- if or (eq $p.Type "string") (eq $p.Type "enum") (eq $p.Type "duration") }}
                         DefaultValue: "{{ $p.DefaultValue }}",
                         {{- else }}
                         DefaultValue: {{ $p.DefaultValue }},
@@ -363,7 +363,7 @@ func init() {
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
-                        {{- if eq $p.Type "string" }}
+                        {{- if or (eq $p.Type "string") (eq $p.Type "enum") (eq $p.Type "duration") }}
                         DefaultValue: "{{ $p.DefaultValue }}",
                         {{- else }}
                         DefaultValue: {{ $p.DefaultValue }},
@@ -424,7 +424,7 @@ func init() {
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
-                        {{- if eq $p.Type "string" }}
+                        {{- if or (eq $p.Type "string") (eq $p.Type "enum") (eq $p.Type "duration") }}
                         DefaultValue: "{{ $p.DefaultValue }}",
                         {{- else }}
                         DefaultValue: {{ $p.DefaultValue }},
