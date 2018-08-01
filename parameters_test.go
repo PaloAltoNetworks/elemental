@@ -555,6 +555,7 @@ func TestParameters_NewParameter(t *testing.T) {
 func TestParameters_Requirements(t *testing.T) {
 
 	Convey("Given I have an empty parameter requirement", t, func() {
+
 		req := NewParametersRequirement([][][]string{})
 
 		Convey("When I call Validate params a and b and 1", func() {
@@ -580,6 +581,39 @@ func TestParameters_Requirements(t *testing.T) {
 
 			Convey("Then err should be nil", func() {
 				So(err, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a simple parameter requirement", t, func() {
+
+		req := NewParametersRequirement([][][]string{
+			[][]string{
+				[]string{"a"},
+			},
+		})
+
+		Convey("When I call Validate params a", func() {
+
+			params := Parameters{
+				"a": NewParameter(ParameterTypeString, "a"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+
+		Convey("When I call Validate no params", func() {
+
+			params := Parameters{}
+
+			err := params.Validate(req)
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
 			})
 		})
 	})
@@ -739,6 +773,49 @@ func TestParameters_Requirements(t *testing.T) {
 
 			Convey("Then err should not be nil", func() {
 				So(err, ShouldNotBeNil)
+			})
+		})
+	})
+}
+
+func TestParameterRequirement_String(t *testing.T) {
+
+	Convey("Given I have some requirements", t, func() {
+
+		req := NewParametersRequirement([][][]string{
+			[][]string{
+				[]string{"a", "b"},
+				[]string{"c", "d"},
+			},
+			[][]string{
+				[]string{"1", "2"},
+			},
+		})
+
+		Convey("When I call String", func() {
+
+			out := req.String()
+
+			Convey("Then it should be correct", func() {
+				So(out, ShouldEqual, `((a and b) or (c and d)) and (1 and 2)`)
+			})
+		})
+	})
+
+	Convey("Given I have some simple requirements", t, func() {
+
+		req := NewParametersRequirement([][][]string{
+			[][]string{
+				[]string{"a"},
+			},
+		})
+
+		Convey("When I call String", func() {
+
+			out := req.String()
+
+			Convey("Then it should be correct", func() {
+				So(out, ShouldEqual, `a`)
 			})
 		})
 	})

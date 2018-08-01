@@ -213,13 +213,13 @@ func (p Parameters) Validate(r ParametersRequirement) error {
 
 			for _, k := range ands {
 
-				if _, ok := p[k]; ok {
+				if _, ok := p[k]; ok && len(p[k].values) > 0 {
 					innerMatch++
 				}
+			}
 
-				if innerMatch == len(ands) {
-					outerMatch++
-				}
+			if innerMatch == len(ands) {
+				outerMatch++
 			}
 		}
 	}
@@ -228,7 +228,7 @@ func (p Parameters) Validate(r ParametersRequirement) error {
 		return nil
 	}
 
-	return NewError("Bad Request", "Some required parameters are missing", "elemental", http.StatusBadRequest)
+	return NewError("Bad Request", fmt.Sprintf("Missing Required parameters: `%s`", r.String()), "elemental", http.StatusBadRequest)
 }
 
 // A ParametersRequirement represents a list of ands of list of ors
@@ -242,6 +242,36 @@ func NewParametersRequirement(match [][][]string) ParametersRequirement {
 	return ParametersRequirement{
 		match: match,
 	}
+}
+
+func (r ParametersRequirement) String() string {
+
+	var out string
+	for i, lvl1 := range r.match {
+		if len(r.match) > 1 {
+			out += "("
+		}
+		for j, lvl2 := range lvl1 {
+			if len(lvl1) > 1 {
+				out += "("
+			}
+			out += strings.Join(lvl2, " and ")
+			if len(lvl1) > 1 {
+				out += ")"
+			}
+			if j+1 != len(lvl1) {
+				out += " or "
+			}
+		}
+		if len(r.match) > 1 {
+			out += ")"
+		}
+		if i+1 != len(r.match) {
+			out += " and "
+		}
+	}
+
+	return out
 }
 
 // A Parameter represent one parameter that can be sent with a query.
