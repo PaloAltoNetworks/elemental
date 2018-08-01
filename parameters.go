@@ -292,8 +292,12 @@ func NewParameter(ptype ParameterType, values ...interface{}) Parameter {
 // StringValue returns the value as a string.
 func (p Parameter) StringValue() string {
 
-	if len(p.values) == 0 || (p.ptype != ParameterTypeString && p.ptype != ParameterTypeEnum) {
+	if (len(p.values) == 0 && p.defaultValue == nil) || (p.ptype != ParameterTypeString && p.ptype != ParameterTypeEnum) {
 		return ""
+	}
+
+	if len(p.values) == 0 {
+		return p.defaultValue.(string)
 	}
 
 	return p.values[0].(string)
@@ -317,8 +321,12 @@ func (p Parameter) StringValues() []string {
 // IntValue returns the value as a int.
 func (p Parameter) IntValue() int {
 
-	if len(p.values) == 0 || p.ptype != ParameterTypeInt {
+	if (len(p.values) == 0 && p.defaultValue == nil) || p.ptype != ParameterTypeInt {
 		return 0
+	}
+
+	if len(p.values) == 0 {
+		return p.defaultValue.(int)
 	}
 
 	return p.values[0].(int)
@@ -342,8 +350,12 @@ func (p Parameter) IntValues() []int {
 // FloatValue returns the value as a float.
 func (p Parameter) FloatValue() float64 {
 
-	if len(p.values) == 0 || p.ptype != ParameterTypeFloat {
+	if (len(p.values) == 0 && p.defaultValue == nil) || p.ptype != ParameterTypeFloat {
 		return 0.0
+	}
+
+	if len(p.values) == 0 {
+		return p.defaultValue.(float64)
 	}
 
 	return p.values[0].(float64)
@@ -367,8 +379,12 @@ func (p Parameter) FloatValues() []float64 {
 // BoolValue returns the value as a bool.
 func (p Parameter) BoolValue() bool {
 
-	if len(p.values) == 0 || p.ptype != ParameterTypeBool {
+	if (len(p.values) == 0 && p.defaultValue == nil) || p.ptype != ParameterTypeBool {
 		return false
+	}
+
+	if len(p.values) == 0 {
+		return p.defaultValue.(bool)
 	}
 
 	return p.values[0].(bool)
@@ -392,8 +408,12 @@ func (p Parameter) BoolValues() []bool {
 // DurationValue returns the value as a time.Duration.
 func (p Parameter) DurationValue() time.Duration {
 
-	if len(p.values) == 0 || p.ptype != ParameterTypeDuration {
+	if (len(p.values) == 0 && p.defaultValue == nil) || p.ptype != ParameterTypeDuration {
 		return 0
+	}
+
+	if len(p.values) == 0 {
+		return p.defaultValue.(time.Duration)
 	}
 
 	return p.values[0].(time.Duration)
@@ -417,8 +437,12 @@ func (p Parameter) DurationValues() []time.Duration {
 // TimeValue returns the value as a time.Time.
 func (p Parameter) TimeValue() time.Time {
 
-	if len(p.values) == 0 || p.ptype != ParameterTypeTime {
+	if (len(p.values) == 0 && p.defaultValue == nil) || p.ptype != ParameterTypeTime {
 		return time.Time{}
+	}
+
+	if len(p.values) == 0 {
+		return p.defaultValue.(time.Time)
 	}
 
 	return p.values[0].(time.Time)

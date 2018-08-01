@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/araddon/dateparse"
-
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -778,6 +777,213 @@ func TestParameters_Requirements(t *testing.T) {
 	})
 }
 
+func TestParameter_DefaultValue(t *testing.T) {
+
+	Convey("Given I have a string parameter with default value", t, func() {
+
+		dv := "hello"
+		p := NewParameter(ParameterTypeString)
+		p.defaultValue = dv
+
+		Convey("When I call the accessor", func() {
+
+			v := p.StringValue()
+
+			Convey("Then it should return the default value", func() {
+				So(v, ShouldEqual, dv)
+			})
+		})
+
+		Convey("When I call the wrong accessor", func() {
+
+			v := p.IntValue()
+
+			Convey("Then it should return the zero value", func() {
+				So(v, ShouldEqual, 0)
+			})
+		})
+
+		Convey("When I call the wrong multiple accessor", func() {
+
+			v := p.IntValues()
+
+			Convey("Then it should return the zero value", func() {
+				So(v, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a int parameter with default value", t, func() {
+
+		dv := 42
+		p := NewParameter(ParameterTypeInt)
+		p.defaultValue = dv
+
+		Convey("When I call the accessor", func() {
+
+			v := p.IntValue()
+
+			Convey("Then it should return the default value", func() {
+				So(v, ShouldEqual, dv)
+			})
+		})
+
+		Convey("When I call the wrong accessor", func() {
+
+			v := p.FloatValue()
+
+			Convey("Then it should return the zero value", func() {
+				So(v, ShouldEqual, 0.0)
+			})
+		})
+
+		Convey("When I call the wrong multiple accessor", func() {
+
+			v := p.FloatValues()
+
+			Convey("Then it should return the zero value", func() {
+				So(v, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a float parameter with default value", t, func() {
+
+		dv := 42.42
+		p := NewParameter(ParameterTypeFloat)
+		p.defaultValue = dv
+
+		Convey("When I call the accessor", func() {
+
+			v := p.FloatValue()
+
+			Convey("Then it should return the default value", func() {
+				So(v, ShouldEqual, dv)
+			})
+		})
+
+		Convey("When I call the wrong accessor", func() {
+
+			v := p.BoolValue()
+
+			Convey("Then it should return the zero value", func() {
+				So(v, ShouldEqual, false)
+			})
+		})
+
+		Convey("When I call the wrong multiple accessor", func() {
+
+			v := p.BoolValues()
+
+			Convey("Then it should return the zero value", func() {
+				So(v, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a bool parameter with default value", t, func() {
+
+		dv := true
+		p := NewParameter(ParameterTypeBool)
+		p.defaultValue = dv
+
+		Convey("When I call the accessor", func() {
+
+			v := p.BoolValue()
+
+			Convey("Then it should return the default value", func() {
+				So(v, ShouldEqual, dv)
+			})
+		})
+
+		Convey("When I call the wrong accessor", func() {
+
+			v := p.DurationValue()
+
+			Convey("Then it should return the zero value", func() {
+				So(v, ShouldEqual, 0*time.Second)
+			})
+		})
+
+		Convey("When I call the wrong multiple accessor", func() {
+
+			v := p.DurationValues()
+
+			Convey("Then it should return the zero value", func() {
+				So(v, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a duration parameter with default value", t, func() {
+
+		dv := 3 * time.Second
+		p := NewParameter(ParameterTypeDuration)
+		p.defaultValue = dv
+
+		Convey("When I call the accessor", func() {
+
+			v := p.DurationValue()
+
+			Convey("Then it should return the default value", func() {
+				So(v, ShouldEqual, dv)
+			})
+		})
+
+		Convey("When I call the wrong accessor", func() {
+
+			v := p.TimeValue()
+
+			Convey("Then it should return the zero value", func() {
+				So(v, ShouldResemble, time.Time{})
+			})
+		})
+
+		Convey("When I call the wrong multiple accessor", func() {
+
+			v := p.TimeValues()
+
+			Convey("Then it should return the zero value", func() {
+				So(v, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a time parameter with default value", t, func() {
+
+		dv := time.Now()
+		p := NewParameter(ParameterTypeTime)
+		p.defaultValue = dv
+
+		Convey("When I call the accessor", func() {
+
+			v := p.TimeValue()
+
+			Convey("Then it should return the default value", func() {
+				So(v, ShouldEqual, dv)
+			})
+		})
+
+		Convey("When I call the wrong accessor", func() {
+
+			v := p.StringValue()
+
+			Convey("Then it should return the zero value", func() {
+				So(v, ShouldEqual, "")
+			})
+		})
+
+		Convey("When I call the wrong multiple accessor", func() {
+
+			v := p.StringValues()
+
+			Convey("Then it should return the zero value", func() {
+				So(v, ShouldBeNil)
+			})
+		})
+	})
+}
+
 func TestParameterRequirement_String(t *testing.T) {
 
 	Convey("Given I have some requirements", t, func() {
@@ -819,4 +1025,80 @@ func TestParameterRequirement_String(t *testing.T) {
 			})
 		})
 	})
+}
+
+func TestParameters_Get(t *testing.T) {
+	type args struct {
+		name string
+	}
+	tests := []struct {
+		name string
+		p    Parameters
+		args args
+		want Parameter
+	}{
+		{
+			"get non existig param",
+			Parameters{},
+			args{
+				"key",
+			},
+			Parameter{},
+		},
+		{
+			"get existig param",
+			Parameters{
+				"key": NewParameter(ParameterTypeString, "a"),
+			},
+			args{
+				"key",
+			},
+			NewParameter(ParameterTypeString, "a"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.p.Get(tt.args.name); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Parameters.Get() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestParameters_Exists(t *testing.T) {
+	type args struct {
+		name string
+	}
+	tests := []struct {
+		name string
+		p    Parameters
+		args args
+		want bool
+	}{
+		{
+			"get non existig param",
+			Parameters{},
+			args{
+				"key",
+			},
+			false,
+		},
+		{
+			"get existig param",
+			Parameters{
+				"key": NewParameter(ParameterTypeString, "a"),
+			},
+			args{
+				"key",
+			},
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.p.Exists(tt.args.name); got != tt.want {
+				t.Errorf("Parameters.Exists() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

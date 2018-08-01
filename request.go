@@ -94,10 +94,8 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 
 	switch len(components) {
 	case 1:
-		parentIdentity = RootIdentity
 		identity = manager.IdentityFromCategory(components[0])
 	case 2:
-		parentIdentity = RootIdentity
 		identity = manager.IdentityFromCategory(components[0])
 		ID = components[1]
 	case 3:
@@ -106,6 +104,10 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		identity = manager.IdentityFromCategory(components[2])
 	default:
 		return nil, fmt.Errorf("%s is not a valid elemental request path", req.URL)
+	}
+
+	if parentIdentity.IsEmpty() {
+		parentIdentity = RootIdentity
 	}
 
 	switch req.Method {
@@ -149,6 +151,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 
 	var page, pageSize int
 	var recursive, override bool
+	var order []string
 
 	q := req.URL.Query()
 	if v := q.Get("page"); v != "" {
@@ -177,13 +180,34 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		q.Del("override")
 	}
 
+	if v, ok := q["order"]; ok {
+		order = v
+		q.Del("order")
+	}
+
 	paramsMap := Parameters{}
+	qKeys := map[string]struct{}{}
+	for k := range q {
+		qKeys[k] = struct{}{}
+	}
+
 	for _, pdef := range ParametersForOperation(manager.Relationships(), identity, parentIdentity, operation) {
 		p, err := pdef.Parse(q[pdef.Name])
 		if err != nil {
 			return nil, err
 		}
+		delete(qKeys, pdef.Name)
 		paramsMap[pdef.Name] = *p
+	}
+
+	if len(qKeys) > 0 {
+		errs := make([]error, len(qKeys))
+		var i int
+		for k := range qKeys {
+			errs[i] = NewError("Bad Request", fmt.Sprintf("Unknown parameter: `%s`", k), "elemental", http.StatusBadRequest)
+			i++
+		}
+		return nil, NewErrors(errs...)
 	}
 
 	rel := RelationshipInfoForOperation(manager.Relationships(), identity, parentIdentity, operation)
@@ -215,7 +239,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		Version:              version,
 		ExternalTrackingID:   req.Header.Get("X-External-Tracking-ID"),
 		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
-		Order:                req.URL.Query()["order"],
+		Order:                order,
 		ClientIP:             req.RemoteAddr,
 		req:                  req,
 	}, nil

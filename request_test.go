@@ -89,7 +89,7 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 	Convey("Given I have a get http request on /lists", t, func() {
 
-		req, err := http.NewRequest(http.MethodGet, "http://server/v/10/lists?p=v&page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
+		req, err := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
 		req.Header.Set("X-Namespace", "ns")
 		req.RemoteAddr = "42.42.42.42"
 
@@ -821,7 +821,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 
 	Convey("Given I have a get http request on /lists with good params", t, func() {
 
-		req, _ := http.NewRequest(http.MethodGet, "http://server/v/10/lists?p=v&page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
+		req, _ := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
 		req.Header.Set("X-Namespace", "ns")
 		req.RemoteAddr = "42.42.42.42"
 
@@ -850,7 +850,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 
 	Convey("Given I have a get http request on /lists with not good params", t, func() {
 
-		req, _ := http.NewRequest(http.MethodGet, "http://server/v/10/lists?p=v&page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=notbool", nil)
+		req, _ := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=notbool", nil)
 		req.Header.Set("X-Namespace", "ns")
 		req.RemoteAddr = "42.42.42.42"
 
@@ -1275,7 +1275,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 
 func TestRequest_RequiredParameters(t *testing.T) {
 
-	Convey("Given I have a delete http request on /lists with no params", t, func() {
+	Convey("Given I have a delete http request on /users with no params", t, func() {
 
 		req, _ := http.NewRequest(http.MethodDelete, "http://server/v/10/users/id", nil)
 		req.Header.Set("X-Namespace", "ns")
@@ -1287,6 +1287,27 @@ func TestRequest_RequiredParameters(t *testing.T) {
 
 			Convey("Then err should not be nil", func() {
 				So(err, ShouldNotBeNil)
+			})
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a http request on /lists with unknown params", t, func() {
+
+		req, _ := http.NewRequest(http.MethodDelete, "http://server/v/10/lists?what=1&the=0", nil)
+		req.Header.Set("X-Namespace", "ns")
+		req.RemoteAddr = "42.42.42.42"
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, "error 400 (elemental): Bad Request: Unknown parameter: `what`, error 400 (elemental): Bad Request: Unknown parameter: `the`")
 			})
 
 			Convey("Then r should be nil", func() {
