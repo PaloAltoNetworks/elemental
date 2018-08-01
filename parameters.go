@@ -35,8 +35,6 @@ type ParameterDefinition struct {
 	DefaultValue   interface{}
 	Required       bool
 	Multiple       bool
-
-	values []interface{}
 }
 
 // Parse parses the given value against the parameter definition
