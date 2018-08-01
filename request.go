@@ -57,7 +57,7 @@ func NewRequest() *Request {
 func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Request, error) {
 
 	if req.URL == nil || req.URL.String() == "" {
-		return nil, fmt.Errorf("request must have an url")
+		return nil, NewError("Bad Request", "Request must have an url", "elemental", http.StatusBadRequest)
 	}
 
 	var operation Operation
@@ -86,7 +86,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	if components[0] == "v" {
 		version, err = strconv.Atoi(components[1])
 		if err != nil {
-			return nil, fmt.Errorf("Invalid api version number '%s'", components[1])
+			return nil, NewError("Bad Request", fmt.Sprintf("Invalid api version number '%s'", components[1]), "elemental", http.StatusBadRequest)
 		}
 		// once we've set the version, we remove it, and continue as usual.
 		components = append(components[:0], components[2:]...)
@@ -103,7 +103,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		parentID = components[1]
 		identity = manager.IdentityFromCategory(components[2])
 	default:
-		return nil, fmt.Errorf("%s is not a valid elemental request path", req.URL)
+		return nil, NewError("Bad Request", fmt.Sprintf("%s is not a valid elemental request path", req.URL), "elemental", http.StatusBadRequest)
 	}
 
 	if parentIdentity.IsEmpty() {
@@ -157,7 +157,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	if v := q.Get("page"); v != "" {
 		page, err = strconv.Atoi(v)
 		if err != nil {
-			return nil, err
+			return nil, NewError("Bad Request", "Parameter `page` must be an integer", "elemental", http.StatusBadRequest)
 		}
 		q.Del("page")
 	}
@@ -165,7 +165,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	if v := q.Get("pagesize"); v != "" {
 		pageSize, err = strconv.Atoi(v)
 		if err != nil {
-			return nil, err
+			return nil, NewError("Bad Request", "Parameter `pagesize` must be an integer", "elemental", http.StatusBadRequest)
 		}
 		q.Del("pagesize")
 	}

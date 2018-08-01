@@ -1307,7 +1307,8 @@ func TestRequest_RequiredParameters(t *testing.T) {
 
 			Convey("Then err should not be nil", func() {
 				So(err, ShouldNotBeNil)
-				So(err.Error(), ShouldEqual, "error 400 (elemental): Bad Request: Unknown parameter: `what`, error 400 (elemental): Bad Request: Unknown parameter: `the`")
+				So(err.Error(), ShouldContainSubstring, "error 400 (elemental): Bad Request: Unknown parameter: `what`")
+				So(err.Error(), ShouldContainSubstring, "error 400 (elemental): Bad Request: Unknown parameter: `the`")
 			})
 
 			Convey("Then r should be nil", func() {
