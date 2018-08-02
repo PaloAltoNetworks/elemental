@@ -8,7 +8,23 @@ import (
     {{ range .Spec.TypeProviders -}}
     "{{ . }}"
     {{ end -}}
+
+    {{ range .Spec.ValidationProviders -}}
+    "{{ . }}"
+    {{ end -}}
 )
+
+// {{ .Spec.Model.EntityName }}Indexes lists the attribute compound indexes.
+var {{ .Spec.Model.EntityName }}Indexes = [][]string {
+    {{- range $i, $compound := .Spec.Model.Indexes }}
+    {{- range $compound }}
+    []string{
+        "{{ .}}",
+    },
+    {{- end }}
+    {{ end }}
+}
+
 
 {{ $latestVersion := .Spec.LatestAttributesVersion }}
 
@@ -278,6 +294,15 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
     }
     {{ end }}
     {{ end }}
+
+    {{ $attr := . }}
+    {{- range $i, $m := .ValidationProviders }}
+        // Custom validation {{ $m.Name }}.
+        if err := {{ $m.Name }}("{{ $attr.Name }}", o.{{ $attr.ConvertedName }}); err != nil {
+            errors = append(errors, err)
+        }
+    {{- end }}
+
     {{ end }}
     {{ end }}
     {{ end }}
@@ -363,9 +388,6 @@ var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSp
         {{- end }}
         {{- if .Identifier }}
         Identifier: {{ .Identifier }},
-        {{- end }}
-        {{- if .Index }}
-        Index: {{ .Index }},
         {{- end }}
         {{- if .MaxLength }}
         MaxLength: {{ .MaxLength }},
@@ -467,9 +489,6 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
         {{- end }}
         {{- if .Identifier }}
         Identifier: {{ .Identifier }},
-        {{- end }}
-        {{- if .Index }}
-        Index: {{ .Index }},
         {{- end }}
         {{- if .MaxLength }}
         MaxLength: {{ .MaxLength }},

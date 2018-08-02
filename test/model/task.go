@@ -7,6 +7,9 @@ import (
 	"go.aporeto.io/elemental"
 )
 
+// TaskIndexes lists the attribute compound indexes.
+var TaskIndexes = [][]string{}
+
 // TaskStatusValue represents the possible values for attribute "status".
 type TaskStatusValue string
 

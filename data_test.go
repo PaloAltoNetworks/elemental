@@ -6,6 +6,9 @@ import (
 	"time"
 )
 
+// ListIndexes lists the attribute compound indexes.
+var ListIndexes = [][]string{}
+
 // ListIdentity represents the Identity of the object.
 var ListIdentity = Identity{
 	Name:     "list",
@@ -453,6 +456,8 @@ var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Type:           "string",
 	},
 }
+// TaskIndexes lists the attribute compound indexes.
+var TaskIndexes = [][]string{}
 
 // TaskStatusValue represents the possible values for attribute "status".
 type TaskStatusValue string
@@ -912,6 +917,8 @@ func (o *UnmarshalableError) UnmarshalJSON([]byte) error {
 func (o *UnmarshalableError) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("error marshalling")
 }
+// UserIndexes lists the attribute compound indexes.
+var UserIndexes = [][]string{}
 
 // UserIdentity represents the Identity of the object.
 var UserIdentity = Identity{

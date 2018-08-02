@@ -7,6 +7,9 @@ import (
 	"go.aporeto.io/elemental"
 )
 
+// UserIndexes lists the attribute compound indexes.
+var UserIndexes = [][]string{}
+
 // UserIdentity represents the Identity of the object.
 var UserIdentity = elemental.Identity{
 	Name:     "user",
