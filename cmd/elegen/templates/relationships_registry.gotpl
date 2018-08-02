@@ -13,61 +13,411 @@ func init() {
     {{ range $entityName, $relation := .Set.Relationships }}
     {{- if shouldRegisterRelationship $.Set $entityName $.PublicMode}}
     relationshipsRegistry[{{ $entityName }}Identity] = &elemental.Relationship{
-        {{- if gt (len $relation.AllowsCreate) 0 }}
-        AllowsCreate: map[string]bool {
-            {{- range $parent := $relation.Get "create" }}
+        {{- if gt (len $relation.Create) 0 }}
+        Create: map[string]*elemental.RelationshipInfo {
+            {{- range $parent, $action := $relation.Create }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : true,
+            "{{ $parent }}" : &elemental.RelationshipInfo{
+                {{- if $action.Deprecated }}
+                Deprecated: true,
+                {{- end }}
+                {{- if $action.ParameterDefinition }}
+                {{- if gt (len $action.ParameterDefinition.Required) 0 }}
+                RequiredParameters: elemental.NewParametersRequirement(
+                    [][][]string{
+                        {{- range $i, $l1 := $action.ParameterDefinition.Required }}
+                        {{- if gt (len $l1) 0 }}
+                        [][]string{
+                            {{- range $i, $l2 := $l1 }}
+                            {{- if gt (len $l2) 0 }}
+                            []string{
+                                {{- range $i, $l3 := $l2 }}
+                                "{{ $l3 }}",
+                                {{- end}}
+                            },
+                            {{- end}}
+                            {{- end}}
+                        },
+                        {{- end}}
+                        {{- end}}
+                    },
+                ),
+                {{- end }}
+                {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
+                Parameters: []elemental.ParameterDefinition{
+                {{- range $i, $p := $action.ParameterDefinition.Entries }}
+                     elemental.ParameterDefinition{
+                        Name: "{{ $p.Name }}",
+                        Type: "{{ $p.Type }}",
+                        {{- if $p.DefaultValue }}
+                        DefaultValue: "{{ $p.DefaultValue }}",
+                        {{- end}}
+                        {{- if eq $p.Type "enum" }}
+                        AllowedChoices: []string{
+                            {{- range $j, $v := $p.AllowedChoices }}
+                            "{{ $v }}",
+                            {{- end }}
+                        },
+                        {{- end }}
+                        {{- if $p.Multiple }}
+                        Multiple: true,
+                        {{- end }}
+                    },
+                {{- end }}
+                },
+                {{- end }}
+                {{- end }}
+            },
             {{- end }}
             {{- end }}
         },
         {{- end }}
-        {{- if gt (len $relation.AllowsUpdate) 0 }}
-        AllowsUpdate: map[string]bool {
-            {{- range $parent := $relation.Get "update" }}
+        {{- if gt (len $relation.Update) 0 }}
+        Update: map[string]*elemental.RelationshipInfo {
+            {{- range $parent, $action := $relation.Update }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : true,
+            "{{ $parent }}" : &elemental.RelationshipInfo{
+                {{- if $action.Deprecated }}
+                Deprecated: true,
+                {{- end }}
+                {{- if $action.ParameterDefinition }}
+                {{- if gt (len $action.ParameterDefinition.Required) 0 }}
+                RequiredParameters: elemental.NewParametersRequirement(
+                    [][][]string{
+                        {{- range $i, $l1 := $action.ParameterDefinition.Required }}
+                        {{- if gt (len $l1) 0 }}
+                        [][]string{
+                            {{- range $i, $l2 := $l1 }}
+                            {{- if gt (len $l2) 0 }}
+                            []string{
+                                {{- range $i, $l3 := $l2 }}
+                                "{{ $l3 }}",
+                                {{- end}}
+                            },
+                            {{- end}}
+                            {{- end}}
+                        },
+                        {{- end}}
+                        {{- end}}
+                    },
+                ),
+                {{- end }}
+                {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
+                Parameters: []elemental.ParameterDefinition{
+                {{- range $i, $p := $action.ParameterDefinition.Entries }}
+                    elemental.ParameterDefinition{
+                        Name: "{{ $p.Name }}",
+                        Type: "{{ $p.Type }}",
+                        {{- if $p.DefaultValue }}
+                        DefaultValue: "{{ $p.DefaultValue }}",
+                        {{- end}}
+                        {{- if eq $p.Type "enum" }}
+                        AllowedChoices: []string{
+                            {{- range $j, $v := $p.AllowedChoices }}
+                            "{{ $v }}",
+                            {{- end }}
+                        },
+                        {{- end }}
+                        {{- if $p.Multiple }}
+                        Multiple: true,
+                        {{- end }}
+                    },
+                {{- end }}
+                },
+                {{- end }}
+                {{- end }}
+            },
             {{- end }}
             {{- end }}
         },
-        AllowsPatch: map[string]bool {
-            {{- range $parent := $relation.Get "update" }}
+        Patch: map[string]*elemental.RelationshipInfo {
+            {{- range $parent, $action := $relation.Update }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : true,
+            "{{ $parent }}" : &elemental.RelationshipInfo{
+                {{- if $action.Deprecated }}
+                Deprecated: true,
+                {{- end }}
+                {{- if $action.ParameterDefinition }}
+                {{- if gt (len $action.ParameterDefinition.Required) 0 }}
+                RequiredParameters: elemental.NewParametersRequirement(
+                    [][][]string{
+                        {{- range $i, $l1 := $action.ParameterDefinition.Required }}
+                        {{- if gt (len $l1) 0 }}
+                        [][]string{
+                            {{- range $i, $l2 := $l1 }}
+                            {{- if gt (len $l2) 0 }}
+                            []string{
+                                {{- range $i, $l3 := $l2 }}
+                                "{{ $l3 }}",
+                                {{- end}}
+                            },
+                            {{- end}}
+                            {{- end}}
+                        },
+                        {{- end}}
+                        {{- end}}
+                    },
+                ),
+                {{- end }}
+                {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
+                Parameters: []elemental.ParameterDefinition{
+                {{- range $i, $p := $action.ParameterDefinition.Entries }}
+                    elemental.ParameterDefinition{
+                        Name: "{{ $p.Name }}",
+                        Type: "{{ $p.Type }}",
+                        {{- if $p.DefaultValue }}
+                        DefaultValue: "{{ $p.DefaultValue }}",
+                        {{- end}}
+                        {{- if eq $p.Type "enum" }}
+                        AllowedChoices: []string{
+                            {{- range $j, $v := $p.AllowedChoices }}
+                            "{{ $v }}",
+                            {{- end }}
+                        },
+                        {{- end }}
+                        {{- if $p.Multiple }}
+                        Multiple: true,
+                        {{- end }}
+                    },
+                {{- end }}
+                },
+                {{- end }}
+                {{- end }}
+            },
             {{- end }}
             {{- end }}
         },
         {{- end }}
-        {{- if gt (len $relation.AllowsDelete) 0 }}
-        AllowsDelete: map[string]bool {
-            {{- range $parent := $relation.Get "delete" }}
+        {{- if gt (len $relation.Delete) 0 }}
+        Delete: map[string]*elemental.RelationshipInfo {
+            {{- range $parent, $action := $relation.Delete }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : true,
+            "{{ $parent }}" : &elemental.RelationshipInfo{
+                {{- if $action.Deprecated }}
+                Deprecated: true,
+                {{- end }}
+                {{- if $action.ParameterDefinition }}
+                {{- if gt (len $action.ParameterDefinition.Required) 0 }}
+                RequiredParameters: elemental.NewParametersRequirement(
+                    [][][]string{
+                        {{- range $i, $l1 := $action.ParameterDefinition.Required }}
+                        {{- if gt (len $l1) 0 }}
+                        [][]string{
+                            {{- range $i, $l2 := $l1 }}
+                            {{- if gt (len $l2) 0 }}
+                            []string{
+                                {{- range $i, $l3 := $l2 }}
+                                "{{ $l3 }}",
+                                {{- end}}
+                            },
+                            {{- end}}
+                            {{- end}}
+                        },
+                        {{- end}}
+                        {{- end}}
+                    },
+                ),
+                {{- end }}
+                {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
+                Parameters: []elemental.ParameterDefinition{
+                {{- range $i, $p := $action.ParameterDefinition.Entries }}
+                    elemental.ParameterDefinition{
+                        Name: "{{ $p.Name }}",
+                        Type: "{{ $p.Type }}",
+                        {{- if $p.DefaultValue }}
+                        DefaultValue: "{{ $p.DefaultValue }}",
+                        {{- end}}
+                        {{- if eq $p.Type "enum" }}
+                        AllowedChoices: []string{
+                            {{- range $j, $v := $p.AllowedChoices }}
+                            "{{ $v }}",
+                            {{- end }}
+                        },
+                        {{- end }}
+                        {{- if $p.Multiple }}
+                        Multiple: true,
+                        {{- end }}
+                    },
+                {{- end }}
+                },
+                {{- end }}
+                {{- end }}
+            },
             {{- end }}
             {{- end }}
         },
         {{- end }}
-        {{- if gt (len $relation.AllowsGet) 0 }}
-        AllowsRetrieve: map[string]bool {
-            {{- range $parent := $relation.Get "get" }}
+        {{- if gt (len $relation.Get) 0 }}
+        Retrieve: map[string]*elemental.RelationshipInfo {
+            {{- range $parent, $action := $relation.Get }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : true,
+            "{{ $parent }}" : &elemental.RelationshipInfo{
+                {{- if $action.Deprecated }}
+                Deprecated: true,
+                {{- end }}
+                {{- if $action.ParameterDefinition }}
+                {{- if gt (len $action.ParameterDefinition.Required) 0 }}
+                RequiredParameters: elemental.NewParametersRequirement(
+                    [][][]string{
+                        {{- range $i, $l1 := $action.ParameterDefinition.Required }}
+                        {{- if gt (len $l1) 0 }}
+                        [][]string{
+                            {{- range $i, $l2 := $l1 }}
+                            {{- if gt (len $l2) 0 }}
+                            []string{
+                                {{- range $i, $l3 := $l2 }}
+                                "{{ $l3 }}",
+                                {{- end}}
+                            },
+                            {{- end}}
+                            {{- end}}
+                        },
+                        {{- end}}
+                        {{- end}}
+                    },
+                ),
+                {{- end }}
+                {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
+                Parameters: []elemental.ParameterDefinition{
+                {{- range $i, $p := $action.ParameterDefinition.Entries }}
+                    elemental.ParameterDefinition{
+                        Name: "{{ $p.Name }}",
+                        Type: "{{ $p.Type }}",
+                        {{- if $p.DefaultValue }}
+                        DefaultValue: "{{ $p.DefaultValue }}",
+                        {{- end}}
+                        {{- if eq $p.Type "enum" }}
+                        AllowedChoices: []string{
+                            {{- range $j, $v := $p.AllowedChoices }}
+                            "{{ $v }}",
+                            {{- end }}
+                        },
+                        {{- end }}
+                        {{- if $p.Multiple }}
+                        Multiple: true,
+                        {{- end }}
+                    },
+                {{- end }}
+                },
+                {{- end }}
+                {{- end }}
+            },
             {{- end }}
             {{- end }}
         },
         {{- end }}
-        {{- if gt (len $relation.AllowsGetMany) 0 }}
-        AllowsRetrieveMany: map[string]bool {
-            {{- range $parent := $relation.Get "getmany" }}
+        {{- if gt (len $relation.GetMany) 0 }}
+        RetrieveMany: map[string]*elemental.RelationshipInfo {
+            {{- range $parent, $action := $relation.GetMany }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : true,
+            "{{ $parent }}" : &elemental.RelationshipInfo{
+                {{- if $action.Deprecated }}
+                Deprecated: true,
+                {{- end }}
+                {{- if $action.ParameterDefinition }}
+                {{- if gt (len $action.ParameterDefinition.Required) 0 }}
+                RequiredParameters: elemental.NewParametersRequirement(
+                    [][][]string{
+                        {{- range $i, $l1 := $action.ParameterDefinition.Required }}
+                        {{- if gt (len $l1) 0 }}
+                        [][]string{
+                            {{- range $i, $l2 := $l1 }}
+                            {{- if gt (len $l2) 0 }}
+                            []string{
+                                {{- range $i, $l3 := $l2 }}
+                                "{{ $l3 }}",
+                                {{- end}}
+                            },
+                            {{- end}}
+                            {{- end}}
+                        },
+                        {{- end}}
+                        {{- end}}
+                    },
+                ),
+                {{- end }}
+                {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
+                Parameters: []elemental.ParameterDefinition{
+                {{- range $i, $p := $action.ParameterDefinition.Entries }}
+                    elemental.ParameterDefinition{
+                        Name: "{{ $p.Name }}",
+                        Type: "{{ $p.Type }}",
+                        {{- if $p.DefaultValue }}
+                        DefaultValue: "{{ $p.DefaultValue }}",
+                        {{- end}}
+                        {{- if eq $p.Type "enum" }}
+                        AllowedChoices: []string{
+                            {{- range $j, $v := $p.AllowedChoices }}
+                            "{{ $v }}",
+                            {{- end }}
+                        },
+                        {{- end }}
+                        {{- if $p.Multiple }}
+                        Multiple: true,
+                        {{- end }}
+                    },
+                {{- end }}
+                },
+                {{- end }}
+                {{- end }}
+            },
             {{- end }}
             {{- end }}
         },
-        AllowsInfo: map[string]bool {
-            {{- range $parent := $relation.Get "getmany" }}
+        Info: map[string]*elemental.RelationshipInfo {
+            {{- range $parent, $action := $relation.GetMany }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : true,
+            "{{ $parent }}" : &elemental.RelationshipInfo{
+                {{- if $action.Deprecated }}
+                Deprecated: true,
+                {{- end }}
+                {{- if $action.ParameterDefinition }}
+                {{- if gt (len $action.ParameterDefinition.Required) 0 }}
+                RequiredParameters: elemental.NewParametersRequirement(
+                    [][][]string{
+                        {{- range $i, $l1 := $action.ParameterDefinition.Required }}
+                        {{- if gt (len $l1) 0 }}
+                        [][]string{
+                            {{- range $i, $l2 := $l1 }}
+                            {{- if gt (len $l2) 0 }}
+                            []string{
+                                {{- range $i, $l3 := $l2 }}
+                                "{{ $l3 }}",
+                                {{- end}}
+                            },
+                            {{- end}}
+                            {{- end}}
+                        },
+                        {{- end}}
+                        {{- end}}
+                    },
+                ),
+                {{- end }}
+                {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
+                Parameters: []elemental.ParameterDefinition{
+                {{- range $i, $p := $action.ParameterDefinition.Entries }}
+                    elemental.ParameterDefinition{
+                        Name: "{{ $p.Name }}",
+                        Type: "{{ $p.Type }}",
+                        {{- if $p.DefaultValue }}
+                        DefaultValue: "{{ $p.DefaultValue }}",
+                        {{- end}}
+                        {{- if eq $p.Type "enum" }}
+                        AllowedChoices: []string{
+                            {{- range $j, $v := $p.AllowedChoices }}
+                            "{{ $v }}",
+                            {{- end }}
+                        },
+                        {{- end }}
+                        {{- if $p.Multiple }}
+                        Multiple: true,
+                        {{- end }}
+                    },
+                {{- end }}
+                },
+                {{- end }}
+                {{- end }}
+            },
             {{- end }}
             {{- end }}
         },

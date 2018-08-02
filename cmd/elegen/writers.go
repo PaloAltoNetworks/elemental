@@ -138,6 +138,7 @@ func writeRelationshipsRegistry(set spec.SpecificationSet, outFolder string, pub
 
 	p, err := format.Source(buf.Bytes())
 	if err != nil {
+		fmt.Println(buf.String())
 		return fmt.Errorf("Unable to format relationships_registry code:%s", err)
 	}
 

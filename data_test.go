@@ -1534,78 +1534,253 @@ func init() {
 	relationshipsRegistry = RelationshipsRegistry{}
 
 	relationshipsRegistry[ListIdentity] = &Relationship{
-		AllowsCreate: map[string]bool{
-			"root": true,
+		Create: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rlcp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rlcp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
+		Update: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "lup1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "lup2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsPatch: map[string]bool{
-			"root": true,
+		Patch: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "lup1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "lup2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsDelete: map[string]bool{
-			"root": true,
+		Delete: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "ldp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "ldp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsRetrieve: map[string]bool{
-			"root": true,
+		Retrieve: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "lgp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "lgp2",
+						Type: "boolean",
+					},
+					ParameterDefinition{
+						Name: "sAp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "sAp2",
+						Type: "boolean",
+					},
+					ParameterDefinition{
+						Name: "sBp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "sBp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsRetrieveMany: map[string]bool{
-			"root": true,
+		RetrieveMany: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rlgmp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rlgmp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsInfo: map[string]bool{
-			"root": true,
+		Info: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rlgmp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rlgmp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
 	}
 
 	relationshipsRegistry[RootIdentity] = &Relationship{}
 
 	relationshipsRegistry[TaskIdentity] = &Relationship{
-		AllowsCreate: map[string]bool{
-			"list": true,
+		Create: map[string]*RelationshipInfo{
+			"list": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "ltcp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "ltcp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
+		Update: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{},
 		},
-		AllowsPatch: map[string]bool{
-			"root": true,
+		Patch: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{},
 		},
-		AllowsDelete: map[string]bool{
-			"root": true,
+		Delete: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{},
 		},
-		AllowsRetrieve: map[string]bool{
-			"root": true,
+		Retrieve: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{},
 		},
-		AllowsRetrieveMany: map[string]bool{
-			"list": true,
+		RetrieveMany: map[string]*RelationshipInfo{
+			"list": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "ltgp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "ltgp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsInfo: map[string]bool{
-			"list": true,
+		Info: map[string]*RelationshipInfo{
+			"list": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "ltgp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "ltgp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
 	}
 
 	relationshipsRegistry[UserIdentity] = &Relationship{
-		AllowsCreate: map[string]bool{
-			"root": true,
+		Create: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rucp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rucp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
+		Update: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{},
 		},
-		AllowsPatch: map[string]bool{
-			"root": true,
+		Patch: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{},
 		},
-		AllowsDelete: map[string]bool{
-			"root": true,
+		Delete: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				RequiredParameters: NewParametersRequirement(
+					[][][]string{
+						[][]string{
+							[]string{
+								"required",
+							},
+						},
+					},
+				),
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "confirm",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsRetrieve: map[string]bool{
-			"root": true,
+		Retrieve: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{},
 		},
-		AllowsRetrieveMany: map[string]bool{
-			"list": true,
-			"root": true,
+		RetrieveMany: map[string]*RelationshipInfo{
+			"list": &RelationshipInfo{},
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rugmp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rugmp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsInfo: map[string]bool{
-			"list": true,
-			"root": true,
+		Info: map[string]*RelationshipInfo{
+			"list": &RelationshipInfo{},
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rugmp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rugmp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
 	}
 

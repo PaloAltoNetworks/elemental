@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
-	"net/url"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -86,13 +85,17 @@ func TestRequest_EncodeDecode(t *testing.T) {
 	})
 }
 
-func TestRequest_FromHttp(t *testing.T) {
+func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 	Convey("Given I have a get http request on /lists", t, func() {
 
-		req, _ := http.NewRequest(http.MethodGet, "http://server/v/10/lists?p=v&page=1&pagesize=2&recursive=true&override=true", nil)
+		req, err := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
 		req.Header.Set("X-Namespace", "ns")
 		req.RemoteAddr = "42.42.42.42"
+
+		Convey("Then err should be nil", func() {
+			So(err, ShouldBeNil)
+		})
 
 		Convey("When I create a new elemental Request from it", func() {
 
@@ -122,10 +125,6 @@ func TestRequest_FromHttp(t *testing.T) {
 				So(r.RequestID, ShouldNotBeEmpty)
 			})
 
-			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, req.URL.Query())
-			})
-
 			Convey("Then the identity should be ListIdentity", func() {
 				So(r.Identity, ShouldResemble, ListIdentity)
 			})
@@ -135,7 +134,7 @@ func TestRequest_FromHttp(t *testing.T) {
 			})
 
 			Convey("Then the parent identity should be empty", func() {
-				So(r.ParentIdentity, ShouldResemble, EmptyIdentity)
+				So(r.ParentIdentity, ShouldResemble, RootIdentity)
 			})
 
 			Convey("Then the ParentID should be empty", func() {
@@ -182,7 +181,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 	Convey("Given I have a head http request on /lists", t, func() {
 
-		req, _ := http.NewRequest(http.MethodHead, "http://server/lists?p=v", nil)
+		req, _ := http.NewRequest(http.MethodHead, "http://server/lists?rlgmp1=A&rlgmp2=true", nil)
 		req.Header.Add("X-Namespace", "ns")
 		req.Header.Add("Authorization", "user pass")
 
@@ -210,10 +209,6 @@ func TestRequest_FromHttp(t *testing.T) {
 				So(r.RequestID, ShouldNotBeEmpty)
 			})
 
-			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, req.URL.Query())
-			})
-
 			Convey("Then the identity should be ListIdentity", func() {
 				So(r.Identity, ShouldResemble, ListIdentity)
 			})
@@ -223,7 +218,7 @@ func TestRequest_FromHttp(t *testing.T) {
 			})
 
 			Convey("Then the parent identity should be empty", func() {
-				So(r.ParentIdentity, ShouldResemble, EmptyIdentity)
+				So(r.ParentIdentity, ShouldResemble, RootIdentity)
 			})
 
 			Convey("Then the ParentID should be empty", func() {
@@ -247,7 +242,7 @@ func TestRequest_FromHttp(t *testing.T) {
 	Convey("Given I have a patch http request on /lists", t, func() {
 
 		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
-		req, _ := http.NewRequest(http.MethodPatch, "http://server/lists?p=v", buffer)
+		req, _ := http.NewRequest(http.MethodPatch, "http://server/lists?lup1=A&lup2=true", buffer)
 		req.Header.Add("X-Namespace", "ns")
 		req.Header.Add("Authorization", "user pass")
 
@@ -275,10 +270,6 @@ func TestRequest_FromHttp(t *testing.T) {
 				So(r.RequestID, ShouldNotBeEmpty)
 			})
 
-			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, req.URL.Query())
-			})
-
 			Convey("Then the identity should be ListIdentity", func() {
 				So(r.Identity, ShouldResemble, ListIdentity)
 			})
@@ -288,7 +279,7 @@ func TestRequest_FromHttp(t *testing.T) {
 			})
 
 			Convey("Then the parent identity should be empty", func() {
-				So(r.ParentIdentity, ShouldResemble, EmptyIdentity)
+				So(r.ParentIdentity, ShouldResemble, RootIdentity)
 			})
 
 			Convey("Then the ParentID should be empty", func() {
@@ -316,7 +307,7 @@ func TestRequest_FromHttp(t *testing.T) {
 	Convey("Given I have a post http request on /lists", t, func() {
 
 		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
-		req, _ := http.NewRequest(http.MethodPost, "http://server/lists?p=v&order=name&order=toto", buffer)
+		req, _ := http.NewRequest(http.MethodPost, "http://server/lists?order=name&order=toto&rlcp1=A&rlcp2=true", buffer)
 		req.Header.Add("X-Namespace", "ns")
 		req.Header.Add("Authorization", "user pass")
 
@@ -348,10 +339,6 @@ func TestRequest_FromHttp(t *testing.T) {
 				So(r.Order, ShouldResemble, []string{"name", "toto"})
 			})
 
-			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, req.URL.Query())
-			})
-
 			Convey("Then the identity should be ListIdentity", func() {
 				So(r.Identity, ShouldResemble, ListIdentity)
 			})
@@ -361,7 +348,7 @@ func TestRequest_FromHttp(t *testing.T) {
 			})
 
 			Convey("Then the parent identity should be empty", func() {
-				So(r.ParentIdentity, ShouldResemble, EmptyIdentity)
+				So(r.ParentIdentity, ShouldResemble, RootIdentity)
 			})
 
 			Convey("Then the ParentID should be empty", func() {
@@ -384,7 +371,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 	Convey("Given I have a get http request on /lists/xx", t, func() {
 
-		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx?p=v", nil)
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx?lgp1=A&lgp2=true", nil)
 		req.Header.Add("X-Namespace", "ns")
 		req.Header.Add("Authorization", "user pass")
 
@@ -412,10 +399,6 @@ func TestRequest_FromHttp(t *testing.T) {
 				So(r.RequestID, ShouldNotBeEmpty)
 			})
 
-			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, req.URL.Query())
-			})
-
 			Convey("Then the identity should be ListIdentity", func() {
 				So(r.Identity, ShouldResemble, ListIdentity)
 			})
@@ -425,7 +408,7 @@ func TestRequest_FromHttp(t *testing.T) {
 			})
 
 			Convey("Then the parent identity should be empty", func() {
-				So(r.ParentIdentity, ShouldResemble, EmptyIdentity)
+				So(r.ParentIdentity, ShouldResemble, RootIdentity)
 			})
 
 			Convey("Then the ParentID should be empty", func() {
@@ -449,7 +432,7 @@ func TestRequest_FromHttp(t *testing.T) {
 	Convey("Given I have a put http request on /lists/xx", t, func() {
 
 		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
-		req, _ := http.NewRequest(http.MethodPut, "http://server/lists/xx?p=v", buffer)
+		req, _ := http.NewRequest(http.MethodPut, "http://server/lists/xx?lup1=A&lup2=true", buffer)
 		req.Header.Add("X-Namespace", "ns")
 		req.Header.Add("Authorization", "user pass")
 
@@ -477,10 +460,6 @@ func TestRequest_FromHttp(t *testing.T) {
 				So(r.RequestID, ShouldNotBeEmpty)
 			})
 
-			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, req.URL.Query())
-			})
-
 			Convey("Then the identity should be ListIdentity", func() {
 				So(r.Identity, ShouldResemble, ListIdentity)
 			})
@@ -490,7 +469,7 @@ func TestRequest_FromHttp(t *testing.T) {
 			})
 
 			Convey("Then the parent identity should be empty", func() {
-				So(r.ParentIdentity, ShouldResemble, EmptyIdentity)
+				So(r.ParentIdentity, ShouldResemble, RootIdentity)
 			})
 
 			Convey("Then the ParentID should be empty", func() {
@@ -513,7 +492,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 	Convey("Given I have a delete http request on /lists/xx", t, func() {
 
-		req, _ := http.NewRequest(http.MethodDelete, "http://server/lists/xx?p=v", nil)
+		req, _ := http.NewRequest(http.MethodDelete, "http://server/lists/xx?ldp1=A&ldp2=true", nil)
 		req.Header.Add("X-Namespace", "ns")
 		req.Header.Add("Authorization", "user pass")
 
@@ -541,10 +520,6 @@ func TestRequest_FromHttp(t *testing.T) {
 				So(r.RequestID, ShouldNotBeEmpty)
 			})
 
-			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, req.URL.Query())
-			})
-
 			Convey("Then the identity should be ListIdentity", func() {
 				So(r.Identity, ShouldResemble, ListIdentity)
 			})
@@ -554,7 +529,7 @@ func TestRequest_FromHttp(t *testing.T) {
 			})
 
 			Convey("Then the parent identity should be empty", func() {
-				So(r.ParentIdentity, ShouldResemble, EmptyIdentity)
+				So(r.ParentIdentity, ShouldResemble, RootIdentity)
 			})
 
 			Convey("Then the ParentID should be empty", func() {
@@ -577,7 +552,7 @@ func TestRequest_FromHttp(t *testing.T) {
 
 	Convey("Given I have a get http request on /lists/xx/tasks", t, func() {
 
-		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/tasks?p=v", nil)
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/tasks?ltgp1=A&ltgp2=true", nil)
 		req.Header.Add("X-Namespace", "ns")
 		req.Header.Add("Authorization", "user pass")
 
@@ -603,10 +578,6 @@ func TestRequest_FromHttp(t *testing.T) {
 
 			Convey("Then the RequestID should not be empty", func() {
 				So(r.RequestID, ShouldNotBeEmpty)
-			})
-
-			Convey("Then the parameters should be correct", func() {
-				So(r.Parameters, ShouldResemble, req.URL.Query())
 			})
 
 			Convey("Then the identity should be TaskIdentity", func() {
@@ -797,7 +768,16 @@ func TestRequest_Duplicate(t *testing.T) {
 		req.Operation = OperationPatch
 		req.Page = 1
 		req.PageSize = 2
-		req.Parameters = url.Values{"p1": []string{"v1"}}
+		req.Parameters = Parameters{
+			"p1": Parameter{
+				ptype:  ParameterTypeString,
+				values: []interface{}{"A"},
+			},
+			"p2": Parameter{
+				ptype:  ParameterTypeBool,
+				values: []interface{}{true},
+			},
+		}
 		req.ParentID = "zzz"
 		req.ParentIdentity = TaskIdentity
 		req.Password = "pass"
@@ -821,7 +801,7 @@ func TestRequest_Duplicate(t *testing.T) {
 				So(req2.Operation, ShouldEqual, req.Operation)
 				So(req2.Page, ShouldEqual, req.Page)
 				So(req2.PageSize, ShouldEqual, req.PageSize)
-				So(req2.Parameters.Get("p1"), ShouldEqual, req.Parameters.Get("p1"))
+				So(req2.Parameters, ShouldResemble, req.Parameters)
 				So(req2.ParentID, ShouldEqual, req.ParentID)
 				So(req2.ParentIdentity.IsEqual(req.ParentIdentity), ShouldBeTrue)
 				So(req2.Password, ShouldEqual, req.Password)
@@ -832,6 +812,507 @@ func TestRequest_Duplicate(t *testing.T) {
 				So(req2.Order, ShouldResemble, req.Order)
 				So(req2.ClientIP, ShouldResemble, req.ClientIP)
 				So(req2.Metadata, ShouldResemble, req.Metadata)
+			})
+		})
+	})
+}
+
+func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
+
+	Convey("Given I have a get http request on /lists with good params", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
+		req.Header.Set("X-Namespace", "ns")
+		req.RemoteAddr = "42.42.42.42"
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then the parameters should be correct", func() {
+				So(r.Parameters, ShouldResemble, Parameters{
+					"rlgmp1": Parameter{
+						ptype:  ParameterTypeString,
+						values: []interface{}{"A"},
+					},
+					"rlgmp2": Parameter{
+						ptype:  ParameterTypeBool,
+						values: []interface{}{true},
+					},
+				})
+			})
+		})
+	})
+
+	Convey("Given I have a get http request on /lists with not good params", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=notbool", nil)
+		req.Header.Set("X-Namespace", "ns")
+		req.RemoteAddr = "42.42.42.42"
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'rlgmp2' must be a boolean, got 'notbool'`)
+			})
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a head http request on /lists with good params", t, func() {
+
+		req, _ := http.NewRequest(http.MethodHead, "http://server/lists?rlgmp1=A&rlgmp2=true", nil)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then the parameters should be correct", func() {
+				So(r.Parameters, ShouldResemble, Parameters{
+					"rlgmp1": Parameter{
+						ptype:  ParameterTypeString,
+						values: []interface{}{"A"},
+					},
+					"rlgmp2": Parameter{
+						ptype:  ParameterTypeBool,
+						values: []interface{}{true},
+					},
+				})
+			})
+		})
+	})
+
+	Convey("Given I have a head http request on /lists with not good params", t, func() {
+
+		req, _ := http.NewRequest(http.MethodHead, "http://server/lists?rlgmp1=A&rlgmp2=nottrue", nil)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'rlgmp2' must be a boolean, got 'nottrue'`)
+			})
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a patch http request on /lists with good params", t, func() {
+
+		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
+		req, _ := http.NewRequest(http.MethodPatch, "http://server/lists?lup1=A&lup2=true", buffer)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then the parameters should be correct", func() {
+				So(r.Parameters, ShouldResemble, Parameters{
+					"lup1": Parameter{
+						ptype:  ParameterTypeString,
+						values: []interface{}{"A"},
+					},
+					"lup2": Parameter{
+						ptype:  ParameterTypeBool,
+						values: []interface{}{true},
+					},
+				})
+			})
+		})
+	})
+
+	Convey("Given I have a patch http request on /lists with not good params", t, func() {
+
+		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
+		req, _ := http.NewRequest(http.MethodPatch, "http://server/lists?lup1=A&lup2=nottrue", buffer)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'lup2' must be a boolean, got 'nottrue'`)
+			})
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a post http request on /lists with good params", t, func() {
+
+		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
+		req, _ := http.NewRequest(http.MethodPost, "http://server/lists?order=name&order=toto&rlcp1=A&rlcp2=true", buffer)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then the parameters should be correct", func() {
+				So(r.Parameters, ShouldResemble, Parameters{
+					"rlcp1": Parameter{
+						ptype:  ParameterTypeString,
+						values: []interface{}{"A"},
+					},
+					"rlcp2": Parameter{
+						ptype:  ParameterTypeBool,
+						values: []interface{}{true},
+					},
+				})
+			})
+		})
+	})
+
+	Convey("Given I have a post http request on /lists with not good params", t, func() {
+
+		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
+		req, _ := http.NewRequest(http.MethodPost, "http://server/lists?order=name&order=toto&rlcp1=A&rlcp2=nottrue", buffer)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'rlcp2' must be a boolean, got 'nottrue'`)
+			})
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a get http request on /lists/xx with good params", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx?lgp1=A&lgp2=true&sAp1=ok&sAp2=true&sBp1=ok&sBp2=true", nil)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then the parameters should be correct", func() {
+				So(r.Parameters, ShouldResemble, Parameters{
+					"lgp1": Parameter{
+						ptype:  ParameterTypeString,
+						values: []interface{}{"A"},
+					},
+					"lgp2": Parameter{
+						ptype:  ParameterTypeBool,
+						values: []interface{}{true},
+					},
+					"sAp1": Parameter{
+						ptype:  ParameterTypeString,
+						values: []interface{}{"ok"},
+					},
+					"sAp2": Parameter{
+						ptype:  ParameterTypeBool,
+						values: []interface{}{true},
+					},
+					"sBp1": Parameter{
+						ptype:  ParameterTypeString,
+						values: []interface{}{"ok"},
+					},
+					"sBp2": Parameter{
+						ptype:  ParameterTypeBool,
+						values: []interface{}{true},
+					},
+				})
+			})
+		})
+	})
+
+	Convey("Given I have a get http request on /lists/xx with not good params", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx?lgp1=A&lgp2=nottrue", nil)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'lgp2' must be a boolean, got 'nottrue'`)
+			})
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a put http request on /lists/xx with good params", t, func() {
+
+		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
+		req, _ := http.NewRequest(http.MethodPut, "http://server/lists/xx?lup1=A&lup2=true", buffer)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then the parameters should be correct", func() {
+				So(r.Parameters, ShouldResemble, Parameters{
+					"lup1": Parameter{
+						ptype:  ParameterTypeString,
+						values: []interface{}{"A"},
+					},
+					"lup2": Parameter{
+						ptype:  ParameterTypeBool,
+						values: []interface{}{true},
+					},
+				})
+			})
+		})
+	})
+
+	Convey("Given I have a put http request on /lists/xx with not good params", t, func() {
+
+		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
+		req, _ := http.NewRequest(http.MethodPut, "http://server/lists/xx?lup1=A&lup2=nottrue", buffer)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'lup2' must be a boolean, got 'nottrue'`)
+			})
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a delete http request on /lists/xx with good paramts", t, func() {
+
+		req, _ := http.NewRequest(http.MethodDelete, "http://server/lists/xx?ldp1=A&ldp2=true", nil)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then the parameters should be correct", func() {
+				So(r.Parameters, ShouldResemble, Parameters{
+					"ldp1": Parameter{
+						ptype:  ParameterTypeString,
+						values: []interface{}{"A"},
+					},
+					"ldp2": Parameter{
+						ptype:  ParameterTypeBool,
+						values: []interface{}{true},
+					},
+				})
+			})
+		})
+	})
+
+	Convey("Given I have a delete http request on /lists/xx with not good paramts", t, func() {
+
+		req, _ := http.NewRequest(http.MethodDelete, "http://server/lists/xx?ldp1=A&ldp2=nottrue", nil)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'ldp2' must be a boolean, got 'nottrue'`)
+			})
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a get http request on /lists/xx/tasks with good params", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/tasks?ltgp1=A&ltgp2=true", nil)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then the parameters should be correct", func() {
+				So(r.Parameters, ShouldResemble, Parameters{
+					"ltgp1": Parameter{
+						ptype:  ParameterTypeString,
+						values: []interface{}{"A"},
+					},
+					"ltgp2": Parameter{
+						ptype:  ParameterTypeBool,
+						values: []interface{}{true},
+					},
+				})
+			})
+		})
+	})
+
+	Convey("Given I have a get http request on /lists/xx/tasks with not good params", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/tasks?ltgp1=A&ltgp2=nottrue", nil)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'ltgp2' must be a boolean, got 'nottrue'`)
+			})
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a get http request on /lists with no params", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/v/10/lists", nil)
+		req.Header.Set("X-Namespace", "ns")
+		req.RemoteAddr = "42.42.42.42"
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then the parameters should be correct", func() {
+				So(r.Parameters, ShouldResemble, Parameters{
+					"rlgmp1": Parameter{
+						ptype:  ParameterTypeString,
+						values: nil,
+					},
+					"rlgmp2": Parameter{
+						ptype:  ParameterTypeBool,
+						values: nil,
+					},
+				})
+				So(r.Parameters["rlgmp1"].StringValue(), ShouldEqual, "")
+				So(r.Parameters["rlgmp2"].BoolValue(), ShouldEqual, false)
+			})
+		})
+	})
+}
+
+func TestRequest_RequiredParameters(t *testing.T) {
+
+	Convey("Given I have a delete http request on /users with no params", t, func() {
+
+		req, _ := http.NewRequest(http.MethodDelete, "http://server/v/10/users/id", nil)
+		req.Header.Set("X-Namespace", "ns")
+		req.RemoteAddr = "42.42.42.42"
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+			})
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a http request on /lists with unknown params", t, func() {
+
+		req, _ := http.NewRequest(http.MethodDelete, "http://server/v/10/lists?what=1&the=0", nil)
+		req.Header.Set("X-Namespace", "ns")
+		req.RemoteAddr = "42.42.42.42"
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldContainSubstring, "error 400 (elemental): Bad Request: Unknown parameter: `what`")
+				So(err.Error(), ShouldContainSubstring, "error 400 (elemental): Bad Request: Unknown parameter: `the`")
+			})
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
 			})
 		})
 	})

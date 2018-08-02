@@ -65,10 +65,10 @@ func NewErrors(errors ...error) Errors {
 
 func (e Errors) Error() string {
 
-	var strs []string
+	strs := make([]string, len(e))
 
-	for _, err := range e {
-		strs = append(strs, err.Error())
+	for i := range e {
+		strs[i] = e[i].Error()
 	}
 
 	return strings.Join(strs, ", ")
