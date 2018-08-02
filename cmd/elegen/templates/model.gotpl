@@ -358,9 +358,6 @@ var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSp
         {{- if .ForeignKey }}
         ForeignKey: {{ .ForeignKey }},
         {{- end }}
-        {{- if .Format }}
-        Format: "{{ .Format }}",
-        {{- end }}
         {{- if .Getter }}
         Getter: {{ .Getter }},
         {{- end }}
@@ -464,9 +461,6 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
         {{- end }}
         {{- if .ForeignKey }}
         ForeignKey: {{ .ForeignKey }},
-        {{- end }}
-        {{- if .Format }}
-        Format: "{{ .Format }}",
         {{- end }}
         {{- if .Getter }}
         Getter: {{ .Getter }},

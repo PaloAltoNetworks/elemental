@@ -44,7 +44,6 @@ func TestAttribute_SpecificationForAttribute(t *testing.T) {
 				So(spec.Exposed, ShouldBeTrue)
 				So(spec.Filterable, ShouldBeTrue)
 				So(spec.ForeignKey, ShouldBeFalse)
-				So(spec.Format, ShouldEqual, "free")
 				So(spec.Getter, ShouldBeTrue)
 				So(spec.Identifier, ShouldBeFalse)
 				So(spec.Index, ShouldBeFalse)

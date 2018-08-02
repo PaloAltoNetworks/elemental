@@ -213,7 +213,7 @@ func init() {
 					[][][]string{
 						[][]string{
 							[]string{
-								"required",
+								"confirm",
 							},
 						},
 					},

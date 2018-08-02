@@ -82,13 +82,6 @@ type AttributeSpecification struct {
 	// ForeignKey defines if the attribute is a foreign key.
 	ForeignKey bool
 
-	// Format defines the format of the attribute.
-	// Monolithe defines various formats, but it is up to your implementation
-	// to decide what values it can take.
-	//
-	// This is not enforced by elemental. You must write your own business logic to honor this.
-	Format string
-
 	// Getter defines if the attribute needs to define a getter method.
 	// This is useful if you can to define an Interface based on this attribute.
 	Getter bool
