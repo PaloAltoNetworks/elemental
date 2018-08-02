@@ -860,7 +860,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 
 			Convey("Then err should not be nil", func() {
 				So(err, ShouldNotBeNil)
-				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'rlgmp2' must be a boolean`)
+				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'rlgmp2' must be a boolean, got 'notbool'`)
 			})
 
 			Convey("Then r should be nil", func() {
@@ -910,7 +910,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 
 			Convey("Then err should not be nil", func() {
 				So(err, ShouldNotBeNil)
-				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'rlgmp2' must be a boolean`)
+				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'rlgmp2' must be a boolean, got 'nottrue'`)
 			})
 
 			Convey("Then r should be nil", func() {
@@ -962,7 +962,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 
 			Convey("Then err should not be nil", func() {
 				So(err, ShouldNotBeNil)
-				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'lup2' must be a boolean`)
+				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'lup2' must be a boolean, got 'nottrue'`)
 			})
 
 			Convey("Then r should be nil", func() {
@@ -1014,7 +1014,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 
 			Convey("Then err should not be nil", func() {
 				So(err, ShouldNotBeNil)
-				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'rlcp2' must be a boolean`)
+				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'rlcp2' must be a boolean, got 'nottrue'`)
 			})
 
 			Convey("Then r should be nil", func() {
@@ -1080,7 +1080,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 
 			Convey("Then err should not be nil", func() {
 				So(err, ShouldNotBeNil)
-				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'lgp2' must be a boolean`)
+				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'lgp2' must be a boolean, got 'nottrue'`)
 			})
 
 			Convey("Then r should be nil", func() {
@@ -1132,7 +1132,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 
 			Convey("Then err should not be nil", func() {
 				So(err, ShouldNotBeNil)
-				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'lup2' must be a boolean`)
+				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'lup2' must be a boolean, got 'nottrue'`)
 			})
 
 			Convey("Then r should be nil", func() {
@@ -1182,7 +1182,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 
 			Convey("Then err should not be nil", func() {
 				So(err, ShouldNotBeNil)
-				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'ldp2' must be a boolean`)
+				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'ldp2' must be a boolean, got 'nottrue'`)
 			})
 
 			Convey("Then r should be nil", func() {
@@ -1232,7 +1232,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 
 			Convey("Then err should not be nil", func() {
 				So(err, ShouldNotBeNil)
-				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'ltgp2' must be a boolean`)
+				So(err.Error(), ShouldEqual, `error 400 (elemental): Invalid Parameter: Parameter 'ltgp2' must be a boolean, got 'nottrue'`)
 			})
 
 			Convey("Then r should be nil", func() {

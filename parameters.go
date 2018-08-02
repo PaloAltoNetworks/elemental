@@ -368,7 +368,7 @@ func parse(ptype ParameterType, pname string, v string, allowedChoices []string)
 		if err != nil {
 			return nil, NewError(
 				invalidParamMsg,
-				fmt.Sprintf("Parameter '%s' must be an integer", pname),
+				fmt.Sprintf("Parameter '%s' must be an integer, got '%s'", pname, v),
 				"elemental",
 				http.StatusBadRequest,
 			)
@@ -381,7 +381,7 @@ func parse(ptype ParameterType, pname string, v string, allowedChoices []string)
 		if err != nil {
 			return nil, NewError(
 				invalidParamMsg,
-				fmt.Sprintf("Parameter '%s' must be a float", pname),
+				fmt.Sprintf("Parameter '%s' must be a float, got '%s'", pname, v),
 				"elemental",
 				http.StatusBadRequest,
 			)
@@ -391,14 +391,14 @@ func parse(ptype ParameterType, pname string, v string, allowedChoices []string)
 	case ParameterTypeBool:
 
 		switch strings.ToLower(v) {
-		case "true", "yes", "1", "":
+		case "true", "yes", "1":
 			return true, nil
-		case "false", "no", "0":
+		case "false", "no", "0", "":
 			return false, nil
 		default:
 			return nil, NewError(
 				invalidParamMsg,
-				fmt.Sprintf("Parameter '%s' must be a boolean", pname),
+				fmt.Sprintf("Parameter '%s' must be a boolean, got '%s'", pname, v),
 				"elemental",
 				http.StatusBadRequest,
 			)
@@ -417,7 +417,7 @@ func parse(ptype ParameterType, pname string, v string, allowedChoices []string)
 		if !matched {
 			return nil, NewError(
 				invalidParamMsg,
-				fmt.Sprintf("Parameter '%s' must be one of '%s'", pname, strings.Join(allowedChoices, ", ")),
+				fmt.Sprintf("Parameter '%s' must be one of '%s', got '%s'", pname, strings.Join(allowedChoices, ", "), v),
 				"elemental",
 				http.StatusBadRequest,
 			)
@@ -430,7 +430,7 @@ func parse(ptype ParameterType, pname string, v string, allowedChoices []string)
 		if err != nil {
 			return nil, NewError(
 				invalidParamMsg,
-				fmt.Sprintf("Parameter '%s' must be a valid duration", pname),
+				fmt.Sprintf("Parameter '%s' must be a valid duration, got '%s'", pname, v),
 				"elemental",
 				http.StatusBadRequest,
 			)
@@ -443,7 +443,7 @@ func parse(ptype ParameterType, pname string, v string, allowedChoices []string)
 		if err != nil {
 			return nil, NewError(
 				invalidParamMsg,
-				fmt.Sprintf("Parameter '%s' must be a valid date", pname),
+				fmt.Sprintf("Parameter '%s' must be a valid date, got '%s'", pname, v),
 				"elemental",
 				http.StatusBadRequest,
 			)
