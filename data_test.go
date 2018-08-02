@@ -456,6 +456,7 @@ var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Type:           "string",
 	},
 }
+
 // TaskIndexes lists the attribute compound indexes.
 var TaskIndexes = [][]string{}
 
@@ -917,6 +918,7 @@ func (o *UnmarshalableError) UnmarshalJSON([]byte) error {
 func (o *UnmarshalableError) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("error marshalling")
 }
+
 // UserIndexes lists the attribute compound indexes.
 var UserIndexes = [][]string{}
 
