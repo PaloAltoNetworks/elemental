@@ -303,15 +303,21 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
 
     {{ $attr := . }}
     {{- range $i, $m := .ValidationProviders }}
-        // Custom validation {{ $m.Name }}.
-        if err := {{ $m.Name }}("{{ $attr.Name }}", o.{{ $attr.ConvertedName }}); err != nil {
-            errors = append(errors, err)
-        }
+    if err := {{ $m.Name }}("{{ $attr.Name }}", o.{{ $attr.ConvertedName }}); err != nil {
+        errors = append(errors, err)
+    }
     {{- end }}
 
     {{ end }}
     {{ end }}
     {{ end }}
+
+    {{- range $i, $validationName := .Spec.Model.Validations }}
+    // Custom object validation.
+    if err := {{ ($.Set.ValidationMapping.Mapping "elemental" $validationName).Name }}(o); err != nil {
+        errors = append(errors, err)
+    }
+    {{- end }}
 
     if len(requiredErrors) > 0 {
       return requiredErrors
