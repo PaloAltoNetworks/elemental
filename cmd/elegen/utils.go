@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"reflect"
+	"sort"
 	"strings"
 	"text/template"
 
@@ -225,4 +227,79 @@ func shouldRegisterInnerRelationship(set spec.SpecificationSet, restName string,
 	}
 
 	return true
+}
+
+func writeInitializer(s spec.Specification, attr *spec.Attribute) string {
+
+	if attr.Initializer == "" && attr.DefaultValue == nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%s: %s,", attr.ConvertedName, writeDefaultValue(s, attr))
+}
+
+func writeDefaultValue(s spec.Specification, attr *spec.Attribute) string {
+
+	if attr.Initializer != "" {
+		return attr.Initializer
+	}
+
+	var prefix string
+	if attr.Type == spec.AttributeTypeEnum {
+		prefix = s.Model().EntityName + attr.ConvertedName
+	}
+
+	return crawl(reflect.ValueOf(attr.DefaultValue), prefix)
+}
+
+func crawl(val reflect.Value, prefix string) string {
+
+	switch val.Kind() {
+
+	case reflect.Bool:
+		if val.Bool() == true {
+			return "true"
+		}
+		return "false"
+
+	case reflect.String:
+		if prefix != "" {
+			return fmt.Sprintf(`%s%s`, prefix, val.String())
+		}
+		return fmt.Sprintf(`"%s"`, val.String())
+
+	case reflect.Int, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int8:
+		return fmt.Sprintf(`%d`, val.Int())
+
+	case reflect.Float32, reflect.Float64:
+		return fmt.Sprintf(`%f`, val.Float())
+
+		// case reflect.Map:
+
+	case reflect.Slice:
+
+		out := "[]" + val.Index(0).Elem().Kind().String() + "{\n"
+		for i := 0; i < val.Len(); i++ {
+			out += fmt.Sprintf("%s,\n", crawl(val.Index(i).Elem(), prefix))
+		}
+		out += "}"
+
+		return out
+	}
+
+	return ""
+}
+
+func sortAttributes(attrs []*spec.Attribute) []*spec.Attribute {
+
+	out := make([]*spec.Attribute, len(attrs))
+	for i := range attrs {
+		out[i] = attrs[i]
+	}
+
+	sort.Slice(out, func(i int, j int) bool {
+		return strings.Compare(attrs[i].ConvertedName, attrs[j].ConvertedName) == -1
+	})
+
+	return out
 }

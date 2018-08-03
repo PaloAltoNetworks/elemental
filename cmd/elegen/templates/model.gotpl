@@ -122,9 +122,15 @@ func New{{ .Spec.Model.EntityName }}() *{{ .Spec.Model.EntityName }} {
 
     return &{{ .Spec.Model.EntityName }}{
         ModelVersion: {{ .Set.APIInfo.Version }},
-        {{ range $name, $constructor := .Spec.AttributeInitializers $latestVersion -}}
-        {{ if shouldWriteInitializer $.Spec $name $latestVersion $.PublicMode }}{{ $name }}: {{ $constructor }},{{ end }}
-        {{ end }}
+
+        {{- range $i, $attr := sortAttributes (.Spec.Attributes $latestVersion) -}}
+        {{- if shouldWriteInitializer $.Spec $attr.Name $latestVersion $.PublicMode }}
+        {{- $init := writeInitializer $.Spec $attr }}
+        {{- if $init }}
+        {{ $init }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
     }
 }
 
@@ -358,15 +364,7 @@ var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSp
         DefaultOrder: {{ .DefaultOrder }},
         {{- end }}
         {{- if .DefaultValue }}
-        {{ if eq .Type "external" -}}
-        DefaultValue: {{ if .DefaultValue }}{{ .Initializer }}{{ else }}nil{{ end }},
-        {{- else if eq .Type "enum" -}}
-        DefaultValue: {{ if .DefaultValue }}{{ $.Spec.Model.EntityName }}{{ .ConvertedName }}{{ .DefaultValue }}{{ else }}nil{{ end }},
-        {{- else if eq .Type "string" -}}
-        DefaultValue: {{ if .DefaultValue -}}"{{ .DefaultValue }}"{{ else }}nil{{ end }},
-        {{- else -}}
-        DefaultValue: {{ if .DefaultValue -}}{{ .DefaultValue }}{{ else }}nil {{ end }},
-        {{- end }}
+        DefaultValue: {{ writeDefaultValue $.Spec . }},
         {{- end }}
         {{- if .Deprecated }}
         Deprecated: {{ .Deprecated }},
@@ -459,15 +457,7 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
         DefaultOrder: {{ .DefaultOrder }},
         {{- end }}
         {{- if .DefaultValue }}
-        {{ if eq .Type "external" -}}
-        DefaultValue: {{ if .DefaultValue }}{{ .Initializer }}{{ else }}nil{{ end }},
-        {{- else if eq .Type "enum" -}}
-        DefaultValue: {{ if .DefaultValue }}{{ $.Spec.Model.EntityName }}{{ .ConvertedName }}{{ .DefaultValue }}{{ else }}nil{{ end }},
-        {{- else if eq .Type "string" -}}
-        DefaultValue: {{ if .DefaultValue -}}"{{ .DefaultValue }}"{{ else }}nil{{ end }},
-        {{- else -}}
-        DefaultValue: {{ if .DefaultValue -}}{{ .DefaultValue }}{{ else }}nil {{ end }},
-        {{- end }}
+        DefaultValue: {{ writeDefaultValue $.Spec . }},
         {{- end }}
         {{- if .Deprecated }}
         Deprecated: {{ .Deprecated }},

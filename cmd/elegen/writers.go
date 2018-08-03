@@ -28,6 +28,9 @@ var functions = template.FuncMap{
 	"shouldRegisterSpecification":     shouldRegisterSpecification,
 	"shouldRegisterRelationship":      shouldRegisterRelationship,
 	"shouldRegisterInnerRelationship": shouldRegisterInnerRelationship,
+	"writeInitializer":                writeInitializer,
+	"writeDefaultValue":               writeDefaultValue,
+	"sortAttributes":                  sortAttributes,
 }
 
 func writeModel(set spec.SpecificationSet, name string, outFolder string, publicMode bool) error {
