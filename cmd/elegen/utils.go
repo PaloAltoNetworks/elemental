@@ -81,7 +81,7 @@ func attributeNameConverter(attrName string) string {
 	return strings.Title(attrName)
 }
 
-func attrToField(attr *spec.Attribute) string {
+func attrToField(set spec.SpecificationSet, attr *spec.Attribute) string {
 
 	json := attr.Name
 	bson := strings.ToLower(attr.Name)
@@ -105,11 +105,29 @@ func attrToField(attr *spec.Attribute) string {
 		descLines[i] = "// " + escapeBackticks(descLines[i])
 	}
 
+	var pointer string
+	if mode, ok := attr.Extensions["refMode"]; ok && mode == "pointer" {
+		pointer = "*"
+	}
+
+	var convertedType string
+	switch attr.Type {
+	case spec.AttributeTypeRef:
+
+		convertedType = pointer + set.Specification(attr.SubType).Model().EntityName
+	case spec.AttributeTypeRefList:
+		convertedType = "[]" + pointer + set.Specification(attr.SubType).Model().EntityName
+	case spec.AttributeTypeRefMap:
+		convertedType = "map[string]" + pointer + set.Specification(attr.SubType).Model().EntityName
+	default:
+		convertedType = attr.ConvertedType
+	}
+
 	return fmt.Sprintf(
 		"%s\n    %s %s `json:\"%s\" bson:\"%s\" mapstructure:\"%s,omitempty\"`\n\n",
 		strings.Join(descLines, "\n"),
 		attr.ConvertedName,
-		attr.ConvertedType,
+		convertedType,
 		json,
 		bson,
 		json,
@@ -195,6 +213,10 @@ func shouldWriteAttributeMap(attr *spec.Attribute, publicMode bool) bool {
 
 func shouldRegisterSpecification(s spec.Specification, publicMode bool) bool {
 
+	if s.Model().Detached {
+		return false
+	}
+
 	if publicMode {
 		return !s.Model().Private
 	}
@@ -211,6 +233,10 @@ func shouldRegisterRelationship(set spec.SpecificationSet, entityName string, pu
 		}
 	}
 
+	if s.Model().Detached {
+		return false
+	}
+
 	if publicMode {
 		return !s.Model().Private
 	}
@@ -221,6 +247,10 @@ func shouldRegisterRelationship(set spec.SpecificationSet, entityName string, pu
 func shouldRegisterInnerRelationship(set spec.SpecificationSet, restName string, publicMode bool) bool {
 
 	s := set.Specification(restName)
+
+	if s.Model().Detached {
+		return false
+	}
 
 	if publicMode {
 		return !s.Model().Private

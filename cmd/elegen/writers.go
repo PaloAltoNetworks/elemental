@@ -18,7 +18,7 @@ var functions = template.FuncMap{
 	"lower":                           strings.ToLower,
 	"capitalize":                      strings.Title,
 	"join":                            strings.Join,
-	"makeAttr":                        attrToField,
+	"attrToField":                     attrToField,
 	"escBackticks":                    escapeBackticks,
 	"buildEnums":                      buildEnums,
 	"shouldGenerateGetter":            shouldGenerateGetter,

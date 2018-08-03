@@ -14,6 +14,7 @@ import (
     {{ end -}}
 )
 
+{{- if not .Spec.Model.Detached }}
 // {{ .Spec.Model.EntityName }}Indexes lists the attribute compound indexes.
 var {{ .Spec.Model.EntityName }}Indexes = [][]string {
     {{- range $i, $compound := .Spec.Model.Indexes }}
@@ -24,7 +25,7 @@ var {{ .Spec.Model.EntityName }}Indexes = [][]string {
     {{- end }}
     {{ end }}
 }
-
+{{- end }}
 
 {{ $latestVersion := .Spec.LatestAttributesVersion }}
 
@@ -40,14 +41,16 @@ const (
 )
 {{ end }}
 
+{{- if not .Spec.Model.Detached }}
 // {{ .Spec.Model.EntityName }}Identity represents the Identity of the object.
 var {{ .Spec.Model.EntityName }}Identity = elemental.Identity {
     Name:     "{{ .Spec.Model.RestName}}",
     Category: "{{ .Spec.Model.ResourceName }}",
     Private:  {{ .Spec.Model.Private}},
 }
+{{ end }}
 
-
+{{- if not .Spec.Model.Detached }}
 {{ if not .Spec.Model.IsRoot }}
 // {{ .Spec.Model.EntityNamePlural }}List represents a list of {{ .Spec.Model.EntityNamePlural }}
 type {{ .Spec.Model.EntityNamePlural }}List []*{{ .Spec.Model.EntityName}}
@@ -104,17 +107,17 @@ func (o {{ .Spec.Model.EntityNamePlural }}List) Version() int {
 }
 
 {{ end }}
-
+{{- end }}
 
 // {{ .Spec.Model.EntityName }} represents the model of a {{ .Spec.Model.RestName }}
 type {{ .Spec.Model.EntityName }} struct {
 {{ range .Spec.Attributes $latestVersion -}}
-{{ makeAttr . }}
+{{ attrToField $.Set . }}
 {{- end }}
 
     ModelVersion int `json:"-" bson:"_modelversion"`
 
-    sync.Mutex
+    sync.Mutex `json:"-" bson:"-"`
 }
 
 // New{{ .Spec.Model.EntityName }} returns a new *{{ .Spec.Model.EntityName }}
@@ -134,12 +137,15 @@ func New{{ .Spec.Model.EntityName }}() *{{ .Spec.Model.EntityName }} {
     }
 }
 
+{{- if not .Spec.Model.Detached }}
 // Identity returns the Identity of the object.
 func (o *{{ .Spec.Model.EntityName }}) Identity() elemental.Identity {
 
     return {{ .Spec.Model.EntityName }}Identity
 }
+{{- end }}
 
+{{- if not .Spec.Model.Detached }}
 // Identifier returns the value of the object's unique identifier.
 func (o *{{ .Spec.Model.EntityName }}) Identifier() string {
 
@@ -149,7 +155,9 @@ func (o *{{ .Spec.Model.EntityName }}) Identifier() string {
     return ""
     {{- end }}
 }
+{{- end }}
 
+{{- if not .Spec.Model.Detached }}
 // SetIdentifier sets the value of the object's unique identifier.
 func (o *{{ .Spec.Model.EntityName }}) SetIdentifier(id string) {
 
@@ -157,13 +165,17 @@ func (o *{{ .Spec.Model.EntityName }}) SetIdentifier(id string) {
     o.{{ .Spec.Identifier.ConvertedName }} = id
     {{- end }}
 }
+{{- end }}
 
+{{- if not .Spec.Model.Detached }}
 // Version returns the hardcoded version of the model.
 func (o *{{ .Spec.Model.EntityName }}) Version() int {
 
     return {{ .Set.APIInfo.Version }}
 }
+{{- end }}
 
+{{- if not .Spec.Model.Detached }}
 // DefaultOrder returns the list of default ordering fields.
 func (o *{{ .Spec.Model.EntityName  }}) DefaultOrder() []string {
 
@@ -173,7 +185,9 @@ func (o *{{ .Spec.Model.EntityName  }}) DefaultOrder() []string {
         {{ end }}
     }
 }
+{{- end }}
 
+{{- if not .Spec.Model.Detached }}
 {{ if .Spec.Model.Description }}
 // Doc returns the documentation for the object
 func (o *{{ .Spec.Model.EntityName }}) Doc() string {
@@ -185,11 +199,14 @@ func (o *{{ .Spec.Model.EntityName }}) Doc() string {
     {{- end }}
 }
 {{ end }}
+{{- end }}
 
-func  (o *{{ .Spec.Model.EntityName }}) String() string {
+{{- if not .Spec.Model.Detached }}
+func (o *{{ .Spec.Model.EntityName }}) String() string {
 
     return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
 }
+{{- end }}
 
 {{ range .Spec.Attributes $latestVersion }}
 {{ if shouldGenerateGetter . $.PublicMode }}
@@ -250,6 +267,20 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
     }
     {{ end }}
 
+    {{ end }}
+
+    {{ if eq .Type "ref" }}
+    if err := o.{{ .ConvertedName }}.Validate(); err != nil {
+        errors = append(errors, err)
+    }
+    {{ end }}
+
+    {{ if or (eq .Type "refList") (eq .Type "refMap") }}
+    for _, sub := range o.{{ .ConvertedName }} {
+        if err := sub.Validate(); err != nil {
+            errors = append(errors, err)
+        }
+    }
     {{ end }}
 
     {{ if .AllowedChoices }}
@@ -330,6 +361,7 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
     return nil
 }
 
+{{- if not .Spec.Model.Detached }}
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
 func (*{{ .Spec.Model.EntityName }}) SpecificationForAttribute(name string) elemental.AttributeSpecification {
 
@@ -532,3 +564,4 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
     {{- end }}
     {{- end }}
 }
+{{- end }}
