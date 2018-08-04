@@ -259,19 +259,39 @@ func shouldRegisterInnerRelationship(set spec.SpecificationSet, restName string,
 	return true
 }
 
-func writeInitializer(s spec.Specification, attr *spec.Attribute) string {
+func writeInitializer(set spec.SpecificationSet, s spec.Specification, attr *spec.Attribute) string {
 
-	if attr.Initializer == "" && attr.DefaultValue == nil {
+	if attr.Initializer == "" &&
+		attr.DefaultValue == nil &&
+		attr.Type != spec.AttributeTypeRef &&
+		attr.Type != spec.AttributeTypeRefList &&
+		attr.Type != spec.AttributeTypeRefMap {
 		return ""
 	}
 
-	return fmt.Sprintf("%s: %s,", attr.ConvertedName, writeDefaultValue(s, attr))
+	return fmt.Sprintf("%s: %s,", attr.ConvertedName, writeDefaultValue(set, s, attr))
 }
 
-func writeDefaultValue(s spec.Specification, attr *spec.Attribute) string {
+func writeDefaultValue(set spec.SpecificationSet, s spec.Specification, attr *spec.Attribute) string {
 
 	if attr.Initializer != "" {
 		return attr.Initializer
+	}
+
+	var pointer string
+	var ref string
+	if mode, ok := attr.Extensions["refMode"]; ok && mode == "pointer" {
+		pointer = "*"
+		ref = "&"
+	}
+
+	switch attr.Type {
+	case spec.AttributeTypeRef:
+		return ref + set.Specification(attr.SubType).Model().EntityName + "{}"
+	case spec.AttributeTypeRefList:
+		return "[]" + pointer + set.Specification(attr.SubType).Model().EntityName + "{}"
+	case spec.AttributeTypeRefMap:
+		return "map[string]" + pointer + set.Specification(attr.SubType).Model().EntityName + "{}"
 	}
 
 	var prefix string

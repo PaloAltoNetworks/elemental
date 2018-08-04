@@ -128,7 +128,7 @@ func New{{ .Spec.Model.EntityName }}() *{{ .Spec.Model.EntityName }} {
 
         {{- range $i, $attr := sortAttributes (.Spec.Attributes $latestVersion) -}}
         {{- if shouldWriteInitializer $.Spec $attr.Name $latestVersion $.PublicMode }}
-        {{- $init := writeInitializer $.Spec $attr }}
+        {{- $init := writeInitializer $.Set $.Spec $attr }}
         {{- if $init }}
         {{ $init }}
         {{- end }}
@@ -402,7 +402,7 @@ var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSp
         DefaultOrder: {{ .DefaultOrder }},
         {{- end }}
         {{- if .DefaultValue }}
-        DefaultValue: {{ writeDefaultValue $.Spec . }},
+        DefaultValue: {{ writeDefaultValue $.Set $.Spec . }},
         {{- end }}
         {{- if .Deprecated }}
         Deprecated: {{ .Deprecated }},
@@ -495,7 +495,7 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
         DefaultOrder: {{ .DefaultOrder }},
         {{- end }}
         {{- if .DefaultValue }}
-        DefaultValue: {{ writeDefaultValue $.Spec . }},
+        DefaultValue: {{ writeDefaultValue $.Set $.Spec . }},
         {{- end }}
         {{- if .Deprecated }}
         Deprecated: {{ .Deprecated }},
