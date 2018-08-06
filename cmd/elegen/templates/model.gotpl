@@ -116,8 +116,9 @@ type {{ .Spec.Model.EntityName }} struct {
 {{- end }}
 
     ModelVersion int `json:"-" bson:"_modelversion"`
-
+    {{- if not .Spec.Model.Detached }}
     sync.Mutex `json:"-" bson:"-"`
+    {{- end }}
 }
 
 // New{{ .Spec.Model.EntityName }} returns a new *{{ .Spec.Model.EntityName }}
