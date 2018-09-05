@@ -11,6 +11,21 @@ import (
 	"strings"
 )
 
+// IsErrorWithCode returns true if the given error is an elemental.Error
+// or elemental.Errors with the status set to the given code.
+func IsErrorWithCode(err error, code int) bool {
+
+	var c int
+	switch e := err.(type) {
+	case Error:
+		c = e.Code
+	case Errors:
+		c = e.Code()
+	}
+
+	return c == code
+}
+
 // An Error represents a computational error.
 //
 // They can be encoded and sent back to the clients.
