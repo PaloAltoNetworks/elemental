@@ -305,3 +305,63 @@ func TestError_DecodeError(t *testing.T) {
 		})
 	})
 }
+
+func TestIsErrorWithCode(t *testing.T) {
+	type args struct {
+		err  error
+		code int
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			"positive test with elemental.Error",
+			args{
+				NewError("title", "description", "subject", 404),
+				404,
+			},
+			true,
+		},
+		{
+			"negative test with elemental.Error",
+			args{
+				NewError("title", "description", "subject", 404),
+				500,
+			},
+			false,
+		},
+		{
+			"positive test with elemental.Errors",
+			args{
+				NewErrors(NewError("title", "description", "subject", 404)),
+				404,
+			},
+			true,
+		},
+		{
+			"negative test with elemental.Errors",
+			args{
+				NewErrors(NewError("title", "description", "subject", 404)),
+				500,
+			},
+			false,
+		},
+		{
+			"test with classic error",
+			args{
+				fmt.Errorf("boom"),
+				500,
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsErrorWithCode(tt.args.err, tt.args.code); got != tt.want {
+				t.Errorf("IsErrorWithCode() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
