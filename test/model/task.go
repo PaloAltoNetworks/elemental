@@ -7,9 +7,6 @@ import (
 	"go.aporeto.io/elemental"
 )
 
-// TaskIndexes lists the attribute compound indexes.
-var TaskIndexes = [][]string{}
-
 // TaskStatusValue represents the possible values for attribute "status".
 type TaskStatusValue string
 
@@ -103,7 +100,7 @@ type Task struct {
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex
+	sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewTask returns a new *Task
@@ -111,7 +108,7 @@ func NewTask() *Task {
 
 	return &Task{
 		ModelVersion: 1,
-		Status:       "TODO",
+		Status:       TaskStatusTODO,
 	}
 }
 

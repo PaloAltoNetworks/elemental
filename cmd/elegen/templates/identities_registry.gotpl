@@ -31,6 +31,18 @@ var (
         {{- end }}
         {{- end }}
     }
+
+    indexesMap = map[string][][]string {
+        {{- range .Set.Specifications }}
+        {{- if shouldRegisterSpecification . $.PublicMode }}
+        "{{ .Model.RestName }}": {{ if len .Model.Indexes }}[][]string {
+            {{- range $i, $compound := .Model.Indexes }}
+            []string{ {{- range $compound }}"{{ . }}",{{- end }} },
+        {{- end }}
+        },{{ else }}nil,{{- end }}
+        {{- end }}
+        {{- end }}
+    }
 )
 
 // ModelVersion returns the current version of the model.
@@ -78,6 +90,11 @@ func(f modelManager) Identifiable(identity elemental.Identity) elemental.Identif
     default:
         return nil
     }
+}
+
+func(f modelManager) Indexes(identity elemental.Identity) [][]string {
+
+    return indexesMap[identity.Name]
 }
 
 func(f modelManager) IdentifiableFromString(any string) elemental.Identifiable {

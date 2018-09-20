@@ -7,9 +7,6 @@ import (
 	"go.aporeto.io/elemental"
 )
 
-// RootIndexes lists the attribute compound indexes.
-var RootIndexes = [][]string{}
-
 // RootIdentity represents the Identity of the object.
 var RootIdentity = elemental.Identity{
 	Name:     "root",
@@ -21,7 +18,7 @@ var RootIdentity = elemental.Identity{
 type Root struct {
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex
+	sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewRoot returns a new *Root

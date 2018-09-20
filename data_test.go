@@ -6,9 +6,6 @@ import (
 	"time"
 )
 
-// ListIndexes lists the attribute compound indexes.
-var ListIndexes = [][]string{}
-
 // ListIdentity represents the Identity of the object.
 var ListIdentity = Identity{
 	Name:     "list",
@@ -100,7 +97,7 @@ type List struct {
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex
+	sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewList returns a new *List
@@ -457,9 +454,6 @@ var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
 	},
 }
 
-// TaskIndexes lists the attribute compound indexes.
-var TaskIndexes = [][]string{}
-
 // TaskStatusValue represents the possible values for attribute "status".
 type TaskStatusValue string
 
@@ -553,7 +547,7 @@ type Task struct {
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex
+	sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewTask returns a new *Task
@@ -561,7 +555,7 @@ func NewTask() *Task {
 
 	return &Task{
 		ModelVersion: 1,
-		Status:       "TODO",
+		Status:       TaskStatusTODO,
 	}
 }
 
@@ -824,6 +818,8 @@ var TaskLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Type:           "enum",
 	},
 }
+
+// UnmarshalableListIdentity represents the Identity of the object.
 var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
 
 // UnmarshalableListsList represents a list of UnmarshalableLists
@@ -919,9 +915,6 @@ func (o *UnmarshalableError) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("error marshalling")
 }
 
-// UserIndexes lists the attribute compound indexes.
-var UserIndexes = [][]string{}
-
 // UserIdentity represents the Identity of the object.
 var UserIdentity = Identity{
 	Name:     "user",
@@ -1001,7 +994,7 @@ type User struct {
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex
+	sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewUser returns a new *User
@@ -1069,6 +1062,8 @@ func (o *User) Validate() error {
 	if err := ValidateRequiredString("userName", o.UserName); err != nil {
 		requiredErrors = append(requiredErrors, err)
 	}
+
+	// Custom object validation.
 
 	if len(requiredErrors) > 0 {
 		return requiredErrors
@@ -1266,7 +1261,7 @@ var UserLowerCaseAttributesMap = map[string]AttributeSpecification{
 type Root struct {
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex
+	sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewRoot returns a new *Root
@@ -1375,6 +1370,13 @@ var (
 		"tsk": TaskIdentity,
 		"usr": UserIdentity,
 	}
+
+	indexesMap = map[string][][]string{
+		"list": nil,
+		"root": nil,
+		"task": nil,
+		"user": nil,
+	}
 )
 
 // ModelVersion returns the current version of the model.
@@ -1425,6 +1427,11 @@ func (f modelManager) Identifiable(identity Identity) Identifiable {
 	default:
 		return nil
 	}
+}
+
+func (f modelManager) Indexes(identity Identity) [][]string {
+
+	return indexesMap[identity.Name]
 }
 
 func (f modelManager) IdentifiableFromString(any string) Identifiable {

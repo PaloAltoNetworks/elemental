@@ -22,6 +22,13 @@ var (
 		"tsk": TaskIdentity,
 		"usr": UserIdentity,
 	}
+
+	indexesMap = map[string][][]string{
+		"list": nil,
+		"root": nil,
+		"task": nil,
+		"user": nil,
+	}
 )
 
 // ModelVersion returns the current version of the model.
@@ -72,6 +79,11 @@ func (f modelManager) Identifiable(identity elemental.Identity) elemental.Identi
 	default:
 		return nil
 	}
+}
+
+func (f modelManager) Indexes(identity elemental.Identity) [][]string {
+
+	return indexesMap[identity.Name]
 }
 
 func (f modelManager) IdentifiableFromString(any string) elemental.Identifiable {

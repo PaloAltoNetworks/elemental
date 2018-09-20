@@ -11,18 +11,18 @@ import "fmt"
 type ModelManager interface {
 
 	// Identifiable returns an Identifiable with the given identity.
-	Identifiable(identity Identity) Identifiable
+	Identifiable(Identity) Identifiable
 
 	// IdentifiableFromString returns an Identifiable from the given
 	// string. The string can be an Identity name, category or alias.
-	IdentifiableFromString(any string) Identifiable
+	IdentifiableFromString(string) Identifiable
 
 	// Identifiables returns an Identifiables with the given identity.
-	Identifiables(identity Identity) Identifiables
+	Identifiables(Identity) Identifiables
 
 	// IdentifiablesFrom returns an Identifiables from the given
 	// string. The string can be an Identity name, category or alias.
-	IdentifiablesFromString(any string) Identifiables
+	IdentifiablesFromString(string) Identifiables
 
 	// IdentityFromName returns the Identity from the given name.
 	IdentityFromName(string) Identity
@@ -35,6 +35,9 @@ type ModelManager interface {
 
 	// IdentityFromAny returns the Identity from the given name, category or alias.
 	IdentityFromAny(string) Identity
+
+	// IndexesForIdentity returns the indexes of the given Identity.
+	Indexes(Identity) [][]string
 
 	// Relationships return the model's elemental.RelationshipsRegistry.
 	Relationships() RelationshipsRegistry

@@ -9,9 +9,6 @@ import (
 	"go.aporeto.io/elemental"
 )
 
-// ListIndexes lists the attribute compound indexes.
-var ListIndexes = [][]string{}
-
 // ListIdentity represents the Identity of the object.
 var ListIdentity = elemental.Identity{
 	Name:     "list",
@@ -103,7 +100,7 @@ type List struct {
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex
+	sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewList returns a new *List

@@ -14,19 +14,6 @@ import (
     {{ end -}}
 )
 
-{{- if not .Spec.Model.Detached }}
-// {{ .Spec.Model.EntityName }}Indexes lists the attribute compound indexes.
-var {{ .Spec.Model.EntityName }}Indexes = [][]string {
-    {{- range $i, $compound := .Spec.Model.Indexes }}
-    {{- range $compound }}
-    []string{
-        "{{ .}}",
-    },
-    {{- end }}
-    {{ end }}
-}
-{{- end }}
-
 {{ $latestVersion := .Spec.LatestAttributesVersion }}
 
 {{ range $i, $enum := buildEnums .Spec $latestVersion }}
@@ -345,9 +332,12 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
 
     {{- range $i, $validationName := .Spec.Model.Validations }}
     // Custom object validation.
-    if err := {{ ($.Set.ValidationMapping.Mapping "elemental" $validationName).Name }}(o); err != nil {
+    {{- $mapping := $.Set.ValidationMapping.Mapping "elemental" $validationName }}
+    {{- if $mapping }}
+    if err := {{ $mapping.Name }}(o); err != nil {
         errors = append(errors, err)
     }
+    {{- end }}
     {{- end }}
 
     if len(requiredErrors) > 0 {

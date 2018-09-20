@@ -7,9 +7,6 @@ import (
 	"go.aporeto.io/elemental"
 )
 
-// UserIndexes lists the attribute compound indexes.
-var UserIndexes = [][]string{}
-
 // UserIdentity represents the Identity of the object.
 var UserIdentity = elemental.Identity{
 	Name:     "user",
@@ -89,7 +86,7 @@ type User struct {
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex
+	sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewUser returns a new *User
@@ -157,6 +154,8 @@ func (o *User) Validate() error {
 	if err := elemental.ValidateRequiredString("userName", o.UserName); err != nil {
 		requiredErrors = append(requiredErrors, err)
 	}
+
+	// Custom object validation.
 
 	if len(requiredErrors) > 0 {
 		return requiredErrors
