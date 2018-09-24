@@ -33,6 +33,7 @@ const (
 var {{ .Spec.Model.EntityName }}Identity = elemental.Identity {
     Name:     "{{ .Spec.Model.RestName}}",
     Category: "{{ .Spec.Model.ResourceName }}",
+    Package:  "{{ .Spec.Model.Package}}",
     Private:  {{ .Spec.Model.Private}},
 }
 {{ end }}

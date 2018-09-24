@@ -76,6 +76,7 @@ type Identity struct {
 	Name     string `json:"name"`
 	Category string `json:"category"`
 	Private  bool   `json:"-"`
+	Package  string `json:"-"`
 }
 
 // MakeIdentity returns a new Identity.
