@@ -1,0 +1,46 @@
+package elemental
+
+import "net/http"
+
+// MockIdentifiable mocks a Identifiable
+type MockIdentifiable struct {
+	DefinedIdentity         string
+	DefinedIdentifier       string
+	ExpectedValidationError error
+}
+
+// MockIdentifiablesList mocks IdentifiablesList
+type MockIdentifiablesList []MockIdentifiable
+
+// Identity returns the Identity of the of the receiver.
+func (p *MockIdentifiable) Identity() Identity {
+	return MakeIdentity(p.DefinedIdentity, "MockCategory")
+}
+
+// Identifier returns the unique identifier of the of the receiver.
+func (p *MockIdentifiable) Identifier() string {
+	return p.DefinedIdentifier
+}
+
+// SetIdentifier sets the unique identifier of the of the receiver.
+func (p *MockIdentifiable) SetIdentifier(DefinedIdentifier string) {
+	p.DefinedIdentifier = DefinedIdentifier
+}
+
+// Version returns the version number
+func (p *MockIdentifiable) Version() int {
+	return 1
+}
+
+// Validate is the method that verifies the object is valid
+func (p *MockIdentifiable) Validate() error {
+	return p.ExpectedValidationError
+}
+
+// MockElementalRequest creates an elemental request from an http request
+func MockElementalRequest(req *http.Request) *Request {
+	r := NewRequest()
+	r.Headers.Set("Origin", req.Header.Get("Origin"))
+
+	return r
+}
