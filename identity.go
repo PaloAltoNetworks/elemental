@@ -166,3 +166,10 @@ type SparseIdentifiable interface {
 
 	Identifiable
 }
+
+// A Patchable the interface of an object that can be patched.
+type Patchable interface {
+
+	// Patch patches the receiver using the given SparseIdentifiable.
+	Patch(SparseIdentifiable)
+}
