@@ -58,9 +58,6 @@ type Identifiable interface {
 	// SetIdentifier sets the unique identifier of the of the receiver.
 	SetIdentifier(string)
 
-	// Shadow returns the shadowed version of the identifiable.
-	// Shadow() Identifiable
-
 	Versionable
 }
 
@@ -145,4 +142,20 @@ type Documentable interface {
 // A Versionable is an object that can be versioned.
 type Versionable interface {
 	Version() int
+}
+
+// A Sparseable is the interface of an object that can return a sparse
+// version of itself.
+type Sparseable interface {
+
+	// ToSparse returns a sparsed version of the object.
+	ToSparse() Identifiable
+}
+
+// A Fullable is the interface of an object that can return a full
+// version of itself.
+type Fullable interface {
+
+	// ToFull returns the full version of the object.
+	ToFull() Identifiable
 }

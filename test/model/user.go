@@ -11,6 +11,7 @@ import (
 var UserIdentity = elemental.Identity{
 	Name:     "user",
 	Category: "users",
+	Package:  "todo-list",
 	Private:  false,
 }
 
@@ -135,6 +136,19 @@ func (o *User) Doc() string {
 func (o *User) String() string {
 
 	return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
+}
+
+// ToSparse returns the sparse version of the model.
+func (o *User) ToSparse() elemental.Identifiable {
+
+	return &SparseUser{
+		ID:         &o.ID,
+		FirstName:  &o.FirstName,
+		LastName:   &o.LastName,
+		ParentID:   &o.ParentID,
+		ParentType: &o.ParentType,
+		UserName:   &o.UserName,
+	}
 }
 
 // Validate valides the current information stored into the structure.
@@ -347,4 +361,134 @@ var UserLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Stored:         true,
 		Type:           "string",
 	},
+}
+
+// SparseUsersList represents a list of SparseUsers
+type SparseUsersList []*User
+
+// Identity returns the identity of the objects in the list.
+func (o SparseUsersList) Identity() elemental.Identity {
+
+	return UserIdentity
+}
+
+// Copy returns a pointer to a copy the SparseUsersList.
+func (o SparseUsersList) Copy() elemental.Identifiables {
+
+	copy := append(UsersList{}, o...)
+	return &copy
+}
+
+// Append appends the objects to the a new copy of the SparseUsersList.
+func (o SparseUsersList) Append(objects ...elemental.Identifiable) elemental.Identifiables {
+
+	out := append(UsersList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*User))
+	}
+
+	return out
+}
+
+// List converts the object to an elemental.IdentifiablesList.
+func (o SparseUsersList) List() elemental.IdentifiablesList {
+
+	out := elemental.IdentifiablesList{}
+	for _, item := range o {
+		out = append(out, item)
+	}
+
+	return out
+}
+
+// DefaultOrder returns the default ordering fields of the content.
+func (o SparseUsersList) DefaultOrder() []string {
+
+	return []string{}
+}
+
+// Version returns the version of the content.
+func (o SparseUsersList) Version() int {
+
+	return 1
+}
+
+// SparseUser represents the sparse version of a user.
+type SparseUser struct {
+	// The identifier.
+	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+
+	// The first name.
+	FirstName *string `json:"firstName,omitempty" bson:"firstname" mapstructure:"firstName,omitempty"`
+
+	// The last name.
+	LastName *string `json:"lastName,omitempty" bson:"lastname" mapstructure:"lastName,omitempty"`
+
+	// The identifier of the parent of the object.
+	ParentID *string `json:"parentID,omitempty" bson:"parentid" mapstructure:"parentID,omitempty"`
+
+	// The type of the parent of the object.
+	ParentType *string `json:"parentType,omitempty" bson:"parenttype" mapstructure:"parentType,omitempty"`
+
+	// the login.
+	UserName *string `json:"userName,omitempty" bson:"username" mapstructure:"userName,omitempty"`
+
+	ModelVersion int `json:"-" bson:"_modelversion"`
+
+	sync.Mutex `json:"-" bson:"-"`
+}
+
+// NewSparseUser returns a new  SparseUser.
+func NewSparseUser() *SparseUser {
+	return &SparseUser{}
+}
+
+// Identity returns the Identity of the sparse object.
+func (o *SparseUser) Identity() elemental.Identity {
+
+	return UserIdentity
+}
+
+// Identifier returns the value of the sparse object's unique identifier.
+func (o *SparseUser) Identifier() string {
+
+	return *o.ID
+}
+
+// SetIdentifier sets the value of the sparse object's unique identifier.
+func (o *SparseUser) SetIdentifier(id string) {
+
+	o.ID = &id
+}
+
+// Version returns the hardcoded version of the model.
+func (o *SparseUser) Version() int {
+
+	return 1
+}
+
+// ToFull returns a full version of the sparse model.
+func (o *SparseUser) ToFull() elemental.Identifiable {
+
+	out := NewUser()
+	if o.ID != nil {
+		out.ID = *o.ID
+	}
+	if o.FirstName != nil {
+		out.FirstName = *o.FirstName
+	}
+	if o.LastName != nil {
+		out.LastName = *o.LastName
+	}
+	if o.ParentID != nil {
+		out.ParentID = *o.ParentID
+	}
+	if o.ParentType != nil {
+		out.ParentType = *o.ParentType
+	}
+	if o.UserName != nil {
+		out.UserName = *o.UserName
+	}
+
+	return out
 }

@@ -214,11 +214,11 @@ func (o *{{ $.Spec.Model.EntityName }}) Set{{ .ConvertedName }}({{ .Name }} {{ .
 {{ end }}
 {{ end }}
 
-{{- if not .Spec.Model.Detached }}
-// Shadow returns the shadowed version of the model.
-func (o *{{ .Spec.Model.EntityName }}) Shadow() *{{ .Spec.Model.EntityName }}Shadow {
+{{- if and (not .Spec.Model.Detached) (not .Spec.Model.IsRoot) }}
+// ToSparse returns the sparse version of the model.
+func (o *{{ .Spec.Model.EntityName }}) ToSparse() elemental.Identifiable {
 
-    return &{{ .Spec.Model.EntityName }}Shadow {
+    return &Sparse{{ .Spec.Model.EntityName }} {
         {{- range .Spec.Attributes $latestVersion }}
         {{ .ConvertedName }}: &o.{{.ConvertedName}},
         {{- end}}
@@ -569,26 +569,86 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
 }
 {{- end }}
 
-{{- if not .Spec.Model.Detached }}
-// {{ .Spec.Model.EntityName }}Shadow represents the shadowed model of a {{ .Spec.Model.RestName }}
-type {{ .Spec.Model.EntityName }}Shadow struct {
-{{ range .Spec.Attributes $latestVersion -}}
-{{ attrToField $.Set true . }}
-{{- end }}
+{{- if and (not .Spec.Model.Detached) (not .Spec.Model.IsRoot) }}
+
+// Sparse{{ .Spec.Model.EntityNamePlural }}List represents a list of Sparse{{ .Spec.Model.EntityNamePlural }}
+type Sparse{{ .Spec.Model.EntityNamePlural }}List []*{{ .Spec.Model.EntityName}}
+
+// Identity returns the identity of the objects in the list.
+func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) Identity() elemental.Identity {
+
+    return {{ .Spec.Model.EntityName}}Identity
+}
+
+// Copy returns a pointer to a copy the Sparse{{ .Spec.Model.EntityNamePlural }}List.
+func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) Copy() elemental.Identifiables {
+
+    copy := append({{ .Spec.Model.EntityNamePlural }}List{}, o...)
+    return &copy
+}
+
+// Append appends the objects to the a new copy of the Sparse{{ .Spec.Model.EntityNamePlural }}List.
+func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) Append(objects ...elemental.Identifiable) elemental.Identifiables {
+
+    out := append({{ .Spec.Model.EntityNamePlural }}List{}, o...)
+    for _, obj := range objects {
+        out = append(out, obj.(*{{ .Spec.Model.EntityName}}))
+    }
+
+    return out
+}
+
+// List converts the object to an elemental.IdentifiablesList.
+func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) List() elemental.IdentifiablesList {
+
+    out := elemental.IdentifiablesList{}
+    for _, item := range o {
+        out = append(out, item)
+    }
+
+    return out
+}
+
+// DefaultOrder returns the default ordering fields of the content.
+func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) DefaultOrder() []string {
+
+    return []string{
+        {{ range .Spec.OrderingAttributes $latestVersion -}}
+        "{{ .Name }}",
+        {{ end }}
+    }
+}
+
+// Version returns the version of the content.
+func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) Version() int {
+
+    return {{ .Set.APIInfo.Version }}
+}
+
+// Sparse{{ .Spec.Model.EntityName }} represents the sparse version of a {{ .Spec.Model.RestName }}.
+type Sparse{{ .Spec.Model.EntityName }} struct {
+    {{ range .Spec.Attributes $latestVersion -}}
+    {{ attrToField $.Set true . }}
+    {{- end }}
 
     ModelVersion int `json:"-" bson:"_modelversion"`
 
     sync.Mutex `json:"-" bson:"-"`
 }
 
-// Identity returns the Identity of the object.
-func (o *{{ .Spec.Model.EntityName }}Shadow) Identity() elemental.Identity {
+// NewSparse{{ .Spec.Model.EntityName }} returns a new  Sparse{{ .Spec.Model.EntityName }}.
+func NewSparse{{ .Spec.Model.EntityName }}() *Sparse{{ .Spec.Model.EntityName }} {
+    return &Sparse{{ .Spec.Model.EntityName }}{}
+}
+
+// Identity returns the Identity of the sparse object.
+func (o *Sparse{{ .Spec.Model.EntityName }}) Identity() elemental.Identity {
 
     return {{ .Spec.Model.EntityName }}Identity
 }
 
-// Identifier returns the value of the object's unique identifier.
-func (o *{{ .Spec.Model.EntityName }}Shadow) Identifier() string {
+// Identifier returns the value of the sparse object's unique identifier.
+func (o *Sparse{{ .Spec.Model.EntityName }}) Identifier() string {
 
     {{ if .Spec.Identifier -}}
     return *o.{{ .Spec.Identifier.ConvertedName }}
@@ -597,22 +657,30 @@ func (o *{{ .Spec.Model.EntityName }}Shadow) Identifier() string {
     {{- end }}
 }
 
-// SetIdentifier sets the value of the object's unique identifier.
-func (o *{{ .Spec.Model.EntityName }}Shadow) SetIdentifier(id string) {
+// SetIdentifier sets the value of the sparse object's unique identifier.
+func (o *Sparse{{ .Spec.Model.EntityName }}) SetIdentifier(id string) {
 
     {{ if .Spec.Identifier -}}
     o.{{ .Spec.Identifier.ConvertedName }} = &id
     {{- end }}
 }
 
-// Unshadow returns a non shadowed version of the shadowed model.
-func (o *{{ .Spec.Model.EntityName }}Shadow) Unshadow() *{{ .Spec.Model.EntityName }} {
+// Version returns the hardcoded version of the model.
+func (o *Sparse{{ .Spec.Model.EntityName }}) Version() int {
+
+    return {{ .Set.APIInfo.Version }}
+}
+
+// ToFull returns a full version of the sparse model.
+func (o *Sparse{{ .Spec.Model.EntityName }}) ToFull() elemental.Identifiable {
 
     out := New{{ .Spec.Model.EntityName }}()
     {{- range .Spec.Attributes $latestVersion }}
-    out.{{ .ConvertedName }} = *o.{{.ConvertedName}}
+    if o.{{.ConvertedName}} != nil {
+        out.{{ .ConvertedName }} = *o.{{.ConvertedName}}
+    }
     {{- end}}
 
     return out
 }
-{{- end }}
+{{ end }}

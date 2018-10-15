@@ -10,6 +10,7 @@ import (
 var ListIdentity = Identity{
 	Name:     "list",
 	Category: "lists",
+	Package:  "todo-list",
 	Private:  false,
 }
 
@@ -158,6 +159,23 @@ func (o *List) GetName() string {
 func (o *List) SetName(name string) {
 
 	o.Name = name
+}
+
+// ToSparse returns the sparse version of the model.
+func (o *List) ToSparse() Identifiable {
+
+	return &SparseList{
+		ID:           &o.ID,
+		CreationOnly: &o.CreationOnly,
+		Date:         &o.Date,
+		Description:  &o.Description,
+		Name:         &o.Name,
+		ParentID:     &o.ParentID,
+		ParentType:   &o.ParentType,
+		ReadOnly:     &o.ReadOnly,
+		Slice:        &o.Slice,
+		Unexposed:    &o.Unexposed,
+	}
 }
 
 // Validate valides the current information stored into the structure.
@@ -454,6 +472,160 @@ var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
 	},
 }
 
+// SparseListsList represents a list of SparseLists
+type SparseListsList []*List
+
+// Identity returns the identity of the objects in the list.
+func (o SparseListsList) Identity() Identity {
+
+	return ListIdentity
+}
+
+// Copy returns a pointer to a copy the SparseListsList.
+func (o SparseListsList) Copy() Identifiables {
+
+	copy := append(ListsList{}, o...)
+	return &copy
+}
+
+// Append appends the objects to the a new copy of the SparseListsList.
+func (o SparseListsList) Append(objects ...Identifiable) Identifiables {
+
+	out := append(ListsList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*List))
+	}
+
+	return out
+}
+
+// List converts the object to an IdentifiablesList.
+func (o SparseListsList) List() IdentifiablesList {
+
+	out := IdentifiablesList{}
+	for _, item := range o {
+		out = append(out, item)
+	}
+
+	return out
+}
+
+// DefaultOrder returns the default ordering fields of the content.
+func (o SparseListsList) DefaultOrder() []string {
+
+	return []string{}
+}
+
+// Version returns the version of the content.
+func (o SparseListsList) Version() int {
+
+	return 1
+}
+
+// SparseList represents the sparse version of a list.
+type SparseList struct {
+	// The identifier.
+	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+
+	// This attribute is creation only.
+	CreationOnly *string `json:"creationOnly,omitempty" bson:"creationonly" mapstructure:"creationOnly,omitempty"`
+
+	// The date.
+	Date *time.Time `json:"date,omitempty" bson:"date" mapstructure:"date,omitempty"`
+
+	// The description.
+	Description *string `json:"description,omitempty" bson:"description" mapstructure:"description,omitempty"`
+
+	// The name.
+	Name *string `json:"name,omitempty" bson:"name" mapstructure:"name,omitempty"`
+
+	// The identifier of the parent of the object.
+	ParentID *string `json:"parentID,omitempty" bson:"parentid" mapstructure:"parentID,omitempty"`
+
+	// The type of the parent of the object.
+	ParentType *string `json:"parentType,omitempty" bson:"parenttype" mapstructure:"parentType,omitempty"`
+
+	// This attribute is readonly.
+	ReadOnly *string `json:"readOnly,omitempty" bson:"readonly" mapstructure:"readOnly,omitempty"`
+
+	// this is a slice.
+	Slice *[]string `json:"slice,omitempty" bson:"slice" mapstructure:"slice,omitempty"`
+
+	// This attribute is not exposed.
+	Unexposed *string `json:"-,omitempty" bson:"unexposed" mapstructure:"-,omitempty"`
+
+	ModelVersion int `json:"-" bson:"_modelversion"`
+
+	sync.Mutex `json:"-" bson:"-"`
+}
+
+// NewSparseList returns a new  SparseList.
+func NewSparseList() *SparseList {
+	return &SparseList{}
+}
+
+// Identity returns the Identity of the sparse object.
+func (o *SparseList) Identity() Identity {
+
+	return ListIdentity
+}
+
+// Identifier returns the value of the sparse object's unique identifier.
+func (o *SparseList) Identifier() string {
+
+	return *o.ID
+}
+
+// SetIdentifier sets the value of the sparse object's unique identifier.
+func (o *SparseList) SetIdentifier(id string) {
+
+	o.ID = &id
+}
+
+// Version returns the hardcoded version of the model.
+func (o *SparseList) Version() int {
+
+	return 1
+}
+
+// ToFull returns a full version of the sparse model.
+func (o *SparseList) ToFull() Identifiable {
+
+	out := NewList()
+	if o.ID != nil {
+		out.ID = *o.ID
+	}
+	if o.CreationOnly != nil {
+		out.CreationOnly = *o.CreationOnly
+	}
+	if o.Date != nil {
+		out.Date = *o.Date
+	}
+	if o.Description != nil {
+		out.Description = *o.Description
+	}
+	if o.Name != nil {
+		out.Name = *o.Name
+	}
+	if o.ParentID != nil {
+		out.ParentID = *o.ParentID
+	}
+	if o.ParentType != nil {
+		out.ParentType = *o.ParentType
+	}
+	if o.ReadOnly != nil {
+		out.ReadOnly = *o.ReadOnly
+	}
+	if o.Slice != nil {
+		out.Slice = *o.Slice
+	}
+	if o.Unexposed != nil {
+		out.Unexposed = *o.Unexposed
+	}
+
+	return out
+}
+
 // TaskStatusValue represents the possible values for attribute "status".
 type TaskStatusValue string
 
@@ -472,6 +644,7 @@ const (
 var TaskIdentity = Identity{
 	Name:     "task",
 	Category: "tasks",
+	Package:  "todo-list",
 	Private:  false,
 }
 
@@ -609,6 +782,19 @@ func (o *Task) GetName() string {
 func (o *Task) SetName(name string) {
 
 	o.Name = name
+}
+
+// ToSparse returns the sparse version of the model.
+func (o *Task) ToSparse() Identifiable {
+
+	return &SparseTask{
+		ID:          &o.ID,
+		Description: &o.Description,
+		Name:        &o.Name,
+		ParentID:    &o.ParentID,
+		ParentType:  &o.ParentType,
+		Status:      &o.Status,
+	}
 }
 
 // Validate valides the current information stored into the structure.
@@ -819,6 +1005,136 @@ var TaskLowerCaseAttributesMap = map[string]AttributeSpecification{
 	},
 }
 
+// SparseTasksList represents a list of SparseTasks
+type SparseTasksList []*Task
+
+// Identity returns the identity of the objects in the list.
+func (o SparseTasksList) Identity() Identity {
+
+	return TaskIdentity
+}
+
+// Copy returns a pointer to a copy the SparseTasksList.
+func (o SparseTasksList) Copy() Identifiables {
+
+	copy := append(TasksList{}, o...)
+	return &copy
+}
+
+// Append appends the objects to the a new copy of the SparseTasksList.
+func (o SparseTasksList) Append(objects ...Identifiable) Identifiables {
+
+	out := append(TasksList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*Task))
+	}
+
+	return out
+}
+
+// List converts the object to an IdentifiablesList.
+func (o SparseTasksList) List() IdentifiablesList {
+
+	out := IdentifiablesList{}
+	for _, item := range o {
+		out = append(out, item)
+	}
+
+	return out
+}
+
+// DefaultOrder returns the default ordering fields of the content.
+func (o SparseTasksList) DefaultOrder() []string {
+
+	return []string{}
+}
+
+// Version returns the version of the content.
+func (o SparseTasksList) Version() int {
+
+	return 1
+}
+
+// SparseTask represents the sparse version of a task.
+type SparseTask struct {
+	// The identifier.
+	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+
+	// The description.
+	Description *string `json:"description,omitempty" bson:"description" mapstructure:"description,omitempty"`
+
+	// The name.
+	Name *string `json:"name,omitempty" bson:"name" mapstructure:"name,omitempty"`
+
+	// The identifier of the parent of the object.
+	ParentID *string `json:"parentID,omitempty" bson:"parentid" mapstructure:"parentID,omitempty"`
+
+	// The type of the parent of the object.
+	ParentType *string `json:"parentType,omitempty" bson:"parenttype" mapstructure:"parentType,omitempty"`
+
+	// The status of the task.
+	Status *TaskStatusValue `json:"status,omitempty" bson:"status" mapstructure:"status,omitempty"`
+
+	ModelVersion int `json:"-" bson:"_modelversion"`
+
+	sync.Mutex `json:"-" bson:"-"`
+}
+
+// NewSparseTask returns a new  SparseTask.
+func NewSparseTask() *SparseTask {
+	return &SparseTask{}
+}
+
+// Identity returns the Identity of the sparse object.
+func (o *SparseTask) Identity() Identity {
+
+	return TaskIdentity
+}
+
+// Identifier returns the value of the sparse object's unique identifier.
+func (o *SparseTask) Identifier() string {
+
+	return *o.ID
+}
+
+// SetIdentifier sets the value of the sparse object's unique identifier.
+func (o *SparseTask) SetIdentifier(id string) {
+
+	o.ID = &id
+}
+
+// Version returns the hardcoded version of the model.
+func (o *SparseTask) Version() int {
+
+	return 1
+}
+
+// ToFull returns a full version of the sparse model.
+func (o *SparseTask) ToFull() Identifiable {
+
+	out := NewTask()
+	if o.ID != nil {
+		out.ID = *o.ID
+	}
+	if o.Description != nil {
+		out.Description = *o.Description
+	}
+	if o.Name != nil {
+		out.Name = *o.Name
+	}
+	if o.ParentID != nil {
+		out.ParentID = *o.ParentID
+	}
+	if o.ParentType != nil {
+		out.ParentType = *o.ParentType
+	}
+	if o.Status != nil {
+		out.Status = *o.Status
+	}
+
+	return out
+}
+
 // UnmarshalableListIdentity represents the Identity of the object.
 var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
 
@@ -919,6 +1235,7 @@ func (o *UnmarshalableError) MarshalJSON() ([]byte, error) {
 var UserIdentity = Identity{
 	Name:     "user",
 	Category: "users",
+	Package:  "todo-list",
 	Private:  false,
 }
 
@@ -1043,6 +1360,19 @@ func (o *User) Doc() string {
 func (o *User) String() string {
 
 	return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
+}
+
+// ToSparse returns the sparse version of the model.
+func (o *User) ToSparse() Identifiable {
+
+	return &SparseUser{
+		ID:         &o.ID,
+		FirstName:  &o.FirstName,
+		LastName:   &o.LastName,
+		ParentID:   &o.ParentID,
+		ParentType: &o.ParentType,
+		UserName:   &o.UserName,
+	}
 }
 
 // Validate valides the current information stored into the structure.
@@ -1255,6 +1585,136 @@ var UserLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Stored:         true,
 		Type:           "string",
 	},
+}
+
+// SparseUsersList represents a list of SparseUsers
+type SparseUsersList []*User
+
+// Identity returns the identity of the objects in the list.
+func (o SparseUsersList) Identity() Identity {
+
+	return UserIdentity
+}
+
+// Copy returns a pointer to a copy the SparseUsersList.
+func (o SparseUsersList) Copy() Identifiables {
+
+	copy := append(UsersList{}, o...)
+	return &copy
+}
+
+// Append appends the objects to the a new copy of the SparseUsersList.
+func (o SparseUsersList) Append(objects ...Identifiable) Identifiables {
+
+	out := append(UsersList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*User))
+	}
+
+	return out
+}
+
+// List converts the object to an IdentifiablesList.
+func (o SparseUsersList) List() IdentifiablesList {
+
+	out := IdentifiablesList{}
+	for _, item := range o {
+		out = append(out, item)
+	}
+
+	return out
+}
+
+// DefaultOrder returns the default ordering fields of the content.
+func (o SparseUsersList) DefaultOrder() []string {
+
+	return []string{}
+}
+
+// Version returns the version of the content.
+func (o SparseUsersList) Version() int {
+
+	return 1
+}
+
+// SparseUser represents the sparse version of a user.
+type SparseUser struct {
+	// The identifier.
+	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+
+	// The first name.
+	FirstName *string `json:"firstName,omitempty" bson:"firstname" mapstructure:"firstName,omitempty"`
+
+	// The last name.
+	LastName *string `json:"lastName,omitempty" bson:"lastname" mapstructure:"lastName,omitempty"`
+
+	// The identifier of the parent of the object.
+	ParentID *string `json:"parentID,omitempty" bson:"parentid" mapstructure:"parentID,omitempty"`
+
+	// The type of the parent of the object.
+	ParentType *string `json:"parentType,omitempty" bson:"parenttype" mapstructure:"parentType,omitempty"`
+
+	// the login.
+	UserName *string `json:"userName,omitempty" bson:"username" mapstructure:"userName,omitempty"`
+
+	ModelVersion int `json:"-" bson:"_modelversion"`
+
+	sync.Mutex `json:"-" bson:"-"`
+}
+
+// NewSparseUser returns a new  SparseUser.
+func NewSparseUser() *SparseUser {
+	return &SparseUser{}
+}
+
+// Identity returns the Identity of the sparse object.
+func (o *SparseUser) Identity() Identity {
+
+	return UserIdentity
+}
+
+// Identifier returns the value of the sparse object's unique identifier.
+func (o *SparseUser) Identifier() string {
+
+	return *o.ID
+}
+
+// SetIdentifier sets the value of the sparse object's unique identifier.
+func (o *SparseUser) SetIdentifier(id string) {
+
+	o.ID = &id
+}
+
+// Version returns the hardcoded version of the model.
+func (o *SparseUser) Version() int {
+
+	return 1
+}
+
+// ToFull returns a full version of the sparse model.
+func (o *SparseUser) ToFull() Identifiable {
+
+	out := NewUser()
+	if o.ID != nil {
+		out.ID = *o.ID
+	}
+	if o.FirstName != nil {
+		out.FirstName = *o.FirstName
+	}
+	if o.LastName != nil {
+		out.LastName = *o.LastName
+	}
+	if o.ParentID != nil {
+		out.ParentID = *o.ParentID
+	}
+	if o.ParentType != nil {
+		out.ParentType = *o.ParentType
+	}
+	if o.UserName != nil {
+		out.UserName = *o.UserName
+	}
+
+	return out
 }
 
 // Root represents the model of a root
