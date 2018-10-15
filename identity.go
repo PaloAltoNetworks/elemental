@@ -58,6 +58,9 @@ type Identifiable interface {
 	// SetIdentifier sets the unique identifier of the of the receiver.
 	SetIdentifier(string)
 
+	// Shadow returns the shadowed version of the identifiable.
+	// Shadow() Identifiable
+
 	Versionable
 }
 

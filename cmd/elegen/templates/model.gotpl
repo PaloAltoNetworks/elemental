@@ -100,7 +100,7 @@ func (o {{ .Spec.Model.EntityNamePlural }}List) Version() int {
 // {{ .Spec.Model.EntityName }} represents the model of a {{ .Spec.Model.RestName }}
 type {{ .Spec.Model.EntityName }} struct {
 {{ range .Spec.Attributes $latestVersion -}}
-{{ attrToField $.Set . }}
+{{ attrToField $.Set false . }}
 {{- end }}
 
     ModelVersion int `json:"-" bson:"_modelversion"`
@@ -213,6 +213,18 @@ func (o *{{ $.Spec.Model.EntityName }}) Set{{ .ConvertedName }}({{ .Name }} {{ .
 }
 {{ end }}
 {{ end }}
+
+{{- if not .Spec.Model.Detached }}
+// Shadow returns the shadowed version of the model.
+func (o *{{ .Spec.Model.EntityName }}) Shadow() *{{ .Spec.Model.EntityName }}Shadow {
+
+    return &{{ .Spec.Model.EntityName }}Shadow {
+        {{- range .Spec.Attributes $latestVersion }}
+        {{ .ConvertedName }}: &o.{{.ConvertedName}},
+        {{- end}}
+    }
+}
+{{- end }}
 
 // Validate valides the current information stored into the structure.
 func (o *{{ .Spec.Model.EntityName }}) Validate() error {
@@ -554,5 +566,53 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
     },
     {{- end }}
     {{- end }}
+}
+{{- end }}
+
+{{- if not .Spec.Model.Detached }}
+// {{ .Spec.Model.EntityName }}Shadow represents the shadowed model of a {{ .Spec.Model.RestName }}
+type {{ .Spec.Model.EntityName }}Shadow struct {
+{{ range .Spec.Attributes $latestVersion -}}
+{{ attrToField $.Set true . }}
+{{- end }}
+
+    ModelVersion int `json:"-" bson:"_modelversion"`
+
+    sync.Mutex `json:"-" bson:"-"`
+}
+
+// Identity returns the Identity of the object.
+func (o *{{ .Spec.Model.EntityName }}Shadow) Identity() elemental.Identity {
+
+    return {{ .Spec.Model.EntityName }}Identity
+}
+
+// Identifier returns the value of the object's unique identifier.
+func (o *{{ .Spec.Model.EntityName }}Shadow) Identifier() string {
+
+    {{ if .Spec.Identifier -}}
+    return *o.{{ .Spec.Identifier.ConvertedName }}
+    {{- else -}}
+    return ""
+    {{- end }}
+}
+
+// SetIdentifier sets the value of the object's unique identifier.
+func (o *{{ .Spec.Model.EntityName }}Shadow) SetIdentifier(id string) {
+
+    {{ if .Spec.Identifier -}}
+    o.{{ .Spec.Identifier.ConvertedName }} = &id
+    {{- end }}
+}
+
+// Unshadow returns a non shadowed version of the shadowed model.
+func (o *{{ .Spec.Model.EntityName }}Shadow) Unshadow() *{{ .Spec.Model.EntityName }} {
+
+    out := New{{ .Spec.Model.EntityName }}()
+    {{- range .Spec.Attributes $latestVersion }}
+    out.{{ .ConvertedName }} = *o.{{.ConvertedName}}
+    {{- end}}
+
+    return out
 }
 {{- end }}

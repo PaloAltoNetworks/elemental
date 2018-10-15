@@ -81,7 +81,7 @@ func attributeNameConverter(attrName string) string {
 	return strings.Title(attrName)
 }
 
-func attrToField(set spec.SpecificationSet, attr *spec.Attribute) string {
+func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) string {
 
 	json := attr.Name
 	bson := strings.ToLower(attr.Name)
@@ -90,7 +90,7 @@ func attrToField(set spec.SpecificationSet, attr *spec.Attribute) string {
 		json = "-"
 	}
 
-	if attr.OmitEmpty {
+	if attr.OmitEmpty || shadow {
 		json += ",omitempty"
 	}
 
@@ -110,17 +110,21 @@ func attrToField(set spec.SpecificationSet, attr *spec.Attribute) string {
 		pointer = "*"
 	}
 
+	var pointerShadow string
+	if shadow {
+		pointerShadow = "*"
+	}
+
 	var convertedType string
 	switch attr.Type {
 	case spec.AttributeTypeRef:
-
-		convertedType = pointer + set.Specification(attr.SubType).Model().EntityName
+		convertedType = pointerShadow + pointer + set.Specification(attr.SubType).Model().EntityName
 	case spec.AttributeTypeRefList:
-		convertedType = "[]" + pointer + set.Specification(attr.SubType).Model().EntityName
+		convertedType = pointerShadow + "[]" + pointer + set.Specification(attr.SubType).Model().EntityName
 	case spec.AttributeTypeRefMap:
-		convertedType = "map[string]" + pointer + set.Specification(attr.SubType).Model().EntityName
+		convertedType = pointerShadow + "map[string]" + pointer + set.Specification(attr.SubType).Model().EntityName
 	default:
-		convertedType = attr.ConvertedType
+		convertedType = pointerShadow + attr.ConvertedType
 	}
 
 	return fmt.Sprintf(
@@ -130,7 +134,7 @@ func attrToField(set spec.SpecificationSet, attr *spec.Attribute) string {
 		convertedType,
 		json,
 		bson,
-		json,
+		strings.Replace(json, ",omitempty", "", 1),
 	)
 }
 
