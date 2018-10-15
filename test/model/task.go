@@ -387,7 +387,7 @@ var TaskLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 }
 
 // SparseTasksList represents a list of SparseTasks
-type SparseTasksList []*Task
+type SparseTasksList []*SparseTask
 
 // Identity returns the identity of the objects in the list.
 func (o SparseTasksList) Identity() elemental.Identity {
@@ -398,16 +398,16 @@ func (o SparseTasksList) Identity() elemental.Identity {
 // Copy returns a pointer to a copy the SparseTasksList.
 func (o SparseTasksList) Copy() elemental.Identifiables {
 
-	copy := append(TasksList{}, o...)
+	copy := append(SparseTasksList{}, o...)
 	return &copy
 }
 
 // Append appends the objects to the a new copy of the SparseTasksList.
 func (o SparseTasksList) Append(objects ...elemental.Identifiable) elemental.Identifiables {
 
-	out := append(TasksList{}, o...)
+	out := append(SparseTasksList{}, o...)
 	for _, obj := range objects {
-		out = append(out, obj.(*Task))
+		out = append(out, obj.(*SparseTask))
 	}
 
 	return out

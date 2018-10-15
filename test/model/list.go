@@ -476,7 +476,7 @@ var ListLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 }
 
 // SparseListsList represents a list of SparseLists
-type SparseListsList []*List
+type SparseListsList []*SparseList
 
 // Identity returns the identity of the objects in the list.
 func (o SparseListsList) Identity() elemental.Identity {
@@ -487,16 +487,16 @@ func (o SparseListsList) Identity() elemental.Identity {
 // Copy returns a pointer to a copy the SparseListsList.
 func (o SparseListsList) Copy() elemental.Identifiables {
 
-	copy := append(ListsList{}, o...)
+	copy := append(SparseListsList{}, o...)
 	return &copy
 }
 
 // Append appends the objects to the a new copy of the SparseListsList.
 func (o SparseListsList) Append(objects ...elemental.Identifiable) elemental.Identifiables {
 
-	out := append(ListsList{}, o...)
+	out := append(SparseListsList{}, o...)
 	for _, obj := range objects {
-		out = append(out, obj.(*List))
+		out = append(out, obj.(*SparseList))
 	}
 
 	return out

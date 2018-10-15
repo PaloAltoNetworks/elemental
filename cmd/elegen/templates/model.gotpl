@@ -572,7 +572,7 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
 {{- if and (not .Spec.Model.Detached) (not .Spec.Model.IsRoot) }}
 
 // Sparse{{ .Spec.Model.EntityNamePlural }}List represents a list of Sparse{{ .Spec.Model.EntityNamePlural }}
-type Sparse{{ .Spec.Model.EntityNamePlural }}List []*{{ .Spec.Model.EntityName}}
+type Sparse{{ .Spec.Model.EntityNamePlural }}List []*Sparse{{ .Spec.Model.EntityName}}
 
 // Identity returns the identity of the objects in the list.
 func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) Identity() elemental.Identity {
@@ -583,16 +583,16 @@ func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) Identity() elemental.Ident
 // Copy returns a pointer to a copy the Sparse{{ .Spec.Model.EntityNamePlural }}List.
 func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) Copy() elemental.Identifiables {
 
-    copy := append({{ .Spec.Model.EntityNamePlural }}List{}, o...)
+    copy := append(Sparse{{ .Spec.Model.EntityNamePlural }}List{}, o...)
     return &copy
 }
 
 // Append appends the objects to the a new copy of the Sparse{{ .Spec.Model.EntityNamePlural }}List.
 func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) Append(objects ...elemental.Identifiable) elemental.Identifiables {
 
-    out := append({{ .Spec.Model.EntityNamePlural }}List{}, o...)
+    out := append(Sparse{{ .Spec.Model.EntityNamePlural }}List{}, o...)
     for _, obj := range objects {
-        out = append(out, obj.(*{{ .Spec.Model.EntityName}}))
+        out = append(out, obj.(*Sparse{{ .Spec.Model.EntityName}}))
     }
 
     return out

@@ -473,7 +473,7 @@ var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
 }
 
 // SparseListsList represents a list of SparseLists
-type SparseListsList []*List
+type SparseListsList []*SparseList
 
 // Identity returns the identity of the objects in the list.
 func (o SparseListsList) Identity() Identity {
@@ -484,16 +484,16 @@ func (o SparseListsList) Identity() Identity {
 // Copy returns a pointer to a copy the SparseListsList.
 func (o SparseListsList) Copy() Identifiables {
 
-	copy := append(ListsList{}, o...)
+	copy := append(SparseListsList{}, o...)
 	return &copy
 }
 
 // Append appends the objects to the a new copy of the SparseListsList.
 func (o SparseListsList) Append(objects ...Identifiable) Identifiables {
 
-	out := append(ListsList{}, o...)
+	out := append(SparseListsList{}, o...)
 	for _, obj := range objects {
-		out = append(out, obj.(*List))
+		out = append(out, obj.(*SparseList))
 	}
 
 	return out
@@ -1006,7 +1006,7 @@ var TaskLowerCaseAttributesMap = map[string]AttributeSpecification{
 }
 
 // SparseTasksList represents a list of SparseTasks
-type SparseTasksList []*Task
+type SparseTasksList []*SparseTask
 
 // Identity returns the identity of the objects in the list.
 func (o SparseTasksList) Identity() Identity {
@@ -1017,16 +1017,16 @@ func (o SparseTasksList) Identity() Identity {
 // Copy returns a pointer to a copy the SparseTasksList.
 func (o SparseTasksList) Copy() Identifiables {
 
-	copy := append(TasksList{}, o...)
+	copy := append(SparseTasksList{}, o...)
 	return &copy
 }
 
 // Append appends the objects to the a new copy of the SparseTasksList.
 func (o SparseTasksList) Append(objects ...Identifiable) Identifiables {
 
-	out := append(TasksList{}, o...)
+	out := append(SparseTasksList{}, o...)
 	for _, obj := range objects {
-		out = append(out, obj.(*Task))
+		out = append(out, obj.(*SparseTask))
 	}
 
 	return out
@@ -1588,7 +1588,7 @@ var UserLowerCaseAttributesMap = map[string]AttributeSpecification{
 }
 
 // SparseUsersList represents a list of SparseUsers
-type SparseUsersList []*User
+type SparseUsersList []*SparseUser
 
 // Identity returns the identity of the objects in the list.
 func (o SparseUsersList) Identity() Identity {
@@ -1599,16 +1599,16 @@ func (o SparseUsersList) Identity() Identity {
 // Copy returns a pointer to a copy the SparseUsersList.
 func (o SparseUsersList) Copy() Identifiables {
 
-	copy := append(UsersList{}, o...)
+	copy := append(SparseUsersList{}, o...)
 	return &copy
 }
 
 // Append appends the objects to the a new copy of the SparseUsersList.
 func (o SparseUsersList) Append(objects ...Identifiable) Identifiables {
 
-	out := append(UsersList{}, o...)
+	out := append(SparseUsersList{}, o...)
 	for _, obj := range objects {
-		out = append(out, obj.(*User))
+		out = append(out, obj.(*SparseUser))
 	}
 
 	return out

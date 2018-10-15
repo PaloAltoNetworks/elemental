@@ -364,7 +364,7 @@ var UserLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 }
 
 // SparseUsersList represents a list of SparseUsers
-type SparseUsersList []*User
+type SparseUsersList []*SparseUser
 
 // Identity returns the identity of the objects in the list.
 func (o SparseUsersList) Identity() elemental.Identity {
@@ -375,16 +375,16 @@ func (o SparseUsersList) Identity() elemental.Identity {
 // Copy returns a pointer to a copy the SparseUsersList.
 func (o SparseUsersList) Copy() elemental.Identifiables {
 
-	copy := append(UsersList{}, o...)
+	copy := append(SparseUsersList{}, o...)
 	return &copy
 }
 
 // Append appends the objects to the a new copy of the SparseUsersList.
 func (o SparseUsersList) Append(objects ...elemental.Identifiable) elemental.Identifiables {
 
-	out := append(UsersList{}, o...)
+	out := append(SparseUsersList{}, o...)
 	for _, obj := range objects {
-		out = append(out, obj.(*User))
+		out = append(out, obj.(*SparseUser))
 	}
 
 	return out
