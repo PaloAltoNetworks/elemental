@@ -92,6 +92,22 @@ func(f modelManager) Identifiable(identity elemental.Identity) elemental.Identif
     }
 }
 
+func(f modelManager) SparseIdentifiable(identity elemental.Identity) elemental.SparseIdentifiable {
+
+    switch identity {
+    {{ range .Set.Specifications }}
+    {{- if shouldRegisterSpecification . $.PublicMode }}
+    {{- if not .Model.IsRoot }}
+    case {{ .Model.EntityName }}Identity:
+        return NewSparse{{ .Model.EntityName }}()
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    default:
+        return nil
+    }
+}
+
 func(f modelManager) Indexes(identity elemental.Identity) [][]string {
 
     return indexesMap[identity.Name]

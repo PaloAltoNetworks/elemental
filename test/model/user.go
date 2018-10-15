@@ -139,7 +139,7 @@ func (o *User) String() string {
 }
 
 // ToSparse returns the sparse version of the model.
-func (o *User) ToSparse() elemental.Identifiable {
+func (o *User) ToSparse() elemental.SparseIdentifiable {
 
 	return &SparseUser{
 		ID:         &o.ID,
@@ -148,6 +148,33 @@ func (o *User) ToSparse() elemental.Identifiable {
 		ParentID:   &o.ParentID,
 		ParentType: &o.ParentType,
 		UserName:   &o.UserName,
+	}
+}
+
+// Patch apply the non nil value of a *SparseUser to the object.
+func (o *User) Patch(sparse elemental.SparseIdentifiable) {
+	if !sparse.Identity().IsEqual(o.Identity()) {
+		panic("cannot patch from a parse with different identity")
+	}
+
+	so := sparse.(*SparseUser)
+	if so.ID != nil {
+		o.ID = *so.ID
+	}
+	if so.FirstName != nil {
+		o.FirstName = *so.FirstName
+	}
+	if so.LastName != nil {
+		o.LastName = *so.LastName
+	}
+	if so.ParentID != nil {
+		o.ParentID = *so.ParentID
+	}
+	if so.ParentType != nil {
+		o.ParentType = *so.ParentType
+	}
+	if so.UserName != nil {
+		o.UserName = *so.UserName
 	}
 }
 
@@ -468,7 +495,7 @@ func (o *SparseUser) Version() int {
 }
 
 // ToFull returns a full version of the sparse model.
-func (o *SparseUser) ToFull() elemental.Identifiable {
+func (o *SparseUser) ToFull() elemental.FullIdentifiable {
 
 	out := NewUser()
 	if o.ID != nil {

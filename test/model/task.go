@@ -166,7 +166,7 @@ func (o *Task) SetName(name string) {
 }
 
 // ToSparse returns the sparse version of the model.
-func (o *Task) ToSparse() elemental.Identifiable {
+func (o *Task) ToSparse() elemental.SparseIdentifiable {
 
 	return &SparseTask{
 		ID:          &o.ID,
@@ -175,6 +175,33 @@ func (o *Task) ToSparse() elemental.Identifiable {
 		ParentID:    &o.ParentID,
 		ParentType:  &o.ParentType,
 		Status:      &o.Status,
+	}
+}
+
+// Patch apply the non nil value of a *SparseTask to the object.
+func (o *Task) Patch(sparse elemental.SparseIdentifiable) {
+	if !sparse.Identity().IsEqual(o.Identity()) {
+		panic("cannot patch from a parse with different identity")
+	}
+
+	so := sparse.(*SparseTask)
+	if so.ID != nil {
+		o.ID = *so.ID
+	}
+	if so.Description != nil {
+		o.Description = *so.Description
+	}
+	if so.Name != nil {
+		o.Name = *so.Name
+	}
+	if so.ParentID != nil {
+		o.ParentID = *so.ParentID
+	}
+	if so.ParentType != nil {
+		o.ParentType = *so.ParentType
+	}
+	if so.Status != nil {
+		o.Status = *so.Status
 	}
 }
 
@@ -491,7 +518,7 @@ func (o *SparseTask) Version() int {
 }
 
 // ToFull returns a full version of the sparse model.
-func (o *SparseTask) ToFull() elemental.Identifiable {
+func (o *SparseTask) ToFull() elemental.FullIdentifiable {
 
 	out := NewTask()
 	if o.ID != nil {

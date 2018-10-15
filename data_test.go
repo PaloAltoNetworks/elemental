@@ -162,7 +162,7 @@ func (o *List) SetName(name string) {
 }
 
 // ToSparse returns the sparse version of the model.
-func (o *List) ToSparse() Identifiable {
+func (o *List) ToSparse() SparseIdentifiable {
 
 	return &SparseList{
 		ID:           &o.ID,
@@ -175,6 +175,45 @@ func (o *List) ToSparse() Identifiable {
 		ReadOnly:     &o.ReadOnly,
 		Slice:        &o.Slice,
 		Unexposed:    &o.Unexposed,
+	}
+}
+
+// Patch apply the non nil value of a *SparseList to the object.
+func (o *List) Patch(sparse SparseIdentifiable) {
+	if !sparse.Identity().IsEqual(o.Identity()) {
+		panic("cannot patch from a parse with different identity")
+	}
+
+	so := sparse.(*SparseList)
+	if so.ID != nil {
+		o.ID = *so.ID
+	}
+	if so.CreationOnly != nil {
+		o.CreationOnly = *so.CreationOnly
+	}
+	if so.Date != nil {
+		o.Date = *so.Date
+	}
+	if so.Description != nil {
+		o.Description = *so.Description
+	}
+	if so.Name != nil {
+		o.Name = *so.Name
+	}
+	if so.ParentID != nil {
+		o.ParentID = *so.ParentID
+	}
+	if so.ParentType != nil {
+		o.ParentType = *so.ParentType
+	}
+	if so.ReadOnly != nil {
+		o.ReadOnly = *so.ReadOnly
+	}
+	if so.Slice != nil {
+		o.Slice = *so.Slice
+	}
+	if so.Unexposed != nil {
+		o.Unexposed = *so.Unexposed
 	}
 }
 
@@ -589,7 +628,7 @@ func (o *SparseList) Version() int {
 }
 
 // ToFull returns a full version of the sparse model.
-func (o *SparseList) ToFull() Identifiable {
+func (o *SparseList) ToFull() FullIdentifiable {
 
 	out := NewList()
 	if o.ID != nil {
@@ -785,7 +824,7 @@ func (o *Task) SetName(name string) {
 }
 
 // ToSparse returns the sparse version of the model.
-func (o *Task) ToSparse() Identifiable {
+func (o *Task) ToSparse() SparseIdentifiable {
 
 	return &SparseTask{
 		ID:          &o.ID,
@@ -794,6 +833,33 @@ func (o *Task) ToSparse() Identifiable {
 		ParentID:    &o.ParentID,
 		ParentType:  &o.ParentType,
 		Status:      &o.Status,
+	}
+}
+
+// Patch apply the non nil value of a *SparseTask to the object.
+func (o *Task) Patch(sparse SparseIdentifiable) {
+	if !sparse.Identity().IsEqual(o.Identity()) {
+		panic("cannot patch from a parse with different identity")
+	}
+
+	so := sparse.(*SparseTask)
+	if so.ID != nil {
+		o.ID = *so.ID
+	}
+	if so.Description != nil {
+		o.Description = *so.Description
+	}
+	if so.Name != nil {
+		o.Name = *so.Name
+	}
+	if so.ParentID != nil {
+		o.ParentID = *so.ParentID
+	}
+	if so.ParentType != nil {
+		o.ParentType = *so.ParentType
+	}
+	if so.Status != nil {
+		o.Status = *so.Status
 	}
 }
 
@@ -1110,7 +1176,7 @@ func (o *SparseTask) Version() int {
 }
 
 // ToFull returns a full version of the sparse model.
-func (o *SparseTask) ToFull() Identifiable {
+func (o *SparseTask) ToFull() FullIdentifiable {
 
 	out := NewTask()
 	if o.ID != nil {
@@ -1134,7 +1200,6 @@ func (o *SparseTask) ToFull() Identifiable {
 
 	return out
 }
-
 // UnmarshalableListIdentity represents the Identity of the object.
 var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
 
@@ -1363,7 +1428,7 @@ func (o *User) String() string {
 }
 
 // ToSparse returns the sparse version of the model.
-func (o *User) ToSparse() Identifiable {
+func (o *User) ToSparse() SparseIdentifiable {
 
 	return &SparseUser{
 		ID:         &o.ID,
@@ -1372,6 +1437,33 @@ func (o *User) ToSparse() Identifiable {
 		ParentID:   &o.ParentID,
 		ParentType: &o.ParentType,
 		UserName:   &o.UserName,
+	}
+}
+
+// Patch apply the non nil value of a *SparseUser to the object.
+func (o *User) Patch(sparse SparseIdentifiable) {
+	if !sparse.Identity().IsEqual(o.Identity()) {
+		panic("cannot patch from a parse with different identity")
+	}
+
+	so := sparse.(*SparseUser)
+	if so.ID != nil {
+		o.ID = *so.ID
+	}
+	if so.FirstName != nil {
+		o.FirstName = *so.FirstName
+	}
+	if so.LastName != nil {
+		o.LastName = *so.LastName
+	}
+	if so.ParentID != nil {
+		o.ParentID = *so.ParentID
+	}
+	if so.ParentType != nil {
+		o.ParentType = *so.ParentType
+	}
+	if so.UserName != nil {
+		o.UserName = *so.UserName
 	}
 }
 
@@ -1692,7 +1784,7 @@ func (o *SparseUser) Version() int {
 }
 
 // ToFull returns a full version of the sparse model.
-func (o *SparseUser) ToFull() Identifiable {
+func (o *SparseUser) ToFull() FullIdentifiable {
 
 	out := NewUser()
 	if o.ID != nil {
@@ -1884,6 +1976,21 @@ func (f modelManager) Identifiable(identity Identity) Identifiable {
 		return NewTask()
 	case UserIdentity:
 		return NewUser()
+	default:
+		return nil
+	}
+}
+
+func (f modelManager) SparseIdentifiable(identity Identity) SparseIdentifiable {
+
+	switch identity {
+
+	case ListIdentity:
+		return NewSparseList()
+	case TaskIdentity:
+		return NewSparseTask()
+	case UserIdentity:
+		return NewSparseUser()
 	default:
 		return nil
 	}

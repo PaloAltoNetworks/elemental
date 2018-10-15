@@ -81,6 +81,21 @@ func (f modelManager) Identifiable(identity elemental.Identity) elemental.Identi
 	}
 }
 
+func (f modelManager) SparseIdentifiable(identity elemental.Identity) elemental.SparseIdentifiable {
+
+	switch identity {
+
+	case ListIdentity:
+		return NewSparseList()
+	case TaskIdentity:
+		return NewSparseTask()
+	case UserIdentity:
+		return NewSparseUser()
+	default:
+		return nil
+	}
+}
+
 func (f modelManager) Indexes(identity elemental.Identity) [][]string {
 
 	return indexesMap[identity.Name]

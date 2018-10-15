@@ -216,13 +216,32 @@ func (o *{{ $.Spec.Model.EntityName }}) Set{{ .ConvertedName }}({{ .Name }} {{ .
 
 {{- if and (not .Spec.Model.Detached) (not .Spec.Model.IsRoot) }}
 // ToSparse returns the sparse version of the model.
-func (o *{{ .Spec.Model.EntityName }}) ToSparse() elemental.Identifiable {
+func (o *{{ .Spec.Model.EntityName }}) ToSparse() elemental.SparseIdentifiable {
 
     return &Sparse{{ .Spec.Model.EntityName }} {
         {{- range .Spec.Attributes $latestVersion }}
         {{ .ConvertedName }}: &o.{{.ConvertedName}},
         {{- end}}
     }
+}
+
+// Patch apply the non nil value of a *Sparse{{ .Spec.Model.EntityName }} to the object.
+func (o *{{ .Spec.Model.EntityName }}) Patch(sparse elemental.SparseIdentifiable) {
+
+    {{- $attrs := .Spec.Attributes $latestVersion }}
+    {{- if $attrs }}
+    if !sparse.Identity().IsEqual(o.Identity()) {
+        panic("cannot patch from a parse with different identity")
+    }
+
+    so := sparse.(*Sparse{{ .Spec.Model.EntityName }})
+
+    {{- range $attrs }}
+    if so.{{ .ConvertedName }} != nil {
+        o.{{ .ConvertedName }} = *so.{{.ConvertedName}}
+    }
+   {{- end}}
+   {{- end}}
 }
 {{- end }}
 
@@ -672,7 +691,7 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) Version() int {
 }
 
 // ToFull returns a full version of the sparse model.
-func (o *Sparse{{ .Spec.Model.EntityName }}) ToFull() elemental.Identifiable {
+func (o *Sparse{{ .Spec.Model.EntityName }}) ToFull() elemental.FullIdentifiable {
 
     out := New{{ .Spec.Model.EntityName }}()
     {{- range .Spec.Attributes $latestVersion }}

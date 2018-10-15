@@ -13,6 +13,9 @@ type ModelManager interface {
 	// Identifiable returns an Identifiable with the given identity.
 	Identifiable(Identity) Identifiable
 
+	// SparseIdentifiable returns a SparseIdentifiable with the given identity.
+	SparseIdentifiable(Identity) SparseIdentifiable
+
 	// IdentifiableFromString returns an Identifiable from the given
 	// string. The string can be an Identity name, category or alias.
 	IdentifiableFromString(string) Identifiable
@@ -144,18 +147,22 @@ type Versionable interface {
 	Version() int
 }
 
-// A Sparseable is the interface of an object that can return a sparse
+// A FullIdentifiable is the interface of an object that can return a sparse
 // version of itself.
-type Sparseable interface {
+type FullIdentifiable interface {
 
 	// ToSparse returns a sparsed version of the object.
-	ToSparse() Identifiable
+	ToSparse() SparseIdentifiable
+
+	Identifiable
 }
 
-// A Fullable is the interface of an object that can return a full
+// A SparseIdentifiable is the interface of an object that can return a full
 // version of itself.
-type Fullable interface {
+type SparseIdentifiable interface {
 
 	// ToFull returns the full version of the object.
-	ToFull() Identifiable
+	ToFull() FullIdentifiable
+
+	Identifiable
 }

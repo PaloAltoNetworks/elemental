@@ -165,7 +165,7 @@ func (o *List) SetName(name string) {
 }
 
 // ToSparse returns the sparse version of the model.
-func (o *List) ToSparse() elemental.Identifiable {
+func (o *List) ToSparse() elemental.SparseIdentifiable {
 
 	return &SparseList{
 		ID:           &o.ID,
@@ -178,6 +178,45 @@ func (o *List) ToSparse() elemental.Identifiable {
 		ReadOnly:     &o.ReadOnly,
 		Slice:        &o.Slice,
 		Unexposed:    &o.Unexposed,
+	}
+}
+
+// Patch apply the non nil value of a *SparseList to the object.
+func (o *List) Patch(sparse elemental.SparseIdentifiable) {
+	if !sparse.Identity().IsEqual(o.Identity()) {
+		panic("cannot patch from a parse with different identity")
+	}
+
+	so := sparse.(*SparseList)
+	if so.ID != nil {
+		o.ID = *so.ID
+	}
+	if so.CreationOnly != nil {
+		o.CreationOnly = *so.CreationOnly
+	}
+	if so.Date != nil {
+		o.Date = *so.Date
+	}
+	if so.Description != nil {
+		o.Description = *so.Description
+	}
+	if so.Name != nil {
+		o.Name = *so.Name
+	}
+	if so.ParentID != nil {
+		o.ParentID = *so.ParentID
+	}
+	if so.ParentType != nil {
+		o.ParentType = *so.ParentType
+	}
+	if so.ReadOnly != nil {
+		o.ReadOnly = *so.ReadOnly
+	}
+	if so.Slice != nil {
+		o.Slice = *so.Slice
+	}
+	if so.Unexposed != nil {
+		o.Unexposed = *so.Unexposed
 	}
 }
 
@@ -592,7 +631,7 @@ func (o *SparseList) Version() int {
 }
 
 // ToFull returns a full version of the sparse model.
-func (o *SparseList) ToFull() elemental.Identifiable {
+func (o *SparseList) ToFull() elemental.FullIdentifiable {
 
 	out := NewList()
 	if o.ID != nil {
