@@ -178,6 +178,7 @@ func (o *List) SetName(name string) {
 func (o *List) ToSparse(fields ...string) SparseIdentifiable {
 
 	if len(fields) == 0 {
+		// nolint: goimport
 		return &SparseList{
 			ID:           &o.ID,
 			CreationOnly: &o.CreationOnly,
@@ -897,6 +898,7 @@ func (o *Task) SetName(name string) {
 func (o *Task) ToSparse(fields ...string) SparseIdentifiable {
 
 	if len(fields) == 0 {
+		// nolint: goimport
 		return &SparseTask{
 			ID:          &o.ID,
 			Description: &o.Description,
@@ -1306,7 +1308,6 @@ func (o *SparseTask) ToFull() FullIdentifiable {
 
 	return out
 }
-
 // UnmarshalableListIdentity represents the Identity of the object.
 var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
 
@@ -1551,6 +1552,7 @@ func (o *User) String() string {
 func (o *User) ToSparse(fields ...string) SparseIdentifiable {
 
 	if len(fields) == 0 {
+		// nolint: goimport
 		return &SparseUser{
 			ID:         &o.ID,
 			FirstName:  &o.FirstName,

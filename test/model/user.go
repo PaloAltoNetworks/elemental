@@ -155,6 +155,7 @@ func (o *User) String() string {
 func (o *User) ToSparse(fields ...string) elemental.SparseIdentifiable {
 
 	if len(fields) == 0 {
+		// nolint: goimport
 		return &SparseUser{
 			ID:         &o.ID,
 			FirstName:  &o.FirstName,

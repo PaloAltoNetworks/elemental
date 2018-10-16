@@ -232,6 +232,7 @@ func (o *{{ $.Spec.Model.EntityName }}) Set{{ .ConvertedName }}({{ .Name }} {{ .
 func (o *{{ .Spec.Model.EntityName }}) ToSparse(fields ...string) elemental.SparseIdentifiable {
 
     if len(fields) == 0 {
+        // nolint: goimport
         return &Sparse{{ .Spec.Model.EntityName }} {
             {{- range .Spec.Attributes $latestVersion }}
             {{ .ConvertedName }}: &o.{{.ConvertedName}},
