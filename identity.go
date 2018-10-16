@@ -19,9 +19,9 @@ type Identifiables interface {
 	Versionable
 }
 
-// A FullIdentifiables is the interface of an object that can return a sparse
+// A PlainIdentifiables is the interface of an object that can return a sparse
 // version of itself.
-type FullIdentifiables interface {
+type PlainIdentifiables interface {
 
 	// ToSparse returns a sparsed version of the object.
 	ToSparse(...string) IdentifiablesList
@@ -33,8 +33,8 @@ type FullIdentifiables interface {
 // version of itself.
 type SparseIdentifiables interface {
 
-	// ToFull returns the full version of the object.
-	ToFull() IdentifiablesList
+	// ToPlain returns the full version of the object.
+	ToPlain() IdentifiablesList
 
 	Identifiables
 }
@@ -54,9 +54,9 @@ type Identifiable interface {
 	Versionable
 }
 
-// A FullIdentifiable is the interface of an object that can return a sparse
+// A PlainIdentifiable is the interface of an object that can return a sparse
 // version of itself.
-type FullIdentifiable interface {
+type PlainIdentifiable interface {
 
 	// ToSparse returns a sparsed version of the object.
 	ToSparse(...string) SparseIdentifiable
@@ -68,8 +68,8 @@ type FullIdentifiable interface {
 // version of itself.
 type SparseIdentifiable interface {
 
-	// ToFull returns the full version of the object.
-	ToFull() FullIdentifiable
+	// ToPlain returns the full version of the object.
+	ToPlain() PlainIdentifiable
 
 	Identifiable
 }

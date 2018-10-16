@@ -493,12 +493,12 @@ func (o SparseTasksList) DefaultOrder() []string {
 	return []string{}
 }
 
-// ToFull returns the SparseTasksList converted to TasksList.
-func (o SparseTasksList) ToFull() elemental.IdentifiablesList {
+// ToPlain returns the SparseTasksList converted to TasksList.
+func (o SparseTasksList) ToPlain() elemental.IdentifiablesList {
 
 	out := make(elemental.IdentifiablesList, len(o))
 	for i := 0; i < len(o); i++ {
-		out[i] = o[i].ToFull()
+		out[i] = o[i].ToPlain()
 	}
 
 	return out
@@ -567,8 +567,8 @@ func (o *SparseTask) Version() int {
 	return 1
 }
 
-// ToFull returns a full version of the sparse model.
-func (o *SparseTask) ToFull() elemental.FullIdentifiable {
+// ToPlain returns the plain version of the sparse model.
+func (o *SparseTask) ToPlain() elemental.PlainIdentifiable {
 
 	out := NewTask()
 	if o.ID != nil {

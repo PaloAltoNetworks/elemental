@@ -602,12 +602,12 @@ func (o SparseListsList) DefaultOrder() []string {
 	return []string{}
 }
 
-// ToFull returns the SparseListsList converted to ListsList.
-func (o SparseListsList) ToFull() elemental.IdentifiablesList {
+// ToPlain returns the SparseListsList converted to ListsList.
+func (o SparseListsList) ToPlain() elemental.IdentifiablesList {
 
 	out := make(elemental.IdentifiablesList, len(o))
 	for i := 0; i < len(o); i++ {
-		out[i] = o[i].ToFull()
+		out[i] = o[i].ToPlain()
 	}
 
 	return out
@@ -688,8 +688,8 @@ func (o *SparseList) Version() int {
 	return 1
 }
 
-// ToFull returns a full version of the sparse model.
-func (o *SparseList) ToFull() elemental.FullIdentifiable {
+// ToPlain returns the plain version of the sparse model.
+func (o *SparseList) ToPlain() elemental.PlainIdentifiable {
 
 	out := NewList()
 	if o.ID != nil {

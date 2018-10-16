@@ -666,12 +666,12 @@ func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) DefaultOrder() []string {
     }
 }
 
-// ToFull returns the Sparse{{ .Spec.Model.EntityNamePlural }}List converted to {{ .Spec.Model.EntityNamePlural }}List.
-func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) ToFull() elemental.IdentifiablesList {
+// ToPlain returns the Sparse{{ .Spec.Model.EntityNamePlural }}List converted to {{ .Spec.Model.EntityNamePlural }}List.
+func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) ToPlain() elemental.IdentifiablesList {
 
     out := make(elemental.IdentifiablesList, len(o))
     for i := 0; i < len(o); i++ {
-        out[i] = o[i].ToFull()
+        out[i] = o[i].ToPlain()
     }
 
     return out
@@ -732,8 +732,8 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) Version() int {
     return {{ .Set.APIInfo.Version }}
 }
 
-// ToFull returns a full version of the sparse model.
-func (o *Sparse{{ .Spec.Model.EntityName }}) ToFull() elemental.FullIdentifiable {
+// ToPlain returns the plain version of the sparse model.
+func (o *Sparse{{ .Spec.Model.EntityName }}) ToPlain() elemental.PlainIdentifiable {
 
     out := New{{ .Spec.Model.EntityName }}()
     {{- range .Spec.Attributes $latestVersion }}

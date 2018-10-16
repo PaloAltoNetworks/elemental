@@ -599,12 +599,12 @@ func (o SparseListsList) DefaultOrder() []string {
 	return []string{}
 }
 
-// ToFull returns the SparseListsList converted to ListsList.
-func (o SparseListsList) ToFull() IdentifiablesList {
+// ToPlain returns the SparseListsList converted to ListsList.
+func (o SparseListsList) ToPlain() IdentifiablesList {
 
 	out := make(IdentifiablesList, len(o))
 	for i := 0; i < len(o); i++ {
-		out[i] = o[i].ToFull()
+		out[i] = o[i].ToPlain()
 	}
 
 	return out
@@ -685,8 +685,8 @@ func (o *SparseList) Version() int {
 	return 1
 }
 
-// ToFull returns a full version of the sparse model.
-func (o *SparseList) ToFull() FullIdentifiable {
+// ToPlain returns the plain version of the sparse model.
+func (o *SparseList) ToPlain() PlainIdentifiable {
 
 	out := NewList()
 	if o.ID != nil {
@@ -1209,12 +1209,12 @@ func (o SparseTasksList) DefaultOrder() []string {
 	return []string{}
 }
 
-// ToFull returns the SparseTasksList converted to TasksList.
-func (o SparseTasksList) ToFull() IdentifiablesList {
+// ToPlain returns the SparseTasksList converted to TasksList.
+func (o SparseTasksList) ToPlain() IdentifiablesList {
 
 	out := make(IdentifiablesList, len(o))
 	for i := 0; i < len(o); i++ {
-		out[i] = o[i].ToFull()
+		out[i] = o[i].ToPlain()
 	}
 
 	return out
@@ -1283,8 +1283,8 @@ func (o *SparseTask) Version() int {
 	return 1
 }
 
-// ToFull returns a full version of the sparse model.
-func (o *SparseTask) ToFull() FullIdentifiable {
+// ToPlain returns the plain version of the sparse model.
+func (o *SparseTask) ToPlain() PlainIdentifiable {
 
 	out := NewTask()
 	if o.ID != nil {
@@ -1308,6 +1308,7 @@ func (o *SparseTask) ToFull() FullIdentifiable {
 
 	return out
 }
+
 // UnmarshalableListIdentity represents the Identity of the object.
 var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
 
@@ -1867,12 +1868,12 @@ func (o SparseUsersList) DefaultOrder() []string {
 	return []string{}
 }
 
-// ToFull returns the SparseUsersList converted to UsersList.
-func (o SparseUsersList) ToFull() IdentifiablesList {
+// ToPlain returns the SparseUsersList converted to UsersList.
+func (o SparseUsersList) ToPlain() IdentifiablesList {
 
 	out := make(IdentifiablesList, len(o))
 	for i := 0; i < len(o); i++ {
-		out[i] = o[i].ToFull()
+		out[i] = o[i].ToPlain()
 	}
 
 	return out
@@ -1941,8 +1942,8 @@ func (o *SparseUser) Version() int {
 	return 1
 }
 
-// ToFull returns a full version of the sparse model.
-func (o *SparseUser) ToFull() FullIdentifiable {
+// ToPlain returns the plain version of the sparse model.
+func (o *SparseUser) ToPlain() PlainIdentifiable {
 
 	out := NewUser()
 	if o.ID != nil {

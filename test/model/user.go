@@ -470,12 +470,12 @@ func (o SparseUsersList) DefaultOrder() []string {
 	return []string{}
 }
 
-// ToFull returns the SparseUsersList converted to UsersList.
-func (o SparseUsersList) ToFull() elemental.IdentifiablesList {
+// ToPlain returns the SparseUsersList converted to UsersList.
+func (o SparseUsersList) ToPlain() elemental.IdentifiablesList {
 
 	out := make(elemental.IdentifiablesList, len(o))
 	for i := 0; i < len(o); i++ {
-		out[i] = o[i].ToFull()
+		out[i] = o[i].ToPlain()
 	}
 
 	return out
@@ -544,8 +544,8 @@ func (o *SparseUser) Version() int {
 	return 1
 }
 
-// ToFull returns a full version of the sparse model.
-func (o *SparseUser) ToFull() elemental.FullIdentifiable {
+// ToPlain returns the plain version of the sparse model.
+func (o *SparseUser) ToPlain() elemental.PlainIdentifiable {
 
 	out := NewUser()
 	if o.ID != nil {
