@@ -58,7 +58,8 @@ func (o ListsList) DefaultOrder() []string {
 	return []string{}
 }
 
-// ToFull returns the ListsList converted to SparseListsList.
+// ToSparse returns the ListsList converted to SparseListsList.
+// Objects in the list will only contain the given fields. No field means entire field set.
 func (o ListsList) ToSparse(fields ...string) IdentifiablesList {
 
 	out := make(IdentifiablesList, len(o))
@@ -173,6 +174,7 @@ func (o *List) SetName(name string) {
 }
 
 // ToSparse returns the sparse version of the model.
+// The returned object will only contain the given fields. No field means entire field set.
 func (o *List) ToSparse(fields ...string) SparseIdentifiable {
 
 	if len(fields) == 0 {
@@ -786,7 +788,8 @@ func (o TasksList) DefaultOrder() []string {
 	return []string{}
 }
 
-// ToFull returns the TasksList converted to SparseTasksList.
+// ToSparse returns the TasksList converted to SparseTasksList.
+// Objects in the list will only contain the given fields. No field means entire field set.
 func (o TasksList) ToSparse(fields ...string) IdentifiablesList {
 
 	out := make(IdentifiablesList, len(o))
@@ -890,6 +893,7 @@ func (o *Task) SetName(name string) {
 }
 
 // ToSparse returns the sparse version of the model.
+// The returned object will only contain the given fields. No field means entire field set.
 func (o *Task) ToSparse(fields ...string) SparseIdentifiable {
 
 	if len(fields) == 0 {
@@ -1451,7 +1455,8 @@ func (o UsersList) DefaultOrder() []string {
 	return []string{}
 }
 
-// ToFull returns the UsersList converted to SparseUsersList.
+// ToSparse returns the UsersList converted to SparseUsersList.
+// Objects in the list will only contain the given fields. No field means entire field set.
 func (o UsersList) ToSparse(fields ...string) IdentifiablesList {
 
 	out := make(IdentifiablesList, len(o))
@@ -1542,6 +1547,7 @@ func (o *User) String() string {
 }
 
 // ToSparse returns the sparse version of the model.
+// The returned object will only contain the given fields. No field means entire field set.
 func (o *User) ToSparse(fields ...string) SparseIdentifiable {
 
 	if len(fields) == 0 {
