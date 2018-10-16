@@ -45,9 +45,9 @@ func (o UsersList) Append(objects ...elemental.Identifiable) elemental.Identifia
 // List converts the object to an elemental.IdentifiablesList.
 func (o UsersList) List() elemental.IdentifiablesList {
 
-	out := elemental.IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -57,6 +57,17 @@ func (o UsersList) List() elemental.IdentifiablesList {
 func (o UsersList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToFull returns the UsersList converted to SparseUsersList.
+func (o UsersList) ToSparse(fields ...string) elemental.IdentifiablesList {
+
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToSparse(fields...)
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -139,16 +150,38 @@ func (o *User) String() string {
 }
 
 // ToSparse returns the sparse version of the model.
-func (o *User) ToSparse() elemental.SparseIdentifiable {
+func (o *User) ToSparse(fields ...string) elemental.SparseIdentifiable {
 
-	return &SparseUser{
-		ID:         &o.ID,
-		FirstName:  &o.FirstName,
-		LastName:   &o.LastName,
-		ParentID:   &o.ParentID,
-		ParentType: &o.ParentType,
-		UserName:   &o.UserName,
+	if len(fields) == 0 {
+		return &SparseUser{
+			ID:         &o.ID,
+			FirstName:  &o.FirstName,
+			LastName:   &o.LastName,
+			ParentID:   &o.ParentID,
+			ParentType: &o.ParentType,
+			UserName:   &o.UserName,
+		}
 	}
+
+	sp := &SparseUser{}
+	for _, f := range fields {
+		switch f {
+		case "ID":
+			sp.ID = &(o.ID)
+		case "firstName":
+			sp.FirstName = &(o.FirstName)
+		case "lastName":
+			sp.LastName = &(o.LastName)
+		case "parentID":
+			sp.ParentID = &(o.ParentID)
+		case "parentType":
+			sp.ParentType = &(o.ParentType)
+		case "userName":
+			sp.UserName = &(o.UserName)
+		}
+	}
+
+	return sp
 }
 
 // Patch apply the non nil value of a *SparseUser to the object.
@@ -420,9 +453,9 @@ func (o SparseUsersList) Append(objects ...elemental.Identifiable) elemental.Ide
 // List converts the object to an elemental.IdentifiablesList.
 func (o SparseUsersList) List() elemental.IdentifiablesList {
 
-	out := elemental.IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -432,6 +465,17 @@ func (o SparseUsersList) List() elemental.IdentifiablesList {
 func (o SparseUsersList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToFull returns the SparseUsersList converted to UsersList.
+func (o SparseUsersList) ToFull() elemental.IdentifiablesList {
+
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToFull()
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -479,6 +523,9 @@ func (o *SparseUser) Identity() elemental.Identity {
 // Identifier returns the value of the sparse object's unique identifier.
 func (o *SparseUser) Identifier() string {
 
+	if o.ID == nil {
+		return ""
+	}
 	return *o.ID
 }
 

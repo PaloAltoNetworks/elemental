@@ -70,9 +70,9 @@ func (o {{ .Spec.Model.EntityNamePlural }}List) Append(objects ...elemental.Iden
 // List converts the object to an elemental.IdentifiablesList.
 func (o {{ .Spec.Model.EntityNamePlural }}List) List() elemental.IdentifiablesList {
 
-    out := elemental.IdentifiablesList{}
-    for _, item := range o {
-        out = append(out, item)
+    out := make(elemental.IdentifiablesList, len(o))
+    for i := 0; i < len(o); i++ {
+        out[i] = o[i]
     }
 
     return out
@@ -86,6 +86,17 @@ func (o {{ .Spec.Model.EntityNamePlural }}List) DefaultOrder() []string {
         "{{ .Name }}",
         {{ end }}
     }
+}
+
+// ToFull returns the {{ .Spec.Model.EntityNamePlural }}List converted to Sparse{{ .Spec.Model.EntityNamePlural }}List.
+func (o {{ .Spec.Model.EntityNamePlural }}List) ToSparse(fields ...string) elemental.IdentifiablesList {
+
+    out := make(elemental.IdentifiablesList, len(o))
+    for i := 0; i < len(o); i++ {
+        out[i] = o[i].ToSparse(fields...)
+    }
+
+    return out
 }
 
 // Version returns the version of the content.
@@ -216,13 +227,27 @@ func (o *{{ $.Spec.Model.EntityName }}) Set{{ .ConvertedName }}({{ .Name }} {{ .
 
 {{- if and (not .Spec.Model.Detached) (not .Spec.Model.IsRoot) }}
 // ToSparse returns the sparse version of the model.
-func (o *{{ .Spec.Model.EntityName }}) ToSparse() elemental.SparseIdentifiable {
+func (o *{{ .Spec.Model.EntityName }}) ToSparse(fields ...string) elemental.SparseIdentifiable {
 
-    return &Sparse{{ .Spec.Model.EntityName }} {
-        {{- range .Spec.Attributes $latestVersion }}
-        {{ .ConvertedName }}: &o.{{.ConvertedName}},
-        {{- end}}
+    if len(fields) == 0 {
+        return &Sparse{{ .Spec.Model.EntityName }} {
+            {{- range .Spec.Attributes $latestVersion }}
+            {{ .ConvertedName }}: &o.{{.ConvertedName}},
+            {{- end}}
+        }
     }
+
+    sp := &Sparse{{ .Spec.Model.EntityName }} {}
+    for _, f := range fields {
+        switch f {
+            {{- range .Spec.Attributes $latestVersion }}
+            case "{{ .Name }}":
+                sp.{{.ConvertedName}} = &(o.{{.ConvertedName}})
+            {{- end}}
+        }
+    }
+
+    return sp
 }
 
 // Patch apply the non nil value of a *Sparse{{ .Spec.Model.EntityName }} to the object.
@@ -620,9 +645,9 @@ func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) Append(objects ...elementa
 // List converts the object to an elemental.IdentifiablesList.
 func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) List() elemental.IdentifiablesList {
 
-    out := elemental.IdentifiablesList{}
-    for _, item := range o {
-        out = append(out, item)
+    out := make(elemental.IdentifiablesList, len(o))
+    for i := 0; i < len(o); i++ {
+        out[i] = o[i]
     }
 
     return out
@@ -636,6 +661,17 @@ func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) DefaultOrder() []string {
         "{{ .Name }}",
         {{ end }}
     }
+}
+
+// ToFull returns the Sparse{{ .Spec.Model.EntityNamePlural }}List converted to {{ .Spec.Model.EntityNamePlural }}List.
+func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) ToFull() elemental.IdentifiablesList {
+
+    out := make(elemental.IdentifiablesList, len(o))
+    for i := 0; i < len(o); i++ {
+        out[i] = o[i].ToFull()
+    }
+
+    return out
 }
 
 // Version returns the version of the content.
@@ -670,6 +706,9 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) Identity() elemental.Identity {
 func (o *Sparse{{ .Spec.Model.EntityName }}) Identifier() string {
 
     {{ if .Spec.Identifier -}}
+    if o.{{ .Spec.Identifier.ConvertedName }} == nil {
+        return ""
+    }
     return *o.{{ .Spec.Identifier.ConvertedName }}
     {{- else -}}
     return ""

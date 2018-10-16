@@ -121,6 +121,21 @@ func (f modelManager) Identifiables(identity elemental.Identity) elemental.Ident
 	}
 }
 
+func (f modelManager) SparseIdentifiables(identity elemental.Identity) elemental.SparseIdentifiables {
+
+	switch identity {
+
+	case ListIdentity:
+		return &SparseListsList{}
+	case TaskIdentity:
+		return &SparseTasksList{}
+	case UserIdentity:
+		return &SparseUsersList{}
+	default:
+		return nil
+	}
+}
+
 func (f modelManager) IdentifiablesFromString(any string) elemental.Identifiables {
 
 	return f.Identifiables(f.IdentityFromAny(any))

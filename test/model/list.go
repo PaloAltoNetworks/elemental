@@ -47,9 +47,9 @@ func (o ListsList) Append(objects ...elemental.Identifiable) elemental.Identifia
 // List converts the object to an elemental.IdentifiablesList.
 func (o ListsList) List() elemental.IdentifiablesList {
 
-	out := elemental.IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -59,6 +59,17 @@ func (o ListsList) List() elemental.IdentifiablesList {
 func (o ListsList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToFull returns the ListsList converted to SparseListsList.
+func (o ListsList) ToSparse(fields ...string) elemental.IdentifiablesList {
+
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToSparse(fields...)
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -165,20 +176,50 @@ func (o *List) SetName(name string) {
 }
 
 // ToSparse returns the sparse version of the model.
-func (o *List) ToSparse() elemental.SparseIdentifiable {
+func (o *List) ToSparse(fields ...string) elemental.SparseIdentifiable {
 
-	return &SparseList{
-		ID:           &o.ID,
-		CreationOnly: &o.CreationOnly,
-		Date:         &o.Date,
-		Description:  &o.Description,
-		Name:         &o.Name,
-		ParentID:     &o.ParentID,
-		ParentType:   &o.ParentType,
-		ReadOnly:     &o.ReadOnly,
-		Slice:        &o.Slice,
-		Unexposed:    &o.Unexposed,
+	if len(fields) == 0 {
+		return &SparseList{
+			ID:           &o.ID,
+			CreationOnly: &o.CreationOnly,
+			Date:         &o.Date,
+			Description:  &o.Description,
+			Name:         &o.Name,
+			ParentID:     &o.ParentID,
+			ParentType:   &o.ParentType,
+			ReadOnly:     &o.ReadOnly,
+			Slice:        &o.Slice,
+			Unexposed:    &o.Unexposed,
+		}
 	}
+
+	sp := &SparseList{}
+	for _, f := range fields {
+		switch f {
+		case "ID":
+			sp.ID = &(o.ID)
+		case "creationOnly":
+			sp.CreationOnly = &(o.CreationOnly)
+		case "date":
+			sp.Date = &(o.Date)
+		case "description":
+			sp.Description = &(o.Description)
+		case "name":
+			sp.Name = &(o.Name)
+		case "parentID":
+			sp.ParentID = &(o.ParentID)
+		case "parentType":
+			sp.ParentType = &(o.ParentType)
+		case "readOnly":
+			sp.ReadOnly = &(o.ReadOnly)
+		case "slice":
+			sp.Slice = &(o.Slice)
+		case "unexposed":
+			sp.Unexposed = &(o.Unexposed)
+		}
+	}
+
+	return sp
 }
 
 // Patch apply the non nil value of a *SparseList to the object.
@@ -544,9 +585,9 @@ func (o SparseListsList) Append(objects ...elemental.Identifiable) elemental.Ide
 // List converts the object to an elemental.IdentifiablesList.
 func (o SparseListsList) List() elemental.IdentifiablesList {
 
-	out := elemental.IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -556,6 +597,17 @@ func (o SparseListsList) List() elemental.IdentifiablesList {
 func (o SparseListsList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToFull returns the SparseListsList converted to ListsList.
+func (o SparseListsList) ToFull() elemental.IdentifiablesList {
+
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToFull()
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -615,6 +667,9 @@ func (o *SparseList) Identity() elemental.Identity {
 // Identifier returns the value of the sparse object's unique identifier.
 func (o *SparseList) Identifier() string {
 
+	if o.ID == nil {
+		return ""
+	}
 	return *o.ID
 }
 

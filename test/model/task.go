@@ -59,9 +59,9 @@ func (o TasksList) Append(objects ...elemental.Identifiable) elemental.Identifia
 // List converts the object to an elemental.IdentifiablesList.
 func (o TasksList) List() elemental.IdentifiablesList {
 
-	out := elemental.IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -71,6 +71,17 @@ func (o TasksList) List() elemental.IdentifiablesList {
 func (o TasksList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToFull returns the TasksList converted to SparseTasksList.
+func (o TasksList) ToSparse(fields ...string) elemental.IdentifiablesList {
+
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToSparse(fields...)
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -166,16 +177,38 @@ func (o *Task) SetName(name string) {
 }
 
 // ToSparse returns the sparse version of the model.
-func (o *Task) ToSparse() elemental.SparseIdentifiable {
+func (o *Task) ToSparse(fields ...string) elemental.SparseIdentifiable {
 
-	return &SparseTask{
-		ID:          &o.ID,
-		Description: &o.Description,
-		Name:        &o.Name,
-		ParentID:    &o.ParentID,
-		ParentType:  &o.ParentType,
-		Status:      &o.Status,
+	if len(fields) == 0 {
+		return &SparseTask{
+			ID:          &o.ID,
+			Description: &o.Description,
+			Name:        &o.Name,
+			ParentID:    &o.ParentID,
+			ParentType:  &o.ParentType,
+			Status:      &o.Status,
+		}
 	}
+
+	sp := &SparseTask{}
+	for _, f := range fields {
+		switch f {
+		case "ID":
+			sp.ID = &(o.ID)
+		case "description":
+			sp.Description = &(o.Description)
+		case "name":
+			sp.Name = &(o.Name)
+		case "parentID":
+			sp.ParentID = &(o.ParentID)
+		case "parentType":
+			sp.ParentType = &(o.ParentType)
+		case "status":
+			sp.Status = &(o.Status)
+		}
+	}
+
+	return sp
 }
 
 // Patch apply the non nil value of a *SparseTask to the object.
@@ -443,9 +476,9 @@ func (o SparseTasksList) Append(objects ...elemental.Identifiable) elemental.Ide
 // List converts the object to an elemental.IdentifiablesList.
 func (o SparseTasksList) List() elemental.IdentifiablesList {
 
-	out := elemental.IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -455,6 +488,17 @@ func (o SparseTasksList) List() elemental.IdentifiablesList {
 func (o SparseTasksList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToFull returns the SparseTasksList converted to TasksList.
+func (o SparseTasksList) ToFull() elemental.IdentifiablesList {
+
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToFull()
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -502,6 +546,9 @@ func (o *SparseTask) Identity() elemental.Identity {
 // Identifier returns the value of the sparse object's unique identifier.
 func (o *SparseTask) Identifier() string {
 
+	if o.ID == nil {
+		return ""
+	}
 	return *o.ID
 }
 

@@ -44,9 +44,9 @@ func (o ListsList) Append(objects ...Identifiable) Identifiables {
 // List converts the object to an IdentifiablesList.
 func (o ListsList) List() IdentifiablesList {
 
-	out := IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -56,6 +56,17 @@ func (o ListsList) List() IdentifiablesList {
 func (o ListsList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToFull returns the ListsList converted to SparseListsList.
+func (o ListsList) ToSparse(fields ...string) IdentifiablesList {
+
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToSparse(fields...)
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -162,20 +173,50 @@ func (o *List) SetName(name string) {
 }
 
 // ToSparse returns the sparse version of the model.
-func (o *List) ToSparse() SparseIdentifiable {
+func (o *List) ToSparse(fields ...string) SparseIdentifiable {
 
-	return &SparseList{
-		ID:           &o.ID,
-		CreationOnly: &o.CreationOnly,
-		Date:         &o.Date,
-		Description:  &o.Description,
-		Name:         &o.Name,
-		ParentID:     &o.ParentID,
-		ParentType:   &o.ParentType,
-		ReadOnly:     &o.ReadOnly,
-		Slice:        &o.Slice,
-		Unexposed:    &o.Unexposed,
+	if len(fields) == 0 {
+		return &SparseList{
+			ID:           &o.ID,
+			CreationOnly: &o.CreationOnly,
+			Date:         &o.Date,
+			Description:  &o.Description,
+			Name:         &o.Name,
+			ParentID:     &o.ParentID,
+			ParentType:   &o.ParentType,
+			ReadOnly:     &o.ReadOnly,
+			Slice:        &o.Slice,
+			Unexposed:    &o.Unexposed,
+		}
 	}
+
+	sp := &SparseList{}
+	for _, f := range fields {
+		switch f {
+		case "ID":
+			sp.ID = &(o.ID)
+		case "creationOnly":
+			sp.CreationOnly = &(o.CreationOnly)
+		case "date":
+			sp.Date = &(o.Date)
+		case "description":
+			sp.Description = &(o.Description)
+		case "name":
+			sp.Name = &(o.Name)
+		case "parentID":
+			sp.ParentID = &(o.ParentID)
+		case "parentType":
+			sp.ParentType = &(o.ParentType)
+		case "readOnly":
+			sp.ReadOnly = &(o.ReadOnly)
+		case "slice":
+			sp.Slice = &(o.Slice)
+		case "unexposed":
+			sp.Unexposed = &(o.Unexposed)
+		}
+	}
+
+	return sp
 }
 
 // Patch apply the non nil value of a *SparseList to the object.
@@ -541,9 +582,9 @@ func (o SparseListsList) Append(objects ...Identifiable) Identifiables {
 // List converts the object to an IdentifiablesList.
 func (o SparseListsList) List() IdentifiablesList {
 
-	out := IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -553,6 +594,17 @@ func (o SparseListsList) List() IdentifiablesList {
 func (o SparseListsList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToFull returns the SparseListsList converted to ListsList.
+func (o SparseListsList) ToFull() IdentifiablesList {
+
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToFull()
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -612,6 +664,9 @@ func (o *SparseList) Identity() Identity {
 // Identifier returns the value of the sparse object's unique identifier.
 func (o *SparseList) Identifier() string {
 
+	if o.ID == nil {
+		return ""
+	}
 	return *o.ID
 }
 
@@ -717,9 +772,9 @@ func (o TasksList) Append(objects ...Identifiable) Identifiables {
 // List converts the object to an IdentifiablesList.
 func (o TasksList) List() IdentifiablesList {
 
-	out := IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -729,6 +784,17 @@ func (o TasksList) List() IdentifiablesList {
 func (o TasksList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToFull returns the TasksList converted to SparseTasksList.
+func (o TasksList) ToSparse(fields ...string) IdentifiablesList {
+
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToSparse(fields...)
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -824,16 +890,38 @@ func (o *Task) SetName(name string) {
 }
 
 // ToSparse returns the sparse version of the model.
-func (o *Task) ToSparse() SparseIdentifiable {
+func (o *Task) ToSparse(fields ...string) SparseIdentifiable {
 
-	return &SparseTask{
-		ID:          &o.ID,
-		Description: &o.Description,
-		Name:        &o.Name,
-		ParentID:    &o.ParentID,
-		ParentType:  &o.ParentType,
-		Status:      &o.Status,
+	if len(fields) == 0 {
+		return &SparseTask{
+			ID:          &o.ID,
+			Description: &o.Description,
+			Name:        &o.Name,
+			ParentID:    &o.ParentID,
+			ParentType:  &o.ParentType,
+			Status:      &o.Status,
+		}
 	}
+
+	sp := &SparseTask{}
+	for _, f := range fields {
+		switch f {
+		case "ID":
+			sp.ID = &(o.ID)
+		case "description":
+			sp.Description = &(o.Description)
+		case "name":
+			sp.Name = &(o.Name)
+		case "parentID":
+			sp.ParentID = &(o.ParentID)
+		case "parentType":
+			sp.ParentType = &(o.ParentType)
+		case "status":
+			sp.Status = &(o.Status)
+		}
+	}
+
+	return sp
 }
 
 // Patch apply the non nil value of a *SparseTask to the object.
@@ -1101,9 +1189,9 @@ func (o SparseTasksList) Append(objects ...Identifiable) Identifiables {
 // List converts the object to an IdentifiablesList.
 func (o SparseTasksList) List() IdentifiablesList {
 
-	out := IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -1113,6 +1201,17 @@ func (o SparseTasksList) List() IdentifiablesList {
 func (o SparseTasksList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToFull returns the SparseTasksList converted to TasksList.
+func (o SparseTasksList) ToFull() IdentifiablesList {
+
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToFull()
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -1160,6 +1259,9 @@ func (o *SparseTask) Identity() Identity {
 // Identifier returns the value of the sparse object's unique identifier.
 func (o *SparseTask) Identifier() string {
 
+	if o.ID == nil {
+		return ""
+	}
 	return *o.ID
 }
 
@@ -1335,9 +1437,9 @@ func (o UsersList) Append(objects ...Identifiable) Identifiables {
 // List converts the object to an IdentifiablesList.
 func (o UsersList) List() IdentifiablesList {
 
-	out := IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -1347,6 +1449,17 @@ func (o UsersList) List() IdentifiablesList {
 func (o UsersList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToFull returns the UsersList converted to SparseUsersList.
+func (o UsersList) ToSparse(fields ...string) IdentifiablesList {
+
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToSparse(fields...)
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -1429,16 +1542,38 @@ func (o *User) String() string {
 }
 
 // ToSparse returns the sparse version of the model.
-func (o *User) ToSparse() SparseIdentifiable {
+func (o *User) ToSparse(fields ...string) SparseIdentifiable {
 
-	return &SparseUser{
-		ID:         &o.ID,
-		FirstName:  &o.FirstName,
-		LastName:   &o.LastName,
-		ParentID:   &o.ParentID,
-		ParentType: &o.ParentType,
-		UserName:   &o.UserName,
+	if len(fields) == 0 {
+		return &SparseUser{
+			ID:         &o.ID,
+			FirstName:  &o.FirstName,
+			LastName:   &o.LastName,
+			ParentID:   &o.ParentID,
+			ParentType: &o.ParentType,
+			UserName:   &o.UserName,
+		}
 	}
+
+	sp := &SparseUser{}
+	for _, f := range fields {
+		switch f {
+		case "ID":
+			sp.ID = &(o.ID)
+		case "firstName":
+			sp.FirstName = &(o.FirstName)
+		case "lastName":
+			sp.LastName = &(o.LastName)
+		case "parentID":
+			sp.ParentID = &(o.ParentID)
+		case "parentType":
+			sp.ParentType = &(o.ParentType)
+		case "userName":
+			sp.UserName = &(o.UserName)
+		}
+	}
+
+	return sp
 }
 
 // Patch apply the non nil value of a *SparseUser to the object.
@@ -1710,9 +1845,9 @@ func (o SparseUsersList) Append(objects ...Identifiable) Identifiables {
 // List converts the object to an IdentifiablesList.
 func (o SparseUsersList) List() IdentifiablesList {
 
-	out := IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -1722,6 +1857,17 @@ func (o SparseUsersList) List() IdentifiablesList {
 func (o SparseUsersList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToFull returns the SparseUsersList converted to UsersList.
+func (o SparseUsersList) ToFull() IdentifiablesList {
+
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToFull()
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -1769,6 +1915,9 @@ func (o *SparseUser) Identity() Identity {
 // Identifier returns the value of the sparse object's unique identifier.
 func (o *SparseUser) Identifier() string {
 
+	if o.ID == nil {
+		return ""
+	}
 	return *o.ID
 }
 
@@ -2017,6 +2166,21 @@ func (f modelManager) Identifiables(identity Identity) Identifiables {
 		return &TasksList{}
 	case UserIdentity:
 		return &UsersList{}
+	default:
+		return nil
+	}
+}
+
+func (f modelManager) SparseIdentifiables(identity Identity) SparseIdentifiables {
+
+	switch identity {
+
+	case ListIdentity:
+		return &SparseListsList{}
+	case TaskIdentity:
+		return &SparseTasksList{}
+	case UserIdentity:
+		return &SparseUsersList{}
 	default:
 		return nil
 	}
