@@ -182,7 +182,7 @@ func (o *Task) SetName(name string) {
 func (o *Task) ToSparse(fields ...string) elemental.SparseIdentifiable {
 
 	if len(fields) == 0 {
-		// nolint: goimport
+		// nolint: goimports
 		return &SparseTask{
 			ID:          &o.ID,
 			Description: &o.Description,
