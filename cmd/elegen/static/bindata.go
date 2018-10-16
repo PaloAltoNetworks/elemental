@@ -106,7 +106,7 @@ func templatesIdentities_registryGotpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/identities_registry.gotpl", size: 5335, mode: os.FileMode(420), modTime: time.Unix(1539649739, 0)}
+	info := bindataFileInfo{name: "templates/identities_registry.gotpl", size: 5335, mode: os.FileMode(420), modTime: time.Unix(1539711614, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -126,7 +126,7 @@ func templatesModelGotpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/model.gotpl", size: 22983, mode: os.FileMode(420), modTime: time.Unix(1539656266, 0)}
+	info := bindataFileInfo{name: "templates/model.gotpl", size: 22983, mode: os.FileMode(420), modTime: time.Unix(1539711614, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

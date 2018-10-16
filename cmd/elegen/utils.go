@@ -273,6 +273,10 @@ func writeInitializer(set spec.SpecificationSet, s spec.Specification, attr *spe
 		return ""
 	}
 
+	if ok1, ok2 := attr.Extensions["noInit"].(bool); ok2 && ok1 {
+		return ""
+	}
+
 	return fmt.Sprintf("%s: %s,", attr.ConvertedName, writeDefaultValue(set, s, attr))
 }
 
