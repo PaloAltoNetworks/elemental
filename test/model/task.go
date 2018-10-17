@@ -25,6 +25,7 @@ const (
 var TaskIdentity = elemental.Identity{
 	Name:     "task",
 	Category: "tasks",
+	Package:  "todo-list",
 	Private:  false,
 }
 
@@ -58,9 +59,9 @@ func (o TasksList) Append(objects ...elemental.Identifiable) elemental.Identifia
 // List converts the object to an elemental.IdentifiablesList.
 func (o TasksList) List() elemental.IdentifiablesList {
 
-	out := elemental.IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -70,6 +71,18 @@ func (o TasksList) List() elemental.IdentifiablesList {
 func (o TasksList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToSparse returns the TasksList converted to SparseTasksList.
+// Objects in the list will only contain the given fields. No field means entire field set.
+func (o TasksList) ToSparse(fields ...string) elemental.IdentifiablesList {
+
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToSparse(fields...)
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -162,6 +175,70 @@ func (o *Task) GetName() string {
 func (o *Task) SetName(name string) {
 
 	o.Name = name
+}
+
+// ToSparse returns the sparse version of the model.
+// The returned object will only contain the given fields. No field means entire field set.
+func (o *Task) ToSparse(fields ...string) elemental.SparseIdentifiable {
+
+	if len(fields) == 0 {
+		// nolint: goimports
+		return &SparseTask{
+			ID:          &o.ID,
+			Description: &o.Description,
+			Name:        &o.Name,
+			ParentID:    &o.ParentID,
+			ParentType:  &o.ParentType,
+			Status:      &o.Status,
+		}
+	}
+
+	sp := &SparseTask{}
+	for _, f := range fields {
+		switch f {
+		case "ID":
+			sp.ID = &(o.ID)
+		case "description":
+			sp.Description = &(o.Description)
+		case "name":
+			sp.Name = &(o.Name)
+		case "parentID":
+			sp.ParentID = &(o.ParentID)
+		case "parentType":
+			sp.ParentType = &(o.ParentType)
+		case "status":
+			sp.Status = &(o.Status)
+		}
+	}
+
+	return sp
+}
+
+// Patch apply the non nil value of a *SparseTask to the object.
+func (o *Task) Patch(sparse elemental.SparseIdentifiable) {
+	if !sparse.Identity().IsEqual(o.Identity()) {
+		panic("cannot patch from a parse with different identity")
+	}
+
+	so := sparse.(*SparseTask)
+	if so.ID != nil {
+		o.ID = *so.ID
+	}
+	if so.Description != nil {
+		o.Description = *so.Description
+	}
+	if so.Name != nil {
+		o.Name = *so.Name
+	}
+	if so.ParentID != nil {
+		o.ParentID = *so.ParentID
+	}
+	if so.ParentType != nil {
+		o.ParentType = *so.ParentType
+	}
+	if so.Status != nil {
+		o.Status = *so.Status
+	}
 }
 
 // Validate valides the current information stored into the structure.
@@ -370,4 +447,148 @@ var TaskLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Stored:         true,
 		Type:           "enum",
 	},
+}
+
+// SparseTasksList represents a list of SparseTasks
+type SparseTasksList []*SparseTask
+
+// Identity returns the identity of the objects in the list.
+func (o SparseTasksList) Identity() elemental.Identity {
+
+	return TaskIdentity
+}
+
+// Copy returns a pointer to a copy the SparseTasksList.
+func (o SparseTasksList) Copy() elemental.Identifiables {
+
+	copy := append(SparseTasksList{}, o...)
+	return &copy
+}
+
+// Append appends the objects to the a new copy of the SparseTasksList.
+func (o SparseTasksList) Append(objects ...elemental.Identifiable) elemental.Identifiables {
+
+	out := append(SparseTasksList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*SparseTask))
+	}
+
+	return out
+}
+
+// List converts the object to an elemental.IdentifiablesList.
+func (o SparseTasksList) List() elemental.IdentifiablesList {
+
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
+	}
+
+	return out
+}
+
+// DefaultOrder returns the default ordering fields of the content.
+func (o SparseTasksList) DefaultOrder() []string {
+
+	return []string{}
+}
+
+// ToPlain returns the SparseTasksList converted to TasksList.
+func (o SparseTasksList) ToPlain() elemental.IdentifiablesList {
+
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToPlain()
+	}
+
+	return out
+}
+
+// Version returns the version of the content.
+func (o SparseTasksList) Version() int {
+
+	return 1
+}
+
+// SparseTask represents the sparse version of a task.
+type SparseTask struct {
+	// The identifier.
+	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+
+	// The description.
+	Description *string `json:"description,omitempty" bson:"description" mapstructure:"description,omitempty"`
+
+	// The name.
+	Name *string `json:"name,omitempty" bson:"name" mapstructure:"name,omitempty"`
+
+	// The identifier of the parent of the object.
+	ParentID *string `json:"parentID,omitempty" bson:"parentid" mapstructure:"parentID,omitempty"`
+
+	// The type of the parent of the object.
+	ParentType *string `json:"parentType,omitempty" bson:"parenttype" mapstructure:"parentType,omitempty"`
+
+	// The status of the task.
+	Status *TaskStatusValue `json:"status,omitempty" bson:"status" mapstructure:"status,omitempty"`
+
+	ModelVersion int `json:"-" bson:"_modelversion"`
+
+	sync.Mutex `json:"-" bson:"-"`
+}
+
+// NewSparseTask returns a new  SparseTask.
+func NewSparseTask() *SparseTask {
+	return &SparseTask{}
+}
+
+// Identity returns the Identity of the sparse object.
+func (o *SparseTask) Identity() elemental.Identity {
+
+	return TaskIdentity
+}
+
+// Identifier returns the value of the sparse object's unique identifier.
+func (o *SparseTask) Identifier() string {
+
+	if o.ID == nil {
+		return ""
+	}
+	return *o.ID
+}
+
+// SetIdentifier sets the value of the sparse object's unique identifier.
+func (o *SparseTask) SetIdentifier(id string) {
+
+	o.ID = &id
+}
+
+// Version returns the hardcoded version of the model.
+func (o *SparseTask) Version() int {
+
+	return 1
+}
+
+// ToPlain returns the plain version of the sparse model.
+func (o *SparseTask) ToPlain() elemental.PlainIdentifiable {
+
+	out := NewTask()
+	if o.ID != nil {
+		out.ID = *o.ID
+	}
+	if o.Description != nil {
+		out.Description = *o.Description
+	}
+	if o.Name != nil {
+		out.Name = *o.Name
+	}
+	if o.ParentID != nil {
+		out.ParentID = *o.ParentID
+	}
+	if o.ParentType != nil {
+		out.ParentType = *o.ParentType
+	}
+	if o.Status != nil {
+		out.Status = *o.Status
+	}
+
+	return out
 }
