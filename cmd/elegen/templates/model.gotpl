@@ -395,7 +395,14 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
     {{- $mapping := $.Set.ValidationMapping.Mapping "elemental" $validationName }}
     {{- if $mapping }}
     if err := {{ $mapping.Name }}(o); err != nil {
-        errors = append(errors, err)
+        switch e := err.(type) {
+        case elemental.Errors:
+            errors = append(errors, e...)
+        case elemental.Error:
+            errors = append(errors, e)
+        default:
+            errors = append(errors, e)
+        }
     }
     {{- end }}
     {{- end }}
