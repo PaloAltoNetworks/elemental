@@ -1308,6 +1308,7 @@ func (o *SparseTask) ToPlain() PlainIdentifiable {
 
 	return out
 }
+
 // UnmarshalableListIdentity represents the Identity of the object.
 var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
 
