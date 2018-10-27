@@ -3,15 +3,13 @@ package {{ .Set.Configuration.Name }}
 import (
     "fmt"
     "sync"
-
     "go.aporeto.io/elemental"
-    {{ range .Spec.TypeProviders -}}
+    {{- range .Spec.TypeProviders }}
     "{{ . }}"
-    {{ end -}}
-
-    {{ range .Spec.ValidationProviders -}}
+    {{- end -}}
+    {{- range .Spec.ValidationProviders }}
     "{{ . }}"
-    {{ end -}}
+    {{- end }}
 )
 
 {{ $latestVersion := .Spec.LatestAttributesVersion }}
