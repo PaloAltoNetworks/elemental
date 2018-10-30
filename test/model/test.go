@@ -396,7 +396,6 @@ var TestAttributesMap = map[string]elemental.AttributeSpecification{
 		Description:    `This is unique`,
 		Name:           "flagUnique",
 		Type:           "string",
-		Unique:         true,
 	},
 	"TypBool": elemental.AttributeSpecification{
 		AllowedChoices: []string{},
@@ -589,7 +588,6 @@ var TestLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Description:    `This is unique`,
 		Name:           "flagUnique",
 		Type:           "string",
-		Unique:         true,
 	},
 	"typbool": elemental.AttributeSpecification{
 		AllowedChoices: []string{},

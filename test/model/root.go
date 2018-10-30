@@ -103,6 +103,17 @@ func (*Root) AttributeSpecifications() map[string]elemental.AttributeSpecificati
 	return RootAttributesMap
 }
 
+// ValueForAttribute returns the value for the given attribute.
+// This is a very advanced function that you should not need but in some
+// very specific use cases.
+func (o *Root) ValueForAttribute(name string) interface{} {
+
+	switch name {
+	}
+
+	return nil
+}
+
 // RootAttributesMap represents the map of attribute for Root.
 var RootAttributesMap = map[string]elemental.AttributeSpecification{}
 
