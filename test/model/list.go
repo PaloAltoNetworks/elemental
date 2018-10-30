@@ -301,6 +301,37 @@ func (*List) AttributeSpecifications() map[string]elemental.AttributeSpecificati
 	return ListAttributesMap
 }
 
+// ValueForAttribute returns the value for the given attribute.
+// This is a very advanced function that you should not need but in some
+// very specific use cases.
+func (o *List) ValueForAttribute(name string) interface{} {
+
+	switch name {
+	case "ID":
+		return o.ID
+	case "creationOnly":
+		return o.CreationOnly
+	case "date":
+		return o.Date
+	case "description":
+		return o.Description
+	case "name":
+		return o.Name
+	case "parentID":
+		return o.ParentID
+	case "parentType":
+		return o.ParentType
+	case "readOnly":
+		return o.ReadOnly
+	case "slice":
+		return o.Slice
+	case "unexposed":
+		return o.Unexposed
+	}
+
+	return nil
+}
+
 // ListAttributesMap represents the map of attribute for List.
 var ListAttributesMap = map[string]elemental.AttributeSpecification{
 	"ID": elemental.AttributeSpecification{
