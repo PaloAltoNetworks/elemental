@@ -111,6 +111,12 @@ func writeIdentitiesRegistry(set spec.SpecificationSet, outFolder string, public
 		return fmt.Errorf("Unable to format identities_registry code:%s", err)
 	}
 
+	p, err = imports.Process("", p, nil)
+	if err != nil {
+		fmt.Println(buf.String())
+		return fmt.Errorf("Unable to goimport relationships_registry code:%s", err)
+	}
+
 	if err := writeFile(path.Join(outFolder, "identities_registry.go"), p); err != nil {
 		return fmt.Errorf("Unable to write file for identities_registry: %s", err)
 	}
@@ -143,6 +149,12 @@ func writeRelationshipsRegistry(set spec.SpecificationSet, outFolder string, pub
 	if err != nil {
 		fmt.Println(buf.String())
 		return fmt.Errorf("Unable to format relationships_registry code:%s", err)
+	}
+
+	p, err = imports.Process("", p, nil)
+	if err != nil {
+		fmt.Println(buf.String())
+		return fmt.Errorf("Unable to goimport relationships_registry code:%s", err)
 	}
 
 	if err := writeFile(path.Join(outFolder, "relationships_registry.go"), p); err != nil {
