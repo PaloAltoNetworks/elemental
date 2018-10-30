@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/gofrs/uuid"
 )
 
 // A Request represents an abstract request on an elemental model.
@@ -46,7 +46,7 @@ type Request struct {
 func NewRequest() *Request {
 
 	return &Request{
-		RequestID:  uuid.NewV4().String(),
+		RequestID:  uuid.Must(uuid.NewV4()).String(),
 		Parameters: Parameters{},
 		Headers:    http.Header{},
 		Metadata:   map[string]interface{}{},
@@ -218,7 +218,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	}
 
 	return &Request{
-		RequestID:            uuid.NewV4().String(),
+		RequestID:            uuid.Must(uuid.NewV4()).String(),
 		Namespace:            req.Header.Get("X-Namespace"),
 		Recursive:            recursive,
 		Page:                 page,
