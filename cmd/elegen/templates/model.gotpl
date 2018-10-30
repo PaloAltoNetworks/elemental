@@ -233,8 +233,8 @@ func (o *{{ .Spec.Model.EntityName }}) ToSparse(fields ...string) elemental.Spar
         // nolint: goimports
         return &Sparse{{ .Spec.Model.EntityName }} {
             {{- range .Spec.Attributes $latestVersion }}
-            {{ .ConvertedName }}: &o.{{.ConvertedName}},
-            {{- end}}
+            {{ .ConvertedName }}: &o.{{ .ConvertedName }},
+            {{- end }}
         }
     }
 
@@ -243,8 +243,8 @@ func (o *{{ .Spec.Model.EntityName }}) ToSparse(fields ...string) elemental.Spar
         switch f {
             {{- range .Spec.Attributes $latestVersion }}
             case "{{ .Name }}":
-                sp.{{.ConvertedName}} = &(o.{{.ConvertedName}})
-            {{- end}}
+                sp.{{ .ConvertedName}} = &(o.{{ .ConvertedName }})
+            {{- end }}
         }
     }
 
@@ -264,10 +264,10 @@ func (o *{{ .Spec.Model.EntityName }}) Patch(sparse elemental.SparseIdentifiable
 
     {{- range $attrs }}
     if so.{{ .ConvertedName }} != nil {
-        o.{{ .ConvertedName }} = *so.{{.ConvertedName}}
+        o.{{ .ConvertedName }} = *so.{{ .ConvertedName }}
     }
-   {{- end}}
-   {{- end}}
+   {{- end }}
+   {{- end }}
 }
 {{- end }}
 
@@ -432,6 +432,21 @@ func (*{{ .Spec.Model.EntityName }}) SpecificationForAttribute(name string) elem
 func (*{{ .Spec.Model.EntityName }}) AttributeSpecifications() map[string]elemental.AttributeSpecification {
 
     return {{ .Spec.Model.EntityName }}AttributesMap
+}
+
+// ValueForAttribute returns the value for the given attribute.
+// This is a very advanced function that you should not need but in some
+// very specific use cases.
+func (o *{{ .Spec.Model.EntityName }}) ValueForAttribute(name string) interface{} {
+
+    switch name {
+    {{- range .Spec.Attributes $latestVersion }}
+    case "{{ .Name }}":
+        return o.{{ .ConvertedName }}
+    {{- end }}
+    }
+
+    return nil
 }
 
 // {{ .Spec.Model.EntityName }}AttributesMap represents the map of attribute for {{ .Spec.Model.EntityName }}.
@@ -742,10 +757,10 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) ToPlain() elemental.PlainIdentifiab
 
     out := New{{ .Spec.Model.EntityName }}()
     {{- range .Spec.Attributes $latestVersion }}
-    if o.{{.ConvertedName}} != nil {
-        out.{{ .ConvertedName }} = *o.{{.ConvertedName}}
+    if o.{{ .ConvertedName}} != nil  {
+        out.{{ .ConvertedName }} = *o.{{ .ConvertedName }}
     }
-    {{- end}}
+    {{- end }}
 
     return out
 }
