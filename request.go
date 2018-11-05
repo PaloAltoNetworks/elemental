@@ -6,39 +6,38 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/gofrs/uuid"
 )
 
 // A Request represents an abstract request on an elemental model.
 type Request struct {
-	RequestID            string          `json:"rid"`
-	Namespace            string          `json:"namespace"`
-	Recursive            bool            `json:"recursive"`
-	Operation            Operation       `json:"operation"`
-	Identity             Identity        `json:"identity"`
-	Order                []string        `json:"order"`
-	ObjectID             string          `json:"objectID"`
-	ParentIdentity       Identity        `json:"parentIdentity"`
-	ParentID             string          `json:"parentID"`
-	Data                 json.RawMessage `json:"data,omitempty"`
-	Parameters           url.Values      `json:"parameters,omitempty"`
-	Headers              http.Header     `json:"headers,omitempty"`
-	Username             string          `json:"username,omitempty"`
-	Password             string          `json:"password,omitempty"`
-	Page                 int             `json:"page,omitempty"`
-	PageSize             int             `json:"pageSize,omitempty"`
-	OverrideProtection   bool            `json:"overrideProtection,omitempty"`
-	Version              int             `json:"version,omitempty"`
-	ExternalTrackingID   string          `json:"externalTrackingID,omitempty"`
-	ExternalTrackingType string          `json:"externalTrackingType,omitempty"`
+	RequestID            string
+	Namespace            string
+	Recursive            bool
+	Operation            Operation
+	Identity             Identity
+	Order                []string
+	ObjectID             string
+	ParentIdentity       Identity
+	ParentID             string
+	Data                 json.RawMessage
+	Parameters           Parameters
+	Headers              http.Header
+	Username             string
+	Password             string
+	Page                 int
+	PageSize             int
+	OverrideProtection   bool
+	Version              int
+	ExternalTrackingID   string
+	ExternalTrackingType string
 
-	Metadata           map[string]interface{} `json:"-"`
-	ClientIP           string                 `json:"-"`
-	TLSConnectionState *tls.ConnectionState   `json:"-"`
+	Metadata           map[string]interface{}
+	ClientIP           string
+	TLSConnectionState *tls.ConnectionState
 
 	req *http.Request
 }
@@ -47,8 +46,8 @@ type Request struct {
 func NewRequest() *Request {
 
 	return &Request{
-		RequestID:  uuid.NewV4().String(),
-		Parameters: url.Values{},
+		RequestID:  uuid.Must(uuid.NewV4()).String(),
+		Parameters: Parameters{},
 		Headers:    http.Header{},
 		Metadata:   map[string]interface{}{},
 	}
@@ -58,7 +57,7 @@ func NewRequest() *Request {
 func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Request, error) {
 
 	if req.URL == nil || req.URL.String() == "" {
-		return nil, fmt.Errorf("request must have an url")
+		return nil, NewError("Bad Request", "Request must have an url", "elemental", http.StatusBadRequest)
 	}
 
 	var operation Operation
@@ -87,7 +86,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	if components[0] == "v" {
 		version, err = strconv.Atoi(components[1])
 		if err != nil {
-			return nil, fmt.Errorf("Invalid api version number '%s'", components[1])
+			return nil, NewError("Bad Request", fmt.Sprintf("Invalid api version number '%s'", components[1]), "elemental", http.StatusBadRequest)
 		}
 		// once we've set the version, we remove it, and continue as usual.
 		components = append(components[:0], components[2:]...)
@@ -104,7 +103,11 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		parentID = components[1]
 		identity = manager.IdentityFromCategory(components[2])
 	default:
-		return nil, fmt.Errorf("%s is not a valid elemental request path", req.URL)
+		return nil, NewError("Bad Request", fmt.Sprintf("%s is not a valid elemental request path", req.URL), "elemental", http.StatusBadRequest)
+	}
+
+	if parentIdentity.IsEmpty() {
+		parentIdentity = RootIdentity
 	}
 
 	switch req.Method {
@@ -148,31 +151,74 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 
 	var page, pageSize int
 	var recursive, override bool
+	var order []string
 
-	if v := req.URL.Query().Get("page"); v != "" {
+	q := req.URL.Query()
+	if v := q.Get("page"); v != "" {
 		page, err = strconv.Atoi(v)
 		if err != nil {
-			return nil, err
+			return nil, NewError("Bad Request", "Parameter `page` must be an integer", "elemental", http.StatusBadRequest)
 		}
+		q.Del("page")
 	}
 
-	if v := req.URL.Query().Get("pagesize"); v != "" {
+	if v := q.Get("pagesize"); v != "" {
 		pageSize, err = strconv.Atoi(v)
+		if err != nil {
+			return nil, NewError("Bad Request", "Parameter `pagesize` must be an integer", "elemental", http.StatusBadRequest)
+		}
+		q.Del("pagesize")
+	}
+
+	if v := q.Get("recursive"); v != "" {
+		recursive = true
+		q.Del("recursive")
+	}
+
+	if v := q.Get("override"); v != "" {
+		override = true
+		q.Del("override")
+	}
+
+	if v, ok := q["order"]; ok {
+		order = v
+		q.Del("order")
+	}
+
+	paramsMap := Parameters{}
+	qKeys := map[string]struct{}{}
+	for k := range q {
+		qKeys[k] = struct{}{}
+	}
+
+	for _, pdef := range ParametersForOperation(manager.Relationships(), identity, parentIdentity, operation) {
+		p, err := pdef.Parse(q[pdef.Name])
 		if err != nil {
 			return nil, err
 		}
+		delete(qKeys, pdef.Name)
+		paramsMap[pdef.Name] = *p
 	}
 
-	if v := req.URL.Query().Get("recursive"); v != "" {
-		recursive = true
+	if len(qKeys) > 0 {
+		errs := make([]error, len(qKeys))
+		var i int
+		for k := range qKeys {
+			errs[i] = NewError("Bad Request", fmt.Sprintf("Unknown parameter: `%s`", k), "elemental", http.StatusBadRequest)
+			i++
+		}
+		return nil, NewErrors(errs...)
 	}
 
-	if v := req.URL.Query().Get("override"); v != "" {
-		override = true
+	rel := RelationshipInfoForOperation(manager.Relationships(), identity, parentIdentity, operation)
+	if rel != nil {
+		if err := paramsMap.Validate(rel.RequiredParameters); err != nil {
+			return nil, err
+		}
 	}
 
 	return &Request{
-		RequestID:            uuid.NewV4().String(),
+		RequestID:            uuid.Must(uuid.NewV4()).String(),
 		Namespace:            req.Header.Get("X-Namespace"),
 		Recursive:            recursive,
 		Page:                 page,
@@ -182,7 +228,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		ObjectID:             ID,
 		ParentID:             parentID,
 		ParentIdentity:       parentIdentity,
-		Parameters:           req.URL.Query(),
+		Parameters:           paramsMap,
 		Username:             username,
 		Password:             password,
 		Data:                 data,
@@ -193,7 +239,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		Version:              version,
 		ExternalTrackingID:   req.Header.Get("X-External-Tracking-ID"),
 		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
-		Order:                req.URL.Query()["order"],
+		Order:                order,
 		ClientIP:             req.RemoteAddr,
 		req:                  req,
 	}, nil

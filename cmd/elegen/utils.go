@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"reflect"
+	"sort"
 	"strings"
 	"text/template"
 
@@ -79,7 +81,7 @@ func attributeNameConverter(attrName string) string {
 	return strings.Title(attrName)
 }
 
-func attrToField(attr *spec.Attribute, publicMode bool) string {
+func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) string {
 
 	json := attr.Name
 	bson := strings.ToLower(attr.Name)
@@ -88,7 +90,7 @@ func attrToField(attr *spec.Attribute, publicMode bool) string {
 		json = "-"
 	}
 
-	if attr.OmitEmpty {
+	if attr.OmitEmpty || shadow {
 		json += ",omitempty"
 	}
 
@@ -103,14 +105,36 @@ func attrToField(attr *spec.Attribute, publicMode bool) string {
 		descLines[i] = "// " + escapeBackticks(descLines[i])
 	}
 
+	var pointer string
+	if mode, ok := attr.Extensions["refMode"]; ok && mode == "pointer" {
+		pointer = "*"
+	}
+
+	var pointerShadow string
+	if shadow {
+		pointerShadow = "*"
+	}
+
+	var convertedType string
+	switch attr.Type {
+	case spec.AttributeTypeRef:
+		convertedType = pointerShadow + pointer + set.Specification(attr.SubType).Model().EntityName
+	case spec.AttributeTypeRefList:
+		convertedType = pointerShadow + "[]" + pointer + set.Specification(attr.SubType).Model().EntityName
+	case spec.AttributeTypeRefMap:
+		convertedType = pointerShadow + "map[string]" + pointer + set.Specification(attr.SubType).Model().EntityName
+	default:
+		convertedType = pointerShadow + attr.ConvertedType
+	}
+
 	return fmt.Sprintf(
 		"%s\n    %s %s `json:\"%s\" bson:\"%s\" mapstructure:\"%s,omitempty\"`\n\n",
 		strings.Join(descLines, "\n"),
 		attr.ConvertedName,
-		attr.ConvertedType,
+		convertedType,
 		json,
 		bson,
-		json,
+		strings.Replace(json, ",omitempty", "", 1),
 	)
 }
 
@@ -120,7 +144,7 @@ func escapeBackticks(str string) string {
 
 func buildEnums(s spec.Specification, version string) []Enum {
 
-	var enums []Enum
+	var enums []Enum // nolint
 	attributes := s.Attributes(version)
 
 	for _, attr := range attributes {
@@ -193,6 +217,10 @@ func shouldWriteAttributeMap(attr *spec.Attribute, publicMode bool) bool {
 
 func shouldRegisterSpecification(s spec.Specification, publicMode bool) bool {
 
+	if s.Model().Detached {
+		return false
+	}
+
 	if publicMode {
 		return !s.Model().Private
 	}
@@ -209,6 +237,10 @@ func shouldRegisterRelationship(set spec.SpecificationSet, entityName string, pu
 		}
 	}
 
+	if s.Model().Detached {
+		return false
+	}
+
 	if publicMode {
 		return !s.Model().Private
 	}
@@ -220,9 +252,112 @@ func shouldRegisterInnerRelationship(set spec.SpecificationSet, restName string,
 
 	s := set.Specification(restName)
 
+	if s.Model().Detached {
+		return false
+	}
+
 	if publicMode {
 		return !s.Model().Private
 	}
 
 	return true
+}
+
+func writeInitializer(set spec.SpecificationSet, s spec.Specification, attr *spec.Attribute) string {
+
+	if attr.Initializer == "" &&
+		attr.DefaultValue == nil &&
+		attr.Type != spec.AttributeTypeRef &&
+		attr.Type != spec.AttributeTypeRefList &&
+		attr.Type != spec.AttributeTypeRefMap {
+		return ""
+	}
+
+	if ok1, ok2 := attr.Extensions["noInit"].(bool); ok2 && ok1 {
+		return ""
+	}
+
+	return fmt.Sprintf("%s: %s,", attr.ConvertedName, writeDefaultValue(set, s, attr))
+}
+
+func writeDefaultValue(set spec.SpecificationSet, s spec.Specification, attr *spec.Attribute) string {
+
+	if attr.Initializer != "" {
+		return attr.Initializer
+	}
+
+	var pointer string
+	var ref string
+	if mode, ok := attr.Extensions["refMode"]; ok && mode == "pointer" {
+		pointer = "*"
+		ref = "&"
+	}
+
+	switch attr.Type {
+	case spec.AttributeTypeRef:
+		return ref + set.Specification(attr.SubType).Model().EntityName + "{}"
+	case spec.AttributeTypeRefList:
+		return "[]" + pointer + set.Specification(attr.SubType).Model().EntityName + "{}"
+	case spec.AttributeTypeRefMap:
+		return "map[string]" + pointer + set.Specification(attr.SubType).Model().EntityName + "{}"
+	}
+
+	var prefix string
+	if attr.Type == spec.AttributeTypeEnum {
+		prefix = s.Model().EntityName + attr.ConvertedName
+	}
+
+	return crawl(reflect.ValueOf(attr.DefaultValue), prefix)
+}
+
+func crawl(val reflect.Value, prefix string) string {
+
+	switch val.Kind() {
+
+	case reflect.Bool:
+		if val.Bool() == true {
+			return "true"
+		}
+		return "false"
+
+	case reflect.String:
+		if prefix != "" {
+			return fmt.Sprintf(`%s%s`, prefix, val.String())
+		}
+		return fmt.Sprintf(`"%s"`, val.String())
+
+	case reflect.Int, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int8:
+		return fmt.Sprintf(`%d`, val.Int())
+
+	case reflect.Float32, reflect.Float64:
+		return fmt.Sprintf(`%f`, val.Float())
+
+		// case reflect.Map:
+
+	case reflect.Slice:
+
+		out := "[]" + val.Index(0).Elem().Kind().String() + "{\n"
+		for i := 0; i < val.Len(); i++ {
+			out += fmt.Sprintf("%s,\n", crawl(val.Index(i).Elem(), prefix))
+		}
+		out += "}"
+
+		return out
+	}
+
+	return ""
+}
+
+func sortAttributes(attrs []*spec.Attribute) []*spec.Attribute {
+
+	out := make([]*spec.Attribute, len(attrs))
+	for i := range attrs {
+		out[i] = attrs[i]
+	}
+
+	sort.Slice(out, func(i int, j int) bool {
+		return strings.Compare(attrs[i].ConvertedName, attrs[j].ConvertedName) == -1
+	})
+
+	return out
 }

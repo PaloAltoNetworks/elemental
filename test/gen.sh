@@ -2,7 +2,7 @@
 
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" || exit 1
 
-elegen github -r https://github.com/aporeto-inc/regolithe -p spec/tests -t "$GITHUB_TOKEN"
+elegen folder -d ../../regolithe/spec/tests || exit 1
 
 mkdir -p model
 mv codegen/elemental/* ./model
@@ -18,11 +18,11 @@ import (
 )
 EOF
 {
-    tail -n +10 model/list.go;
-    tail -n +10 model/task.go;
-    tail -n +10 model/unmarshalable.go;
-    tail -n +10 model/user.go;
-    tail -n +16 model/root.go;
+    tail -n +11 model/list.go;
+    tail -n +9 model/task.go;
+    tail -n +9 model/unmarshalable.go;
+    tail -n +9 model/user.go;
+    tail -n +17 model/root.go;
     tail -n +5 model/identities_registry.go;
     tail -n +4 model/relationships_registry.go;
 }>> ../data_test.go

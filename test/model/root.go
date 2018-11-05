@@ -11,6 +11,7 @@ import (
 var RootIdentity = elemental.Identity{
 	Name:     "root",
 	Category: "root",
+	Package:  "todo-list",
 	Private:  false,
 }
 
@@ -18,7 +19,7 @@ var RootIdentity = elemental.Identity{
 type Root struct {
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex
+	sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewRoot returns a new *Root
@@ -100,6 +101,17 @@ func (*Root) SpecificationForAttribute(name string) elemental.AttributeSpecifica
 func (*Root) AttributeSpecifications() map[string]elemental.AttributeSpecification {
 
 	return RootAttributesMap
+}
+
+// ValueForAttribute returns the value for the given attribute.
+// This is a very advanced function that you should not need but in some
+// very specific use cases.
+func (o *Root) ValueForAttribute(name string) interface{} {
+
+	switch name {
+	}
+
+	return nil
 }
 
 // RootAttributesMap represents the map of attribute for Root.

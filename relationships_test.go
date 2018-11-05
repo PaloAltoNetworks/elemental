@@ -10,41 +10,37 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-// func TestRelationship_AddChild(t *testing.T) {
-//
-// 	Convey("Given I have two Relationship", t, func() {
-// 		r1 := &Relationship{}
-// 		r2 := &Relationship{}
-//
-// 		Convey("When I add r2 as child of r1", func() {
-//
-// 			r1.AddChild(ListIdentity, r2)
-//
-// 			Convey("Then r2 should be added to the children of r1", func() {
-// 				So(r1.Children[ListIdentity], ShouldEqual, r2)
-// 			})
-// 		})
-// 	})
-// }
-
-func TestRelationship_IsRetrieveAllowed(t *testing.T) {
+func TestRelationship_IsOperationAllowed_Retrieve(t *testing.T) {
 
 	Convey("Given I have some relationships that allows retrieve", t, func() {
 
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{
-				AllowsRetrieve: map[string]bool{
-					RootIdentity.Name: true,
+				Retrieve: map[string]*RelationshipInfo{
+					RootIdentity.Name: &RelationshipInfo{
+						Parameters: []ParameterDefinition{
+							ParameterDefinition{Name: "toto"},
+						},
+					},
 				},
 			},
 		}
 
-		Convey("When I call IsRetrieveAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsRetrieveAllowed(registry, ListIdentity)
+			ok := IsOperationAllowed(registry, ListIdentity, RootIdentity, OperationRetrieve)
 
 			Convey("Then retrieve should be ok", func() {
 				So(ok, ShouldBeTrue)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, ListIdentity, RootIdentity, OperationRetrieve)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldResemble, []ParameterDefinition{ParameterDefinition{Name: "toto"}})
 			})
 		})
 	})
@@ -55,12 +51,21 @@ func TestRelationship_IsRetrieveAllowed(t *testing.T) {
 			ListIdentity: &Relationship{},
 		}
 
-		Convey("When I call IsRetrieveAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsRetrieveAllowed(registry, ListIdentity)
+			ok := IsOperationAllowed(registry, ListIdentity, RootIdentity, OperationRetrieve)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, ListIdentity, RootIdentity, OperationRetrieve)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
 			})
 		})
 	})
@@ -69,35 +74,57 @@ func TestRelationship_IsRetrieveAllowed(t *testing.T) {
 
 		registry := RelationshipsRegistry{}
 
-		Convey("When I call IsRetrieveAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsRetrieveAllowed(registry, ListIdentity)
+			ok := IsOperationAllowed(registry, ListIdentity, RootIdentity, OperationRetrieve)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
 			})
 		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, ListIdentity, RootIdentity, OperationRetrieve)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
+			})
+		})
 	})
 }
 
-func TestRelationship_IsUpdateAllowed(t *testing.T) {
+func TestRelationship_IsOperationAllowed_Update(t *testing.T) {
 
 	Convey("Given I have some relationships that allows update", t, func() {
 
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{
-				AllowsUpdate: map[string]bool{
-					RootIdentity.Name: true,
+				Update: map[string]*RelationshipInfo{
+					RootIdentity.Name: &RelationshipInfo{
+						Parameters: []ParameterDefinition{
+							ParameterDefinition{Name: "toto"},
+						},
+					},
 				},
 			},
 		}
 
-		Convey("When I call IsUpdateAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsUpdateAllowed(registry, ListIdentity)
+			ok := IsOperationAllowed(registry, ListIdentity, RootIdentity, OperationUpdate)
 
 			Convey("Then retrieve should be ok", func() {
 				So(ok, ShouldBeTrue)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, ListIdentity, RootIdentity, OperationUpdate)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldResemble, []ParameterDefinition{ParameterDefinition{Name: "toto"}})
 			})
 		})
 	})
@@ -108,12 +135,21 @@ func TestRelationship_IsUpdateAllowed(t *testing.T) {
 			ListIdentity: &Relationship{},
 		}
 
-		Convey("When I call IsUpdateAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsUpdateAllowed(registry, ListIdentity)
+			ok := IsOperationAllowed(registry, ListIdentity, RootIdentity, OperationUpdate)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, ListIdentity, RootIdentity, OperationUpdate)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
 			})
 		})
 	})
@@ -122,35 +158,57 @@ func TestRelationship_IsUpdateAllowed(t *testing.T) {
 
 		registry := RelationshipsRegistry{}
 
-		Convey("When I call IsUpdateAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsUpdateAllowed(registry, ListIdentity)
+			ok := IsOperationAllowed(registry, ListIdentity, RootIdentity, OperationUpdate)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
 			})
 		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, ListIdentity, RootIdentity, OperationUpdate)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
+			})
+		})
 	})
 }
 
-func TestRelationship_IsDeleteAllowed(t *testing.T) {
+func TestRelationship_IsOperationAllowed_Delete(t *testing.T) {
 
 	Convey("Given I have some relationships that allows delete", t, func() {
 
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{
-				AllowsDelete: map[string]bool{
-					RootIdentity.Name: true,
+				Delete: map[string]*RelationshipInfo{
+					RootIdentity.Name: &RelationshipInfo{
+						Parameters: []ParameterDefinition{
+							ParameterDefinition{Name: "toto"},
+						},
+					},
 				},
 			},
 		}
 
-		Convey("When I call IsDeleteAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsDeleteAllowed(registry, ListIdentity)
+			ok := IsOperationAllowed(registry, ListIdentity, RootIdentity, OperationDelete)
 
 			Convey("Then retrieve should be ok", func() {
 				So(ok, ShouldBeTrue)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, ListIdentity, RootIdentity, OperationDelete)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldResemble, []ParameterDefinition{ParameterDefinition{Name: "toto"}})
 			})
 		})
 	})
@@ -161,12 +219,21 @@ func TestRelationship_IsDeleteAllowed(t *testing.T) {
 			ListIdentity: &Relationship{},
 		}
 
-		Convey("When I call IsDeleteAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsDeleteAllowed(registry, ListIdentity)
+			ok := IsOperationAllowed(registry, ListIdentity, RootIdentity, OperationDelete)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, ListIdentity, RootIdentity, OperationDelete)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
 			})
 		})
 	})
@@ -175,36 +242,58 @@ func TestRelationship_IsDeleteAllowed(t *testing.T) {
 
 		registry := RelationshipsRegistry{}
 
-		Convey("When I call IsDeleteAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsDeleteAllowed(registry, ListIdentity)
+			ok := IsOperationAllowed(registry, ListIdentity, RootIdentity, OperationDelete)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
 			})
 		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, ListIdentity, RootIdentity, OperationDelete)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
+			})
+		})
 	})
 }
 
-func TestRelationship_IsRetrieveManyAllowed(t *testing.T) {
+func TestRelationship_IsOperationAllowed_RetrieveMany(t *testing.T) {
 
 	Convey("Given I have some relationships that allows retrieveMany", t, func() {
 
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
-				AllowsRetrieveMany: map[string]bool{
-					ListIdentity.Name: true,
+				RetrieveMany: map[string]*RelationshipInfo{
+					ListIdentity.Name: &RelationshipInfo{
+						Parameters: []ParameterDefinition{
+							ParameterDefinition{Name: "toto"},
+						},
+					},
 				},
 			},
 		}
 
-		Convey("When I call IsRetrieveManyAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsRetrieveManyAllowed(registry, TaskIdentity, ListIdentity)
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, OperationRetrieveMany)
 
 			Convey("Then retrieve should be ok", func() {
 				So(ok, ShouldBeTrue)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationRetrieveMany)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldResemble, []ParameterDefinition{ParameterDefinition{Name: "toto"}})
 			})
 		})
 	})
@@ -214,16 +303,25 @@ func TestRelationship_IsRetrieveManyAllowed(t *testing.T) {
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
-				AllowsRetrieveMany: map[string]bool{},
+				RetrieveMany: map[string]*RelationshipInfo{},
 			},
 		}
 
-		Convey("When I call IsRetrieveManyAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsRetrieveManyAllowed(registry, TaskIdentity, ListIdentity)
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, OperationRetrieveMany)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationRetrieveMany)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
 			})
 		})
 	})
@@ -232,12 +330,21 @@ func TestRelationship_IsRetrieveManyAllowed(t *testing.T) {
 
 		registry := RelationshipsRegistry{}
 
-		Convey("When I call IsRetrieveManyAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsRetrieveManyAllowed(registry, TaskIdentity, ListIdentity)
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, OperationRetrieveMany)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationRetrieveMany)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
 			})
 		})
 	})
@@ -248,36 +355,58 @@ func TestRelationship_IsRetrieveManyAllowed(t *testing.T) {
 			ListIdentity: &Relationship{},
 		}
 
-		Convey("When I call IsRetrieveManyAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsRetrieveManyAllowed(registry, TaskIdentity, ListIdentity)
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, OperationRetrieveMany)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
 			})
 		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationRetrieveMany)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
+			})
+		})
 	})
 }
 
-func TestRelationship_IsInfoAllowed(t *testing.T) {
+func TestRelationship_IsOperationAllowed_Info(t *testing.T) {
 
 	Convey("Given I have some relationships that allows info", t, func() {
 
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
-				AllowsInfo: map[string]bool{
-					ListIdentity.Name: true,
+				Info: map[string]*RelationshipInfo{
+					ListIdentity.Name: &RelationshipInfo{
+						Parameters: []ParameterDefinition{
+							ParameterDefinition{Name: "toto"},
+						},
+					},
 				},
 			},
 		}
 
-		Convey("When I call IsInfoAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsInfoAllowed(registry, TaskIdentity, ListIdentity)
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, OperationInfo)
 
 			Convey("Then retrieve should be ok", func() {
 				So(ok, ShouldBeTrue)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationInfo)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldResemble, []ParameterDefinition{ParameterDefinition{Name: "toto"}})
 			})
 		})
 	})
@@ -287,16 +416,25 @@ func TestRelationship_IsInfoAllowed(t *testing.T) {
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
-				AllowsInfo: map[string]bool{},
+				Info: map[string]*RelationshipInfo{},
 			},
 		}
 
-		Convey("When I call IsInfoAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsInfoAllowed(registry, TaskIdentity, ListIdentity)
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, OperationInfo)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationInfo)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
 			})
 		})
 	})
@@ -305,12 +443,21 @@ func TestRelationship_IsInfoAllowed(t *testing.T) {
 
 		registry := RelationshipsRegistry{}
 
-		Convey("When I call IsInfoAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsInfoAllowed(registry, TaskIdentity, ListIdentity)
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, OperationInfo)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationInfo)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
 			})
 		})
 	})
@@ -321,36 +468,58 @@ func TestRelationship_IsInfoAllowed(t *testing.T) {
 			ListIdentity: &Relationship{},
 		}
 
-		Convey("When I call IsInfoAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsInfoAllowed(registry, TaskIdentity, ListIdentity)
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, OperationInfo)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
 			})
 		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationInfo)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
+			})
+		})
 	})
 }
 
-func TestRelationship_IsPatchAllowed(t *testing.T) {
+func TestRelationship_IsOperationAllowed_Patch(t *testing.T) {
 
 	Convey("Given I have some relationships that allows patch", t, func() {
 
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
-				AllowsPatch: map[string]bool{
-					ListIdentity.Name: true,
+				Patch: map[string]*RelationshipInfo{
+					ListIdentity.Name: &RelationshipInfo{
+						Parameters: []ParameterDefinition{
+							ParameterDefinition{Name: "toto"},
+						},
+					},
 				},
 			},
 		}
 
-		Convey("When I call IsPatchAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsPatchAllowed(registry, TaskIdentity, ListIdentity)
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, OperationPatch)
 
 			Convey("Then retrieve should be ok", func() {
 				So(ok, ShouldBeTrue)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationPatch)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldResemble, []ParameterDefinition{ParameterDefinition{Name: "toto"}})
 			})
 		})
 	})
@@ -360,16 +529,25 @@ func TestRelationship_IsPatchAllowed(t *testing.T) {
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
-				AllowsPatch: map[string]bool{},
+				Patch: map[string]*RelationshipInfo{},
 			},
 		}
 
-		Convey("When I call IsPatchAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsPatchAllowed(registry, TaskIdentity, ListIdentity)
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, OperationPatch)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationPatch)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
 			})
 		})
 	})
@@ -378,12 +556,21 @@ func TestRelationship_IsPatchAllowed(t *testing.T) {
 
 		registry := RelationshipsRegistry{}
 
-		Convey("When I call IsPatchAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsPatchAllowed(registry, TaskIdentity, ListIdentity)
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, OperationPatch)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationPatch)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
 			})
 		})
 	})
@@ -394,36 +581,58 @@ func TestRelationship_IsPatchAllowed(t *testing.T) {
 			ListIdentity: &Relationship{},
 		}
 
-		Convey("When I call IsPatchAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsPatchAllowed(registry, TaskIdentity, ListIdentity)
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, OperationPatch)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
 			})
 		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationPatch)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
+			})
+		})
 	})
 }
 
-func TestRelationship_IsCreateAllowed(t *testing.T) {
+func TestRelationship_IsOperationAllowed_Create(t *testing.T) {
 
 	Convey("Given I have some relationships that allows create", t, func() {
 
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
-				AllowsCreate: map[string]bool{
-					ListIdentity.Name: true,
+				Create: map[string]*RelationshipInfo{
+					ListIdentity.Name: &RelationshipInfo{
+						Parameters: []ParameterDefinition{
+							ParameterDefinition{Name: "toto"},
+						},
+					},
 				},
 			},
 		}
 
-		Convey("When I call IsCreateAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsCreateAllowed(registry, TaskIdentity, ListIdentity)
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, OperationCreate)
 
 			Convey("Then retrieve should be ok", func() {
 				So(ok, ShouldBeTrue)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationCreate)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldResemble, []ParameterDefinition{ParameterDefinition{Name: "toto"}})
 			})
 		})
 	})
@@ -433,16 +642,25 @@ func TestRelationship_IsCreateAllowed(t *testing.T) {
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
-				AllowsCreate: map[string]bool{},
+				Create: map[string]*RelationshipInfo{},
 			},
 		}
 
-		Convey("When I call IsCreateAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsCreateAllowed(registry, TaskIdentity, ListIdentity)
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, OperationCreate)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationCreate)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
 			})
 		})
 	})
@@ -451,12 +669,21 @@ func TestRelationship_IsCreateAllowed(t *testing.T) {
 
 		registry := RelationshipsRegistry{}
 
-		Convey("When I call IsCreateAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsCreateAllowed(registry, TaskIdentity, ListIdentity)
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, OperationCreate)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationCreate)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
 			})
 		})
 	})
@@ -467,12 +694,58 @@ func TestRelationship_IsCreateAllowed(t *testing.T) {
 			ListIdentity: &Relationship{},
 		}
 
-		Convey("When I call IsCreateAllowed", func() {
+		Convey("When I call IsOperationAllowed", func() {
 
-			ok := IsCreateAllowed(registry, TaskIdentity, ListIdentity)
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, OperationCreate)
 
 			Convey("Then retrieve should not be ok", func() {
 				So(ok, ShouldBeFalse)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationCreate)
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
+			})
+		})
+	})
+}
+
+func TestRelationship_IsOperationAllowed_UnknownOperation(t *testing.T) {
+
+	Convey("Given I have some relationships that allows create", t, func() {
+
+		registry := RelationshipsRegistry{
+			ListIdentity: &Relationship{},
+			TaskIdentity: &Relationship{
+				Create: map[string]*RelationshipInfo{
+					ListIdentity.Name: &RelationshipInfo{
+						Parameters: []ParameterDefinition{
+							ParameterDefinition{Name: "toto"},
+						},
+					},
+				},
+			},
+		}
+
+		Convey("When I call IsOperationAllowed", func() {
+
+			ok := IsOperationAllowed(registry, TaskIdentity, ListIdentity, Operation("unknown"))
+
+			Convey("Then retrieve should be false", func() {
+				So(ok, ShouldBeFalse)
+			})
+		})
+
+		Convey("When I call ParametersForOperation", func() {
+
+			p := ParametersForOperation(registry, ListIdentity, RootIdentity, Operation("unknown"))
+
+			Convey("Then parameters should be correct", func() {
+				So(p, ShouldBeNil)
 			})
 		})
 	})

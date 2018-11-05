@@ -10,6 +10,7 @@ import (
 var ListIdentity = Identity{
 	Name:     "list",
 	Category: "lists",
+	Package:  "todo-list",
 	Private:  false,
 }
 
@@ -43,9 +44,9 @@ func (o ListsList) Append(objects ...Identifiable) Identifiables {
 // List converts the object to an IdentifiablesList.
 func (o ListsList) List() IdentifiablesList {
 
-	out := IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -55,6 +56,18 @@ func (o ListsList) List() IdentifiablesList {
 func (o ListsList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToSparse returns the ListsList converted to SparseListsList.
+// Objects in the list will only contain the given fields. No field means entire field set.
+func (o ListsList) ToSparse(fields ...string) IdentifiablesList {
+
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToSparse(fields...)
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -97,7 +110,7 @@ type List struct {
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex
+	sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewList returns a new *List
@@ -160,6 +173,94 @@ func (o *List) SetName(name string) {
 	o.Name = name
 }
 
+// ToSparse returns the sparse version of the model.
+// The returned object will only contain the given fields. No field means entire field set.
+func (o *List) ToSparse(fields ...string) SparseIdentifiable {
+
+	if len(fields) == 0 {
+		// nolint: goimports
+		return &SparseList{
+			ID:           &o.ID,
+			CreationOnly: &o.CreationOnly,
+			Date:         &o.Date,
+			Description:  &o.Description,
+			Name:         &o.Name,
+			ParentID:     &o.ParentID,
+			ParentType:   &o.ParentType,
+			ReadOnly:     &o.ReadOnly,
+			Slice:        &o.Slice,
+			Unexposed:    &o.Unexposed,
+		}
+	}
+
+	sp := &SparseList{}
+	for _, f := range fields {
+		switch f {
+		case "ID":
+			sp.ID = &(o.ID)
+		case "creationOnly":
+			sp.CreationOnly = &(o.CreationOnly)
+		case "date":
+			sp.Date = &(o.Date)
+		case "description":
+			sp.Description = &(o.Description)
+		case "name":
+			sp.Name = &(o.Name)
+		case "parentID":
+			sp.ParentID = &(o.ParentID)
+		case "parentType":
+			sp.ParentType = &(o.ParentType)
+		case "readOnly":
+			sp.ReadOnly = &(o.ReadOnly)
+		case "slice":
+			sp.Slice = &(o.Slice)
+		case "unexposed":
+			sp.Unexposed = &(o.Unexposed)
+		}
+	}
+
+	return sp
+}
+
+// Patch apply the non nil value of a *SparseList to the object.
+func (o *List) Patch(sparse SparseIdentifiable) {
+	if !sparse.Identity().IsEqual(o.Identity()) {
+		panic("cannot patch from a parse with different identity")
+	}
+
+	so := sparse.(*SparseList)
+	if so.ID != nil {
+		o.ID = *so.ID
+	}
+	if so.CreationOnly != nil {
+		o.CreationOnly = *so.CreationOnly
+	}
+	if so.Date != nil {
+		o.Date = *so.Date
+	}
+	if so.Description != nil {
+		o.Description = *so.Description
+	}
+	if so.Name != nil {
+		o.Name = *so.Name
+	}
+	if so.ParentID != nil {
+		o.ParentID = *so.ParentID
+	}
+	if so.ParentType != nil {
+		o.ParentType = *so.ParentType
+	}
+	if so.ReadOnly != nil {
+		o.ReadOnly = *so.ReadOnly
+	}
+	if so.Slice != nil {
+		o.Slice = *so.Slice
+	}
+	if so.Unexposed != nil {
+		o.Unexposed = *so.Unexposed
+	}
+}
+
 // Validate valides the current information stored into the structure.
 func (o *List) Validate() error {
 
@@ -198,6 +299,37 @@ func (*List) AttributeSpecifications() map[string]AttributeSpecification {
 	return ListAttributesMap
 }
 
+// ValueForAttribute returns the value for the given attribute.
+// This is a very advanced function that you should not need but in some
+// very specific use cases.
+func (o *List) ValueForAttribute(name string) interface{} {
+
+	switch name {
+	case "ID":
+		return o.ID
+	case "creationOnly":
+		return o.CreationOnly
+	case "date":
+		return o.Date
+	case "description":
+		return o.Description
+	case "name":
+		return o.Name
+	case "parentID":
+		return o.ParentID
+	case "parentType":
+		return o.ParentType
+	case "readOnly":
+		return o.ReadOnly
+	case "slice":
+		return o.Slice
+	case "unexposed":
+		return o.Unexposed
+	}
+
+	return nil
+}
+
 // ListAttributesMap represents the map of attribute for List.
 var ListAttributesMap = map[string]AttributeSpecification{
 	"ID": AttributeSpecification{
@@ -207,7 +339,6 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Description:    `The identifier.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Identifier:     true,
 		Name:           "ID",
 		Orderable:      true,
@@ -223,7 +354,6 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Description:    `This attribute is creation only.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "creationOnly",
 		Orderable:      true,
 		Stored:         true,
@@ -246,7 +376,6 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Description:    `The description.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "description",
 		Orderable:      true,
 		Stored:         true,
@@ -258,7 +387,6 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Description:    `The name.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Getter:         true,
 		Name:           "name",
 		Orderable:      true,
@@ -275,7 +403,6 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Exposed:        true,
 		Filterable:     true,
 		ForeignKey:     true,
-		Format:         "free",
 		Name:           "parentID",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -289,7 +416,6 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Description:    `The type of the parent of the object.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -302,7 +428,6 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Description:    `This attribute is readonly.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "readOnly",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -326,7 +451,6 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		ConvertedName:  "Unexposed",
 		Description:    `This attribute is not exposed.`,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "unexposed",
 		Orderable:      true,
 		Stored:         true,
@@ -343,7 +467,6 @@ var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Description:    `The identifier.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Identifier:     true,
 		Name:           "ID",
 		Orderable:      true,
@@ -359,7 +482,6 @@ var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Description:    `This attribute is creation only.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "creationOnly",
 		Orderable:      true,
 		Stored:         true,
@@ -382,7 +504,6 @@ var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Description:    `The description.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "description",
 		Orderable:      true,
 		Stored:         true,
@@ -394,7 +515,6 @@ var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Description:    `The name.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Getter:         true,
 		Name:           "name",
 		Orderable:      true,
@@ -411,7 +531,6 @@ var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Exposed:        true,
 		Filterable:     true,
 		ForeignKey:     true,
-		Format:         "free",
 		Name:           "parentID",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -425,7 +544,6 @@ var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Description:    `The type of the parent of the object.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -438,7 +556,6 @@ var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Description:    `This attribute is readonly.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "readOnly",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -462,12 +579,179 @@ var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
 		ConvertedName:  "Unexposed",
 		Description:    `This attribute is not exposed.`,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "unexposed",
 		Orderable:      true,
 		Stored:         true,
 		Type:           "string",
 	},
+}
+
+// SparseListsList represents a list of SparseLists
+type SparseListsList []*SparseList
+
+// Identity returns the identity of the objects in the list.
+func (o SparseListsList) Identity() Identity {
+
+	return ListIdentity
+}
+
+// Copy returns a pointer to a copy the SparseListsList.
+func (o SparseListsList) Copy() Identifiables {
+
+	copy := append(SparseListsList{}, o...)
+	return &copy
+}
+
+// Append appends the objects to the a new copy of the SparseListsList.
+func (o SparseListsList) Append(objects ...Identifiable) Identifiables {
+
+	out := append(SparseListsList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*SparseList))
+	}
+
+	return out
+}
+
+// List converts the object to an IdentifiablesList.
+func (o SparseListsList) List() IdentifiablesList {
+
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
+	}
+
+	return out
+}
+
+// DefaultOrder returns the default ordering fields of the content.
+func (o SparseListsList) DefaultOrder() []string {
+
+	return []string{}
+}
+
+// ToPlain returns the SparseListsList converted to ListsList.
+func (o SparseListsList) ToPlain() IdentifiablesList {
+
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToPlain()
+	}
+
+	return out
+}
+
+// Version returns the version of the content.
+func (o SparseListsList) Version() int {
+
+	return 1
+}
+
+// SparseList represents the sparse version of a list.
+type SparseList struct {
+	// The identifier.
+	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+
+	// This attribute is creation only.
+	CreationOnly *string `json:"creationOnly,omitempty" bson:"creationonly" mapstructure:"creationOnly,omitempty"`
+
+	// The date.
+	Date *time.Time `json:"date,omitempty" bson:"date" mapstructure:"date,omitempty"`
+
+	// The description.
+	Description *string `json:"description,omitempty" bson:"description" mapstructure:"description,omitempty"`
+
+	// The name.
+	Name *string `json:"name,omitempty" bson:"name" mapstructure:"name,omitempty"`
+
+	// The identifier of the parent of the object.
+	ParentID *string `json:"parentID,omitempty" bson:"parentid" mapstructure:"parentID,omitempty"`
+
+	// The type of the parent of the object.
+	ParentType *string `json:"parentType,omitempty" bson:"parenttype" mapstructure:"parentType,omitempty"`
+
+	// This attribute is readonly.
+	ReadOnly *string `json:"readOnly,omitempty" bson:"readonly" mapstructure:"readOnly,omitempty"`
+
+	// this is a slice.
+	Slice *[]string `json:"slice,omitempty" bson:"slice" mapstructure:"slice,omitempty"`
+
+	// This attribute is not exposed.
+	Unexposed *string `json:"-,omitempty" bson:"unexposed" mapstructure:"-,omitempty"`
+
+	ModelVersion int `json:"-" bson:"_modelversion"`
+
+	sync.Mutex `json:"-" bson:"-"`
+}
+
+// NewSparseList returns a new  SparseList.
+func NewSparseList() *SparseList {
+	return &SparseList{}
+}
+
+// Identity returns the Identity of the sparse object.
+func (o *SparseList) Identity() Identity {
+
+	return ListIdentity
+}
+
+// Identifier returns the value of the sparse object's unique identifier.
+func (o *SparseList) Identifier() string {
+
+	if o.ID == nil {
+		return ""
+	}
+	return *o.ID
+}
+
+// SetIdentifier sets the value of the sparse object's unique identifier.
+func (o *SparseList) SetIdentifier(id string) {
+
+	o.ID = &id
+}
+
+// Version returns the hardcoded version of the model.
+func (o *SparseList) Version() int {
+
+	return 1
+}
+
+// ToPlain returns the plain version of the sparse model.
+func (o *SparseList) ToPlain() PlainIdentifiable {
+
+	out := NewList()
+	if o.ID != nil {
+		out.ID = *o.ID
+	}
+	if o.CreationOnly != nil {
+		out.CreationOnly = *o.CreationOnly
+	}
+	if o.Date != nil {
+		out.Date = *o.Date
+	}
+	if o.Description != nil {
+		out.Description = *o.Description
+	}
+	if o.Name != nil {
+		out.Name = *o.Name
+	}
+	if o.ParentID != nil {
+		out.ParentID = *o.ParentID
+	}
+	if o.ParentType != nil {
+		out.ParentType = *o.ParentType
+	}
+	if o.ReadOnly != nil {
+		out.ReadOnly = *o.ReadOnly
+	}
+	if o.Slice != nil {
+		out.Slice = *o.Slice
+	}
+	if o.Unexposed != nil {
+		out.Unexposed = *o.Unexposed
+	}
+
+	return out
 }
 
 // TaskStatusValue represents the possible values for attribute "status".
@@ -488,6 +772,7 @@ const (
 var TaskIdentity = Identity{
 	Name:     "task",
 	Category: "tasks",
+	Package:  "todo-list",
 	Private:  false,
 }
 
@@ -521,9 +806,9 @@ func (o TasksList) Append(objects ...Identifiable) Identifiables {
 // List converts the object to an IdentifiablesList.
 func (o TasksList) List() IdentifiablesList {
 
-	out := IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -533,6 +818,18 @@ func (o TasksList) List() IdentifiablesList {
 func (o TasksList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToSparse returns the TasksList converted to SparseTasksList.
+// Objects in the list will only contain the given fields. No field means entire field set.
+func (o TasksList) ToSparse(fields ...string) IdentifiablesList {
+
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToSparse(fields...)
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -563,7 +860,7 @@ type Task struct {
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex
+	sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewTask returns a new *Task
@@ -571,7 +868,7 @@ func NewTask() *Task {
 
 	return &Task{
 		ModelVersion: 1,
-		Status:       "TODO",
+		Status:       TaskStatusTODO,
 	}
 }
 
@@ -627,6 +924,70 @@ func (o *Task) SetName(name string) {
 	o.Name = name
 }
 
+// ToSparse returns the sparse version of the model.
+// The returned object will only contain the given fields. No field means entire field set.
+func (o *Task) ToSparse(fields ...string) SparseIdentifiable {
+
+	if len(fields) == 0 {
+		// nolint: goimports
+		return &SparseTask{
+			ID:          &o.ID,
+			Description: &o.Description,
+			Name:        &o.Name,
+			ParentID:    &o.ParentID,
+			ParentType:  &o.ParentType,
+			Status:      &o.Status,
+		}
+	}
+
+	sp := &SparseTask{}
+	for _, f := range fields {
+		switch f {
+		case "ID":
+			sp.ID = &(o.ID)
+		case "description":
+			sp.Description = &(o.Description)
+		case "name":
+			sp.Name = &(o.Name)
+		case "parentID":
+			sp.ParentID = &(o.ParentID)
+		case "parentType":
+			sp.ParentType = &(o.ParentType)
+		case "status":
+			sp.Status = &(o.Status)
+		}
+	}
+
+	return sp
+}
+
+// Patch apply the non nil value of a *SparseTask to the object.
+func (o *Task) Patch(sparse SparseIdentifiable) {
+	if !sparse.Identity().IsEqual(o.Identity()) {
+		panic("cannot patch from a parse with different identity")
+	}
+
+	so := sparse.(*SparseTask)
+	if so.ID != nil {
+		o.ID = *so.ID
+	}
+	if so.Description != nil {
+		o.Description = *so.Description
+	}
+	if so.Name != nil {
+		o.Name = *so.Name
+	}
+	if so.ParentID != nil {
+		o.ParentID = *so.ParentID
+	}
+	if so.ParentType != nil {
+		o.ParentType = *so.ParentType
+	}
+	if so.Status != nil {
+		o.Status = *so.Status
+	}
+}
+
 // Validate valides the current information stored into the structure.
 func (o *Task) Validate() error {
 
@@ -669,6 +1030,29 @@ func (*Task) AttributeSpecifications() map[string]AttributeSpecification {
 	return TaskAttributesMap
 }
 
+// ValueForAttribute returns the value for the given attribute.
+// This is a very advanced function that you should not need but in some
+// very specific use cases.
+func (o *Task) ValueForAttribute(name string) interface{} {
+
+	switch name {
+	case "ID":
+		return o.ID
+	case "description":
+		return o.Description
+	case "name":
+		return o.Name
+	case "parentID":
+		return o.ParentID
+	case "parentType":
+		return o.ParentType
+	case "status":
+		return o.Status
+	}
+
+	return nil
+}
+
 // TaskAttributesMap represents the map of attribute for Task.
 var TaskAttributesMap = map[string]AttributeSpecification{
 	"ID": AttributeSpecification{
@@ -678,7 +1062,6 @@ var TaskAttributesMap = map[string]AttributeSpecification{
 		Description:    `The identifier.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Identifier:     true,
 		Name:           "ID",
 		Orderable:      true,
@@ -693,7 +1076,6 @@ var TaskAttributesMap = map[string]AttributeSpecification{
 		Description:    `The description.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "description",
 		Orderable:      true,
 		Stored:         true,
@@ -705,7 +1087,6 @@ var TaskAttributesMap = map[string]AttributeSpecification{
 		Description:    `The name.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Getter:         true,
 		Name:           "name",
 		Orderable:      true,
@@ -722,7 +1103,6 @@ var TaskAttributesMap = map[string]AttributeSpecification{
 		Exposed:        true,
 		Filterable:     true,
 		ForeignKey:     true,
-		Format:         "free",
 		Name:           "parentID",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -736,7 +1116,6 @@ var TaskAttributesMap = map[string]AttributeSpecification{
 		Description:    `The type of the parent of the object.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -766,7 +1145,6 @@ var TaskLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Description:    `The identifier.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Identifier:     true,
 		Name:           "ID",
 		Orderable:      true,
@@ -781,7 +1159,6 @@ var TaskLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Description:    `The description.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "description",
 		Orderable:      true,
 		Stored:         true,
@@ -793,7 +1170,6 @@ var TaskLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Description:    `The name.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Getter:         true,
 		Name:           "name",
 		Orderable:      true,
@@ -810,7 +1186,6 @@ var TaskLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Exposed:        true,
 		Filterable:     true,
 		ForeignKey:     true,
-		Format:         "free",
 		Name:           "parentID",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -824,7 +1199,6 @@ var TaskLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Description:    `The type of the parent of the object.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -844,6 +1218,152 @@ var TaskLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Type:           "enum",
 	},
 }
+
+// SparseTasksList represents a list of SparseTasks
+type SparseTasksList []*SparseTask
+
+// Identity returns the identity of the objects in the list.
+func (o SparseTasksList) Identity() Identity {
+
+	return TaskIdentity
+}
+
+// Copy returns a pointer to a copy the SparseTasksList.
+func (o SparseTasksList) Copy() Identifiables {
+
+	copy := append(SparseTasksList{}, o...)
+	return &copy
+}
+
+// Append appends the objects to the a new copy of the SparseTasksList.
+func (o SparseTasksList) Append(objects ...Identifiable) Identifiables {
+
+	out := append(SparseTasksList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*SparseTask))
+	}
+
+	return out
+}
+
+// List converts the object to an IdentifiablesList.
+func (o SparseTasksList) List() IdentifiablesList {
+
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
+	}
+
+	return out
+}
+
+// DefaultOrder returns the default ordering fields of the content.
+func (o SparseTasksList) DefaultOrder() []string {
+
+	return []string{}
+}
+
+// ToPlain returns the SparseTasksList converted to TasksList.
+func (o SparseTasksList) ToPlain() IdentifiablesList {
+
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToPlain()
+	}
+
+	return out
+}
+
+// Version returns the version of the content.
+func (o SparseTasksList) Version() int {
+
+	return 1
+}
+
+// SparseTask represents the sparse version of a task.
+type SparseTask struct {
+	// The identifier.
+	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+
+	// The description.
+	Description *string `json:"description,omitempty" bson:"description" mapstructure:"description,omitempty"`
+
+	// The name.
+	Name *string `json:"name,omitempty" bson:"name" mapstructure:"name,omitempty"`
+
+	// The identifier of the parent of the object.
+	ParentID *string `json:"parentID,omitempty" bson:"parentid" mapstructure:"parentID,omitempty"`
+
+	// The type of the parent of the object.
+	ParentType *string `json:"parentType,omitempty" bson:"parenttype" mapstructure:"parentType,omitempty"`
+
+	// The status of the task.
+	Status *TaskStatusValue `json:"status,omitempty" bson:"status" mapstructure:"status,omitempty"`
+
+	ModelVersion int `json:"-" bson:"_modelversion"`
+
+	sync.Mutex `json:"-" bson:"-"`
+}
+
+// NewSparseTask returns a new  SparseTask.
+func NewSparseTask() *SparseTask {
+	return &SparseTask{}
+}
+
+// Identity returns the Identity of the sparse object.
+func (o *SparseTask) Identity() Identity {
+
+	return TaskIdentity
+}
+
+// Identifier returns the value of the sparse object's unique identifier.
+func (o *SparseTask) Identifier() string {
+
+	if o.ID == nil {
+		return ""
+	}
+	return *o.ID
+}
+
+// SetIdentifier sets the value of the sparse object's unique identifier.
+func (o *SparseTask) SetIdentifier(id string) {
+
+	o.ID = &id
+}
+
+// Version returns the hardcoded version of the model.
+func (o *SparseTask) Version() int {
+
+	return 1
+}
+
+// ToPlain returns the plain version of the sparse model.
+func (o *SparseTask) ToPlain() PlainIdentifiable {
+
+	out := NewTask()
+	if o.ID != nil {
+		out.ID = *o.ID
+	}
+	if o.Description != nil {
+		out.Description = *o.Description
+	}
+	if o.Name != nil {
+		out.Name = *o.Name
+	}
+	if o.ParentID != nil {
+		out.ParentID = *o.ParentID
+	}
+	if o.ParentType != nil {
+		out.ParentType = *o.ParentType
+	}
+	if o.Status != nil {
+		out.Status = *o.Status
+	}
+
+	return out
+}
+
+// UnmarshalableListIdentity represents the Identity of the object.
 var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
 
 // UnmarshalableListsList represents a list of UnmarshalableLists
@@ -943,6 +1463,7 @@ func (o *UnmarshalableError) MarshalJSON() ([]byte, error) {
 var UserIdentity = Identity{
 	Name:     "user",
 	Category: "users",
+	Package:  "todo-list",
 	Private:  false,
 }
 
@@ -976,9 +1497,9 @@ func (o UsersList) Append(objects ...Identifiable) Identifiables {
 // List converts the object to an IdentifiablesList.
 func (o UsersList) List() IdentifiablesList {
 
-	out := IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -988,6 +1509,18 @@ func (o UsersList) List() IdentifiablesList {
 func (o UsersList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToSparse returns the UsersList converted to SparseUsersList.
+// Objects in the list will only contain the given fields. No field means entire field set.
+func (o UsersList) ToSparse(fields ...string) IdentifiablesList {
+
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToSparse(fields...)
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -1018,7 +1551,7 @@ type User struct {
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex
+	sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewUser returns a new *User
@@ -1069,6 +1602,70 @@ func (o *User) String() string {
 	return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
 }
 
+// ToSparse returns the sparse version of the model.
+// The returned object will only contain the given fields. No field means entire field set.
+func (o *User) ToSparse(fields ...string) SparseIdentifiable {
+
+	if len(fields) == 0 {
+		// nolint: goimports
+		return &SparseUser{
+			ID:         &o.ID,
+			FirstName:  &o.FirstName,
+			LastName:   &o.LastName,
+			ParentID:   &o.ParentID,
+			ParentType: &o.ParentType,
+			UserName:   &o.UserName,
+		}
+	}
+
+	sp := &SparseUser{}
+	for _, f := range fields {
+		switch f {
+		case "ID":
+			sp.ID = &(o.ID)
+		case "firstName":
+			sp.FirstName = &(o.FirstName)
+		case "lastName":
+			sp.LastName = &(o.LastName)
+		case "parentID":
+			sp.ParentID = &(o.ParentID)
+		case "parentType":
+			sp.ParentType = &(o.ParentType)
+		case "userName":
+			sp.UserName = &(o.UserName)
+		}
+	}
+
+	return sp
+}
+
+// Patch apply the non nil value of a *SparseUser to the object.
+func (o *User) Patch(sparse SparseIdentifiable) {
+	if !sparse.Identity().IsEqual(o.Identity()) {
+		panic("cannot patch from a parse with different identity")
+	}
+
+	so := sparse.(*SparseUser)
+	if so.ID != nil {
+		o.ID = *so.ID
+	}
+	if so.FirstName != nil {
+		o.FirstName = *so.FirstName
+	}
+	if so.LastName != nil {
+		o.LastName = *so.LastName
+	}
+	if so.ParentID != nil {
+		o.ParentID = *so.ParentID
+	}
+	if so.ParentType != nil {
+		o.ParentType = *so.ParentType
+	}
+	if so.UserName != nil {
+		o.UserName = *so.UserName
+	}
+}
+
 // Validate valides the current information stored into the structure.
 func (o *User) Validate() error {
 
@@ -1086,6 +1683,8 @@ func (o *User) Validate() error {
 	if err := ValidateRequiredString("userName", o.UserName); err != nil {
 		requiredErrors = append(requiredErrors, err)
 	}
+
+	// Custom object validation.
 
 	if len(requiredErrors) > 0 {
 		return requiredErrors
@@ -1115,6 +1714,29 @@ func (*User) AttributeSpecifications() map[string]AttributeSpecification {
 	return UserAttributesMap
 }
 
+// ValueForAttribute returns the value for the given attribute.
+// This is a very advanced function that you should not need but in some
+// very specific use cases.
+func (o *User) ValueForAttribute(name string) interface{} {
+
+	switch name {
+	case "ID":
+		return o.ID
+	case "firstName":
+		return o.FirstName
+	case "lastName":
+		return o.LastName
+	case "parentID":
+		return o.ParentID
+	case "parentType":
+		return o.ParentType
+	case "userName":
+		return o.UserName
+	}
+
+	return nil
+}
+
 // UserAttributesMap represents the map of attribute for User.
 var UserAttributesMap = map[string]AttributeSpecification{
 	"ID": AttributeSpecification{
@@ -1124,7 +1746,6 @@ var UserAttributesMap = map[string]AttributeSpecification{
 		Description:    `The identifier.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Identifier:     true,
 		Name:           "ID",
 		Orderable:      true,
@@ -1139,7 +1760,6 @@ var UserAttributesMap = map[string]AttributeSpecification{
 		Description:    `The first name.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "firstName",
 		Orderable:      true,
 		Required:       true,
@@ -1152,7 +1772,6 @@ var UserAttributesMap = map[string]AttributeSpecification{
 		Description:    `The last name.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "lastName",
 		Orderable:      true,
 		Required:       true,
@@ -1167,7 +1786,6 @@ var UserAttributesMap = map[string]AttributeSpecification{
 		Exposed:        true,
 		Filterable:     true,
 		ForeignKey:     true,
-		Format:         "free",
 		Name:           "parentID",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -1181,7 +1799,6 @@ var UserAttributesMap = map[string]AttributeSpecification{
 		Description:    `The type of the parent of the object.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -1194,7 +1811,6 @@ var UserAttributesMap = map[string]AttributeSpecification{
 		Description:    `the login.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "userName",
 		Orderable:      true,
 		Required:       true,
@@ -1212,7 +1828,6 @@ var UserLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Description:    `The identifier.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Identifier:     true,
 		Name:           "ID",
 		Orderable:      true,
@@ -1227,7 +1842,6 @@ var UserLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Description:    `The first name.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "firstName",
 		Orderable:      true,
 		Required:       true,
@@ -1240,7 +1854,6 @@ var UserLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Description:    `The last name.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "lastName",
 		Orderable:      true,
 		Required:       true,
@@ -1255,7 +1868,6 @@ var UserLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Exposed:        true,
 		Filterable:     true,
 		ForeignKey:     true,
-		Format:         "free",
 		Name:           "parentID",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -1269,7 +1881,6 @@ var UserLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Description:    `The type of the parent of the object.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -1282,7 +1893,6 @@ var UserLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Description:    `the login.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "userName",
 		Orderable:      true,
 		Required:       true,
@@ -1291,11 +1901,155 @@ var UserLowerCaseAttributesMap = map[string]AttributeSpecification{
 	},
 }
 
+// SparseUsersList represents a list of SparseUsers
+type SparseUsersList []*SparseUser
+
+// Identity returns the identity of the objects in the list.
+func (o SparseUsersList) Identity() Identity {
+
+	return UserIdentity
+}
+
+// Copy returns a pointer to a copy the SparseUsersList.
+func (o SparseUsersList) Copy() Identifiables {
+
+	copy := append(SparseUsersList{}, o...)
+	return &copy
+}
+
+// Append appends the objects to the a new copy of the SparseUsersList.
+func (o SparseUsersList) Append(objects ...Identifiable) Identifiables {
+
+	out := append(SparseUsersList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*SparseUser))
+	}
+
+	return out
+}
+
+// List converts the object to an IdentifiablesList.
+func (o SparseUsersList) List() IdentifiablesList {
+
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
+	}
+
+	return out
+}
+
+// DefaultOrder returns the default ordering fields of the content.
+func (o SparseUsersList) DefaultOrder() []string {
+
+	return []string{}
+}
+
+// ToPlain returns the SparseUsersList converted to UsersList.
+func (o SparseUsersList) ToPlain() IdentifiablesList {
+
+	out := make(IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToPlain()
+	}
+
+	return out
+}
+
+// Version returns the version of the content.
+func (o SparseUsersList) Version() int {
+
+	return 1
+}
+
+// SparseUser represents the sparse version of a user.
+type SparseUser struct {
+	// The identifier.
+	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+
+	// The first name.
+	FirstName *string `json:"firstName,omitempty" bson:"firstname" mapstructure:"firstName,omitempty"`
+
+	// The last name.
+	LastName *string `json:"lastName,omitempty" bson:"lastname" mapstructure:"lastName,omitempty"`
+
+	// The identifier of the parent of the object.
+	ParentID *string `json:"parentID,omitempty" bson:"parentid" mapstructure:"parentID,omitempty"`
+
+	// The type of the parent of the object.
+	ParentType *string `json:"parentType,omitempty" bson:"parenttype" mapstructure:"parentType,omitempty"`
+
+	// the login.
+	UserName *string `json:"userName,omitempty" bson:"username" mapstructure:"userName,omitempty"`
+
+	ModelVersion int `json:"-" bson:"_modelversion"`
+
+	sync.Mutex `json:"-" bson:"-"`
+}
+
+// NewSparseUser returns a new  SparseUser.
+func NewSparseUser() *SparseUser {
+	return &SparseUser{}
+}
+
+// Identity returns the Identity of the sparse object.
+func (o *SparseUser) Identity() Identity {
+
+	return UserIdentity
+}
+
+// Identifier returns the value of the sparse object's unique identifier.
+func (o *SparseUser) Identifier() string {
+
+	if o.ID == nil {
+		return ""
+	}
+	return *o.ID
+}
+
+// SetIdentifier sets the value of the sparse object's unique identifier.
+func (o *SparseUser) SetIdentifier(id string) {
+
+	o.ID = &id
+}
+
+// Version returns the hardcoded version of the model.
+func (o *SparseUser) Version() int {
+
+	return 1
+}
+
+// ToPlain returns the plain version of the sparse model.
+func (o *SparseUser) ToPlain() PlainIdentifiable {
+
+	out := NewUser()
+	if o.ID != nil {
+		out.ID = *o.ID
+	}
+	if o.FirstName != nil {
+		out.FirstName = *o.FirstName
+	}
+	if o.LastName != nil {
+		out.LastName = *o.LastName
+	}
+	if o.ParentID != nil {
+		out.ParentID = *o.ParentID
+	}
+	if o.ParentType != nil {
+		out.ParentType = *o.ParentType
+	}
+	if o.UserName != nil {
+		out.UserName = *o.UserName
+	}
+
+	return out
+}
+
 // Root represents the model of a root
 type Root struct {
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex
+	sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewRoot returns a new *Root
@@ -1379,6 +2133,17 @@ func (*Root) AttributeSpecifications() map[string]AttributeSpecification {
 	return RootAttributesMap
 }
 
+// ValueForAttribute returns the value for the given attribute.
+// This is a very advanced function that you should not need but in some
+// very specific use cases.
+func (o *Root) ValueForAttribute(name string) interface{} {
+
+	switch name {
+	}
+
+	return nil
+}
+
 // RootAttributesMap represents the map of attribute for Root.
 var RootAttributesMap = map[string]AttributeSpecification{}
 
@@ -1403,6 +2168,13 @@ var (
 		"lst": ListIdentity,
 		"tsk": TaskIdentity,
 		"usr": UserIdentity,
+	}
+
+	indexesMap = map[string][][]string{
+		"list": nil,
+		"root": nil,
+		"task": nil,
+		"user": nil,
 	}
 )
 
@@ -1456,6 +2228,26 @@ func (f modelManager) Identifiable(identity Identity) Identifiable {
 	}
 }
 
+func (f modelManager) SparseIdentifiable(identity Identity) SparseIdentifiable {
+
+	switch identity {
+
+	case ListIdentity:
+		return NewSparseList()
+	case TaskIdentity:
+		return NewSparseTask()
+	case UserIdentity:
+		return NewSparseUser()
+	default:
+		return nil
+	}
+}
+
+func (f modelManager) Indexes(identity Identity) [][]string {
+
+	return indexesMap[identity.Name]
+}
+
 func (f modelManager) IdentifiableFromString(any string) Identifiable {
 
 	return f.Identifiable(f.IdentityFromAny(any))
@@ -1471,6 +2263,21 @@ func (f modelManager) Identifiables(identity Identity) Identifiables {
 		return &TasksList{}
 	case UserIdentity:
 		return &UsersList{}
+	default:
+		return nil
+	}
+}
+
+func (f modelManager) SparseIdentifiables(identity Identity) SparseIdentifiables {
+
+	switch identity {
+
+	case ListIdentity:
+		return &SparseListsList{}
+	case TaskIdentity:
+		return &SparseTasksList{}
+	case UserIdentity:
+		return &SparseUsersList{}
 	default:
 		return nil
 	}
@@ -1534,78 +2341,253 @@ func init() {
 	relationshipsRegistry = RelationshipsRegistry{}
 
 	relationshipsRegistry[ListIdentity] = &Relationship{
-		AllowsCreate: map[string]bool{
-			"root": true,
+		Create: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rlcp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rlcp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
+		Update: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "lup1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "lup2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsPatch: map[string]bool{
-			"root": true,
+		Patch: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "lup1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "lup2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsDelete: map[string]bool{
-			"root": true,
+		Delete: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "ldp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "ldp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsRetrieve: map[string]bool{
-			"root": true,
+		Retrieve: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "lgp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "lgp2",
+						Type: "boolean",
+					},
+					ParameterDefinition{
+						Name: "sAp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "sAp2",
+						Type: "boolean",
+					},
+					ParameterDefinition{
+						Name: "sBp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "sBp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsRetrieveMany: map[string]bool{
-			"root": true,
+		RetrieveMany: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rlgmp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rlgmp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsInfo: map[string]bool{
-			"root": true,
+		Info: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rlgmp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rlgmp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
 	}
 
 	relationshipsRegistry[RootIdentity] = &Relationship{}
 
 	relationshipsRegistry[TaskIdentity] = &Relationship{
-		AllowsCreate: map[string]bool{
-			"list": true,
+		Create: map[string]*RelationshipInfo{
+			"list": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "ltcp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "ltcp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
+		Update: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{},
 		},
-		AllowsPatch: map[string]bool{
-			"root": true,
+		Patch: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{},
 		},
-		AllowsDelete: map[string]bool{
-			"root": true,
+		Delete: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{},
 		},
-		AllowsRetrieve: map[string]bool{
-			"root": true,
+		Retrieve: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{},
 		},
-		AllowsRetrieveMany: map[string]bool{
-			"list": true,
+		RetrieveMany: map[string]*RelationshipInfo{
+			"list": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "ltgp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "ltgp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsInfo: map[string]bool{
-			"list": true,
+		Info: map[string]*RelationshipInfo{
+			"list": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "ltgp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "ltgp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
 	}
 
 	relationshipsRegistry[UserIdentity] = &Relationship{
-		AllowsCreate: map[string]bool{
-			"root": true,
+		Create: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rucp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rucp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
+		Update: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{},
 		},
-		AllowsPatch: map[string]bool{
-			"root": true,
+		Patch: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{},
 		},
-		AllowsDelete: map[string]bool{
-			"root": true,
+		Delete: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{
+				RequiredParameters: NewParametersRequirement(
+					[][][]string{
+						[][]string{
+							[]string{
+								"confirm",
+							},
+						},
+					},
+				),
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "confirm",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsRetrieve: map[string]bool{
-			"root": true,
+		Retrieve: map[string]*RelationshipInfo{
+			"root": &RelationshipInfo{},
 		},
-		AllowsRetrieveMany: map[string]bool{
-			"list": true,
-			"root": true,
+		RetrieveMany: map[string]*RelationshipInfo{
+			"list": &RelationshipInfo{},
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rugmp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rugmp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsInfo: map[string]bool{
-			"list": true,
-			"root": true,
+		Info: map[string]*RelationshipInfo{
+			"list": &RelationshipInfo{},
+			"root": &RelationshipInfo{
+				Parameters: []ParameterDefinition{
+					ParameterDefinition{
+						Name: "rugmp1",
+						Type: "string",
+					},
+					ParameterDefinition{
+						Name: "rugmp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
 	}
 

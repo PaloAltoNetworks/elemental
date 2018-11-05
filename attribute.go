@@ -8,18 +8,8 @@ package elemental
 type AttributeSpecifiable interface {
 	SpecificationForAttribute(string) AttributeSpecification
 	AttributeSpecifications() map[string]AttributeSpecification
+	ValueForAttribute(name string) interface{}
 }
-
-// UniqueScope is a the type used to define uniqueness.
-type UniqueScope int
-
-const (
-	// LocallyUnique represents the uniqueness in a particular context.
-	LocallyUnique UniqueScope = iota + 1
-
-	// GloballyUnique represents the absolute uniqueness.
-	GloballyUnique
-)
 
 // An AttributeSpecification represents all the metadata of an attribute.
 //
@@ -81,13 +71,6 @@ type AttributeSpecification struct {
 
 	// ForeignKey defines if the attribute is a foreign key.
 	ForeignKey bool
-
-	// Format defines the format of the attribute.
-	// Monolithe defines various formats, but it is up to your implementation
-	// to decide what values it can take.
-	//
-	// This is not enforced by elemental. You must write your own business logic to honor this.
-	Format string
 
 	// Getter defines if the attribute needs to define a getter method.
 	// This is useful if you can to define an Interface based on this attribute.
@@ -168,15 +151,4 @@ type AttributeSpecification struct {
 
 	// Type defines the raw Monolithe type.
 	Type string
-
-	// Unique defines if the value of the attribute must be unique.
-	//
-	// This is not enforced by elemental. You must write your own business logic to honor this.
-	Unique bool
-
-	// UniqueScope defines the scope of the uniqueness of the value of the attribute.
-	// This makes sense only if Unique is true.
-	//
-	// This is not enforced by elemental. You must write your own business logic to honor this.
-	UniqueScope UniqueScope
 }

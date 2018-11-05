@@ -11,78 +11,253 @@ func init() {
 	relationshipsRegistry = elemental.RelationshipsRegistry{}
 
 	relationshipsRegistry[ListIdentity] = &elemental.Relationship{
-		AllowsCreate: map[string]bool{
-			"root": true,
+		Create: map[string]*elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
+				Parameters: []elemental.ParameterDefinition{
+					elemental.ParameterDefinition{
+						Name: "rlcp1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "rlcp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
+		Update: map[string]*elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
+				Parameters: []elemental.ParameterDefinition{
+					elemental.ParameterDefinition{
+						Name: "lup1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "lup2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsPatch: map[string]bool{
-			"root": true,
+		Patch: map[string]*elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
+				Parameters: []elemental.ParameterDefinition{
+					elemental.ParameterDefinition{
+						Name: "lup1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "lup2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsDelete: map[string]bool{
-			"root": true,
+		Delete: map[string]*elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
+				Parameters: []elemental.ParameterDefinition{
+					elemental.ParameterDefinition{
+						Name: "ldp1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "ldp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsRetrieve: map[string]bool{
-			"root": true,
+		Retrieve: map[string]*elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
+				Parameters: []elemental.ParameterDefinition{
+					elemental.ParameterDefinition{
+						Name: "lgp1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "lgp2",
+						Type: "boolean",
+					},
+					elemental.ParameterDefinition{
+						Name: "sAp1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "sAp2",
+						Type: "boolean",
+					},
+					elemental.ParameterDefinition{
+						Name: "sBp1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "sBp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsRetrieveMany: map[string]bool{
-			"root": true,
+		RetrieveMany: map[string]*elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
+				Parameters: []elemental.ParameterDefinition{
+					elemental.ParameterDefinition{
+						Name: "rlgmp1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "rlgmp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsInfo: map[string]bool{
-			"root": true,
+		Info: map[string]*elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
+				Parameters: []elemental.ParameterDefinition{
+					elemental.ParameterDefinition{
+						Name: "rlgmp1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "rlgmp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
 	}
 
 	relationshipsRegistry[RootIdentity] = &elemental.Relationship{}
 
 	relationshipsRegistry[TaskIdentity] = &elemental.Relationship{
-		AllowsCreate: map[string]bool{
-			"list": true,
+		Create: map[string]*elemental.RelationshipInfo{
+			"list": &elemental.RelationshipInfo{
+				Parameters: []elemental.ParameterDefinition{
+					elemental.ParameterDefinition{
+						Name: "ltcp1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "ltcp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
+		Update: map[string]*elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{},
 		},
-		AllowsPatch: map[string]bool{
-			"root": true,
+		Patch: map[string]*elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{},
 		},
-		AllowsDelete: map[string]bool{
-			"root": true,
+		Delete: map[string]*elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{},
 		},
-		AllowsRetrieve: map[string]bool{
-			"root": true,
+		Retrieve: map[string]*elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{},
 		},
-		AllowsRetrieveMany: map[string]bool{
-			"list": true,
+		RetrieveMany: map[string]*elemental.RelationshipInfo{
+			"list": &elemental.RelationshipInfo{
+				Parameters: []elemental.ParameterDefinition{
+					elemental.ParameterDefinition{
+						Name: "ltgp1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "ltgp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsInfo: map[string]bool{
-			"list": true,
+		Info: map[string]*elemental.RelationshipInfo{
+			"list": &elemental.RelationshipInfo{
+				Parameters: []elemental.ParameterDefinition{
+					elemental.ParameterDefinition{
+						Name: "ltgp1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "ltgp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
 	}
 
 	relationshipsRegistry[UserIdentity] = &elemental.Relationship{
-		AllowsCreate: map[string]bool{
-			"root": true,
+		Create: map[string]*elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
+				Parameters: []elemental.ParameterDefinition{
+					elemental.ParameterDefinition{
+						Name: "rucp1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "rucp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsUpdate: map[string]bool{
-			"root": true,
+		Update: map[string]*elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{},
 		},
-		AllowsPatch: map[string]bool{
-			"root": true,
+		Patch: map[string]*elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{},
 		},
-		AllowsDelete: map[string]bool{
-			"root": true,
+		Delete: map[string]*elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{
+				RequiredParameters: elemental.NewParametersRequirement(
+					[][][]string{
+						[][]string{
+							[]string{
+								"confirm",
+							},
+						},
+					},
+				),
+				Parameters: []elemental.ParameterDefinition{
+					elemental.ParameterDefinition{
+						Name: "confirm",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsRetrieve: map[string]bool{
-			"root": true,
+		Retrieve: map[string]*elemental.RelationshipInfo{
+			"root": &elemental.RelationshipInfo{},
 		},
-		AllowsRetrieveMany: map[string]bool{
-			"list": true,
-			"root": true,
+		RetrieveMany: map[string]*elemental.RelationshipInfo{
+			"list": &elemental.RelationshipInfo{},
+			"root": &elemental.RelationshipInfo{
+				Parameters: []elemental.ParameterDefinition{
+					elemental.ParameterDefinition{
+						Name: "rugmp1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "rugmp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
-		AllowsInfo: map[string]bool{
-			"list": true,
-			"root": true,
+		Info: map[string]*elemental.RelationshipInfo{
+			"list": &elemental.RelationshipInfo{},
+			"root": &elemental.RelationshipInfo{
+				Parameters: []elemental.ParameterDefinition{
+					elemental.ParameterDefinition{
+						Name: "rugmp1",
+						Type: "string",
+					},
+					elemental.ParameterDefinition{
+						Name: "rugmp2",
+						Type: "boolean",
+					},
+				},
+			},
 		},
 	}
 

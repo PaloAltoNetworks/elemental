@@ -18,7 +18,7 @@ var functions = template.FuncMap{
 	"lower":                           strings.ToLower,
 	"capitalize":                      strings.Title,
 	"join":                            strings.Join,
-	"makeAttr":                        attrToField,
+	"attrToField":                     attrToField,
 	"escBackticks":                    escapeBackticks,
 	"buildEnums":                      buildEnums,
 	"shouldGenerateGetter":            shouldGenerateGetter,
@@ -28,6 +28,9 @@ var functions = template.FuncMap{
 	"shouldRegisterSpecification":     shouldRegisterSpecification,
 	"shouldRegisterRelationship":      shouldRegisterRelationship,
 	"shouldRegisterInnerRelationship": shouldRegisterInnerRelationship,
+	"writeInitializer":                writeInitializer,
+	"writeDefaultValue":               writeDefaultValue,
+	"sortAttributes":                  sortAttributes,
 }
 
 func writeModel(set spec.SpecificationSet, name string, outFolder string, publicMode bool) error {
@@ -108,6 +111,12 @@ func writeIdentitiesRegistry(set spec.SpecificationSet, outFolder string, public
 		return fmt.Errorf("Unable to format identities_registry code:%s", err)
 	}
 
+	p, err = imports.Process("", p, nil)
+	if err != nil {
+		fmt.Println(buf.String())
+		return fmt.Errorf("Unable to goimport relationships_registry code:%s", err)
+	}
+
 	if err := writeFile(path.Join(outFolder, "identities_registry.go"), p); err != nil {
 		return fmt.Errorf("Unable to write file for identities_registry: %s", err)
 	}
@@ -138,7 +147,14 @@ func writeRelationshipsRegistry(set spec.SpecificationSet, outFolder string, pub
 
 	p, err := format.Source(buf.Bytes())
 	if err != nil {
+		fmt.Println(buf.String())
 		return fmt.Errorf("Unable to format relationships_registry code:%s", err)
+	}
+
+	p, err = imports.Process("", p, nil)
+	if err != nil {
+		fmt.Println(buf.String())
+		return fmt.Errorf("Unable to goimport relationships_registry code:%s", err)
 	}
 
 	if err := writeFile(path.Join(outFolder, "relationships_registry.go"), p); err != nil {

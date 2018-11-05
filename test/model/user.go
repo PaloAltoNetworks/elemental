@@ -11,6 +11,7 @@ import (
 var UserIdentity = elemental.Identity{
 	Name:     "user",
 	Category: "users",
+	Package:  "todo-list",
 	Private:  false,
 }
 
@@ -44,9 +45,9 @@ func (o UsersList) Append(objects ...elemental.Identifiable) elemental.Identifia
 // List converts the object to an elemental.IdentifiablesList.
 func (o UsersList) List() elemental.IdentifiablesList {
 
-	out := elemental.IdentifiablesList{}
-	for _, item := range o {
-		out = append(out, item)
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
 	}
 
 	return out
@@ -56,6 +57,18 @@ func (o UsersList) List() elemental.IdentifiablesList {
 func (o UsersList) DefaultOrder() []string {
 
 	return []string{}
+}
+
+// ToSparse returns the UsersList converted to SparseUsersList.
+// Objects in the list will only contain the given fields. No field means entire field set.
+func (o UsersList) ToSparse(fields ...string) elemental.IdentifiablesList {
+
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToSparse(fields...)
+	}
+
+	return out
 }
 
 // Version returns the version of the content.
@@ -86,7 +99,7 @@ type User struct {
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex
+	sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewUser returns a new *User
@@ -137,6 +150,70 @@ func (o *User) String() string {
 	return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
 }
 
+// ToSparse returns the sparse version of the model.
+// The returned object will only contain the given fields. No field means entire field set.
+func (o *User) ToSparse(fields ...string) elemental.SparseIdentifiable {
+
+	if len(fields) == 0 {
+		// nolint: goimports
+		return &SparseUser{
+			ID:         &o.ID,
+			FirstName:  &o.FirstName,
+			LastName:   &o.LastName,
+			ParentID:   &o.ParentID,
+			ParentType: &o.ParentType,
+			UserName:   &o.UserName,
+		}
+	}
+
+	sp := &SparseUser{}
+	for _, f := range fields {
+		switch f {
+		case "ID":
+			sp.ID = &(o.ID)
+		case "firstName":
+			sp.FirstName = &(o.FirstName)
+		case "lastName":
+			sp.LastName = &(o.LastName)
+		case "parentID":
+			sp.ParentID = &(o.ParentID)
+		case "parentType":
+			sp.ParentType = &(o.ParentType)
+		case "userName":
+			sp.UserName = &(o.UserName)
+		}
+	}
+
+	return sp
+}
+
+// Patch apply the non nil value of a *SparseUser to the object.
+func (o *User) Patch(sparse elemental.SparseIdentifiable) {
+	if !sparse.Identity().IsEqual(o.Identity()) {
+		panic("cannot patch from a parse with different identity")
+	}
+
+	so := sparse.(*SparseUser)
+	if so.ID != nil {
+		o.ID = *so.ID
+	}
+	if so.FirstName != nil {
+		o.FirstName = *so.FirstName
+	}
+	if so.LastName != nil {
+		o.LastName = *so.LastName
+	}
+	if so.ParentID != nil {
+		o.ParentID = *so.ParentID
+	}
+	if so.ParentType != nil {
+		o.ParentType = *so.ParentType
+	}
+	if so.UserName != nil {
+		o.UserName = *so.UserName
+	}
+}
+
 // Validate valides the current information stored into the structure.
 func (o *User) Validate() error {
 
@@ -154,6 +231,8 @@ func (o *User) Validate() error {
 	if err := elemental.ValidateRequiredString("userName", o.UserName); err != nil {
 		requiredErrors = append(requiredErrors, err)
 	}
+
+	// Custom object validation.
 
 	if len(requiredErrors) > 0 {
 		return requiredErrors
@@ -183,6 +262,29 @@ func (*User) AttributeSpecifications() map[string]elemental.AttributeSpecificati
 	return UserAttributesMap
 }
 
+// ValueForAttribute returns the value for the given attribute.
+// This is a very advanced function that you should not need but in some
+// very specific use cases.
+func (o *User) ValueForAttribute(name string) interface{} {
+
+	switch name {
+	case "ID":
+		return o.ID
+	case "firstName":
+		return o.FirstName
+	case "lastName":
+		return o.LastName
+	case "parentID":
+		return o.ParentID
+	case "parentType":
+		return o.ParentType
+	case "userName":
+		return o.UserName
+	}
+
+	return nil
+}
+
 // UserAttributesMap represents the map of attribute for User.
 var UserAttributesMap = map[string]elemental.AttributeSpecification{
 	"ID": elemental.AttributeSpecification{
@@ -192,7 +294,6 @@ var UserAttributesMap = map[string]elemental.AttributeSpecification{
 		Description:    `The identifier.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Identifier:     true,
 		Name:           "ID",
 		Orderable:      true,
@@ -207,7 +308,6 @@ var UserAttributesMap = map[string]elemental.AttributeSpecification{
 		Description:    `The first name.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "firstName",
 		Orderable:      true,
 		Required:       true,
@@ -220,7 +320,6 @@ var UserAttributesMap = map[string]elemental.AttributeSpecification{
 		Description:    `The last name.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "lastName",
 		Orderable:      true,
 		Required:       true,
@@ -235,7 +334,6 @@ var UserAttributesMap = map[string]elemental.AttributeSpecification{
 		Exposed:        true,
 		Filterable:     true,
 		ForeignKey:     true,
-		Format:         "free",
 		Name:           "parentID",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -249,7 +347,6 @@ var UserAttributesMap = map[string]elemental.AttributeSpecification{
 		Description:    `The type of the parent of the object.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -262,7 +359,6 @@ var UserAttributesMap = map[string]elemental.AttributeSpecification{
 		Description:    `the login.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "userName",
 		Orderable:      true,
 		Required:       true,
@@ -280,7 +376,6 @@ var UserLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Description:    `The identifier.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Identifier:     true,
 		Name:           "ID",
 		Orderable:      true,
@@ -295,7 +390,6 @@ var UserLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Description:    `The first name.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "firstName",
 		Orderable:      true,
 		Required:       true,
@@ -308,7 +402,6 @@ var UserLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Description:    `The last name.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "lastName",
 		Orderable:      true,
 		Required:       true,
@@ -323,7 +416,6 @@ var UserLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Exposed:        true,
 		Filterable:     true,
 		ForeignKey:     true,
-		Format:         "free",
 		Name:           "parentID",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -337,7 +429,6 @@ var UserLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Description:    `The type of the parent of the object.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "parentType",
 		Orderable:      true,
 		ReadOnly:       true,
@@ -350,11 +441,154 @@ var UserLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Description:    `the login.`,
 		Exposed:        true,
 		Filterable:     true,
-		Format:         "free",
 		Name:           "userName",
 		Orderable:      true,
 		Required:       true,
 		Stored:         true,
 		Type:           "string",
 	},
+}
+
+// SparseUsersList represents a list of SparseUsers
+type SparseUsersList []*SparseUser
+
+// Identity returns the identity of the objects in the list.
+func (o SparseUsersList) Identity() elemental.Identity {
+
+	return UserIdentity
+}
+
+// Copy returns a pointer to a copy the SparseUsersList.
+func (o SparseUsersList) Copy() elemental.Identifiables {
+
+	copy := append(SparseUsersList{}, o...)
+	return &copy
+}
+
+// Append appends the objects to the a new copy of the SparseUsersList.
+func (o SparseUsersList) Append(objects ...elemental.Identifiable) elemental.Identifiables {
+
+	out := append(SparseUsersList{}, o...)
+	for _, obj := range objects {
+		out = append(out, obj.(*SparseUser))
+	}
+
+	return out
+}
+
+// List converts the object to an elemental.IdentifiablesList.
+func (o SparseUsersList) List() elemental.IdentifiablesList {
+
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i]
+	}
+
+	return out
+}
+
+// DefaultOrder returns the default ordering fields of the content.
+func (o SparseUsersList) DefaultOrder() []string {
+
+	return []string{}
+}
+
+// ToPlain returns the SparseUsersList converted to UsersList.
+func (o SparseUsersList) ToPlain() elemental.IdentifiablesList {
+
+	out := make(elemental.IdentifiablesList, len(o))
+	for i := 0; i < len(o); i++ {
+		out[i] = o[i].ToPlain()
+	}
+
+	return out
+}
+
+// Version returns the version of the content.
+func (o SparseUsersList) Version() int {
+
+	return 1
+}
+
+// SparseUser represents the sparse version of a user.
+type SparseUser struct {
+	// The identifier.
+	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+
+	// The first name.
+	FirstName *string `json:"firstName,omitempty" bson:"firstname" mapstructure:"firstName,omitempty"`
+
+	// The last name.
+	LastName *string `json:"lastName,omitempty" bson:"lastname" mapstructure:"lastName,omitempty"`
+
+	// The identifier of the parent of the object.
+	ParentID *string `json:"parentID,omitempty" bson:"parentid" mapstructure:"parentID,omitempty"`
+
+	// The type of the parent of the object.
+	ParentType *string `json:"parentType,omitempty" bson:"parenttype" mapstructure:"parentType,omitempty"`
+
+	// the login.
+	UserName *string `json:"userName,omitempty" bson:"username" mapstructure:"userName,omitempty"`
+
+	ModelVersion int `json:"-" bson:"_modelversion"`
+
+	sync.Mutex `json:"-" bson:"-"`
+}
+
+// NewSparseUser returns a new  SparseUser.
+func NewSparseUser() *SparseUser {
+	return &SparseUser{}
+}
+
+// Identity returns the Identity of the sparse object.
+func (o *SparseUser) Identity() elemental.Identity {
+
+	return UserIdentity
+}
+
+// Identifier returns the value of the sparse object's unique identifier.
+func (o *SparseUser) Identifier() string {
+
+	if o.ID == nil {
+		return ""
+	}
+	return *o.ID
+}
+
+// SetIdentifier sets the value of the sparse object's unique identifier.
+func (o *SparseUser) SetIdentifier(id string) {
+
+	o.ID = &id
+}
+
+// Version returns the hardcoded version of the model.
+func (o *SparseUser) Version() int {
+
+	return 1
+}
+
+// ToPlain returns the plain version of the sparse model.
+func (o *SparseUser) ToPlain() elemental.PlainIdentifiable {
+
+	out := NewUser()
+	if o.ID != nil {
+		out.ID = *o.ID
+	}
+	if o.FirstName != nil {
+		out.FirstName = *o.FirstName
+	}
+	if o.LastName != nil {
+		out.LastName = *o.LastName
+	}
+	if o.ParentID != nil {
+		out.ParentID = *o.ParentID
+	}
+	if o.ParentType != nil {
+		out.ParentType = *o.ParentType
+	}
+	if o.UserName != nil {
+		out.UserName = *o.UserName
+	}
+
+	return out
 }
