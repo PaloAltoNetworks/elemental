@@ -4,6 +4,7 @@ import (
     "fmt"
     "sync"
     "go.aporeto.io/elemental"
+    "github.com/mitchellh/copystructure"
     {{- range .Spec.TypeProviders }}
     "{{ . }}"
     {{- end -}}
@@ -216,7 +217,7 @@ func (o *{{ $.Spec.Model.EntityName }}) Get{{ .ConvertedName }}() {{ .ConvertedT
 
 {{ end }}
 {{ if shouldGenerateSetter . $.PublicMode }}
-// Set{{ .ConvertedName }} sets the given {{ .ConvertedName }} of the receiver.
+// Set{{ .ConvertedName }} sets the property {{ .ConvertedName }} of the receiver using the given value.
 func (o *{{ $.Spec.Model.EntityName }}) Set{{ .ConvertedName }}({{ .Name }} {{ .ConvertedType }}) {
 
     o.{{ .ConvertedName }} = {{ .Name }}
@@ -270,6 +271,30 @@ func (o *{{ .Spec.Model.EntityName }}) Patch(sparse elemental.SparseIdentifiable
    {{- end }}
 }
 {{- end }}
+
+// DeepCopy returns a deep copy if the {{ .Spec.Model.EntityName }}.
+func (o *{{ .Spec.Model.EntityName }}) DeepCopy() *{{ .Spec.Model.EntityName }} {
+
+    if o == nil {
+		return nil
+	}
+
+	out := &{{ .Spec.Model.EntityName }}{}
+	o.DeepCopyInto(out)
+
+	return out
+}
+
+// DeepCopyInto copies the receiver into the given *{{ .Spec.Model.EntityName }}.
+func (o *{{ .Spec.Model.EntityName }}) DeepCopyInto(out *{{ .Spec.Model.EntityName }}) {
+
+	target, err := copystructure.Copy(o)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to deepcopy {{ .Spec.Model.EntityName }}: %s", err))
+	}
+
+	*out = *target.(*{{ .Spec.Model.EntityName }})
+}
 
 // Validate valides the current information stored into the structure.
 func (o *{{ .Spec.Model.EntityName }}) Validate() error {
@@ -763,5 +788,47 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) ToPlain() elemental.PlainIdentifiab
     {{- end }}
 
     return out
+}
+
+{{ range .Spec.Attributes $latestVersion }}
+{{ if shouldGenerateGetter . $.PublicMode }}
+// Get{{ .ConvertedName }} returns the {{ .ConvertedName }} of the receiver.
+func (o *Sparse{{ $.Spec.Model.EntityName }}) Get{{ .ConvertedName }}() {{ .ConvertedType }} {
+
+    return *o.{{ .ConvertedName }}
+}
+
+{{ end }}
+{{ if shouldGenerateSetter . $.PublicMode }}
+// Set{{ .ConvertedName }} sets the property {{ .ConvertedName }} of the receiver using the address of the given value.
+func (o *Sparse{{ $.Spec.Model.EntityName }}) Set{{ .ConvertedName }}({{ .Name }} {{ .ConvertedType }}) {
+
+    o.{{ .ConvertedName }} = &{{ .Name }}
+}
+{{ end }}
+{{ end }}
+
+// DeepCopy returns a deep copy if the Sparse{{ .Spec.Model.EntityName }}.
+func (o *Sparse{{ .Spec.Model.EntityName }}) DeepCopy() *Sparse{{ .Spec.Model.EntityName }} {
+
+    if o == nil {
+		return nil
+	}
+
+	out := &Sparse{{ .Spec.Model.EntityName }}{}
+	o.DeepCopyInto(out)
+
+	return out
+}
+
+// DeepCopyInto copies the receiver into the given *Sparse{{ .Spec.Model.EntityName }}.
+func (o *Sparse{{ .Spec.Model.EntityName }}) DeepCopyInto(out *Sparse{{ .Spec.Model.EntityName }}) {
+
+	target, err := copystructure.Copy(o)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to deepcopy Sparse{{ .Spec.Model.EntityName }}: %s", err))
+	}
+
+	*out = *target.(*Sparse{{ .Spec.Model.EntityName }})
 }
 {{ end }}
