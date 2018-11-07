@@ -7,4 +7,6 @@ codegen
 vendor
 cmd/elegen/elegen
 cmd/elegen/build
-coverage.txt
+*.lock
+*.cov
+artifacts
