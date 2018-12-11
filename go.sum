@@ -1,0 +1,4 @@
+github.com/araddon/dateparse v0.0.0-20181123171228-21df004e09ca h1:7tLEgJZb8/+TI8fLso4lINkuSOI4DqQYwhFB+nRH7RQ=
+github.com/araddon/dateparse v0.0.0-20181123171228-21df004e09ca/go.mod h1:SLqhdZcd+dF3TEVL2RMoob5bBP5R1P1qkox+HtCBgGI=
+github.com/gofrs/uuid/v3 v3.1.2 h1:V3IBv1oU82x6YIr5txe3azVHgmOKYdyKQTowm9moBlY=
+github.com/gofrs/uuid/v3 v3.1.2/go.mod h1:xPwMqoocQ1L5G6pXX5BcE7N5jlzn2o19oqAKxwZW/kI=
