@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gofrs/uuid/v3"
+	"github.com/gofrs/uuid"
 )
 
 // A Request represents an abstract request on an elemental model.
