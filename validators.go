@@ -25,7 +25,7 @@ const (
 	maximumLengthExclusiveFailFormat = `Data '%s' of attribute '%s' should be less or equal than %d chars long`
 	minimumLengthFailFormat          = `Data '%s' of attribute '%s' should be greater than %d chars long`
 	minimumLengthExclusiveFailFormat = `Data '%s' of attribute '%s' should be greater or equal than %d chars long`
-	patternFailFormat                = `Data '%s' of attribute '%s' should match '%s'`
+	patternFailFormat                = `Data '%s' of attribute '%s' %s`
 	requiredFloatFailFormat          = `Attribute '%s' is required`
 	requiredStringFailFormat         = `Attribute '%s' is required`
 	requiredTimeFailFormat           = `Attribute '%s' is required`
@@ -273,7 +273,7 @@ func ValidateRequiredTime(attribute string, value time.Time) error {
 }
 
 // ValidatePattern validates a string against a regular expression.
-func ValidatePattern(attribute string, value string, pattern string, required bool) error {
+func ValidatePattern(attribute string, value string, pattern string, message string, required bool) error {
 
 	if !required && value == "" {
 		return nil
@@ -282,7 +282,7 @@ func ValidatePattern(attribute string, value string, pattern string, required bo
 	re := regexp.MustCompile(pattern)
 
 	if !re.MatchString(value) {
-		err := NewError("Validation Error", fmt.Sprintf(patternFailFormat, value, attribute, pattern), "elemental", http.StatusUnprocessableEntity)
+		err := NewError("Validation Error", fmt.Sprintf(patternFailFormat, value, attribute, message), "elemental", http.StatusUnprocessableEntity)
 		err.Data = map[string]string{"attribute": attribute}
 		return err
 	}
