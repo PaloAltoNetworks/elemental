@@ -360,7 +360,7 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
     {{ end }}
 
     {{ if .AllowedChars }}
-    if err := elemental.ValidatePattern("{{ .Name }}", o.{{ .ConvertedName }}, `{{ .AllowedChars }}`, {{ .Required }}); err != nil {
+    if err := elemental.ValidatePattern("{{ .Name }}", o.{{ .ConvertedName }}, `{{ .AllowedChars }}`, `{{ .AllowedCharsMessage }}`, {{ .Required }}); err != nil {
         errors = append(errors, err)
     }
     {{ end }}
