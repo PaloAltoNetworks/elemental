@@ -217,6 +217,15 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		}
 	}
 
+	var clientIP string
+	if ip := req.Header.Get("X-Forwarded-For"); ip != "" {
+		clientIP = ip
+	} else if ip := req.Header.Get("X-Real-IP"); ip != "" {
+		clientIP = ip
+	} else {
+		clientIP = req.RemoteAddr
+	}
+
 	return &Request{
 		RequestID:            uuid.Must(uuid.NewV4()).String(),
 		Namespace:            req.Header.Get("X-Namespace"),
@@ -240,7 +249,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		ExternalTrackingID:   req.Header.Get("X-External-Tracking-ID"),
 		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
 		Order:                order,
-		ClientIP:             req.RemoteAddr,
+		ClientIP:             clientIP,
 		req:                  req,
 	}, nil
 }

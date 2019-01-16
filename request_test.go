@@ -91,6 +91,8 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 		req, err := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
 		req.Header.Set("X-Namespace", "ns")
+		req.Header.Set("X-Forwarded-for", "1.1.1.1")
+		req.Header.Set("X-Real-IP", "2.2.2.2")
 		req.RemoteAddr = "42.42.42.42"
 
 		Convey("Then err should be nil", func() {
@@ -154,7 +156,7 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 			})
 
 			Convey("Then the ClientIP should be set", func() {
-				So(r.ClientIP, ShouldEqual, "42.42.42.42")
+				So(r.ClientIP, ShouldEqual, "1.1.1.1")
 			})
 
 			Convey("Then the Page should be 1", func() {
@@ -184,6 +186,9 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 		req, _ := http.NewRequest(http.MethodHead, "http://server/lists?rlgmp1=A&rlgmp2=true", nil)
 		req.Header.Add("X-Namespace", "ns")
 		req.Header.Add("Authorization", "user pass")
+		req.Header.Set("X-Namespace", "ns")
+		req.Header.Set("X-Real-IP", "2.2.2.2")
+		req.RemoteAddr = "42.42.42.42"
 
 		Convey("When I create a new elemental Request from it", func() {
 
@@ -235,6 +240,10 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 			Convey("Then the Data should be empty", func() {
 				So(r.Data, ShouldBeEmpty)
+			})
+
+			Convey("Then the ClientIP should be set", func() {
+				So(r.ClientIP, ShouldEqual, "2.2.2.2")
 			})
 		})
 	})
@@ -823,7 +832,7 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 
 		req, _ := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
 		req.Header.Set("X-Namespace", "ns")
-		req.RemoteAddr = "42.42.42.42"
+		req.Header.Set("X-Real-IP", "2.2.2.2")
 
 		Convey("When I create a new elemental Request from it", func() {
 
@@ -852,7 +861,6 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 
 		req, _ := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=notbool", nil)
 		req.Header.Set("X-Namespace", "ns")
-		req.RemoteAddr = "42.42.42.42"
 
 		Convey("When I create a new elemental Request from it", func() {
 
@@ -1245,7 +1253,6 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 
 		req, _ := http.NewRequest(http.MethodGet, "http://server/v/10/lists", nil)
 		req.Header.Set("X-Namespace", "ns")
-		req.RemoteAddr = "42.42.42.42"
 
 		Convey("When I create a new elemental Request from it", func() {
 
@@ -1279,8 +1286,6 @@ func TestRequest_RequiredParameters(t *testing.T) {
 
 		req, _ := http.NewRequest(http.MethodDelete, "http://server/v/10/users/id", nil)
 		req.Header.Set("X-Namespace", "ns")
-		req.RemoteAddr = "42.42.42.42"
-
 		Convey("When I create a new elemental Request from it", func() {
 
 			r, err := NewRequestFromHTTPRequest(req, Manager())
@@ -1299,7 +1304,6 @@ func TestRequest_RequiredParameters(t *testing.T) {
 
 		req, _ := http.NewRequest(http.MethodDelete, "http://server/v/10/lists?what=1&the=0", nil)
 		req.Header.Set("X-Namespace", "ns")
-		req.RemoteAddr = "42.42.42.42"
 
 		Convey("When I create a new elemental Request from it", func() {
 
