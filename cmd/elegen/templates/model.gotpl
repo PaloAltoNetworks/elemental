@@ -319,7 +319,7 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
     }
     {{ end }}
 
-    {{ if eq .Type "external" }}
+    {{ if or (eq .Type "external") (eq .Type "list")}}
     if err := elemental.ValidateRequiredExternal("{{ .Name }}", o.{{ .ConvertedName }}); err != nil {
         requiredErrors = append(requiredErrors, err)
     }
