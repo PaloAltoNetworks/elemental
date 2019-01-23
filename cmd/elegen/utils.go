@@ -290,12 +290,12 @@ func writeDefaultValue(set spec.SpecificationSet, s spec.Specification, attr *sp
 	var ref string
 	if mode, ok := attr.Extensions["refMode"]; ok && mode == "pointer" {
 		pointer = "*"
-		ref = "&"
+		ref = "New"
 	}
 
 	switch attr.Type {
 	case spec.AttributeTypeRef:
-		return ref + set.Specification(attr.SubType).Model().EntityName + "{}"
+		return ref + set.Specification(attr.SubType).Model().EntityName + "()"
 	case spec.AttributeTypeRefList:
 		return "[]" + pointer + set.Specification(attr.SubType).Model().EntityName + "{}"
 	case spec.AttributeTypeRefMap:
