@@ -267,6 +267,7 @@ func writeInitializer(set spec.SpecificationSet, s spec.Specification, attr *spe
 
 	if attr.Initializer == "" &&
 		attr.DefaultValue == nil &&
+		attr.Type != spec.AttributeTypeList &&
 		attr.Type != spec.AttributeTypeRef &&
 		attr.Type != spec.AttributeTypeRefList &&
 		attr.Type != spec.AttributeTypeRefMap {
@@ -294,6 +295,10 @@ func writeDefaultValue(set spec.SpecificationSet, s spec.Specification, attr *sp
 	}
 
 	switch attr.Type {
+	case spec.AttributeTypeList:
+		if attr.DefaultValue == nil {
+			return ref + attr.ConvertedType + "{}"
+		}
 	case spec.AttributeTypeRef:
 		return ref + set.Specification(attr.SubType).Model().EntityName + "()"
 	case spec.AttributeTypeRefList:
