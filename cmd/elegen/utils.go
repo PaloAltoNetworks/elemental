@@ -120,7 +120,12 @@ func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) s
 	case spec.AttributeTypeRef:
 		convertedType = pointerShadow + pointer + set.Specification(attr.SubType).Model().EntityName
 	case spec.AttributeTypeRefList:
-		convertedType = pointerShadow + "[]" + pointer + set.Specification(attr.SubType).Model().EntityName
+		remoteSpec := set.Specification(attr.SubType)
+		if remoteSpec.Model().Detached {
+			convertedType = pointerShadow + "[]" + pointer + remoteSpec.Model().EntityName
+		} else {
+			convertedType = pointerShadow + pointer + remoteSpec.Model().EntityNamePlural + "List"
+		}
 	case spec.AttributeTypeRefMap:
 		convertedType = pointerShadow + "map[string]" + pointer + set.Specification(attr.SubType).Model().EntityName
 	default:
@@ -295,14 +300,22 @@ func writeDefaultValue(set spec.SpecificationSet, s spec.Specification, attr *sp
 	}
 
 	switch attr.Type {
+
 	case spec.AttributeTypeList:
 		if attr.DefaultValue == nil {
 			return ref + attr.ConvertedType + "{}"
 		}
+
 	case spec.AttributeTypeRef:
 		return ref + set.Specification(attr.SubType).Model().EntityName + "()"
+
 	case spec.AttributeTypeRefList:
-		return "[]" + pointer + set.Specification(attr.SubType).Model().EntityName + "{}"
+		remoteSpec := set.Specification(attr.SubType)
+		if remoteSpec.Model().Detached {
+			return "[]" + pointer + remoteSpec.Model().EntityName + "{}"
+		}
+		return pointer + remoteSpec.Model().EntityNamePlural + "List{}"
+
 	case spec.AttributeTypeRefMap:
 		return "map[string]" + pointer + set.Specification(attr.SubType).Model().EntityName + "{}"
 	}
