@@ -66,7 +66,7 @@ func attributeTypeConverter(typ spec.AttributeType, subtype string) (string, str
 		return "time.Time", "time"
 
 	case spec.AttributeTypeList:
-		if subtype == "" {
+		if subtype == "" || subtype == "object" {
 			return "[]interface{}", ""
 		}
 		return "[]" + subtype, ""
