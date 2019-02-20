@@ -26,6 +26,19 @@ func TestEvent_NewEvent(t *testing.T) {
 		})
 	})
 
+	Convey("Given I create an Event with a custom marhaller", t, func() {
+
+		list := &List{}
+		e := NewEventWithMarshaler(EventCreate, list, json.Marshal)
+
+		Convey("Then the Error should be correctly initialized", func() {
+			d, _ := json.Marshal(list)
+			So(e.Identity, ShouldEqual, "list")
+			So(e.Type, ShouldEqual, EventCreate)
+			So(e.Entity, ShouldResemble, json.RawMessage(d))
+		})
+	})
+
 	Convey("Given I create an Event with an unmarshalable entity", t, func() {
 
 		list := &UnmarshalableList{}
@@ -49,6 +62,16 @@ func TestEvent_Decode(t *testing.T) {
 			l2 := &List{}
 
 			_ = e.Decode(l2)
+
+			Convey("Then t2 should resemble to tag", func() {
+				So(l2, ShouldResemble, list)
+			})
+		})
+
+		Convey("When I decode the data with custom unmarshaller", func() {
+			l2 := &List{}
+
+			_ = e.DecodeWithUnmarshaler(l2, json.Unmarshal)
 
 			Convey("Then t2 should resemble to tag", func() {
 				So(l2, ShouldResemble, list)

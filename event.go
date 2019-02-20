@@ -35,7 +35,13 @@ type Event struct {
 // NewEvent returns a new Event.
 func NewEvent(t EventType, o Identifiable) *Event {
 
-	data, err := json.Marshal(o)
+	return NewEventWithMarshaler(t, o, json.Marshal)
+}
+
+// NewEventWithMarshaler returns a new Event with the identifiable encoded with the provided marshalFunc.
+func NewEventWithMarshaler(t EventType, o Identifiable, marshalFunc func(interface{}) ([]byte, error)) *Event {
+
+	data, err := marshalFunc(o)
 	if err != nil {
 		panic(err)
 	}
@@ -51,7 +57,13 @@ func NewEvent(t EventType, o Identifiable) *Event {
 // Decode decodes the data into the given destination.
 func (e *Event) Decode(dst interface{}) error {
 
-	return json.Unmarshal(e.Entity, &dst)
+	return e.DecodeWithUnmarshaler(dst, json.Unmarshal)
+}
+
+// DecodeWithUnmarshaler decodes the data into the given destination using the given unmarshaller
+func (e *Event) DecodeWithUnmarshaler(dst interface{}, unmarshalFunc func([]byte, interface{}) error) error {
+
+	return unmarshalFunc(e.Entity, &dst)
 }
 
 func (e *Event) String() string {
