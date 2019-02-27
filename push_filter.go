@@ -8,7 +8,7 @@ import (
 // A PushFilter represents an abstract filter for filtering out push notifications.
 type PushFilter struct {
 	Identities map[string][]EventType `json:"identities"`
-	parameters url.Values
+	Params     url.Values             `json:"parameters"`
 }
 
 // NewPushFilter returns a new PushFilter.
@@ -22,22 +22,22 @@ func NewPushFilter() *PushFilter {
 // SetParameter sets the values of the parameter with the given key.
 func (f *PushFilter) SetParameter(key string, values ...string) {
 
-	if f.parameters == nil {
-		f.parameters = url.Values{}
+	if f.Params == nil {
+		f.Params = url.Values{}
 	}
 
-	f.parameters[key] = values
+	f.Params[key] = values
 }
 
 // Parameters returns a copy of all the parameters.
 func (f *PushFilter) Parameters() url.Values {
 
-	if f.parameters == nil {
+	if f.Params == nil {
 		return nil
 	}
 
 	out := url.Values{}
-	for k, v := range f.parameters {
+	for k, v := range f.Params {
 		out[k] = v
 	}
 
@@ -90,7 +90,7 @@ func (f *PushFilter) Duplicate() *PushFilter {
 		nf.FilterIdentity(id, types...)
 	}
 
-	for k, v := range f.parameters {
+	for k, v := range f.Params {
 		nf.SetParameter(k, v...)
 	}
 

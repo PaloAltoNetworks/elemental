@@ -15,7 +15,7 @@ func TestPushFilter_NewPushFilter(t *testing.T) {
 
 		Convey("Then it should be correctly initialized", func() {
 			So(f.Identities, ShouldNotBeNil)
-			So(f.parameters, ShouldBeNil)
+			So(f.Params, ShouldBeNil)
 		})
 	})
 }
@@ -39,8 +39,8 @@ func TestPushFilter_Duplicate(t *testing.T) {
 				So(dup.Identities, ShouldResemble, f.Identities)
 				So(dup.Identities, ShouldNotEqual, f.Identities)
 
-				So(dup.parameters, ShouldResemble, f.parameters)
-				So(dup.parameters, ShouldNotEqual, f.parameters)
+				So(dup.Params, ShouldResemble, f.Params)
+				So(dup.Params, ShouldNotEqual, f.Params)
 			})
 		})
 	})
@@ -64,9 +64,8 @@ func TestPushFilter_Parameters(t *testing.T) {
 					"key2": []string{"v3"},
 				})
 
-				So(f.Parameters(), ShouldNotEqual, f.parameters)
+				So(f.Parameters(), ShouldNotEqual, f.Params)
 			})
-
 		})
 	})
 }
