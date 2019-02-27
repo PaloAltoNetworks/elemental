@@ -1,6 +1,7 @@
 package elemental
 
 import (
+	"net/url"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -9,10 +10,12 @@ import (
 func TestPushFilter_NewPushFilter(t *testing.T) {
 
 	Convey("Given I create a new PushFilter", t, func() {
+
 		f := NewPushFilter()
 
 		Convey("Then it should be correctly initialized", func() {
-			So(f.Identities, ShouldNotBeNil)
+			So(f.identities, ShouldNotBeNil)
+			So(f.parameters, ShouldBeNil)
 		})
 	})
 }
@@ -23,16 +26,47 @@ func TestPushFilter_Duplicate(t *testing.T) {
 
 		f := NewPushFilter()
 
+		f.SetParameter("key", "values")
+
 		f.FilterIdentity("i1", EventCreate, EventDelete)
 		f.FilterIdentity("i2", EventCreate, EventDelete)
 
-		Convey("When I duplicate it", func() {
+		Convey("When I call Duplicate", func() {
+
 			dup := f.Duplicate()
 
 			Convey("Then it should be correctly duplicated", func() {
-				So(dup.Identities, ShouldResemble, f.Identities)
-				So(dup.Identities, ShouldNotEqual, f.Identities)
+				So(dup.identities, ShouldResemble, f.identities)
+				So(dup.identities, ShouldNotEqual, f.identities)
+
+				So(dup.parameters, ShouldResemble, f.parameters)
+				So(dup.parameters, ShouldNotEqual, f.parameters)
 			})
+		})
+	})
+}
+
+func TestPushFilter_Parameters(t *testing.T) {
+
+	Convey("Given I create a new PushFilter", t, func() {
+
+		f := NewPushFilter()
+
+		Convey("When I call SetParameter", func() {
+
+			f.SetParameter("key1", "v1", "v2")
+			f.SetParameter("key2", "v3")
+
+			Convey("Then the parameter should be set", func() {
+
+				So(f.Parameters(), ShouldResemble, url.Values{
+					"key1": []string{"v1", "v2"},
+					"key2": []string{"v3"},
+				})
+
+				So(f.Parameters(), ShouldNotEqual, f.parameters)
+			})
+
 		})
 	})
 }
@@ -45,7 +79,7 @@ func TestPushFilter_IsFilteredOut(t *testing.T) {
 
 		Convey("When I check if i1 is filtered with a nil value for identities", func() {
 
-			f.Identities = nil
+			f.identities = nil
 
 			filtered1 := f.IsFilteredOut("i1", EventDelete)
 			filtered2 := f.IsFilteredOut("i2", EventDelete)
