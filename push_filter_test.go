@@ -14,7 +14,7 @@ func TestPushFilter_NewPushFilter(t *testing.T) {
 		f := NewPushFilter()
 
 		Convey("Then it should be correctly initialized", func() {
-			So(f.identities, ShouldNotBeNil)
+			So(f.Identities, ShouldNotBeNil)
 			So(f.parameters, ShouldBeNil)
 		})
 	})
@@ -36,8 +36,8 @@ func TestPushFilter_Duplicate(t *testing.T) {
 			dup := f.Duplicate()
 
 			Convey("Then it should be correctly duplicated", func() {
-				So(dup.identities, ShouldResemble, f.identities)
-				So(dup.identities, ShouldNotEqual, f.identities)
+				So(dup.Identities, ShouldResemble, f.Identities)
+				So(dup.Identities, ShouldNotEqual, f.Identities)
 
 				So(dup.parameters, ShouldResemble, f.parameters)
 				So(dup.parameters, ShouldNotEqual, f.parameters)
@@ -79,7 +79,7 @@ func TestPushFilter_IsFilteredOut(t *testing.T) {
 
 		Convey("When I check if i1 is filtered with a nil value for identities", func() {
 
-			f.identities = nil
+			f.Identities = nil
 
 			filtered1 := f.IsFilteredOut("i1", EventDelete)
 			filtered2 := f.IsFilteredOut("i2", EventDelete)

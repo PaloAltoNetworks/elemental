@@ -7,7 +7,7 @@ import (
 
 // A PushFilter represents an abstract filter for filtering out push notifications.
 type PushFilter struct {
-	identities map[string][]EventType `json:"identities"`
+	Identities map[string][]EventType `json:"identities"`
 	parameters url.Values
 }
 
@@ -15,7 +15,7 @@ type PushFilter struct {
 func NewPushFilter() *PushFilter {
 
 	return &PushFilter{
-		identities: map[string][]EventType{},
+		Identities: map[string][]EventType{},
 	}
 }
 
@@ -47,23 +47,23 @@ func (f *PushFilter) Parameters() url.Values {
 // FilterIdentity adds the given identity for the given eventTypes in the PushFilter.
 func (f *PushFilter) FilterIdentity(identityName string, eventTypes ...EventType) {
 
-	f.identities[identityName] = eventTypes
+	f.Identities[identityName] = eventTypes
 }
 
 // IsFilteredOut returns true if the given Identity is not part of the PushFilter.
 func (f *PushFilter) IsFilteredOut(identityName string, eventType EventType) bool {
 
 	// if the identities list is nil, we filter nothing.
-	if f.identities == nil {
+	if f.Identities == nil {
 		return false
 	}
 
 	// if the identities list not nil but contains nothing, we filter everything.
-	if len(f.identities) == 0 {
+	if len(f.Identities) == 0 {
 		return true
 	}
 
-	types, ok := f.identities[identityName]
+	types, ok := f.Identities[identityName]
 	if !ok {
 		return true
 	}
@@ -86,7 +86,7 @@ func (f *PushFilter) Duplicate() *PushFilter {
 
 	nf := NewPushFilter()
 
-	for id, types := range f.identities {
+	for id, types := range f.Identities {
 		nf.FilterIdentity(id, types...)
 	}
 
@@ -99,5 +99,5 @@ func (f *PushFilter) Duplicate() *PushFilter {
 
 func (f *PushFilter) String() string {
 
-	return fmt.Sprintf("<pushfilter identities:%s>", f.identities)
+	return fmt.Sprintf("<pushfilter identities:%s>", f.Identities)
 }
