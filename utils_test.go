@@ -40,70 +40,139 @@ func TestUtils_extractFieldNames(t *testing.T) {
 	})
 }
 
+type testStruct struct {
+	String  string
+	Strings []string
+	Time    time.Time
+	Map     map[string]interface{}
+	Int     int
+	Float   float64
+}
+
 func TestUtils_areFieldValuesEqual(t *testing.T) {
 
 	Convey("Given I have 2 list", t, func() {
 
-		l1 := NewList()
-		l2 := NewList()
+		s1 := &testStruct{}
+		s2 := &testStruct{}
 
 		Convey("When I set the same name", func() {
 
-			l1.Name = "list1"
-			l2.Name = "list1"
+			s1.String = "v1"
+			s2.String = "v1"
 
 			Convey("Then the values should be equal", func() {
-				So(areFieldValuesEqual("Name", l1, l2), ShouldBeTrue)
+				So(areFieldValuesEqual("String", s1, s2), ShouldBeTrue)
 			})
 		})
 
 		Convey("When I set a different name", func() {
 
-			l1.Name = "list1"
-			l2.Name = "list2"
+			s1.String = "v1"
+			s2.String = "v2"
 
 			Convey("Then the values should not be equal", func() {
-				So(areFieldValuesEqual("Name", l1, l2), ShouldBeFalse)
+				So(areFieldValuesEqual("String", s1, s2), ShouldBeFalse)
+			})
+		})
+
+		Convey("When I set a same int", func() {
+
+			s1.Int = 42
+			s2.Int = 42
+
+			Convey("Then the values should not be equal", func() {
+				So(areFieldValuesEqual("Int", s1, s2), ShouldBeTrue)
+			})
+		})
+
+		Convey("When I set a different int", func() {
+
+			s1.Int = 42
+			s2.Int = 43
+
+			Convey("Then the values should not be equal", func() {
+				So(areFieldValuesEqual("Int", s1, s2), ShouldBeFalse)
+			})
+		})
+
+		Convey("When I set a same Float", func() {
+
+			s1.Float = 42.42
+			s2.Float = 42.42
+
+			Convey("Then the values should not be equal", func() {
+				So(areFieldValuesEqual("Float", s1, s2), ShouldBeTrue)
+			})
+		})
+
+		Convey("When I set a different Float", func() {
+
+			s1.Float = 42.42
+			s2.Float = 42.43
+
+			Convey("Then the values should not be equal", func() {
+				So(areFieldValuesEqual("Float", s1, s2), ShouldBeFalse)
 			})
 		})
 
 		Convey("When I set a same time", func() {
 
-			l1.Date = time.Date(2009, time.November, 10, 10, 0, 0, 0, time.UTC)
-			l2.Date = time.Date(2009, time.November, 10, 5, 0, 0, 0, time.FixedZone("Eastern", -5*3600))
+			s1.Time = time.Date(2009, time.November, 10, 10, 0, 0, 0, time.UTC)
+			s2.Time = time.Date(2009, time.November, 10, 5, 0, 0, 0, time.FixedZone("Eastern", -5*3600))
 
 			Convey("Then the values should not be equal", func() {
-				So(areFieldValuesEqual("Date", l1, l2), ShouldBeTrue)
+				So(areFieldValuesEqual("Time", s1, s2), ShouldBeTrue)
 			})
 		})
 
 		Convey("When I set a different time", func() {
 
-			l1.Date = time.Now()
-			l2.Date = time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC)
+			s1.Time = time.Now()
+			s2.Time = time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC)
 
 			Convey("Then the values should not be equal", func() {
-				So(areFieldValuesEqual("Date", l1, l2), ShouldBeFalse)
+				So(areFieldValuesEqual("Time", s1, s2), ShouldBeFalse)
 			})
 		})
 
 		Convey("When I set a same slice", func() {
 
-			l1.Slice = []string{"a", "b", "c"}
-			l2.Slice = []string{"a", "b", "c"}
+			s1.Strings = []string{"a", "b", "c"}
+			s2.Strings = []string{"a", "b", "c"}
 
 			Convey("Then the values should not be equal", func() {
-				So(areFieldValuesEqual("Slice", l1, l2), ShouldBeTrue)
+				So(areFieldValuesEqual("Strings", s1, s2), ShouldBeTrue)
 			})
 		})
 
 		Convey("When I set a different slice", func() {
 
-			l1.Slice = []string{"a", "b", "c"}
-			l2.Slice = []string{"a", "b"}
+			s1.Strings = []string{"a", "b", "c"}
+			s2.Strings = []string{"a", "b"}
 
 			Convey("Then the values should not be equal", func() {
-				So(areFieldValuesEqual("Slice", l1, l2), ShouldBeFalse)
+				So(areFieldValuesEqual("Strings", s1, s2), ShouldBeFalse)
+			})
+		})
+
+		Convey("When I set a same map", func() {
+
+			s1.Map = map[string]interface{}{"a": 1}
+			s2.Map = map[string]interface{}{"a": 1}
+
+			Convey("Then the values should not be equal", func() {
+				So(areFieldValuesEqual("Map", s1, s2), ShouldBeTrue)
+			})
+		})
+
+		Convey("When I set a different map", func() {
+
+			s1.Map = map[string]interface{}{"a": 1}
+			s2.Map = map[string]interface{}{"a": 2}
+
+			Convey("Then the values should not be equal", func() {
+				So(areFieldValuesEqual("Map", s1, s2), ShouldBeFalse)
 			})
 		})
 	})

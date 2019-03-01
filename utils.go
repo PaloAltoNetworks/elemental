@@ -61,6 +61,15 @@ func areFieldValuesEqual(field string, o1, o2 interface{}) bool {
 		return reflect.DeepEqual(field1.Interface(), field2.Interface())
 	}
 
+	if field1.Kind() == reflect.Map {
+
+		if field1.Len() != field2.Len() {
+			return false
+		}
+
+		return reflect.DeepEqual(field1.Interface(), field2.Interface())
+	}
+
 	return field1.Interface() == field2.Interface()
 }
 
