@@ -40,16 +40,16 @@ func TestUtils_extractFieldNames(t *testing.T) {
 	})
 }
 
-type testStruct struct {
-	String  string
-	Strings []string
-	Time    time.Time
-	Map     map[string]interface{}
-	Int     int
-	Float   float64
-}
-
 func TestUtils_areFieldValuesEqual(t *testing.T) {
+
+	type testStruct struct {
+		String  string
+		Strings []string
+		Time    time.Time
+		Map     map[string]interface{}
+		Int     int
+		Float   float64
+	}
 
 	Convey("Given I have 2 list", t, func() {
 
