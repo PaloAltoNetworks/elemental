@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"sync"
 	"time"
+
+    "github.com/mitchellh/copystructure"
 )
 
 // ListIdentity represents the Identity of the object.
@@ -102,6 +104,9 @@ type List struct {
 	// This attribute is readonly.
 	ReadOnly string `json:"readOnly" bson:"readonly" mapstructure:"readOnly,omitempty"`
 
+	// This attribute is secret.
+	Secret string `json:"secret" bson:"secret" mapstructure:"secret,omitempty"`
+
 	// this is a slice.
 	Slice []string `json:"slice" bson:"slice" mapstructure:"slice,omitempty"`
 
@@ -118,6 +123,7 @@ func NewList() *List {
 
 	return &List{
 		ModelVersion: 1,
+		Slice:        []string{},
 	}
 }
 
@@ -167,7 +173,7 @@ func (o *List) GetName() string {
 	return o.Name
 }
 
-// SetName sets the given Name of the receiver.
+// SetName sets the property Name of the receiver using the given value.
 func (o *List) SetName(name string) {
 
 	o.Name = name
@@ -188,6 +194,7 @@ func (o *List) ToSparse(fields ...string) SparseIdentifiable {
 			ParentID:     &o.ParentID,
 			ParentType:   &o.ParentType,
 			ReadOnly:     &o.ReadOnly,
+			Secret:       &o.Secret,
 			Slice:        &o.Slice,
 			Unexposed:    &o.Unexposed,
 		}
@@ -212,6 +219,8 @@ func (o *List) ToSparse(fields ...string) SparseIdentifiable {
 			sp.ParentType = &(o.ParentType)
 		case "readOnly":
 			sp.ReadOnly = &(o.ReadOnly)
+		case "secret":
+			sp.Secret = &(o.Secret)
 		case "slice":
 			sp.Slice = &(o.Slice)
 		case "unexposed":
@@ -253,12 +262,39 @@ func (o *List) Patch(sparse SparseIdentifiable) {
 	if so.ReadOnly != nil {
 		o.ReadOnly = *so.ReadOnly
 	}
+	if so.Secret != nil {
+		o.Secret = *so.Secret
+	}
 	if so.Slice != nil {
 		o.Slice = *so.Slice
 	}
 	if so.Unexposed != nil {
 		o.Unexposed = *so.Unexposed
 	}
+}
+
+// DeepCopy returns a deep copy if the List.
+func (o *List) DeepCopy() *List {
+
+	if o == nil {
+		return nil
+	}
+
+	out := &List{}
+	o.DeepCopyInto(out)
+
+	return out
+}
+
+// DeepCopyInto copies the receiver into the given *List.
+func (o *List) DeepCopyInto(out *List) {
+
+	target, err := copystructure.Copy(o)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to deepcopy List: %s", err))
+	}
+
+	*out = *target.(*List)
 }
 
 // Validate valides the current information stored into the structure.
@@ -321,6 +357,8 @@ func (o *List) ValueForAttribute(name string) interface{} {
 		return o.ParentType
 	case "readOnly":
 		return o.ReadOnly
+	case "secret":
+		return o.Secret
 	case "slice":
 		return o.Slice
 	case "unexposed":
@@ -431,6 +469,18 @@ var ListAttributesMap = map[string]AttributeSpecification{
 		Name:           "readOnly",
 		Orderable:      true,
 		ReadOnly:       true,
+		Stored:         true,
+		Type:           "string",
+	},
+	"Secret": AttributeSpecification{
+		AllowedChoices: []string{},
+		ConvertedName:  "Secret",
+		Description:    `This attribute is secret.`,
+		Exposed:        true,
+		Filterable:     true,
+		Name:           "secret",
+		Orderable:      true,
+		Secret:         true,
 		Stored:         true,
 		Type:           "string",
 	},
@@ -562,6 +612,18 @@ var ListLowerCaseAttributesMap = map[string]AttributeSpecification{
 		Stored:         true,
 		Type:           "string",
 	},
+	"secret": AttributeSpecification{
+		AllowedChoices: []string{},
+		ConvertedName:  "Secret",
+		Description:    `This attribute is secret.`,
+		Exposed:        true,
+		Filterable:     true,
+		Name:           "secret",
+		Orderable:      true,
+		Secret:         true,
+		Stored:         true,
+		Type:           "string",
+	},
 	"slice": AttributeSpecification{
 		AllowedChoices: []string{},
 		ConvertedName:  "Slice",
@@ -673,6 +735,9 @@ type SparseList struct {
 	// This attribute is readonly.
 	ReadOnly *string `json:"readOnly,omitempty" bson:"readonly" mapstructure:"readOnly,omitempty"`
 
+	// This attribute is secret.
+	Secret *string `json:"secret,omitempty" bson:"secret" mapstructure:"secret,omitempty"`
+
 	// this is a slice.
 	Slice *[]string `json:"slice,omitempty" bson:"slice" mapstructure:"slice,omitempty"`
 
@@ -744,6 +809,9 @@ func (o *SparseList) ToPlain() PlainIdentifiable {
 	if o.ReadOnly != nil {
 		out.ReadOnly = *o.ReadOnly
 	}
+	if o.Secret != nil {
+		out.Secret = *o.Secret
+	}
 	if o.Slice != nil {
 		out.Slice = *o.Slice
 	}
@@ -752,6 +820,42 @@ func (o *SparseList) ToPlain() PlainIdentifiable {
 	}
 
 	return out
+}
+
+// GetName returns the Name of the receiver.
+func (o *SparseList) GetName() string {
+
+	return *o.Name
+}
+
+// SetName sets the property Name of the receiver using the address of the given value.
+func (o *SparseList) SetName(name string) {
+
+	o.Name = &name
+}
+
+// DeepCopy returns a deep copy if the SparseList.
+func (o *SparseList) DeepCopy() *SparseList {
+
+	if o == nil {
+		return nil
+	}
+
+	out := &SparseList{}
+	o.DeepCopyInto(out)
+
+	return out
+}
+
+// DeepCopyInto copies the receiver into the given *SparseList.
+func (o *SparseList) DeepCopyInto(out *SparseList) {
+
+	target, err := copystructure.Copy(o)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to deepcopy SparseList: %s", err))
+	}
+
+	*out = *target.(*SparseList)
 }
 
 // TaskStatusValue represents the possible values for attribute "status".
@@ -918,7 +1022,7 @@ func (o *Task) GetName() string {
 	return o.Name
 }
 
-// SetName sets the given Name of the receiver.
+// SetName sets the property Name of the receiver using the given value.
 func (o *Task) SetName(name string) {
 
 	o.Name = name
@@ -986,6 +1090,30 @@ func (o *Task) Patch(sparse SparseIdentifiable) {
 	if so.Status != nil {
 		o.Status = *so.Status
 	}
+}
+
+// DeepCopy returns a deep copy if the Task.
+func (o *Task) DeepCopy() *Task {
+
+	if o == nil {
+		return nil
+	}
+
+	out := &Task{}
+	o.DeepCopyInto(out)
+
+	return out
+}
+
+// DeepCopyInto copies the receiver into the given *Task.
+func (o *Task) DeepCopyInto(out *Task) {
+
+	target, err := copystructure.Copy(o)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to deepcopy Task: %s", err))
+	}
+
+	*out = *target.(*Task)
 }
 
 // Validate valides the current information stored into the structure.
@@ -1363,7 +1491,41 @@ func (o *SparseTask) ToPlain() PlainIdentifiable {
 	return out
 }
 
-// UnmarshalableListIdentity represents the Identity of the object.
+// GetName returns the Name of the receiver.
+func (o *SparseTask) GetName() string {
+
+	return *o.Name
+}
+
+// SetName sets the property Name of the receiver using the address of the given value.
+func (o *SparseTask) SetName(name string) {
+
+	o.Name = &name
+}
+
+// DeepCopy returns a deep copy if the SparseTask.
+func (o *SparseTask) DeepCopy() *SparseTask {
+
+	if o == nil {
+		return nil
+	}
+
+	out := &SparseTask{}
+	o.DeepCopyInto(out)
+
+	return out
+}
+
+// DeepCopyInto copies the receiver into the given *SparseTask.
+func (o *SparseTask) DeepCopyInto(out *SparseTask) {
+
+	target, err := copystructure.Copy(o)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to deepcopy SparseTask: %s", err))
+	}
+
+	*out = *target.(*SparseTask)
+}
 var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
 
 // UnmarshalableListsList represents a list of UnmarshalableLists
@@ -1664,6 +1826,30 @@ func (o *User) Patch(sparse SparseIdentifiable) {
 	if so.UserName != nil {
 		o.UserName = *so.UserName
 	}
+}
+
+// DeepCopy returns a deep copy if the User.
+func (o *User) DeepCopy() *User {
+
+	if o == nil {
+		return nil
+	}
+
+	out := &User{}
+	o.DeepCopyInto(out)
+
+	return out
+}
+
+// DeepCopyInto copies the receiver into the given *User.
+func (o *User) DeepCopyInto(out *User) {
+
+	target, err := copystructure.Copy(o)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to deepcopy User: %s", err))
+	}
+
+	*out = *target.(*User)
 }
 
 // Validate valides the current information stored into the structure.
@@ -2045,6 +2231,30 @@ func (o *SparseUser) ToPlain() PlainIdentifiable {
 	return out
 }
 
+// DeepCopy returns a deep copy if the SparseUser.
+func (o *SparseUser) DeepCopy() *SparseUser {
+
+	if o == nil {
+		return nil
+	}
+
+	out := &SparseUser{}
+	o.DeepCopyInto(out)
+
+	return out
+}
+
+// DeepCopyInto copies the receiver into the given *SparseUser.
+func (o *SparseUser) DeepCopyInto(out *SparseUser) {
+
+	target, err := copystructure.Copy(o)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to deepcopy SparseUser: %s", err))
+	}
+
+	*out = *target.(*SparseUser)
+}
+
 // Root represents the model of a root
 type Root struct {
 	ModelVersion int `json:"-" bson:"_modelversion"`
@@ -2097,6 +2307,30 @@ func (o *Root) Doc() string {
 func (o *Root) String() string {
 
 	return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
+}
+
+// DeepCopy returns a deep copy if the Root.
+func (o *Root) DeepCopy() *Root {
+
+	if o == nil {
+		return nil
+	}
+
+	out := &Root{}
+	o.DeepCopyInto(out)
+
+	return out
+}
+
+// DeepCopyInto copies the receiver into the given *Root.
+func (o *Root) DeepCopyInto(out *Root) {
+
+	target, err := copystructure.Copy(o)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to deepcopy Root: %s", err))
+	}
+
+	*out = *target.(*Root)
 }
 
 // Validate valides the current information stored into the structure.

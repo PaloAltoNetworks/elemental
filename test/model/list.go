@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mitchellh/copystructure"
 	"go.aporeto.io/elemental"
 )
 
@@ -104,6 +105,9 @@ type List struct {
 	// This attribute is readonly.
 	ReadOnly string `json:"readOnly" bson:"readonly" mapstructure:"readOnly,omitempty"`
 
+	// This attribute is secret.
+	Secret string `json:"secret" bson:"secret" mapstructure:"secret,omitempty"`
+
 	// this is a slice.
 	Slice []string `json:"slice" bson:"slice" mapstructure:"slice,omitempty"`
 
@@ -120,6 +124,7 @@ func NewList() *List {
 
 	return &List{
 		ModelVersion: 1,
+		Slice:        []string{},
 	}
 }
 
@@ -169,7 +174,7 @@ func (o *List) GetName() string {
 	return o.Name
 }
 
-// SetName sets the given Name of the receiver.
+// SetName sets the property Name of the receiver using the given value.
 func (o *List) SetName(name string) {
 
 	o.Name = name
@@ -190,6 +195,7 @@ func (o *List) ToSparse(fields ...string) elemental.SparseIdentifiable {
 			ParentID:     &o.ParentID,
 			ParentType:   &o.ParentType,
 			ReadOnly:     &o.ReadOnly,
+			Secret:       &o.Secret,
 			Slice:        &o.Slice,
 			Unexposed:    &o.Unexposed,
 		}
@@ -214,6 +220,8 @@ func (o *List) ToSparse(fields ...string) elemental.SparseIdentifiable {
 			sp.ParentType = &(o.ParentType)
 		case "readOnly":
 			sp.ReadOnly = &(o.ReadOnly)
+		case "secret":
+			sp.Secret = &(o.Secret)
 		case "slice":
 			sp.Slice = &(o.Slice)
 		case "unexposed":
@@ -255,12 +263,39 @@ func (o *List) Patch(sparse elemental.SparseIdentifiable) {
 	if so.ReadOnly != nil {
 		o.ReadOnly = *so.ReadOnly
 	}
+	if so.Secret != nil {
+		o.Secret = *so.Secret
+	}
 	if so.Slice != nil {
 		o.Slice = *so.Slice
 	}
 	if so.Unexposed != nil {
 		o.Unexposed = *so.Unexposed
 	}
+}
+
+// DeepCopy returns a deep copy if the List.
+func (o *List) DeepCopy() *List {
+
+	if o == nil {
+		return nil
+	}
+
+	out := &List{}
+	o.DeepCopyInto(out)
+
+	return out
+}
+
+// DeepCopyInto copies the receiver into the given *List.
+func (o *List) DeepCopyInto(out *List) {
+
+	target, err := copystructure.Copy(o)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to deepcopy List: %s", err))
+	}
+
+	*out = *target.(*List)
 }
 
 // Validate valides the current information stored into the structure.
@@ -323,6 +358,8 @@ func (o *List) ValueForAttribute(name string) interface{} {
 		return o.ParentType
 	case "readOnly":
 		return o.ReadOnly
+	case "secret":
+		return o.Secret
 	case "slice":
 		return o.Slice
 	case "unexposed":
@@ -433,6 +470,18 @@ var ListAttributesMap = map[string]elemental.AttributeSpecification{
 		Name:           "readOnly",
 		Orderable:      true,
 		ReadOnly:       true,
+		Stored:         true,
+		Type:           "string",
+	},
+	"Secret": elemental.AttributeSpecification{
+		AllowedChoices: []string{},
+		ConvertedName:  "Secret",
+		Description:    `This attribute is secret.`,
+		Exposed:        true,
+		Filterable:     true,
+		Name:           "secret",
+		Orderable:      true,
+		Secret:         true,
 		Stored:         true,
 		Type:           "string",
 	},
@@ -564,6 +613,18 @@ var ListLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{
 		Stored:         true,
 		Type:           "string",
 	},
+	"secret": elemental.AttributeSpecification{
+		AllowedChoices: []string{},
+		ConvertedName:  "Secret",
+		Description:    `This attribute is secret.`,
+		Exposed:        true,
+		Filterable:     true,
+		Name:           "secret",
+		Orderable:      true,
+		Secret:         true,
+		Stored:         true,
+		Type:           "string",
+	},
 	"slice": elemental.AttributeSpecification{
 		AllowedChoices: []string{},
 		ConvertedName:  "Slice",
@@ -675,6 +736,9 @@ type SparseList struct {
 	// This attribute is readonly.
 	ReadOnly *string `json:"readOnly,omitempty" bson:"readonly" mapstructure:"readOnly,omitempty"`
 
+	// This attribute is secret.
+	Secret *string `json:"secret,omitempty" bson:"secret" mapstructure:"secret,omitempty"`
+
 	// this is a slice.
 	Slice *[]string `json:"slice,omitempty" bson:"slice" mapstructure:"slice,omitempty"`
 
@@ -746,6 +810,9 @@ func (o *SparseList) ToPlain() elemental.PlainIdentifiable {
 	if o.ReadOnly != nil {
 		out.ReadOnly = *o.ReadOnly
 	}
+	if o.Secret != nil {
+		out.Secret = *o.Secret
+	}
 	if o.Slice != nil {
 		out.Slice = *o.Slice
 	}
@@ -754,4 +821,40 @@ func (o *SparseList) ToPlain() elemental.PlainIdentifiable {
 	}
 
 	return out
+}
+
+// GetName returns the Name of the receiver.
+func (o *SparseList) GetName() string {
+
+	return *o.Name
+}
+
+// SetName sets the property Name of the receiver using the address of the given value.
+func (o *SparseList) SetName(name string) {
+
+	o.Name = &name
+}
+
+// DeepCopy returns a deep copy if the SparseList.
+func (o *SparseList) DeepCopy() *SparseList {
+
+	if o == nil {
+		return nil
+	}
+
+	out := &SparseList{}
+	o.DeepCopyInto(out)
+
+	return out
+}
+
+// DeepCopyInto copies the receiver into the given *SparseList.
+func (o *SparseList) DeepCopyInto(out *SparseList) {
+
+	target, err := copystructure.Copy(o)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to deepcopy SparseList: %s", err))
+	}
+
+	*out = *target.(*SparseList)
 }

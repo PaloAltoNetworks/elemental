@@ -132,6 +132,11 @@ type AttributeSpecification struct {
 	// This is enforced by elemental.
 	Required bool
 
+	// Secret defines if the attribute is secret.
+	// This is useful if you can to define perform sanity check on this field to be sure it
+	// is not sent for instance.
+	Secret bool
+
 	// Setter defines if the attribute needs to define a setter method.
 	// This is useful if you can to define an Interface based on this attribute.
 	Setter bool

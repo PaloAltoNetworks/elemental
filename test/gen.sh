@@ -15,14 +15,16 @@ import (
 	"fmt"
 	"sync"
 	"time"
+
+    "github.com/mitchellh/copystructure"
 )
 EOF
 {
     tail -n +11 model/list.go;
-    tail -n +9 model/task.go;
-    tail -n +9 model/unmarshalable.go;
-    tail -n +9 model/user.go;
-    tail -n +17 model/root.go;
+    tail -n +10 model/task.go;
+    tail -n +10 model/unmarshalable.go;
+    tail -n +10 model/user.go;
+    tail -n +18 model/root.go;
     tail -n +5 model/identities_registry.go;
     tail -n +4 model/relationships_registry.go;
 }>> ../data_test.go

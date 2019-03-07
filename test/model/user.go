@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/mitchellh/copystructure"
 	"go.aporeto.io/elemental"
 )
 
@@ -212,6 +213,30 @@ func (o *User) Patch(sparse elemental.SparseIdentifiable) {
 	if so.UserName != nil {
 		o.UserName = *so.UserName
 	}
+}
+
+// DeepCopy returns a deep copy if the User.
+func (o *User) DeepCopy() *User {
+
+	if o == nil {
+		return nil
+	}
+
+	out := &User{}
+	o.DeepCopyInto(out)
+
+	return out
+}
+
+// DeepCopyInto copies the receiver into the given *User.
+func (o *User) DeepCopyInto(out *User) {
+
+	target, err := copystructure.Copy(o)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to deepcopy User: %s", err))
+	}
+
+	*out = *target.(*User)
 }
 
 // Validate valides the current information stored into the structure.
@@ -591,4 +616,28 @@ func (o *SparseUser) ToPlain() elemental.PlainIdentifiable {
 	}
 
 	return out
+}
+
+// DeepCopy returns a deep copy if the SparseUser.
+func (o *SparseUser) DeepCopy() *SparseUser {
+
+	if o == nil {
+		return nil
+	}
+
+	out := &SparseUser{}
+	o.DeepCopyInto(out)
+
+	return out
+}
+
+// DeepCopyInto copies the receiver into the given *SparseUser.
+func (o *SparseUser) DeepCopyInto(out *SparseUser) {
+
+	target, err := copystructure.Copy(o)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to deepcopy SparseUser: %s", err))
+	}
+
+	*out = *target.(*SparseUser)
 }

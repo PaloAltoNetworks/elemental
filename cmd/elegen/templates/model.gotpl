@@ -547,6 +547,9 @@ var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSp
         {{- if .Required }}
         Required: {{ .Required }},
         {{- end }}
+        {{- if .Secret }}
+        Secret: {{ .Secret }},
+        {{- end }}
         {{- if .Setter }}
         Setter: {{ .Setter }},
         {{- end }}
@@ -639,6 +642,9 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
         {{- end }}
         {{- if .Required }}
         Required: {{ .Required }},
+        {{- end }}
+        {{- if .Secret }}
+        Secret: {{ .Secret }},
         {{- end }}
         {{- if .Setter }}
         Setter: {{ .Setter }},

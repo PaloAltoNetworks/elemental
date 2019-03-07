@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/mitchellh/copystructure"
 	"go.aporeto.io/elemental"
 )
 
@@ -171,7 +172,7 @@ func (o *Task) GetName() string {
 	return o.Name
 }
 
-// SetName sets the given Name of the receiver.
+// SetName sets the property Name of the receiver using the given value.
 func (o *Task) SetName(name string) {
 
 	o.Name = name
@@ -239,6 +240,30 @@ func (o *Task) Patch(sparse elemental.SparseIdentifiable) {
 	if so.Status != nil {
 		o.Status = *so.Status
 	}
+}
+
+// DeepCopy returns a deep copy if the Task.
+func (o *Task) DeepCopy() *Task {
+
+	if o == nil {
+		return nil
+	}
+
+	out := &Task{}
+	o.DeepCopyInto(out)
+
+	return out
+}
+
+// DeepCopyInto copies the receiver into the given *Task.
+func (o *Task) DeepCopyInto(out *Task) {
+
+	target, err := copystructure.Copy(o)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to deepcopy Task: %s", err))
+	}
+
+	*out = *target.(*Task)
 }
 
 // Validate valides the current information stored into the structure.
@@ -614,4 +639,40 @@ func (o *SparseTask) ToPlain() elemental.PlainIdentifiable {
 	}
 
 	return out
+}
+
+// GetName returns the Name of the receiver.
+func (o *SparseTask) GetName() string {
+
+	return *o.Name
+}
+
+// SetName sets the property Name of the receiver using the address of the given value.
+func (o *SparseTask) SetName(name string) {
+
+	o.Name = &name
+}
+
+// DeepCopy returns a deep copy if the SparseTask.
+func (o *SparseTask) DeepCopy() *SparseTask {
+
+	if o == nil {
+		return nil
+	}
+
+	out := &SparseTask{}
+	o.DeepCopyInto(out)
+
+	return out
+}
+
+// DeepCopyInto copies the receiver into the given *SparseTask.
+func (o *SparseTask) DeepCopyInto(out *SparseTask) {
+
+	target, err := copystructure.Copy(o)
+	if err != nil {
+		panic(fmt.Sprintf("Unable to deepcopy SparseTask: %s", err))
+	}
+
+	*out = *target.(*SparseTask)
 }
