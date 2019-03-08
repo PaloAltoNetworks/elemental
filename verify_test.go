@@ -113,7 +113,7 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 
 func TestVerify_BackportUnexposedFields(t *testing.T) {
 
-	Convey("Given have to objects", t, func() {
+	Convey("Given have to objects with unexposed fields", t, func() {
 
 		l1 := NewList()
 		l2 := NewList()
@@ -136,6 +136,51 @@ func TestVerify_BackportUnexposedFields(t *testing.T) {
 			Convey("Then the Unexposed attribute should be equal", func() {
 				So(l1.Unexposed, ShouldEqual, "u1")
 				So(l2.Unexposed, ShouldEqual, "u1")
+			})
+		})
+	})
+
+	Convey("Given have to objects with secret fields", t, func() {
+
+		l1 := NewList()
+		l2 := NewList()
+
+		Convey("When I backport secrets fields from l1 to l2 with no change in l2", func() {
+
+			l1.Secret = "u1"
+			l2.Secret = "u1"
+
+			BackportUnexposedFields(l1, l2)
+
+			Convey("Then the Unexposed attribute should be equal", func() {
+				So(l1.Secret, ShouldEqual, "u1")
+				So(l2.Secret, ShouldEqual, "u1")
+			})
+		})
+
+		Convey("When I backport secrets fields from l1 to l2 with empty changes in l2", func() {
+
+			l1.Secret = "u1"
+			l2.Secret = ""
+
+			BackportUnexposedFields(l1, l2)
+
+			Convey("Then the Unexposed attribute should be equal", func() {
+				So(l1.Secret, ShouldEqual, "u1")
+				So(l2.Secret, ShouldEqual, "u1")
+			})
+		})
+
+		Convey("When I backport secrets fields from l1 to l2 with changes in l2", func() {
+
+			l1.Secret = "u1"
+			l2.Secret = "u2"
+
+			BackportUnexposedFields(l1, l2)
+
+			Convey("Then the Unexposed attribute should be equal", func() {
+				So(l1.Secret, ShouldEqual, "u1")
+				So(l2.Secret, ShouldEqual, "u2")
 			})
 		})
 	})

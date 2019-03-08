@@ -89,6 +89,10 @@ func BackportUnexposedFields(src, dest AttributeSpecifiable) {
 		if !spec.Exposed {
 			reflect.ValueOf(dest).Elem().FieldByName(field).Set(reflect.ValueOf(src).Elem().FieldByName(field))
 		}
+
+		if spec.Secret && isFieldValueZero(field, dest) {
+			reflect.ValueOf(dest).Elem().FieldByName(field).Set(reflect.ValueOf(src).Elem().FieldByName(field))
+		}
 	}
 }
 
