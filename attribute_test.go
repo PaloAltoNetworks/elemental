@@ -1,7 +1,3 @@
-// Author: Antoine Mercadal
-// See LICENSE file for full LICENSE
-// Copyright 2016 Aporeto.
-
 package elemental
 
 import (
@@ -59,6 +55,124 @@ func TestAttribute_SpecificationForAttribute(t *testing.T) {
 				So(spec.Stored, ShouldBeTrue)
 				So(spec.SubType, ShouldBeEmpty)
 				So(spec.Transient, ShouldBeFalse)
+			})
+		})
+	})
+}
+
+func Test_ResetSecretAttributesValues(t *testing.T) {
+
+	Convey("Given I have an identifiable with a secret property", t, func() {
+
+		l := NewList()
+		l.Secret = "it's a secret to everybody"
+
+		Convey("When I call ResetSecretAttributesValues", func() {
+
+			ResetSecretAttributesValues(l)
+
+			Convey("Then the secret should have been erased", func() {
+				So(l.Secret, ShouldEqual, "")
+			})
+		})
+	})
+
+	Convey("Given I have some identifiables with a secret property", t, func() {
+
+		l1 := NewList()
+		l1.Secret = "it's a secret to everybody"
+
+		l2 := NewList()
+		l2.Secret = "it's a secret to everybody"
+
+		Convey("When I call ResetSecretAttributesValues", func() {
+
+			ResetSecretAttributesValues(ListsList{l1, l2})
+
+			Convey("Then the secret should have been erased", func() {
+				So(l1.Secret, ShouldEqual, "")
+				So(l2.Secret, ShouldEqual, "")
+			})
+		})
+	})
+
+	Convey("Given I have an sparse identifiable with a secret property", t, func() {
+
+		val := "it's a secret to everybody"
+
+		l := NewSparseList()
+		l.Secret = &val
+
+		Convey("When I call ResetSecretAttributesValues", func() {
+
+			ResetSecretAttributesValues(l)
+
+			Convey("Then the secret should have been erased", func() {
+				So(l.Secret, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have some sparse identifiables with a secret property", t, func() {
+
+		l1 := NewSparseList()
+		val1 := "it's a secret to everybody"
+		l1.Secret = &val1
+
+		l2 := NewSparseList()
+		val2 := "it's a secret to everybody"
+		l2.Secret = &val2
+
+		Convey("When I call ResetSecretAttributesValues", func() {
+
+			ResetSecretAttributesValues(SparseListsList{l1, l2})
+
+			Convey("Then the secret should have been erased", func() {
+				So(l1.Secret, ShouldBeNil)
+				So(l2.Secret, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have some random non pointer struct", t, func() {
+
+		s := struct{}{}
+
+		Convey("When I call ResetSecretAttributesValues", func() {
+
+			ResetSecretAttributesValues(s)
+
+			Convey("Then it should not panic", func() {
+				So(func() { ResetSecretAttributesValues(s) }, ShouldNotPanic)
+			})
+		})
+	})
+
+	Convey("Given I have some random pointer struct", t, func() {
+
+		s := &struct{}{}
+
+		Convey("When I call ResetSecretAttributesValues", func() {
+
+			ResetSecretAttributesValues(s)
+
+			Convey("Then it should not panic", func() {
+				So(func() { ResetSecretAttributesValues(s) }, ShouldNotPanic)
+			})
+		})
+	})
+
+	Convey("Given I have an non pointer identifiable with a secret property", t, func() {
+
+		l := NewList()
+		l.Secret = "it's a secret to everybody"
+
+		Convey("When I call ResetSecretAttributesValues", func() {
+
+			ResetSecretAttributesValues(*l)
+
+			Convey("Then the secret should have been erased", func() {
+				So(l.Secret, ShouldEqual, "it's a secret to everybody")
 			})
 		})
 	})

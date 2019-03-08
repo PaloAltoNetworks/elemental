@@ -4,6 +4,8 @@
 
 package elemental
 
+import "reflect"
+
 // An AttributeSpecifiable is the interface an object must implement in order to access specification of its attributes.
 type AttributeSpecifiable interface {
 	SpecificationForAttribute(string) AttributeSpecification
@@ -156,4 +158,49 @@ type AttributeSpecification struct {
 
 	// Type defines the raw Monolithe type.
 	Type string
+}
+
+// ResetSecretAttributesValues will reset any attributes marked
+// as `secret` in the given obj if it is an elemental.Identifiable
+// or an elemental.Identifiables.
+// The given Identifiables must implement the elemental.AttributeSpecifiable
+// interface or this function will have no effect.
+//
+// If you pass anything else, this function does nothing.
+func ResetSecretAttributesValues(obj interface{}) {
+
+	strip := func(o Identifiable) {
+
+		oo := o
+		if sp, ok := o.(SparseIdentifiable); ok {
+			oo = sp.ToPlain()
+		}
+
+		if attrspec, ok := oo.(AttributeSpecifiable); ok {
+
+			var rv, val reflect.Value
+
+			for _, aspec := range attrspec.AttributeSpecifications() {
+
+				if !aspec.Secret {
+					continue
+				}
+
+				rv = reflect.Indirect(reflect.ValueOf(o))
+				val = rv.FieldByName(aspec.ConvertedName)
+				val.Set(reflect.Zero(val.Type()))
+			}
+		}
+	}
+
+	switch o := obj.(type) {
+
+	case Identifiable:
+		strip(o)
+
+	case Identifiables:
+		for _, i := range o.List() {
+			strip(i)
+		}
+	}
 }

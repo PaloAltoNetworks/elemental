@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-    "github.com/mitchellh/copystructure"
+	"github.com/mitchellh/copystructure"
 )
 
 // ListIdentity represents the Identity of the object.
@@ -1526,6 +1526,7 @@ func (o *SparseTask) DeepCopyInto(out *SparseTask) {
 
 	*out = *target.(*SparseTask)
 }
+
 var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
 
 // UnmarshalableListsList represents a list of UnmarshalableLists
