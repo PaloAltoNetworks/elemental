@@ -90,7 +90,7 @@ func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) s
 		json = "-"
 	}
 
-	if attr.OmitEmpty || shadow {
+	if attr.Exposed && (attr.OmitEmpty || shadow) {
 		json += ",omitempty"
 	}
 

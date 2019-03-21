@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mitchellh/copystructure"
+    "github.com/mitchellh/copystructure"
 )
 
 // ListIdentity represents the Identity of the object.
@@ -115,7 +115,7 @@ type List struct {
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex `json:"-" bson:"-"`
+	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewList returns a new *List
@@ -746,7 +746,7 @@ type SparseList struct {
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex `json:"-" bson:"-"`
+	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewSparseList returns a new  SparseList.
@@ -964,7 +964,7 @@ type Task struct {
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex `json:"-" bson:"-"`
+	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewTask returns a new *Task
@@ -1430,7 +1430,7 @@ type SparseTask struct {
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex `json:"-" bson:"-"`
+	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewSparseTask returns a new  SparseTask.
@@ -1526,7 +1526,6 @@ func (o *SparseTask) DeepCopyInto(out *SparseTask) {
 
 	*out = *target.(*SparseTask)
 }
-
 var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
 
 // UnmarshalableListsList represents a list of UnmarshalableLists
@@ -1714,7 +1713,7 @@ type User struct {
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex `json:"-" bson:"-"`
+	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewUser returns a new *User
@@ -2171,7 +2170,7 @@ type SparseUser struct {
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex `json:"-" bson:"-"`
+	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewSparseUser returns a new  SparseUser.
@@ -2260,7 +2259,7 @@ func (o *SparseUser) DeepCopyInto(out *SparseUser) {
 type Root struct {
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
-	sync.Mutex `json:"-" bson:"-"`
+	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewRoot returns a new *Root

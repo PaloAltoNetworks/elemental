@@ -116,7 +116,7 @@ type {{ .Spec.Model.EntityName }} struct {
 
     ModelVersion int `json:"-" bson:"_modelversion"`
 
-    sync.Mutex `json:"-" bson:"-"`
+    *sync.Mutex `json:"-" bson:"-"`
 }
 
 // New{{ .Spec.Model.EntityName }} returns a new *{{ .Spec.Model.EntityName }}
@@ -742,7 +742,7 @@ type Sparse{{ .Spec.Model.EntityName }} struct {
 
     ModelVersion int `json:"-" bson:"_modelversion"`
 
-    sync.Mutex `json:"-" bson:"-"`
+    *sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewSparse{{ .Spec.Model.EntityName }} returns a new  Sparse{{ .Spec.Model.EntityName }}.
