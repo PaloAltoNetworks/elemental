@@ -68,6 +68,20 @@ func TestPushFilter_Parameters(t *testing.T) {
 			})
 		})
 	})
+
+	Convey("Given I have a push filter with no parameters", t, func() {
+
+		f := NewPushFilter()
+
+		Convey("When I call Parameters", func() {
+
+			p := f.Parameters()
+
+			Convey("Then p should be nil", func() {
+				So(p, ShouldBeNil)
+			})
+		})
+	})
 }
 
 func TestPushFilter_IsFilteredOut(t *testing.T) {
