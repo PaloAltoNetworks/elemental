@@ -124,6 +124,7 @@ func New{{ .Spec.Model.EntityName }}() *{{ .Spec.Model.EntityName }} {
 
     return &{{ .Spec.Model.EntityName }}{
         ModelVersion: {{ .Set.APIInfo.Version }},
+        Mutex:        &sync.Mutex{},
 
         {{- range $i, $attr := sortAttributes (.Spec.Attributes $latestVersion) -}}
         {{- if shouldWriteInitializer $.Spec $attr.Name $latestVersion $.PublicMode }}
