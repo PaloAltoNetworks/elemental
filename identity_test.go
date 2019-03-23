@@ -51,6 +51,25 @@ func TestIdentity_String(t *testing.T) {
 	})
 }
 
+func TestIdentity_IsEmpty(t *testing.T) {
+
+	Convey("Given I create a new emtpty identity", t, func() {
+		i := Identity{}
+
+		Convey("Then IsEmpty should return true", func() {
+			So(i.IsEmpty(), ShouldBeTrue)
+		})
+	})
+
+	Convey("Given I create a new non emtpty identity", t, func() {
+		i := MakeIdentity("a", "b")
+
+		Convey("Then IsEmpty should return false", func() {
+			So(i.IsEmpty(), ShouldBeFalse)
+		})
+	})
+}
+
 func TestIdentity_Identity_Copy(t *testing.T) {
 
 	Convey("Given I create I have a Identifiables with 2 Identifiable", t, func() {

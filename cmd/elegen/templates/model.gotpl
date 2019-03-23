@@ -314,6 +314,12 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
     }
     {{ end }}
 
+    {{ if or (eq .Type "enum") }}
+    if err := elemental.ValidateRequiredString("{{ .Name }}", string(o.{{ .ConvertedName }})); err != nil {
+        requiredErrors = append(requiredErrors, err)
+    }
+    {{ end }}
+
     {{ if eq .Type "time" }}
     if err := elemental.ValidateRequiredTime("{{ .Name }}", o.{{ .ConvertedName }}); err != nil {
         requiredErrors = append(requiredErrors, err)

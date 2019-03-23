@@ -167,10 +167,20 @@ func TestUtils_areFieldValuesEqual(t *testing.T) {
 			})
 		})
 
-		Convey("When I set a different map", func() {
+		Convey("When I set a different map with same len", func() {
 
 			s1.Map = map[string]interface{}{"a": 1}
 			s2.Map = map[string]interface{}{"a": 2}
+
+			Convey("Then the values should not be equal", func() {
+				So(areFieldValuesEqual("Map", s1, s2), ShouldBeFalse)
+			})
+		})
+
+		Convey("When I set a different map with different len", func() {
+
+			s1.Map = map[string]interface{}{"a": 1}
+			s2.Map = map[string]interface{}{"a": 2, "b": 1}
 
 			Convey("Then the values should not be equal", func() {
 				So(areFieldValuesEqual("Map", s1, s2), ShouldBeFalse)
