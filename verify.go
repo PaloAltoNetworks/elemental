@@ -19,7 +19,7 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 
 	errors := NewErrors()
 
-	for _, field := range ExtractFieldNames(obj) {
+	for _, field := range extractFieldNames(obj) {
 
 		spec := obj.SpecificationForAttribute(field)
 
@@ -30,10 +30,10 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 
 		switch op {
 		case OperationCreate:
-			if spec.ReadOnly && !IsFieldValueZero(field, obj) && !AreFieldsValueEqualValue(field, obj, spec.DefaultValue) {
+			if spec.ReadOnly && !isFieldValueZero(field, obj) && !areFieldsValueEqualValue(field, obj, spec.DefaultValue) {
 
 				// Special case here. If we have a pristine object, and the fields are equal, it is fine.
-				if pristine != nil && AreFieldValuesEqual(field, obj, pristine) {
+				if pristine != nil && areFieldValuesEqual(field, obj, pristine) {
 					continue
 				}
 
@@ -48,7 +48,7 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 			}
 
 		case OperationUpdate:
-			if !spec.CreationOnly && spec.ReadOnly && !AreFieldValuesEqual(field, obj, pristine) {
+			if !spec.CreationOnly && spec.ReadOnly && !areFieldValuesEqual(field, obj, pristine) {
 				e := NewError(
 					readOnlyErrorTitle,
 					fmt.Sprintf("Field %s is read only. You cannot modify its value.", spec.Name),
@@ -59,7 +59,7 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 				errors = append(errors, e)
 			}
 
-			if spec.CreationOnly && !AreFieldValuesEqual(field, obj, pristine) {
+			if spec.CreationOnly && !areFieldValuesEqual(field, obj, pristine) {
 				e := NewError(
 					creationOnlyErrorTitle,
 					fmt.Sprintf("Field %s can only be set during creation. You cannot modify its value.", spec.Name),
@@ -82,7 +82,7 @@ func ValidateAdvancedSpecification(obj AttributeSpecifiable, pristine AttributeS
 // BackportUnexposedFields copy the values of unexposed fields from src to dest.
 func BackportUnexposedFields(src, dest AttributeSpecifiable) {
 
-	for _, field := range ExtractFieldNames(src) {
+	for _, field := range extractFieldNames(src) {
 
 		spec := src.SpecificationForAttribute(field)
 
@@ -90,7 +90,7 @@ func BackportUnexposedFields(src, dest AttributeSpecifiable) {
 			reflect.Indirect(reflect.ValueOf(dest)).FieldByName(field).Set(reflect.Indirect(reflect.ValueOf(src)).FieldByName(field))
 		}
 
-		if spec.Secret && IsFieldValueZero(field, dest) {
+		if spec.Secret && isFieldValueZero(field, dest) {
 			reflect.Indirect(reflect.ValueOf(dest)).FieldByName(field).Set(reflect.Indirect(reflect.ValueOf(src)).FieldByName(field))
 		}
 	}
@@ -99,11 +99,11 @@ func BackportUnexposedFields(src, dest AttributeSpecifiable) {
 // ResetDefaultForZeroValues reset the default value from the specification when a field is Zero.
 func ResetDefaultForZeroValues(obj AttributeSpecifiable) {
 
-	for _, field := range ExtractFieldNames(obj) {
+	for _, field := range extractFieldNames(obj) {
 
 		spec := obj.SpecificationForAttribute(field)
 
-		if spec.DefaultValue == nil || !IsFieldValueZero(field, obj) {
+		if spec.DefaultValue == nil || !isFieldValueZero(field, obj) {
 			continue
 		}
 
