@@ -9,9 +9,11 @@ import (
 	"time"
 )
 
-// extractFieldNames returns all the field Name of the given
+var reflectedTimeType = reflect.ValueOf(time.Time{}).Type()
+
+// ExtractFieldNames returns all the field Name of the given
 // object using reflection.
-func extractFieldNames(obj interface{}) []string {
+func ExtractFieldNames(obj interface{}) []string {
 
 	val := reflect.Indirect(reflect.ValueOf(obj))
 	c := val.NumField()
@@ -24,16 +26,14 @@ func extractFieldNames(obj interface{}) []string {
 	return fields
 }
 
-var reflectedTimeType = reflect.ValueOf(time.Time{}).Type()
-
-// areFieldValuesEqual checks if the value of the given field name are
+// AreFieldValuesEqual checks if the value of the given field name are
 // equal in both given objects using reflection.
-func areFieldValuesEqual(field string, o1, o2 interface{}) bool {
+func AreFieldValuesEqual(field string, o1, o2 interface{}) bool {
 
 	field1 := reflect.Indirect(reflect.ValueOf(o1)).FieldByName(field)
 	field2 := reflect.Indirect(reflect.ValueOf(o2)).FieldByName(field)
 
-	if isFieldValueZero(field, o1) && isFieldValueZero(field, o2) {
+	if IsFieldValueZero(field, o1) && IsFieldValueZero(field, o2) {
 		return true
 	}
 
@@ -73,10 +73,18 @@ func areFieldValuesEqual(field string, o1, o2 interface{}) bool {
 	return field1.Interface() == field2.Interface()
 }
 
-// isFieldValueZero check if the value of the given field is set to its zero value.
-func isFieldValueZero(field string, o interface{}) bool {
+// IsFieldValueZero check if the value of the given field is set to its zero value.
+func IsFieldValueZero(field string, o interface{}) bool {
 
 	v := reflect.Indirect(reflect.ValueOf(o)).FieldByName(field)
+
+	return IsZero(v.Interface())
+}
+
+// IsZero returns true is the given value is zero.
+func IsZero(o interface{}) bool {
+
+	v := reflect.Indirect(reflect.ValueOf(o))
 
 	if v.Type() == reflectedTimeType {
 		return time.Time{}.Equal(v.Interface().(time.Time))
@@ -90,12 +98,14 @@ func isFieldValueZero(field string, o interface{}) bool {
 	}
 }
 
-func areFieldsValueEqualValue(f string, obj interface{}, value interface{}) bool {
+// AreFieldsValueEqualValue checks field with the given name of the given
+// object is equal to the given value.
+func AreFieldsValueEqualValue(f string, obj interface{}, value interface{}) bool {
 
 	field := reflect.Indirect(reflect.ValueOf(obj)).FieldByName(f)
 
 	if value == nil {
-		return isFieldValueZero(f, obj)
+		return IsFieldValueZero(f, obj)
 	}
 
 	v2 := reflect.ValueOf(value)
