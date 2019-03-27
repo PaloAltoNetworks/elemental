@@ -76,7 +76,13 @@ func areFieldValuesEqual(field string, o1, o2 interface{}) bool {
 // isFieldValueZero check if the value of the given field is set to its zero value.
 func isFieldValueZero(field string, o interface{}) bool {
 
-	v := reflect.Indirect(reflect.ValueOf(o)).FieldByName(field)
+	return IsZero(reflect.Indirect(reflect.ValueOf(o)).FieldByName(field).Interface())
+}
+
+// IsZero returns true if the given value is set to its Zero value.
+func IsZero(o interface{}) bool {
+
+	v := reflect.Indirect(reflect.ValueOf(o))
 
 	if v.Type() == reflectedTimeType {
 		return time.Time{}.Equal(v.Interface().(time.Time))
