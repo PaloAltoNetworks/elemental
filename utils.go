@@ -13,7 +13,7 @@ import (
 // object using reflection.
 func extractFieldNames(obj interface{}) []string {
 
-	val := reflect.ValueOf(obj).Elem()
+	val := reflect.Indirect(reflect.ValueOf(obj))
 	c := val.NumField()
 	fields := make([]string, c)
 
@@ -30,8 +30,8 @@ var reflectedTimeType = reflect.ValueOf(time.Time{}).Type()
 // equal in both given objects using reflection.
 func areFieldValuesEqual(field string, o1, o2 interface{}) bool {
 
-	field1 := reflect.ValueOf(o1).Elem().FieldByName(field)
-	field2 := reflect.ValueOf(o2).Elem().FieldByName(field)
+	field1 := reflect.Indirect(reflect.ValueOf(o1)).FieldByName(field)
+	field2 := reflect.Indirect(reflect.ValueOf(o2)).FieldByName(field)
 
 	if isFieldValueZero(field, o1) && isFieldValueZero(field, o2) {
 		return true
@@ -76,7 +76,7 @@ func areFieldValuesEqual(field string, o1, o2 interface{}) bool {
 // isFieldValueZero check if the value of the given field is set to its zero value.
 func isFieldValueZero(field string, o interface{}) bool {
 
-	v := reflect.ValueOf(o).Elem().FieldByName(field)
+	v := reflect.Indirect(reflect.ValueOf(o)).FieldByName(field)
 
 	if v.Type() == reflectedTimeType {
 		return time.Time{}.Equal(v.Interface().(time.Time))
@@ -92,7 +92,7 @@ func isFieldValueZero(field string, o interface{}) bool {
 
 func areFieldsValueEqualValue(f string, obj interface{}, value interface{}) bool {
 
-	field := reflect.ValueOf(obj).Elem().FieldByName(f)
+	field := reflect.Indirect(reflect.ValueOf(obj)).FieldByName(f)
 
 	if value == nil {
 		return isFieldValueZero(f, obj)

@@ -354,9 +354,9 @@ func crawl(val reflect.Value, prefix string) string {
 
 	case reflect.Slice:
 
-		out := "[]" + val.Index(0).Elem().Kind().String() + "{\n"
+		out := "[]" + reflect.Indirect(val.Index(0)).Kind().String() + "{\n"
 		for i := 0; i < val.Len(); i++ {
-			out += fmt.Sprintf("%s,\n", crawl(val.Index(i).Elem(), prefix))
+			out += fmt.Sprintf("%s,\n", crawl(reflect.Indirect(val.Index(i)), prefix))
 		}
 		out += "}"
 

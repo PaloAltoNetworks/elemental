@@ -87,11 +87,11 @@ func BackportUnexposedFields(src, dest AttributeSpecifiable) {
 		spec := src.SpecificationForAttribute(field)
 
 		if !spec.Exposed {
-			reflect.ValueOf(dest).Elem().FieldByName(field).Set(reflect.ValueOf(src).Elem().FieldByName(field))
+			reflect.Indirect(reflect.ValueOf(dest)).FieldByName(field).Set(reflect.Indirect(reflect.ValueOf(src)).FieldByName(field))
 		}
 
 		if spec.Secret && isFieldValueZero(field, dest) {
-			reflect.ValueOf(dest).Elem().FieldByName(field).Set(reflect.ValueOf(src).Elem().FieldByName(field))
+			reflect.Indirect(reflect.ValueOf(dest)).FieldByName(field).Set(reflect.Indirect(reflect.ValueOf(src)).FieldByName(field))
 		}
 	}
 }
@@ -107,6 +107,6 @@ func ResetDefaultForZeroValues(obj AttributeSpecifiable) {
 			continue
 		}
 
-		reflect.ValueOf(obj).Elem().FieldByName(field).Set(reflect.ValueOf(spec.DefaultValue))
+		reflect.Indirect(reflect.ValueOf(obj)).FieldByName(field).Set(reflect.ValueOf(spec.DefaultValue))
 	}
 }
