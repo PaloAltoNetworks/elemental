@@ -98,6 +98,8 @@ func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) s
 		bson = "-"
 	} else if attr.Identifier {
 		bson = "_" + bson
+	} else if shadow {
+		bson += ",omitempty"
 	}
 
 	descLines := strings.Split(attr.Description, "\n")
@@ -354,9 +356,9 @@ func crawl(val reflect.Value, prefix string) string {
 
 	case reflect.Slice:
 
-		out := "[]" + reflect.Indirect(val.Index(0)).Kind().String() + "{\n"
+		out := "[]" + val.Index(0).Elem().Kind().String() + "{\n"
 		for i := 0; i < val.Len(); i++ {
-			out += fmt.Sprintf("%s,\n", crawl(reflect.Indirect(val.Index(i)), prefix))
+			out += fmt.Sprintf("%s,\n", crawl(val.Index(i).Elem(), prefix))
 		}
 		out += "}"
 
