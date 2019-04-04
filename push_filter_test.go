@@ -112,11 +112,11 @@ func TestPushFilter_IsFilteredOut(t *testing.T) {
 			filtered2 := f.IsFilteredOut("i2", EventDelete)
 
 			Convey("Then filtered1 should be false", func() {
-				So(filtered1, ShouldBeTrue)
+				So(filtered1, ShouldBeFalse)
 			})
 
 			Convey("Then filtered2 should be false", func() {
-				So(filtered2, ShouldBeTrue)
+				So(filtered2, ShouldBeFalse)
 			})
 		})
 
