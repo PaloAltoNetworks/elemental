@@ -18,6 +18,8 @@ import (
 
     "github.com/mitchellh/copystructure"
 )
+
+//lint:file-ignore U1000 auto generated code.
 EOF
 {
     tail -n +11 model/list.go;

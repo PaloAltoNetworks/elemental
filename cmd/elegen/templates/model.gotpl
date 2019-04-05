@@ -192,11 +192,7 @@ func (o *{{ .Spec.Model.EntityName  }}) DefaultOrder() []string {
 // Doc returns the documentation for the object
 func (o *{{ .Spec.Model.EntityName }}) Doc() string {
 
-    {{- if eq .Spec.Model.Description "[nodoc]" -}}
-    return nodocString
-    {{- else }}
     return `{{ escBackticks .Spec.Model.Description }}`
-    {{- end }}
 }
 {{ end }}
 {{- end }}

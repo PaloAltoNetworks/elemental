@@ -32,16 +32,14 @@ func makeTemplate(p string) (*template.Template, error) {
 
 func writeFile(path string, data []byte) error {
 
-	// fmt.Println(string(data))
-
 	f, err := os.Create(path)
 	if err != nil {
-		return fmt.Errorf("Unable to write file: %s", f.Name())
+		return fmt.Errorf("unable to write file: %s", f.Name())
 	}
 
 	defer f.Close() // nolint: errcheck
 	if _, err := f.Write(data); err != nil {
-		return fmt.Errorf("Unable to write file: %s", f.Name())
+		return fmt.Errorf("unable to write file: %s", f.Name())
 	}
 
 	return nil
@@ -335,7 +333,7 @@ func crawl(val reflect.Value, prefix string) string {
 	switch val.Kind() {
 
 	case reflect.Bool:
-		if val.Bool() == true {
+		if val.Bool() {
 			return "true"
 		}
 		return "false"
@@ -371,9 +369,7 @@ func crawl(val reflect.Value, prefix string) string {
 func sortAttributes(attrs []*spec.Attribute) []*spec.Attribute {
 
 	out := make([]*spec.Attribute, len(attrs))
-	for i := range attrs {
-		out[i] = attrs[i]
-	}
+	copy(out, attrs)
 
 	sort.Slice(out, func(i int, j int) bool {
 		return strings.Compare(attrs[i].ConvertedName, attrs[j].ConvertedName) == -1

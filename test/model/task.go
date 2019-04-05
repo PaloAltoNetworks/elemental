@@ -122,6 +122,7 @@ func NewTask() *Task {
 
 	return &Task{
 		ModelVersion: 1,
+		Mutex:        &sync.Mutex{},
 		Status:       TaskStatusTODO,
 	}
 }
@@ -564,19 +565,19 @@ type SparseTask struct {
 	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
 
 	// The description.
-	Description *string `json:"description,omitempty" bson:"description" mapstructure:"description,omitempty"`
+	Description *string `json:"description,omitempty" bson:"description,omitempty" mapstructure:"description,omitempty"`
 
 	// The name.
-	Name *string `json:"name,omitempty" bson:"name" mapstructure:"name,omitempty"`
+	Name *string `json:"name,omitempty" bson:"name,omitempty" mapstructure:"name,omitempty"`
 
 	// The identifier of the parent of the object.
-	ParentID *string `json:"parentID,omitempty" bson:"parentid" mapstructure:"parentID,omitempty"`
+	ParentID *string `json:"parentID,omitempty" bson:"parentid,omitempty" mapstructure:"parentID,omitempty"`
 
 	// The type of the parent of the object.
-	ParentType *string `json:"parentType,omitempty" bson:"parenttype" mapstructure:"parentType,omitempty"`
+	ParentType *string `json:"parentType,omitempty" bson:"parenttype,omitempty" mapstructure:"parentType,omitempty"`
 
 	// The status of the task.
-	Status *TaskStatusValue `json:"status,omitempty" bson:"status" mapstructure:"status,omitempty"`
+	Status *TaskStatusValue `json:"status,omitempty" bson:"status,omitempty" mapstructure:"status,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 

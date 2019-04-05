@@ -124,6 +124,7 @@ func NewList() *List {
 
 	return &List{
 		ModelVersion: 1,
+		Mutex:        &sync.Mutex{},
 		Slice:        []string{},
 	}
 }
@@ -716,34 +717,34 @@ type SparseList struct {
 	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
 
 	// This attribute is creation only.
-	CreationOnly *string `json:"creationOnly,omitempty" bson:"creationonly" mapstructure:"creationOnly,omitempty"`
+	CreationOnly *string `json:"creationOnly,omitempty" bson:"creationonly,omitempty" mapstructure:"creationOnly,omitempty"`
 
 	// The date.
-	Date *time.Time `json:"date,omitempty" bson:"date" mapstructure:"date,omitempty"`
+	Date *time.Time `json:"date,omitempty" bson:"date,omitempty" mapstructure:"date,omitempty"`
 
 	// The description.
-	Description *string `json:"description,omitempty" bson:"description" mapstructure:"description,omitempty"`
+	Description *string `json:"description,omitempty" bson:"description,omitempty" mapstructure:"description,omitempty"`
 
 	// The name.
-	Name *string `json:"name,omitempty" bson:"name" mapstructure:"name,omitempty"`
+	Name *string `json:"name,omitempty" bson:"name,omitempty" mapstructure:"name,omitempty"`
 
 	// The identifier of the parent of the object.
-	ParentID *string `json:"parentID,omitempty" bson:"parentid" mapstructure:"parentID,omitempty"`
+	ParentID *string `json:"parentID,omitempty" bson:"parentid,omitempty" mapstructure:"parentID,omitempty"`
 
 	// The type of the parent of the object.
-	ParentType *string `json:"parentType,omitempty" bson:"parenttype" mapstructure:"parentType,omitempty"`
+	ParentType *string `json:"parentType,omitempty" bson:"parenttype,omitempty" mapstructure:"parentType,omitempty"`
 
 	// This attribute is readonly.
-	ReadOnly *string `json:"readOnly,omitempty" bson:"readonly" mapstructure:"readOnly,omitempty"`
+	ReadOnly *string `json:"readOnly,omitempty" bson:"readonly,omitempty" mapstructure:"readOnly,omitempty"`
 
 	// This attribute is secret.
-	Secret *string `json:"secret,omitempty" bson:"secret" mapstructure:"secret,omitempty"`
+	Secret *string `json:"secret,omitempty" bson:"secret,omitempty" mapstructure:"secret,omitempty"`
 
 	// this is a slice.
-	Slice *[]string `json:"slice,omitempty" bson:"slice" mapstructure:"slice,omitempty"`
+	Slice *[]string `json:"slice,omitempty" bson:"slice,omitempty" mapstructure:"slice,omitempty"`
 
 	// This attribute is not exposed.
-	Unexposed *string `json:"-,omitempty" bson:"unexposed" mapstructure:"-,omitempty"`
+	Unexposed *string `json:"-" bson:"unexposed,omitempty" mapstructure:"-,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 

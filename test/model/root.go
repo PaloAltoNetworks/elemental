@@ -28,6 +28,7 @@ func NewRoot() *Root {
 
 	return &Root{
 		ModelVersion: 1,
+		Mutex:        &sync.Mutex{},
 	}
 }
 

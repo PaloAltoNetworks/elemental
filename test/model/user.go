@@ -108,6 +108,7 @@ func NewUser() *User {
 
 	return &User{
 		ModelVersion: 1,
+		Mutex:        &sync.Mutex{},
 	}
 }
 
@@ -541,19 +542,19 @@ type SparseUser struct {
 	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
 
 	// The first name.
-	FirstName *string `json:"firstName,omitempty" bson:"firstname" mapstructure:"firstName,omitempty"`
+	FirstName *string `json:"firstName,omitempty" bson:"firstname,omitempty" mapstructure:"firstName,omitempty"`
 
 	// The last name.
-	LastName *string `json:"lastName,omitempty" bson:"lastname" mapstructure:"lastName,omitempty"`
+	LastName *string `json:"lastName,omitempty" bson:"lastname,omitempty" mapstructure:"lastName,omitempty"`
 
 	// The identifier of the parent of the object.
-	ParentID *string `json:"parentID,omitempty" bson:"parentid" mapstructure:"parentID,omitempty"`
+	ParentID *string `json:"parentID,omitempty" bson:"parentid,omitempty" mapstructure:"parentID,omitempty"`
 
 	// The type of the parent of the object.
-	ParentType *string `json:"parentType,omitempty" bson:"parenttype" mapstructure:"parentType,omitempty"`
+	ParentType *string `json:"parentType,omitempty" bson:"parenttype,omitempty" mapstructure:"parentType,omitempty"`
 
 	// the login.
-	UserName *string `json:"userName,omitempty" bson:"username" mapstructure:"userName,omitempty"`
+	UserName *string `json:"userName,omitempty" bson:"username,omitempty" mapstructure:"userName,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 

@@ -10,3 +10,4 @@ cmd/elegen/build
 *.lock
 *.cov
 artifacts
+profile.out

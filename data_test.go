@@ -8,6 +8,8 @@ import (
 	"github.com/mitchellh/copystructure"
 )
 
+//lint:file-ignore U1000 auto generated code.
+
 // ListIdentity represents the Identity of the object.
 var ListIdentity = Identity{
 	Name:     "list",
@@ -123,6 +125,7 @@ func NewList() *List {
 
 	return &List{
 		ModelVersion: 1,
+		Mutex:        &sync.Mutex{},
 		Slice:        []string{},
 	}
 }
@@ -715,34 +718,34 @@ type SparseList struct {
 	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
 
 	// This attribute is creation only.
-	CreationOnly *string `json:"creationOnly,omitempty" bson:"creationonly" mapstructure:"creationOnly,omitempty"`
+	CreationOnly *string `json:"creationOnly,omitempty" bson:"creationonly,omitempty" mapstructure:"creationOnly,omitempty"`
 
 	// The date.
-	Date *time.Time `json:"date,omitempty" bson:"date" mapstructure:"date,omitempty"`
+	Date *time.Time `json:"date,omitempty" bson:"date,omitempty" mapstructure:"date,omitempty"`
 
 	// The description.
-	Description *string `json:"description,omitempty" bson:"description" mapstructure:"description,omitempty"`
+	Description *string `json:"description,omitempty" bson:"description,omitempty" mapstructure:"description,omitempty"`
 
 	// The name.
-	Name *string `json:"name,omitempty" bson:"name" mapstructure:"name,omitempty"`
+	Name *string `json:"name,omitempty" bson:"name,omitempty" mapstructure:"name,omitempty"`
 
 	// The identifier of the parent of the object.
-	ParentID *string `json:"parentID,omitempty" bson:"parentid" mapstructure:"parentID,omitempty"`
+	ParentID *string `json:"parentID,omitempty" bson:"parentid,omitempty" mapstructure:"parentID,omitempty"`
 
 	// The type of the parent of the object.
-	ParentType *string `json:"parentType,omitempty" bson:"parenttype" mapstructure:"parentType,omitempty"`
+	ParentType *string `json:"parentType,omitempty" bson:"parenttype,omitempty" mapstructure:"parentType,omitempty"`
 
 	// This attribute is readonly.
-	ReadOnly *string `json:"readOnly,omitempty" bson:"readonly" mapstructure:"readOnly,omitempty"`
+	ReadOnly *string `json:"readOnly,omitempty" bson:"readonly,omitempty" mapstructure:"readOnly,omitempty"`
 
 	// This attribute is secret.
-	Secret *string `json:"secret,omitempty" bson:"secret" mapstructure:"secret,omitempty"`
+	Secret *string `json:"secret,omitempty" bson:"secret,omitempty" mapstructure:"secret,omitempty"`
 
 	// this is a slice.
-	Slice *[]string `json:"slice,omitempty" bson:"slice" mapstructure:"slice,omitempty"`
+	Slice *[]string `json:"slice,omitempty" bson:"slice,omitempty" mapstructure:"slice,omitempty"`
 
 	// This attribute is not exposed.
-	Unexposed *string `json:"-,omitempty" bson:"unexposed" mapstructure:"-,omitempty"`
+	Unexposed *string `json:"-" bson:"unexposed,omitempty" mapstructure:"-,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
@@ -972,6 +975,7 @@ func NewTask() *Task {
 
 	return &Task{
 		ModelVersion: 1,
+		Mutex:        &sync.Mutex{},
 		Status:       TaskStatusTODO,
 	}
 }
@@ -1414,19 +1418,19 @@ type SparseTask struct {
 	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
 
 	// The description.
-	Description *string `json:"description,omitempty" bson:"description" mapstructure:"description,omitempty"`
+	Description *string `json:"description,omitempty" bson:"description,omitempty" mapstructure:"description,omitempty"`
 
 	// The name.
-	Name *string `json:"name,omitempty" bson:"name" mapstructure:"name,omitempty"`
+	Name *string `json:"name,omitempty" bson:"name,omitempty" mapstructure:"name,omitempty"`
 
 	// The identifier of the parent of the object.
-	ParentID *string `json:"parentID,omitempty" bson:"parentid" mapstructure:"parentID,omitempty"`
+	ParentID *string `json:"parentID,omitempty" bson:"parentid,omitempty" mapstructure:"parentID,omitempty"`
 
 	// The type of the parent of the object.
-	ParentType *string `json:"parentType,omitempty" bson:"parenttype" mapstructure:"parentType,omitempty"`
+	ParentType *string `json:"parentType,omitempty" bson:"parenttype,omitempty" mapstructure:"parentType,omitempty"`
 
 	// The status of the task.
-	Status *TaskStatusValue `json:"status,omitempty" bson:"status" mapstructure:"status,omitempty"`
+	Status *TaskStatusValue `json:"status,omitempty" bson:"status,omitempty" mapstructure:"status,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
@@ -1722,6 +1726,7 @@ func NewUser() *User {
 
 	return &User{
 		ModelVersion: 1,
+		Mutex:        &sync.Mutex{},
 	}
 }
 
@@ -2155,19 +2160,19 @@ type SparseUser struct {
 	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
 
 	// The first name.
-	FirstName *string `json:"firstName,omitempty" bson:"firstname" mapstructure:"firstName,omitempty"`
+	FirstName *string `json:"firstName,omitempty" bson:"firstname,omitempty" mapstructure:"firstName,omitempty"`
 
 	// The last name.
-	LastName *string `json:"lastName,omitempty" bson:"lastname" mapstructure:"lastName,omitempty"`
+	LastName *string `json:"lastName,omitempty" bson:"lastname,omitempty" mapstructure:"lastName,omitempty"`
 
 	// The identifier of the parent of the object.
-	ParentID *string `json:"parentID,omitempty" bson:"parentid" mapstructure:"parentID,omitempty"`
+	ParentID *string `json:"parentID,omitempty" bson:"parentid,omitempty" mapstructure:"parentID,omitempty"`
 
 	// The type of the parent of the object.
-	ParentType *string `json:"parentType,omitempty" bson:"parenttype" mapstructure:"parentType,omitempty"`
+	ParentType *string `json:"parentType,omitempty" bson:"parenttype,omitempty" mapstructure:"parentType,omitempty"`
 
 	// the login.
-	UserName *string `json:"userName,omitempty" bson:"username" mapstructure:"userName,omitempty"`
+	UserName *string `json:"userName,omitempty" bson:"username,omitempty" mapstructure:"userName,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
 
@@ -2268,6 +2273,7 @@ func NewRoot() *Root {
 
 	return &Root{
 		ModelVersion: 1,
+		Mutex:        &sync.Mutex{},
 	}
 }
 
@@ -2566,8 +2572,6 @@ func AliasesForIdentity(identity Identity) []string {
 
 	return nil
 }
-
-const nodocString = "[nodoc]" // nolint: varcheck,deadcode
 
 var relationshipsRegistry RelationshipsRegistry
 
