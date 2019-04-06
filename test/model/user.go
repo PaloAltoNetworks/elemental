@@ -144,6 +144,7 @@ func (o *User) DefaultOrder() []string {
 
 // Doc returns the documentation for the object
 func (o *User) Doc() string {
+
 	return `Represent a user.`
 }
 

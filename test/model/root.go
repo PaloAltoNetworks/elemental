@@ -63,6 +63,7 @@ func (o *Root) DefaultOrder() []string {
 
 // Doc returns the documentation for the object
 func (o *Root) Doc() string {
+
 	return `Root object of the API.`
 }
 

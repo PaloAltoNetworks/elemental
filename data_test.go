@@ -162,6 +162,7 @@ func (o *List) DefaultOrder() []string {
 
 // Doc returns the documentation for the object
 func (o *List) Doc() string {
+
 	return `Represent a a list of task to do.`
 }
 
@@ -1012,6 +1013,7 @@ func (o *Task) DefaultOrder() []string {
 
 // Doc returns the documentation for the object
 func (o *Task) Doc() string {
+
 	return `Represent a task to do in a listd.`
 }
 
@@ -1762,6 +1764,7 @@ func (o *User) DefaultOrder() []string {
 
 // Doc returns the documentation for the object
 func (o *User) Doc() string {
+
 	return `Represent a user.`
 }
 
@@ -2308,6 +2311,7 @@ func (o *Root) DefaultOrder() []string {
 
 // Doc returns the documentation for the object
 func (o *Root) Doc() string {
+
 	return `Root object of the API.`
 }
 
