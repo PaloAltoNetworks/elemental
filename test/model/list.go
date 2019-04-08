@@ -161,6 +161,7 @@ func (o *List) DefaultOrder() []string {
 
 // Doc returns the documentation for the object
 func (o *List) Doc() string {
+
 	return `Represent a a list of task to do.`
 }
 

@@ -159,6 +159,7 @@ func (o *Task) DefaultOrder() []string {
 
 // Doc returns the documentation for the object
 func (o *Task) Doc() string {
+
 	return `Represent a task to do in a listd.`
 }
 
