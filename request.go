@@ -295,29 +295,6 @@ func (r *Request) Duplicate() *Request {
 	return req
 }
 
-// Encode encodes the given identifiable into the request.
-func (r *Request) Encode(entity Identifiable) error {
-
-	data, err := json.Marshal(entity)
-	if err != nil {
-		return err
-	}
-
-	r.Data = data
-
-	return nil
-}
-
-// Decode decodes the data into the given destination
-func (r *Request) Decode(dst interface{}) error {
-
-	if err := json.Unmarshal(r.Data, &dst); err != nil {
-		return NewError("Bad Request", err.Error(), "elemental", http.StatusBadRequest)
-	}
-
-	return nil
-}
-
 // HTTPRequest returns the native http.Request, if any.
 func (r *Request) HTTPRequest() *http.Request {
 	return r.req

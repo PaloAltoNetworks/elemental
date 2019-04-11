@@ -2,7 +2,6 @@ package testmodel
 
 import (
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/mitchellh/copystructure"
@@ -63,11 +62,11 @@ func (o ListsList) DefaultOrder() []string {
 
 // ToSparse returns the ListsList converted to SparseListsList.
 // Objects in the list will only contain the given fields. No field means entire field set.
-func (o ListsList) ToSparse(fields ...string) elemental.IdentifiablesList {
+func (o ListsList) ToSparse(fields ...string) elemental.Identifiables {
 
-	out := make(elemental.IdentifiablesList, len(o))
+	out := make(SparseListsList, len(o))
 	for i := 0; i < len(o); i++ {
-		out[i] = o[i].ToSparse(fields...)
+		out[i] = o[i].ToSparse(fields...).(*SparseList)
 	}
 
 	return out
@@ -115,8 +114,6 @@ type List struct {
 	Unexposed string `json:"-" bson:"unexposed" mapstructure:"-,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewList returns a new *List
@@ -124,7 +121,6 @@ func NewList() *List {
 
 	return &List{
 		ModelVersion: 1,
-		Mutex:        &sync.Mutex{},
 		Slice:        []string{},
 	}
 }
@@ -748,8 +744,6 @@ type SparseList struct {
 	Unexposed *string `json:"-" bson:"unexposed,omitempty" mapstructure:"-,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewSparseList returns a new  SparseList.

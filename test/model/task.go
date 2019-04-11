@@ -2,7 +2,6 @@ package testmodel
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/mitchellh/copystructure"
 	"go.aporeto.io/elemental"
@@ -76,11 +75,11 @@ func (o TasksList) DefaultOrder() []string {
 
 // ToSparse returns the TasksList converted to SparseTasksList.
 // Objects in the list will only contain the given fields. No field means entire field set.
-func (o TasksList) ToSparse(fields ...string) elemental.IdentifiablesList {
+func (o TasksList) ToSparse(fields ...string) elemental.Identifiables {
 
-	out := make(elemental.IdentifiablesList, len(o))
+	out := make(SparseTasksList, len(o))
 	for i := 0; i < len(o); i++ {
-		out[i] = o[i].ToSparse(fields...)
+		out[i] = o[i].ToSparse(fields...).(*SparseTask)
 	}
 
 	return out
@@ -113,8 +112,6 @@ type Task struct {
 	Status TaskStatusValue `json:"status" bson:"status" mapstructure:"status,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewTask returns a new *Task
@@ -122,7 +119,6 @@ func NewTask() *Task {
 
 	return &Task{
 		ModelVersion: 1,
-		Mutex:        &sync.Mutex{},
 		Status:       TaskStatusTODO,
 	}
 }
@@ -581,8 +577,6 @@ type SparseTask struct {
 	Status *TaskStatusValue `json:"status,omitempty" bson:"status,omitempty" mapstructure:"status,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewSparseTask returns a new  SparseTask.

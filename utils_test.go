@@ -22,7 +22,7 @@ func TestUtils_extractFieldNames(t *testing.T) {
 			fmt.Println(fields)
 
 			Convey("Then all fields should be present", func() {
-				So(len(fields), ShouldEqual, 13)
+				So(len(fields), ShouldEqual, 12)
 				So(fields, ShouldContain, "ID")
 				So(fields, ShouldContain, "Description")
 				So(fields, ShouldContain, "Name")
@@ -34,7 +34,6 @@ func TestUtils_extractFieldNames(t *testing.T) {
 				So(fields, ShouldContain, "Date")
 				So(fields, ShouldContain, "Slice")
 				So(fields, ShouldContain, "ModelVersion")
-				So(fields, ShouldContain, "Mutex")
 				So(fields, ShouldContain, "Secret")
 			})
 		})
@@ -584,4 +583,108 @@ func TestVerify_areFieldValuesEqualWithEncoding(t *testing.T) {
 			})
 		})
 	})
+}
+
+func TestIsZero(t *testing.T) {
+	type args struct {
+		o interface{}
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			"string",
+			args{"hello"},
+			false,
+		},
+		{
+			"0 string",
+			args{""},
+			true,
+		},
+		{
+			"int",
+			args{42},
+			false,
+		},
+		{
+			"0 int",
+			args{0},
+			true,
+		},
+		{
+			"float",
+			args{42.2},
+			false,
+		},
+		{
+			"0 float",
+			args{0.0},
+			true,
+		},
+		{
+			"bool",
+			args{true},
+			false,
+		},
+		{
+			"0 bool",
+			args{false},
+			true,
+		},
+		{
+			"time",
+			args{time.Now()},
+			false,
+		},
+		{
+			"0 time",
+			args{time.Time{}},
+			true,
+		},
+		{
+			"slice",
+			args{[]string{"a"}},
+			false,
+		},
+		{
+			"0 slice",
+			args{[]string{}},
+			true,
+		},
+		{
+			"nil slice",
+			args{[]string(nil)},
+			true,
+		},
+		{
+			"map",
+			args{map[string]string{"a": "a"}},
+			false,
+		},
+		{
+			"0 map",
+			args{map[string]string{}},
+			true,
+		},
+		{
+			"nil map",
+			args{map[string]string(nil)},
+			true,
+		},
+		{
+			"nil",
+			args{nil},
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsZero(tt.args.o); got != tt.want {
+				t.Errorf("IsZero() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

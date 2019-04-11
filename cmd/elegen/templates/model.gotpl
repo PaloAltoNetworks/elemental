@@ -2,7 +2,6 @@ package {{ .Set.Configuration.Name }}
 
 import (
     "fmt"
-    "sync"
     "go.aporeto.io/elemental"
     "github.com/mitchellh/copystructure"
     {{- range .Spec.TypeProviders }}
@@ -89,11 +88,11 @@ func (o {{ .Spec.Model.EntityNamePlural }}List) DefaultOrder() []string {
 
 // ToSparse returns the {{ .Spec.Model.EntityNamePlural }}List converted to Sparse{{ .Spec.Model.EntityNamePlural }}List.
 // Objects in the list will only contain the given fields. No field means entire field set.
-func (o {{ .Spec.Model.EntityNamePlural }}List) ToSparse(fields ...string) elemental.IdentifiablesList {
+func (o {{ .Spec.Model.EntityNamePlural }}List) ToSparse(fields ...string) elemental.Identifiables {
 
-    out := make(elemental.IdentifiablesList, len(o))
+    out := make(Sparse{{ .Spec.Model.EntityNamePlural }}List, len(o))
     for i := 0; i < len(o); i++ {
-        out[i] = o[i].ToSparse(fields...)
+        out[i] = o[i].ToSparse(fields...).(*Sparse{{ .Spec.Model.EntityName }})
     }
 
     return out
@@ -115,8 +114,6 @@ type {{ .Spec.Model.EntityName }} struct {
 {{- end }}
 
     ModelVersion int `json:"-" bson:"_modelversion"`
-
-    *sync.Mutex `json:"-" bson:"-"`
 }
 
 // New{{ .Spec.Model.EntityName }} returns a new *{{ .Spec.Model.EntityName }}
@@ -124,7 +121,6 @@ func New{{ .Spec.Model.EntityName }}() *{{ .Spec.Model.EntityName }} {
 
     return &{{ .Spec.Model.EntityName }}{
         ModelVersion: {{ .Set.APIInfo.Version }},
-        Mutex:        &sync.Mutex{},
 
         {{- range $i, $attr := sortAttributes (.Spec.Attributes $latestVersion) -}}
         {{- if shouldWriteInitializer $.Spec $attr.Name $latestVersion $.PublicMode }}
@@ -744,8 +740,6 @@ type Sparse{{ .Spec.Model.EntityName }} struct {
     {{- end }}
 
     ModelVersion int `json:"-" bson:"_modelversion"`
-
-    *sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewSparse{{ .Spec.Model.EntityName }} returns a new  Sparse{{ .Spec.Model.EntityName }}.

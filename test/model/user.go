@@ -2,7 +2,6 @@ package testmodel
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/mitchellh/copystructure"
 	"go.aporeto.io/elemental"
@@ -62,11 +61,11 @@ func (o UsersList) DefaultOrder() []string {
 
 // ToSparse returns the UsersList converted to SparseUsersList.
 // Objects in the list will only contain the given fields. No field means entire field set.
-func (o UsersList) ToSparse(fields ...string) elemental.IdentifiablesList {
+func (o UsersList) ToSparse(fields ...string) elemental.Identifiables {
 
-	out := make(elemental.IdentifiablesList, len(o))
+	out := make(SparseUsersList, len(o))
 	for i := 0; i < len(o); i++ {
-		out[i] = o[i].ToSparse(fields...)
+		out[i] = o[i].ToSparse(fields...).(*SparseUser)
 	}
 
 	return out
@@ -99,8 +98,6 @@ type User struct {
 	UserName string `json:"userName" bson:"username" mapstructure:"userName,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewUser returns a new *User
@@ -108,7 +105,6 @@ func NewUser() *User {
 
 	return &User{
 		ModelVersion: 1,
-		Mutex:        &sync.Mutex{},
 	}
 }
 
@@ -558,8 +554,6 @@ type SparseUser struct {
 	UserName *string `json:"userName,omitempty" bson:"username,omitempty" mapstructure:"userName,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewSparseUser returns a new  SparseUser.

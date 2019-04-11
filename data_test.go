@@ -2,14 +2,12 @@ package elemental
 
 import (
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/mitchellh/copystructure"
 )
 
 //lint:file-ignore U1000 auto generated code.
-
 // ListIdentity represents the Identity of the object.
 var ListIdentity = Identity{
 	Name:     "list",
@@ -64,11 +62,11 @@ func (o ListsList) DefaultOrder() []string {
 
 // ToSparse returns the ListsList converted to SparseListsList.
 // Objects in the list will only contain the given fields. No field means entire field set.
-func (o ListsList) ToSparse(fields ...string) IdentifiablesList {
+func (o ListsList) ToSparse(fields ...string) Identifiables {
 
-	out := make(IdentifiablesList, len(o))
+	out := make(SparseListsList, len(o))
 	for i := 0; i < len(o); i++ {
-		out[i] = o[i].ToSparse(fields...)
+		out[i] = o[i].ToSparse(fields...).(*SparseList)
 	}
 
 	return out
@@ -116,8 +114,6 @@ type List struct {
 	Unexposed string `json:"-" bson:"unexposed" mapstructure:"-,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewList returns a new *List
@@ -125,7 +121,6 @@ func NewList() *List {
 
 	return &List{
 		ModelVersion: 1,
-		Mutex:        &sync.Mutex{},
 		Slice:        []string{},
 	}
 }
@@ -749,8 +744,6 @@ type SparseList struct {
 	Unexposed *string `json:"-" bson:"unexposed,omitempty" mapstructure:"-,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewSparseList returns a new  SparseList.
@@ -930,11 +923,11 @@ func (o TasksList) DefaultOrder() []string {
 
 // ToSparse returns the TasksList converted to SparseTasksList.
 // Objects in the list will only contain the given fields. No field means entire field set.
-func (o TasksList) ToSparse(fields ...string) IdentifiablesList {
+func (o TasksList) ToSparse(fields ...string) Identifiables {
 
-	out := make(IdentifiablesList, len(o))
+	out := make(SparseTasksList, len(o))
 	for i := 0; i < len(o); i++ {
-		out[i] = o[i].ToSparse(fields...)
+		out[i] = o[i].ToSparse(fields...).(*SparseTask)
 	}
 
 	return out
@@ -967,8 +960,6 @@ type Task struct {
 	Status TaskStatusValue `json:"status" bson:"status" mapstructure:"status,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewTask returns a new *Task
@@ -976,7 +967,6 @@ func NewTask() *Task {
 
 	return &Task{
 		ModelVersion: 1,
-		Mutex:        &sync.Mutex{},
 		Status:       TaskStatusTODO,
 	}
 }
@@ -1435,8 +1425,6 @@ type SparseTask struct {
 	Status *TaskStatusValue `json:"status,omitempty" bson:"status,omitempty" mapstructure:"status,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewSparseTask returns a new  SparseTask.
@@ -1682,11 +1670,11 @@ func (o UsersList) DefaultOrder() []string {
 
 // ToSparse returns the UsersList converted to SparseUsersList.
 // Objects in the list will only contain the given fields. No field means entire field set.
-func (o UsersList) ToSparse(fields ...string) IdentifiablesList {
+func (o UsersList) ToSparse(fields ...string) Identifiables {
 
-	out := make(IdentifiablesList, len(o))
+	out := make(SparseUsersList, len(o))
 	for i := 0; i < len(o); i++ {
-		out[i] = o[i].ToSparse(fields...)
+		out[i] = o[i].ToSparse(fields...).(*SparseUser)
 	}
 
 	return out
@@ -1719,8 +1707,6 @@ type User struct {
 	UserName string `json:"userName" bson:"username" mapstructure:"userName,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewUser returns a new *User
@@ -1728,7 +1714,6 @@ func NewUser() *User {
 
 	return &User{
 		ModelVersion: 1,
-		Mutex:        &sync.Mutex{},
 	}
 }
 
@@ -2178,8 +2163,6 @@ type SparseUser struct {
 	UserName *string `json:"userName,omitempty" bson:"username,omitempty" mapstructure:"userName,omitempty"`
 
 	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewSparseUser returns a new  SparseUser.
@@ -2267,8 +2250,6 @@ func (o *SparseUser) DeepCopyInto(out *SparseUser) {
 // Root represents the model of a root
 type Root struct {
 	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
 }
 
 // NewRoot returns a new *Root
@@ -2276,7 +2257,6 @@ func NewRoot() *Root {
 
 	return &Root{
 		ModelVersion: 1,
-		Mutex:        &sync.Mutex{},
 	}
 }
 

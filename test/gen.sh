@@ -13,7 +13,6 @@ package elemental
 
 import (
 	"fmt"
-	"sync"
 	"time"
 
     "github.com/mitchellh/copystructure"

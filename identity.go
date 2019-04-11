@@ -24,7 +24,7 @@ type Identifiables interface {
 type PlainIdentifiables interface {
 
 	// ToSparse returns a sparsed version of the object.
-	ToSparse(...string) IdentifiablesList
+	ToSparse(...string) Identifiables
 
 	Identifiables
 }
