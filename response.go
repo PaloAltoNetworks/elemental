@@ -1,21 +1,15 @@
 package elemental
 
-import (
-	"encoding/json"
-)
-
 // A Response contains the response from a Request.
 type Response struct {
-	StatusCode int             `json:"statusCode"`
-	Data       json.RawMessage `json:"data,omitempty"`
-	Count      int             `json:"count"`
-	Total      int             `json:"total"`
-	Messages   []string        `json:"messages,omitempty"`
-	Redirect   string          `json:"redirect,omitempty"`
-	RequestID  string          `json:"requestID"`
-
-	// TODO: this is kept for backward compat
-	Request *Request `json:"request,omitempty"`
+	StatusCode int
+	Data       []byte
+	Count      int
+	Total      int
+	Messages   []string
+	Redirect   string
+	RequestID  string
+	Request    *Request
 }
 
 // NewResponse returns a new Response
@@ -25,4 +19,11 @@ func NewResponse(req *Request) *Response {
 		RequestID: req.RequestID,
 		Request:   req,
 	}
+}
+
+// Encode encodes the given oject into the response.
+func (r *Response) Encode(obj interface{}) (err error) {
+
+	r.Data, err = Encode(r.Request.Accept, obj)
+	return err
 }

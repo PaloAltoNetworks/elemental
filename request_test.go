@@ -34,6 +34,8 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 		req.Header.Set("X-Namespace", "ns")
 		req.Header.Set("X-Forwarded-for", "1.1.1.1")
 		req.Header.Set("X-Real-IP", "2.2.2.2")
+		req.Header.Set("Accept", "application/msgpack")
+		req.Header.Set("Content-Type", "application/json")
 		req.RemoteAddr = "42.42.42.42"
 
 		Convey("Then err should be nil", func() {
@@ -114,6 +116,14 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 			Convey("Then the OverrideProtection should be true", func() {
 				So(r.OverrideProtection, ShouldBeTrue)
+			})
+
+			Convey("Then the Accept should be EncodingTypeMSGPACK", func() {
+				So(r.Accept, ShouldEqual, EncodingTypeMSGPACK)
+			})
+
+			Convey("Then the ContentType should be EncodingTypeJSON", func() {
+				So(r.ContentType, ShouldEqual, EncodingTypeJSON)
 			})
 
 			Convey("Then I can retrieve the original request", func() {
@@ -737,6 +747,8 @@ func TestRequest_Duplicate(t *testing.T) {
 		req.Order = []string{"key1", "key2"}
 		req.ClientIP = "1.2.3.4"
 		req.Metadata = map[string]interface{}{"a": 1}
+		req.ContentType = EncodingTypeMSGPACK
+		req.Accept = EncodingTypeMSGPACK
 
 		Convey("When I use Duplicate()", func() {
 
@@ -762,6 +774,8 @@ func TestRequest_Duplicate(t *testing.T) {
 				So(req2.Order, ShouldResemble, req.Order)
 				So(req2.ClientIP, ShouldResemble, req.ClientIP)
 				So(req2.Metadata, ShouldResemble, req.Metadata)
+				So(req2.ContentType, ShouldEqual, req.ContentType)
+				So(req2.Accept, ShouldEqual, req.Accept)
 			})
 		})
 	})
@@ -1261,4 +1275,62 @@ func TestRequest_RequiredParameters(t *testing.T) {
 			})
 		})
 	})
+}
+
+func TestDecode(t *testing.T) {
+
+	Convey("Given I have a list and a request with Content-Type JSON", t, func() {
+
+		lst := NewList()
+		lst.Name = "hello"
+		data, _ := Encode(EncodingTypeJSON, lst)
+
+		req := &Request{
+			ContentType: EncodingTypeJSON,
+			Data:        data,
+		}
+
+		Convey("When I call Decode", func() {
+
+			lst2 := NewList()
+			err := req.Decode(lst2)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then the object should be correctly decoded", func() {
+
+				So(lst2, ShouldResemble, lst)
+			})
+		})
+	})
+
+	Convey("Given I have a list and a request with Content-Type MSGPACK", t, func() {
+
+		lst := NewList()
+		lst.Name = "hello"
+		data, _ := Encode(EncodingTypeMSGPACK, lst)
+
+		req := &Request{
+			ContentType: EncodingTypeMSGPACK,
+			Data:        data,
+		}
+
+		Convey("When I call Decode", func() {
+
+			lst2 := NewList()
+			err := req.Decode(lst2)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then the object should be correctly decoded", func() {
+
+				So(lst2, ShouldResemble, lst)
+			})
+		})
+	})
+
 }

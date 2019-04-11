@@ -5,7 +5,6 @@
 package elemental
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 )
@@ -26,14 +25,14 @@ const (
 
 // An Event represents a computational event.
 type Event struct {
-	Entity    json.RawMessage `json:"entity"`
-	Identity  string          `json:"identity"`
-	Type      EventType       `json:"type"`
-	Timestamp time.Time       `json:"timestamp"`
-	Encoding  EncodingType    `json:"encoding"`
+	Entity    []byte       `json:"entity"`
+	Identity  string       `json:"identity"`
+	Type      EventType    `json:"type"`
+	Timestamp time.Time    `json:"timestamp"`
+	Encoding  EncodingType `json:"encoding"`
 }
 
-// NewEventWithEncoding returns a new Event.
+// NewEvent returns a new Event.
 func NewEvent(t EventType, o Identifiable) *Event {
 	return NewEventWithEncoding(t, o, EncodingTypeMSGPACK)
 }

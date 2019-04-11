@@ -2,7 +2,6 @@ package elemental
 
 import (
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -23,7 +22,7 @@ type Request struct {
 	ObjectID             string
 	ParentIdentity       Identity
 	ParentID             string
-	Data                 json.RawMessage
+	Data                 []byte
 	Parameters           Parameters
 	Headers              http.Header
 	Username             string
@@ -34,6 +33,8 @@ type Request struct {
 	Version              int
 	ExternalTrackingID   string
 	ExternalTrackingType string
+	ContentType          EncodingType
+	Accept               EncodingType
 
 	Metadata           map[string]interface{}
 	ClientIP           string
@@ -248,6 +249,8 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
 		Order:                order,
 		ClientIP:             clientIP,
+		ContentType:          EncodingType(req.Header.Get("Content-Type")),
+		Accept:               EncodingType(req.Header.Get("Accept")),
 		req:                  req,
 	}, nil
 }
@@ -277,6 +280,8 @@ func (r *Request) Duplicate() *Request {
 	req.ClientIP = r.ClientIP
 	req.Order = append([]string{}, r.Order...)
 	req.req = r.req
+	req.ContentType = r.ContentType
+	req.Accept = r.Accept
 
 	for k, v := range r.Headers {
 		req.Headers[k] = v
@@ -291,6 +296,12 @@ func (r *Request) Duplicate() *Request {
 	}
 
 	return req
+}
+
+// Decode decodes the data into the given destination.
+func (r *Request) Decode(dst interface{}) error {
+
+	return Decode(r.ContentType, r.Data, dst)
 }
 
 // HTTPRequest returns the native http.Request, if any.

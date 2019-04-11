@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/vmihailenco/msgpack"
 )
@@ -14,10 +15,14 @@ type EncodingType string
 
 // Various values for EncodingType.
 const (
-	EncodingTypeJSON    = "application/json"
-	EncodingTypeMSGPACK = "application/msgpack"
-	EncodingTypeGOB     = "application/gob"
+	EncodingTypeJSON    EncodingType = "application/json"
+	EncodingTypeMSGPACK EncodingType = "application/msgpack"
+	EncodingTypeGOB     EncodingType = "application/gob"
 )
+
+func init() {
+	time.Local = time.UTC
+}
 
 // Decode decodes the given data using an appropriate decoder chosen
 // from the given contentType.

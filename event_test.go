@@ -5,7 +5,6 @@
 package elemental
 
 import (
-	"encoding/json"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -18,12 +17,12 @@ func TestEvent_NewEvent(t *testing.T) {
 		list := &List{}
 		e := NewEventWithEncoding(EventCreate, list, EncodingTypeJSON)
 
-		Convey("Then the Error should be correctly initialized", func() {
+		Convey("Then the Event should be correctly initialized", func() {
 			d, _ := Encode(EncodingTypeJSON, list)
 			So(e.Identity, ShouldEqual, "list")
 			So(e.Type, ShouldEqual, EventCreate)
 			So(e.Encoding, ShouldEqual, EncodingTypeJSON)
-			So(e.Entity, ShouldResemble, json.RawMessage(d))
+			So(e.Entity, ShouldResemble, d)
 		})
 	})
 
@@ -32,12 +31,12 @@ func TestEvent_NewEvent(t *testing.T) {
 		list := &List{}
 		e := NewEventWithEncoding(EventCreate, list, EncodingTypeMSGPACK)
 
-		Convey("Then the Error should be correctly initialized", func() {
+		Convey("Then the Event should be correctly initialized", func() {
 			d, _ := Encode(EncodingTypeMSGPACK, list)
 			So(e.Identity, ShouldEqual, "list")
 			So(e.Type, ShouldEqual, EventCreate)
 			So(e.Encoding, ShouldEqual, EncodingTypeMSGPACK)
-			So(e.Entity, ShouldResemble, json.RawMessage(d))
+			So(e.Entity, ShouldResemble, d)
 		})
 	})
 
@@ -46,12 +45,12 @@ func TestEvent_NewEvent(t *testing.T) {
 		list := &List{}
 		e := NewEvent(EventCreate, list)
 
-		Convey("Then the Error should be correctly initialized", func() {
+		Convey("Then the Event should be correctly initialized", func() {
 			d, _ := Encode(EncodingTypeMSGPACK, list)
 			So(e.Identity, ShouldEqual, "list")
 			So(e.Type, ShouldEqual, EventCreate)
 			So(e.Encoding, ShouldEqual, EncodingTypeMSGPACK)
-			So(e.Entity, ShouldResemble, json.RawMessage(d))
+			So(e.Entity, ShouldResemble, d)
 		})
 	})
 
@@ -131,7 +130,7 @@ func TestEvent_NewEvents(t *testing.T) {
 
 		evts := NewEvents(e1, e2)
 
-		Convey("Then the Error should be correctly initialized", func() {
+		Convey("Then the Event should be correctly initialized", func() {
 			So(len(evts), ShouldEqual, 2)
 		})
 	})
