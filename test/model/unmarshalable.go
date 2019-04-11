@@ -84,6 +84,16 @@ func (o *UnmarshalableList) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("error marshalling")
 }
 
+// UnmarshalMsgpack makes the UnmarshalableList not unmarshalable.
+func (o *UnmarshalableList) UnmarshalMsgpack([]byte) error {
+	return fmt.Errorf("error unmarshalling")
+}
+
+// MarshalMsgpack makes the UnmarshalableList not marshalable.
+func (o *UnmarshalableList) MarshalMsgpack() ([]byte, error) {
+	return nil, fmt.Errorf("error marshalling")
+}
+
 // Validate validates the data
 func (o *UnmarshalableList) Validate() elemental.Errors { return nil }
 
@@ -99,5 +109,15 @@ func (o *UnmarshalableError) UnmarshalJSON([]byte) error {
 
 // MarshalJSON makes the UnmarshalableError not marshalable.
 func (o *UnmarshalableError) MarshalJSON() ([]byte, error) {
+	return nil, fmt.Errorf("error marshalling")
+}
+
+// UnmarshalMsgpack makes the UnmarshalableError not unmarshalable.
+func (o *UnmarshalableError) UnmarshalMsgpack([]byte) error {
+	return fmt.Errorf("error unmarshalling")
+}
+
+// MarshalMsgpack makes the UnmarshalableError not marshalable.
+func (o *UnmarshalableError) MarshalMsgpack() ([]byte, error) {
 	return nil, fmt.Errorf("error marshalling")
 }

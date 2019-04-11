@@ -303,7 +303,7 @@ func (o *List) Validate() error {
 	requiredErrors := Errors{}
 
 	if err := ValidateRequiredString("name", o.Name); err != nil {
-		requiredErrors = append(requiredErrors, err)
+		requiredErrors = requiredErrors.Append(err)
 	}
 
 	if len(requiredErrors) > 0 {
@@ -1119,11 +1119,11 @@ func (o *Task) Validate() error {
 	requiredErrors := Errors{}
 
 	if err := ValidateRequiredString("name", o.Name); err != nil {
-		requiredErrors = append(requiredErrors, err)
+		requiredErrors = requiredErrors.Append(err)
 	}
 
 	if err := ValidateStringInList("status", string(o.Status), []string{"DONE", "PROGRESS", "TODO"}, false); err != nil {
-		errors = append(errors, err)
+		errors = errors.Append(err)
 	}
 
 	if len(requiredErrors) > 0 {
@@ -1598,6 +1598,16 @@ func (o *UnmarshalableList) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("error marshalling")
 }
 
+// UnmarshalMsgpack makes the UnmarshalableList not unmarshalable.
+func (o *UnmarshalableList) UnmarshalMsgpack([]byte) error {
+	return fmt.Errorf("error unmarshalling")
+}
+
+// MarshalMsgpack makes the UnmarshalableList not marshalable.
+func (o *UnmarshalableList) MarshalMsgpack() ([]byte, error) {
+	return nil, fmt.Errorf("error marshalling")
+}
+
 // Validate validates the data
 func (o *UnmarshalableList) Validate() Errors { return nil }
 
@@ -1613,6 +1623,16 @@ func (o *UnmarshalableError) UnmarshalJSON([]byte) error {
 
 // MarshalJSON makes the UnmarshalableError not marshalable.
 func (o *UnmarshalableError) MarshalJSON() ([]byte, error) {
+	return nil, fmt.Errorf("error marshalling")
+}
+
+// UnmarshalMsgpack makes the UnmarshalableError not unmarshalable.
+func (o *UnmarshalableError) UnmarshalMsgpack([]byte) error {
+	return fmt.Errorf("error unmarshalling")
+}
+
+// MarshalMsgpack makes the UnmarshalableError not marshalable.
+func (o *UnmarshalableError) MarshalMsgpack() ([]byte, error) {
 	return nil, fmt.Errorf("error marshalling")
 }
 
@@ -1853,15 +1873,15 @@ func (o *User) Validate() error {
 	requiredErrors := Errors{}
 
 	if err := ValidateRequiredString("firstName", o.FirstName); err != nil {
-		requiredErrors = append(requiredErrors, err)
+		requiredErrors = requiredErrors.Append(err)
 	}
 
 	if err := ValidateRequiredString("lastName", o.LastName); err != nil {
-		requiredErrors = append(requiredErrors, err)
+		requiredErrors = requiredErrors.Append(err)
 	}
 
 	if err := ValidateRequiredString("userName", o.UserName); err != nil {
-		requiredErrors = append(requiredErrors, err)
+		requiredErrors = requiredErrors.Append(err)
 	}
 
 	// Custom object validation.

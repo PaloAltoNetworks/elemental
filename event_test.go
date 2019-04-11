@@ -13,28 +13,44 @@ import (
 
 func TestEvent_NewEvent(t *testing.T) {
 
+	Convey("Given I create an Event using EncodingTypeJSON", t, func() {
+
+		list := &List{}
+		e := NewEventWithEncoding(EventCreate, list, EncodingTypeJSON)
+
+		Convey("Then the Error should be correctly initialized", func() {
+			d, _ := Encode(EncodingTypeJSON, list)
+			So(e.Identity, ShouldEqual, "list")
+			So(e.Type, ShouldEqual, EventCreate)
+			So(e.Encoding, ShouldEqual, EncodingTypeJSON)
+			So(e.Entity, ShouldResemble, json.RawMessage(d))
+		})
+	})
+
+	Convey("Given I create an Event using EncodingTypeMSGPACK", t, func() {
+
+		list := &List{}
+		e := NewEventWithEncoding(EventCreate, list, EncodingTypeMSGPACK)
+
+		Convey("Then the Error should be correctly initialized", func() {
+			d, _ := Encode(EncodingTypeMSGPACK, list)
+			So(e.Identity, ShouldEqual, "list")
+			So(e.Type, ShouldEqual, EventCreate)
+			So(e.Encoding, ShouldEqual, EncodingTypeMSGPACK)
+			So(e.Entity, ShouldResemble, json.RawMessage(d))
+		})
+	})
+
 	Convey("Given I create an Event", t, func() {
 
 		list := &List{}
 		e := NewEvent(EventCreate, list)
 
 		Convey("Then the Error should be correctly initialized", func() {
-			d, _ := json.Marshal(list)
+			d, _ := Encode(EncodingTypeMSGPACK, list)
 			So(e.Identity, ShouldEqual, "list")
 			So(e.Type, ShouldEqual, EventCreate)
-			So(e.Entity, ShouldResemble, json.RawMessage(d))
-		})
-	})
-
-	Convey("Given I create an Event with a custom marhaller", t, func() {
-
-		list := &List{}
-		e := NewEventWithMarshaler(EventCreate, list, json.Marshal)
-
-		Convey("Then the Error should be correctly initialized", func() {
-			d, _ := json.Marshal(list)
-			So(e.Identity, ShouldEqual, "list")
-			So(e.Type, ShouldEqual, EventCreate)
+			So(e.Encoding, ShouldEqual, EncodingTypeMSGPACK)
 			So(e.Entity, ShouldResemble, json.RawMessage(d))
 		})
 	})
@@ -51,11 +67,11 @@ func TestEvent_NewEvent(t *testing.T) {
 
 func TestEvent_Decode(t *testing.T) {
 
-	Convey("Given I create an Event", t, func() {
+	Convey("Given I create an Event using EncodingTypeJSON", t, func() {
 
 		list := &List{Name: "t1"}
-		e := NewEvent(EventCreate, list)
-		d, _ := json.Marshal(list)
+		e := NewEventWithEncoding(EventCreate, list, EncodingTypeJSON)
+		d, _ := Encode(EncodingTypeJSON, list)
 		e.Entity = d
 
 		Convey("When I decode the data", func() {
@@ -67,11 +83,19 @@ func TestEvent_Decode(t *testing.T) {
 				So(l2, ShouldResemble, list)
 			})
 		})
+	})
 
-		Convey("When I decode the data with custom unmarshaller", func() {
+	Convey("Given I create an Event using EncodingTypeMSGPACK", t, func() {
+
+		list := &List{Name: "t1"}
+		e := NewEventWithEncoding(EventCreate, list, EncodingTypeMSGPACK)
+		d, _ := Encode(EncodingTypeMSGPACK, list)
+		e.Entity = d
+
+		Convey("When I decode the data", func() {
 			l2 := &List{}
 
-			_ = e.DecodeWithUnmarshaler(l2, json.Unmarshal)
+			_ = e.Decode(l2)
 
 			Convey("Then t2 should resemble to tag", func() {
 				So(l2, ShouldResemble, list)
@@ -85,7 +109,7 @@ func TestEvent_String(t *testing.T) {
 	Convey("Given I create an Event", t, func() {
 
 		list := &List{Name: "t1"}
-		e := NewEvent(EventCreate, list)
+		e := NewEventWithEncoding(EventCreate, list, EncodingTypeJSON)
 
 		Convey("When I use String", func() {
 			str := e.String()
@@ -129,6 +153,7 @@ func TestEvent_Duplicate(t *testing.T) {
 				So(e2.Entity, ShouldResemble, e1.Entity)
 				So(e2.Identity, ShouldEqual, e1.Identity)
 				So(e2.Timestamp, ShouldEqual, e1.Timestamp)
+				So(e2.Encoding, ShouldEqual, e1.Encoding)
 			})
 		})
 	})

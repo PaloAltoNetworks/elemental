@@ -30,18 +30,18 @@ type Event struct {
 	Identity  string          `json:"identity"`
 	Type      EventType       `json:"type"`
 	Timestamp time.Time       `json:"timestamp"`
+	Encoding  EncodingType    `json:"encoding"`
 }
 
-// NewEvent returns a new Event.
+// NewEventWithEncoding returns a new Event.
 func NewEvent(t EventType, o Identifiable) *Event {
-
-	return NewEventWithMarshaler(t, o, json.Marshal)
+	return NewEventWithEncoding(t, o, EncodingTypeMSGPACK)
 }
 
-// NewEventWithMarshaler returns a new Event with the identifiable encoded with the provided marshalFunc.
-func NewEventWithMarshaler(t EventType, o Identifiable, marshalFunc func(interface{}) ([]byte, error)) *Event {
+// NewEventWithEncoding returns a new Event using the given encoding
+func NewEventWithEncoding(t EventType, o Identifiable, encoding EncodingType) *Event {
 
-	data, err := marshalFunc(o)
+	data, err := Encode(encoding, o)
 	if err != nil {
 		panic(err)
 	}
@@ -51,19 +51,14 @@ func NewEventWithMarshaler(t EventType, o Identifiable, marshalFunc func(interfa
 		Entity:    data,
 		Identity:  o.Identity().Name,
 		Timestamp: time.Now(),
+		Encoding:  encoding,
 	}
 }
 
 // Decode decodes the data into the given destination.
 func (e *Event) Decode(dst interface{}) error {
 
-	return e.DecodeWithUnmarshaler(dst, json.Unmarshal)
-}
-
-// DecodeWithUnmarshaler decodes the data into the given destination using the given unmarshaller
-func (e *Event) DecodeWithUnmarshaler(dst interface{}, unmarshalFunc func([]byte, interface{}) error) error {
-
-	return unmarshalFunc(e.Entity, &dst)
+	return Decode(e.Encoding, e.Entity, dst)
 }
 
 func (e *Event) String() string {
@@ -79,6 +74,7 @@ func (e *Event) Duplicate() *Event {
 		Entity:    e.Entity,
 		Identity:  e.Identity,
 		Timestamp: e.Timestamp,
+		Encoding:  e.Encoding,
 	}
 }
 

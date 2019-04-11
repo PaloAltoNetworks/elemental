@@ -9,7 +9,7 @@ import (
 
 func TestEncodeDecode(t *testing.T) {
 
-	test := func(encoding string) {
+	test := func(encoding EncodingType) {
 
 		Convey(fmt.Sprintf("Given I encode an object into the request using encoding %s", encoding), t, func() {
 
@@ -76,7 +76,7 @@ func TestEncodeDecode(t *testing.T) {
 		Convey(fmt.Sprintf("Given I encode an unmarshalable object into the request using encoding %s", encoding), t, func() {
 
 			var o interface{}
-			if encoding == "application/json" {
+			if encoding == "application/json" || encoding == "application/msgpack" {
 				o = &UnmarshalableList{}
 			}
 
@@ -94,7 +94,7 @@ func TestEncodeDecode(t *testing.T) {
 		Convey(fmt.Sprintf("Given I decode an unmarshalable object into the request using encoding %s", encoding), t, func() {
 
 			var o interface{}
-			if encoding == "application/json" {
+			if encoding == "application/json" || encoding == "application/msgpack" {
 				o = &UnmarshalableList{}
 			}
 
@@ -106,6 +106,7 @@ func TestEncodeDecode(t *testing.T) {
 		})
 	}
 
-	test("application/json")
-	test("application/gob")
+	test(EncodingTypeJSON)
+	test(EncodingTypeGOB)
+	test(EncodingTypeMSGPACK)
 }

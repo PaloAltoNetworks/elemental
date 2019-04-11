@@ -201,13 +201,11 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	}
 
 	if len(qKeys) > 0 {
-		errs := make([]error, len(qKeys))
-		var i int
+		errs := NewErrors()
 		for k := range qKeys {
-			errs[i] = NewError("Bad Request", fmt.Sprintf("Unknown parameter: `%s`", k), "elemental", http.StatusBadRequest)
-			i++
+			errs = errs.Append(NewError("Bad Request", fmt.Sprintf("Unknown parameter: `%s`", k), "elemental", http.StatusBadRequest))
 		}
-		return nil, NewErrors(errs...)
+		return nil, errs
 	}
 
 	rel := RelationshipInfoForOperation(manager.Relationships(), identity, parentIdentity, operation)

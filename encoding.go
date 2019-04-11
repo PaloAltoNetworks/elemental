@@ -5,18 +5,37 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
+
+	"github.com/vmihailenco/msgpack"
+)
+
+// An EncodingType represents one type of data encoding
+type EncodingType string
+
+// Various values for EncodingType.
+const (
+	EncodingTypeJSON    = "application/json"
+	EncodingTypeMSGPACK = "application/msgpack"
+	EncodingTypeGOB     = "application/gob"
 )
 
 // Decode decodes the given data using an appropriate decoder chosen
 // from the given contentType.
-// It supports "application/gob". Anything else uses JSON.
-func Decode(contentType string, data []byte, dest interface{}) error {
+func Decode(encoding EncodingType, data []byte, dest interface{}) error {
 
-	switch contentType {
+	switch encoding {
 
-	case "application/gob":
-		if err := gob.NewDecoder(bytes.NewBuffer(data)).Decode(dest); err != nil {
+	case EncodingTypeGOB:
+		dec := gob.NewDecoder(bytes.NewBuffer(data))
+		if err := dec.Decode(dest); err != nil {
 			return fmt.Errorf("unable to decode gob: %s", err.Error())
+		}
+
+	case EncodingTypeMSGPACK:
+		dec := msgpack.NewDecoder(bytes.NewBuffer(data))
+		dec.UseJSONTag(true)
+		if err := dec.Decode(dest); err != nil {
+			return fmt.Errorf("unable to decode msgpack: %s", err.Error())
 		}
 
 	default:
@@ -31,13 +50,24 @@ func Decode(contentType string, data []byte, dest interface{}) error {
 // Encode encodes the given object using an appropriate encoder chosen
 // from the given acceptType.
 // It supports "application/gob". Anything else uses JSON.
-func Encode(acceptType string, obj interface{}) ([]byte, error) {
+func Encode(encoding EncodingType, obj interface{}) ([]byte, error) {
 
-	switch acceptType {
-	case "application/gob":
+	switch encoding {
+
+	case EncodingTypeGOB:
 		buf := bytes.NewBuffer(nil)
-		if err := gob.NewEncoder(buf).Encode(obj); err != nil {
+		enc := gob.NewEncoder(buf)
+		if err := enc.Encode(obj); err != nil {
 			return nil, fmt.Errorf("unable to encode gob: %s", err.Error())
+		}
+		return buf.Bytes(), nil
+
+	case EncodingTypeMSGPACK:
+		buf := bytes.NewBuffer(nil)
+		enc := msgpack.NewEncoder(buf)
+		enc.UseJSONTag(true)
+		if err := enc.Encode(obj); err != nil {
+			return nil, fmt.Errorf("unable to encode msgpack: %s", err.Error())
 		}
 		return buf.Bytes(), nil
 
