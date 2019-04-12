@@ -17,7 +17,7 @@ var RootIdentity = elemental.Identity{
 
 // Root represents the model of a root
 type Root struct {
-	ModelVersion int `json:"-" bson:"_modelversion"`
+	ModelVersion int `json:"-" msgpack:"-" bson:"_modelversion"`
 }
 
 // NewRoot returns a new *Root

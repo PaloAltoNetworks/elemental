@@ -82,14 +82,17 @@ func attributeNameConverter(attrName string) string {
 func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) string {
 
 	json := attr.Name
+	msgpack := attr.Name
 	bson := strings.ToLower(attr.Name)
 
 	if !attr.Exposed {
 		json = "-"
+		msgpack = "-"
 	}
 
 	if attr.Exposed && (attr.OmitEmpty || shadow) {
 		json += ",omitempty"
+		msgpack += ",omitempty"
 	}
 
 	if !attr.Stored {
@@ -133,11 +136,12 @@ func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) s
 	}
 
 	return fmt.Sprintf(
-		"%s\n    %s %s `json:\"%s\" bson:\"%s\" mapstructure:\"%s,omitempty\"`\n\n",
+		"%s\n    %s %s `json:\"%s\" msgpack:\"%s\" bson:\"%s\" mapstructure:\"%s,omitempty\"`\n\n",
 		strings.Join(descLines, "\n"),
 		attr.ConvertedName,
 		convertedType,
 		json,
+		msgpack,
 		bson,
 		strings.Replace(json, ",omitempty", "", 1),
 	)

@@ -21,9 +21,14 @@ func NewResponse(req *Request) *Response {
 	}
 }
 
+// GetEncoding returns the encoding used to encode the entity.
+func (r *Response) GetEncoding() EncodingType {
+	return r.Request.Accept
+}
+
 // Encode encodes the given oject into the response.
 func (r *Response) Encode(obj interface{}) (err error) {
 
-	r.Data, err = Encode(r.Request.Accept, obj)
+	r.Data, err = Encode(r.GetEncoding(), obj)
 	return err
 }

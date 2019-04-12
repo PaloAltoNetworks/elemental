@@ -30,12 +30,12 @@ func IsErrorWithCode(err error, code int) bool {
 //
 // They can be encoded and sent back to the clients.
 type Error struct {
-	Code        int         `json:"code"`
-	Description string      `json:"description"`
-	Subject     string      `json:"subject"`
-	Title       string      `json:"title"`
-	Data        interface{} `json:"data"`
-	Trace       string      `json:"trace"`
+	Code        int         `msgpack:"code" json:"code"`
+	Description string      `msgpack:"description" json:"description"`
+	Subject     string      `msgpack:"subject" json:"subject"`
+	Title       string      `msgpack:"title" json:"title"`
+	Data        interface{} `msgpack:"data" json:"data"`
+	Trace       string      `msgpack:"trace" json:"trace"`
 }
 
 // NewError returns a new Error.

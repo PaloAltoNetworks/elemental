@@ -113,7 +113,7 @@ type {{ .Spec.Model.EntityName }} struct {
 {{ attrToField $.Set false . }}
 {{- end }}
 
-    ModelVersion int `json:"-" bson:"_modelversion"`
+    ModelVersion int `json:"-" msgpack:"-" bson:"_modelversion"`
 }
 
 // New{{ .Spec.Model.EntityName }} returns a new *{{ .Spec.Model.EntityName }}
@@ -732,7 +732,7 @@ type Sparse{{ .Spec.Model.EntityName }} struct {
     {{ attrToField $.Set true . }}
     {{- end }}
 
-    ModelVersion int `json:"-" bson:"_modelversion"`
+    ModelVersion int `json:"-" msgpack:"-" bson:"_modelversion"`
 }
 
 // NewSparse{{ .Spec.Model.EntityName }} returns a new  Sparse{{ .Spec.Model.EntityName }}.

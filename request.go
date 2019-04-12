@@ -303,10 +303,15 @@ func (r *Request) Duplicate() *Request {
 	return req
 }
 
+// GetEncoding returns the encoding used to encode the body.
+func (r *Request) GetEncoding() EncodingType {
+	return r.ContentType
+}
+
 // Decode decodes the data into the given destination.
 func (r *Request) Decode(dst interface{}) error {
 
-	return Decode(r.ContentType, r.Data, dst)
+	return Decode(r.GetEncoding(), r.Data, dst)
 }
 
 // HTTPRequest returns the native http.Request, if any.

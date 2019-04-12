@@ -11,6 +11,24 @@ import (
 	"github.com/vmihailenco/msgpack"
 )
 
+// An Encodable is the interface of objects
+// that can hold encoding information.
+type Encodable interface {
+	GetEncoding() EncodingType
+}
+
+// A Encoder is an Encodable that can be encoded.
+type Encoder interface {
+	Encode(obj interface{}) (err error)
+	Encodable
+}
+
+// A Decoder is an Encodable that can be decoded.
+type Decoder interface {
+	Decode(dst interface{}) error
+	Encodable
+}
+
 // An EncodingType represents one type of data encoding
 type EncodingType string
 
@@ -31,15 +49,11 @@ func Decode(encoding EncodingType, data []byte, dest interface{}) error {
 	switch encoding {
 
 	case EncodingTypeMSGPACK:
-		// fmt.Print("M")
-		dec := msgpack.NewDecoder(bytes.NewBuffer(data))
-		dec.UseJSONTag(true)
-		if err := dec.Decode(dest); err != nil {
+		if err := msgpack.NewDecoder(bytes.NewBuffer(data)).Decode(dest); err != nil {
 			return fmt.Errorf("unable to decode msgpack: %s", err.Error())
 		}
 
 	default:
-		// fmt.Print("J")
 		if err := json.Unmarshal(data, dest); err != nil {
 			return fmt.Errorf("unable to decode json: %s", err.Error())
 		}
@@ -56,18 +70,13 @@ func Encode(encoding EncodingType, obj interface{}) ([]byte, error) {
 	switch encoding {
 
 	case EncodingTypeMSGPACK:
-		// fmt.Print("M")
 		buf := bytes.NewBuffer(nil)
-		enc := msgpack.NewEncoder(buf)
-		enc.UseJSONTag(true)
-		enc.SortMapKeys(true)
-		if err := enc.Encode(obj); err != nil {
+		if err := msgpack.NewEncoder(buf).SortMapKeys(true).UseCompactEncoding(true).Encode(obj); err != nil {
 			return nil, fmt.Errorf("unable to encode msgpack: %s", err.Error())
 		}
 		return buf.Bytes(), nil
 
 	default:
-		// fmt.Print("J")
 		data, err := json.Marshal(obj)
 		if err != nil {
 			return nil, fmt.Errorf("unable to encode json: %s", err.Error())
@@ -87,6 +96,8 @@ func Convert(from EncodingType, to EncodingType, data []byte) ([]byte, error) {
 	if err := Decode(from, data, &m); err != nil {
 		return nil, err
 	}
+
+	fmt.Println(m)
 
 	return Encode(to, m)
 }
