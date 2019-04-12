@@ -254,8 +254,8 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
 		Order:                order,
 		ClientIP:             clientIP,
-		ContentType:          EncodingType(contentType),
-		Accept:               EncodingType(acceptType),
+		ContentType:          contentType,
+		Accept:               acceptType,
 		req:                  req,
 	}, nil
 }
