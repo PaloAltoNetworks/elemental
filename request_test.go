@@ -713,6 +713,44 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 			})
 		})
 	})
+
+	Convey("Given I have a post http request invalid accept ", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx", nil)
+		req.Header.Set("Accept", "dfsdfsd sdfsdfsdf")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a post http request invalid content-type ", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/", nil)
+		req.Header.Set("Content-Type", "dfsdfsd sdfsdfsdf")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+			})
+		})
+	})
 }
 
 func TestRequest_Duplicate(t *testing.T) {

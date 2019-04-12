@@ -70,7 +70,7 @@ func (e *Event) Duplicate() *Event {
 
 	return &Event{
 		Type:      e.Type,
-		Entity:    e.Entity,
+		Entity:    e.Entity[:],
 		Identity:  e.Identity,
 		Timestamp: e.Timestamp,
 		Encoding:  e.Encoding,

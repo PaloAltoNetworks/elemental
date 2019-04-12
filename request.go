@@ -225,6 +225,11 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		clientIP = req.RemoteAddr
 	}
 
+	contentType, acceptType, err := EncodingFromHeaders(req.Header)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Request{
 		RequestID:            uuid.Must(uuid.NewV4()).String(),
 		Namespace:            req.Header.Get("X-Namespace"),
@@ -249,8 +254,8 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
 		Order:                order,
 		ClientIP:             clientIP,
-		ContentType:          EncodingType(req.Header.Get("Content-Type")),
-		Accept:               EncodingType(req.Header.Get("Accept")),
+		ContentType:          EncodingType(contentType),
+		Accept:               EncodingType(acceptType),
 		req:                  req,
 	}, nil
 }
