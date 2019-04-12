@@ -97,8 +97,6 @@ func Convert(from EncodingType, to EncodingType, data []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	fmt.Println(m)
-
 	return Encode(to, m)
 }
 
