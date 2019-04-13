@@ -2,13 +2,14 @@ package elemental
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"mime"
 	"net/http"
+	"reflect"
+	"sync"
 	"time"
 
-	"github.com/vmihailenco/msgpack"
+	"github.com/ugorji/go/codec"
 )
 
 // An Encodable is the interface of objects
@@ -38,25 +39,67 @@ const (
 	EncodingTypeMSGPACK EncodingType = "application/msgpack"
 )
 
+var (
+	jsonHandle       = &codec.JsonHandle{}
+	jsonEncodersPool = sync.Pool{
+		New: func() interface{} {
+			return codec.NewEncoder(nil, jsonHandle)
+		},
+	}
+	jsonDecodersPool = sync.Pool{
+		New: func() interface{} {
+			return codec.NewDecoder(nil, jsonHandle)
+		},
+	}
+
+	msgpackHandle       = &codec.MsgpackHandle{}
+	msgpackEncodersPool = sync.Pool{
+		New: func() interface{} {
+			return codec.NewEncoder(nil, msgpackHandle)
+		},
+	}
+	msgpackDecodersPool = sync.Pool{
+		New: func() interface{} {
+			return codec.NewDecoder(nil, msgpackHandle)
+		},
+	}
+)
+
 func init() {
 	time.Local = time.UTC
+
+	// If you need to understand all of this, go there http://ugorji.net/blog/go-codec-primer
+	// But you should not need to touch that.
+	jsonHandle.Canonical = true
+	jsonHandle.MapType = reflect.ValueOf(map[string]interface{}{}).Type()
+	jsonHandle.MapValueReset = true
+
+	msgpackHandle.WriteExt = true
+	msgpackHandle.Canonical = true
+	msgpackHandle.TypeInfos = codec.NewTypeInfos([]string{"msgpack"})
+	msgpackHandle.MapType = reflect.ValueOf(map[string]interface{}{}).Type()
+	msgpackHandle.MapValueReset = true
 }
 
 // Decode decodes the given data using an appropriate decoder chosen
 // from the given contentType.
 func Decode(encoding EncodingType, data []byte, dest interface{}) error {
 
+	var dec *codec.Decoder
+
 	switch encoding {
-
 	case EncodingTypeMSGPACK:
-		if err := msgpack.NewDecoder(bytes.NewBuffer(data)).Decode(dest); err != nil {
-			return fmt.Errorf("unable to decode msgpack: %s", err.Error())
-		}
-
+		dec = msgpackDecodersPool.Get().(*codec.Decoder)
+		defer msgpackDecodersPool.Put(dec)
 	default:
-		if err := json.Unmarshal(data, dest); err != nil {
-			return fmt.Errorf("unable to decode json: %s", err.Error())
-		}
+		dec = jsonDecodersPool.Get().(*codec.Decoder)
+		defer jsonDecodersPool.Put(dec)
+	}
+
+	dec.Reset(bytes.NewBuffer(data))
+
+	if err := dec.Decode(dest); err != nil {
+		return fmt.Errorf("unable to decode %s: %s", encoding, err.Error())
 	}
 
 	return nil
@@ -64,25 +107,31 @@ func Decode(encoding EncodingType, data []byte, dest interface{}) error {
 
 // Encode encodes the given object using an appropriate encoder chosen
 // from the given acceptType.
-// It supports "application/gob". Anything else uses JSON.
 func Encode(encoding EncodingType, obj interface{}) ([]byte, error) {
 
-	switch encoding {
-
-	case EncodingTypeMSGPACK:
-		buf := bytes.NewBuffer(nil)
-		if err := msgpack.NewEncoder(buf).SortMapKeys(true).UseCompactEncoding(true).Encode(obj); err != nil {
-			return nil, fmt.Errorf("unable to encode msgpack: %s", err.Error())
-		}
-		return buf.Bytes(), nil
-
-	default:
-		data, err := json.Marshal(obj)
-		if err != nil {
-			return nil, fmt.Errorf("unable to encode json: %s", err.Error())
-		}
-		return data, nil
+	if obj == nil {
+		return nil, fmt.Errorf("encode received a nil object")
 	}
+
+	var enc *codec.Encoder
+
+	switch encoding {
+	case EncodingTypeMSGPACK:
+		enc = msgpackEncodersPool.Get().(*codec.Encoder)
+		defer msgpackEncodersPool.Put(enc)
+	default:
+		enc = jsonEncodersPool.Get().(*codec.Encoder)
+		defer jsonEncodersPool.Put(enc)
+	}
+
+	buf := bytes.NewBuffer(nil)
+	enc.Reset(buf)
+
+	if err := enc.Encode(obj); err != nil {
+		return nil, fmt.Errorf("unable to encode %s: %s", encoding, err.Error())
+	}
+
+	return buf.Bytes(), nil
 }
 
 // Convert converts from one EncodingType to another

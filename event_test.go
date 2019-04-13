@@ -47,10 +47,8 @@ func TestEvent_NewEvent(t *testing.T) {
 
 	Convey("Given I create an Event with an unmarshalable entity", t, func() {
 
-		list := &UnmarshalableList{}
-
 		Convey("Then it should panic", func() {
-			So(func() { NewEvent(EventCreate, list) }, ShouldPanic)
+			So(func() { NewEvent(EventCreate, nil) }, ShouldPanicWith, "unable to create new event: encode received a nil object")
 		})
 	})
 }

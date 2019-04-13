@@ -44,7 +44,7 @@ func NewEventWithEncoding(t EventType, o Identifiable, encoding EncodingType) *E
 
 	data, err := Encode(encoding, o)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("unable to create new event: %s", err))
 	}
 
 	evt := &Event{
@@ -70,12 +70,7 @@ func (e *Event) GetEncoding() EncodingType {
 
 // Decode decodes the data into the given destination.
 func (e *Event) Decode(dst interface{}) error {
-
-	if e.Encoding == EncodingTypeJSON {
-		return Decode(e.GetEncoding(), e.JSONData, dst)
-	}
-
-	return Decode(e.GetEncoding(), e.RawData, dst)
+	return Decode(e.GetEncoding(), e.Entity(), dst)
 }
 
 // Convert converts the internal encoded data to the given
@@ -114,11 +109,12 @@ func (e *Event) Convert(encoding EncodingType) error {
 // Entity returns the byte encoded entity.
 func (e *Event) Entity() []byte {
 
-	if len(e.JSONData) != 0 {
+	switch e.Encoding {
+	case EncodingTypeMSGPACK:
+		return e.RawData
+	default:
 		return []byte(e.JSONData)
 	}
-
-	return e.RawData
 }
 
 func (e *Event) String() string {
