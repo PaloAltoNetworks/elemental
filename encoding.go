@@ -94,6 +94,7 @@ func Decode(encoding EncodingType, data []byte, dest interface{}) error {
 	default:
 		dec = jsonDecodersPool.Get().(*codec.Decoder)
 		defer jsonDecodersPool.Put(dec)
+		encoding = EncodingTypeJSON
 	}
 
 	dec.Reset(bytes.NewBuffer(data))
@@ -122,6 +123,7 @@ func Encode(encoding EncodingType, obj interface{}) ([]byte, error) {
 	default:
 		enc = jsonEncodersPool.Get().(*codec.Encoder)
 		defer jsonEncodersPool.Put(enc)
+		encoding = EncodingTypeJSON
 	}
 
 	buf := bytes.NewBuffer(nil)
