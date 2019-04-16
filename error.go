@@ -30,12 +30,12 @@ func IsErrorWithCode(err error, code int) bool {
 //
 // They can be encoded and sent back to the clients.
 type Error struct {
-	Code        int         `json:"code"`
-	Description string      `json:"description"`
-	Subject     string      `json:"subject"`
-	Title       string      `json:"title"`
-	Data        interface{} `json:"data"`
-	Trace       string      `json:"trace"`
+	Code        int         `msgpack:"code" json:"code"`
+	Description string      `msgpack:"description" json:"description"`
+	Subject     string      `msgpack:"subject" json:"subject"`
+	Title       string      `msgpack:"title" json:"title"`
+	Data        interface{} `msgpack:"data" json:"data"`
+	Trace       string      `msgpack:"trace" json:"trace"`
 }
 
 // NewError returns a new Error.
@@ -66,16 +66,17 @@ func (e Error) Error() string {
 }
 
 // Errors represents a list of Error.
-type Errors []error
+type Errors []Error
 
 // NewErrors creates a new Errors.
 func NewErrors(errors ...error) Errors {
 
+	out := Errors{}
 	if len(errors) == 0 {
-		return Errors{}
+		return out
 	}
 
-	return append(Errors{}, errors...)
+	return out.Append(errors...)
 }
 
 func (e Errors) Error() string {
@@ -96,25 +97,41 @@ func (e Errors) Code() int {
 		return -1
 	}
 
-	switch e0 := e[0].(type) {
-	case Error:
-		return e0.Code
-	default:
-		return -1
-	}
+	return e[0].Code
 }
 
-// At returns the Error at the given index.
-// If the error at the given index is not an Error or doesn't exists
-// it returns an Unknown Error.
-func (e Errors) At(i int) Error {
+// Append returns returns a copy of the receiver containing
+// also the given errors.
+func (e Errors) Append(errs ...error) Errors {
 
-	switch ei := e[i].(type) {
-	case Error:
-		return ei
-	default:
-		return NewError("Standard error", ei.Error(), "elemental", -1)
+	out := append(Errors{}, e...)
+
+	for _, err := range errs {
+		switch er := err.(type) {
+		case Error:
+			out = append(out, er)
+		case Errors:
+			out = append(out, er...)
+		default:
+			out = append(out, NewError("Internal Server Error", err.Error(), "elemental", http.StatusInternalServerError))
+		}
 	}
+
+	return out
+}
+
+// Trace returns Errors with all inside Error marked with the
+// given trace ID.
+func (e Errors) Trace(id string) Errors {
+
+	out := Errors{}
+
+	for _, err := range e {
+		err.Trace = id
+		out = append(out, err)
+	}
+
+	return out
 }
 
 // DecodeErrors decodes the given bytes into a en elemental.Errors.
@@ -147,7 +164,7 @@ func IsValidationError(err error, title string, attribute string) bool {
 		if len(e) != 1 {
 			return false
 		}
-		elementalError = e[0].(Error)
+		elementalError = e[0]
 
 	case Error:
 		if e.Code != http.StatusUnprocessableEntity {

@@ -82,6 +82,10 @@ func isFieldValueZero(field string, o interface{}) bool {
 // IsZero returns true if the given value is set to its Zero value.
 func IsZero(o interface{}) bool {
 
+	if o == nil {
+		return true
+	}
+
 	v := reflect.Indirect(reflect.ValueOf(o))
 
 	if v.Type() == reflectedTimeType {

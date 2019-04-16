@@ -2,14 +2,12 @@ package elemental
 
 import (
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/mitchellh/copystructure"
 )
 
 //lint:file-ignore U1000 auto generated code.
-
 // ListIdentity represents the Identity of the object.
 var ListIdentity = Identity{
 	Name:     "list",
@@ -64,11 +62,11 @@ func (o ListsList) DefaultOrder() []string {
 
 // ToSparse returns the ListsList converted to SparseListsList.
 // Objects in the list will only contain the given fields. No field means entire field set.
-func (o ListsList) ToSparse(fields ...string) IdentifiablesList {
+func (o ListsList) ToSparse(fields ...string) Identifiables {
 
-	out := make(IdentifiablesList, len(o))
+	out := make(SparseListsList, len(o))
 	for i := 0; i < len(o); i++ {
-		out[i] = o[i].ToSparse(fields...)
+		out[i] = o[i].ToSparse(fields...).(*SparseList)
 	}
 
 	return out
@@ -83,41 +81,39 @@ func (o ListsList) Version() int {
 // List represents the model of a list
 type List struct {
 	// The identifier.
-	ID string `json:"ID" bson:"_id" mapstructure:"ID,omitempty"`
+	ID string `json:"ID" msgpack:"ID" bson:"_id" mapstructure:"ID,omitempty"`
 
 	// This attribute is creation only.
-	CreationOnly string `json:"creationOnly" bson:"creationonly" mapstructure:"creationOnly,omitempty"`
+	CreationOnly string `json:"creationOnly" msgpack:"creationOnly" bson:"creationonly" mapstructure:"creationOnly,omitempty"`
 
 	// The date.
-	Date time.Time `json:"date" bson:"date" mapstructure:"date,omitempty"`
+	Date time.Time `json:"date" msgpack:"date" bson:"date" mapstructure:"date,omitempty"`
 
 	// The description.
-	Description string `json:"description" bson:"description" mapstructure:"description,omitempty"`
+	Description string `json:"description" msgpack:"description" bson:"description" mapstructure:"description,omitempty"`
 
 	// The name.
-	Name string `json:"name" bson:"name" mapstructure:"name,omitempty"`
+	Name string `json:"name" msgpack:"name" bson:"name" mapstructure:"name,omitempty"`
 
 	// The identifier of the parent of the object.
-	ParentID string `json:"parentID" bson:"parentid" mapstructure:"parentID,omitempty"`
+	ParentID string `json:"parentID" msgpack:"parentID" bson:"parentid" mapstructure:"parentID,omitempty"`
 
 	// The type of the parent of the object.
-	ParentType string `json:"parentType" bson:"parenttype" mapstructure:"parentType,omitempty"`
+	ParentType string `json:"parentType" msgpack:"parentType" bson:"parenttype" mapstructure:"parentType,omitempty"`
 
 	// This attribute is readonly.
-	ReadOnly string `json:"readOnly" bson:"readonly" mapstructure:"readOnly,omitempty"`
+	ReadOnly string `json:"readOnly" msgpack:"readOnly" bson:"readonly" mapstructure:"readOnly,omitempty"`
 
 	// This attribute is secret.
-	Secret string `json:"secret" bson:"secret" mapstructure:"secret,omitempty"`
+	Secret string `json:"secret" msgpack:"secret" bson:"secret" mapstructure:"secret,omitempty"`
 
 	// this is a slice.
-	Slice []string `json:"slice" bson:"slice" mapstructure:"slice,omitempty"`
+	Slice []string `json:"slice" msgpack:"slice" bson:"slice" mapstructure:"slice,omitempty"`
 
 	// This attribute is not exposed.
-	Unexposed string `json:"-" bson:"unexposed" mapstructure:"-,omitempty"`
+	Unexposed string `json:"-" msgpack:"-" bson:"unexposed" mapstructure:"-,omitempty"`
 
-	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
+	ModelVersion int `json:"-" msgpack:"-" bson:"_modelversion"`
 }
 
 // NewList returns a new *List
@@ -125,7 +121,6 @@ func NewList() *List {
 
 	return &List{
 		ModelVersion: 1,
-		Mutex:        &sync.Mutex{},
 		Slice:        []string{},
 	}
 }
@@ -308,7 +303,7 @@ func (o *List) Validate() error {
 	requiredErrors := Errors{}
 
 	if err := ValidateRequiredString("name", o.Name); err != nil {
-		requiredErrors = append(requiredErrors, err)
+		requiredErrors = requiredErrors.Append(err)
 	}
 
 	if len(requiredErrors) > 0 {
@@ -716,41 +711,39 @@ func (o SparseListsList) Version() int {
 // SparseList represents the sparse version of a list.
 type SparseList struct {
 	// The identifier.
-	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
 
 	// This attribute is creation only.
-	CreationOnly *string `json:"creationOnly,omitempty" bson:"creationonly,omitempty" mapstructure:"creationOnly,omitempty"`
+	CreationOnly *string `json:"creationOnly,omitempty" msgpack:"creationOnly,omitempty" bson:"creationonly,omitempty" mapstructure:"creationOnly,omitempty"`
 
 	// The date.
-	Date *time.Time `json:"date,omitempty" bson:"date,omitempty" mapstructure:"date,omitempty"`
+	Date *time.Time `json:"date,omitempty" msgpack:"date,omitempty" bson:"date,omitempty" mapstructure:"date,omitempty"`
 
 	// The description.
-	Description *string `json:"description,omitempty" bson:"description,omitempty" mapstructure:"description,omitempty"`
+	Description *string `json:"description,omitempty" msgpack:"description,omitempty" bson:"description,omitempty" mapstructure:"description,omitempty"`
 
 	// The name.
-	Name *string `json:"name,omitempty" bson:"name,omitempty" mapstructure:"name,omitempty"`
+	Name *string `json:"name,omitempty" msgpack:"name,omitempty" bson:"name,omitempty" mapstructure:"name,omitempty"`
 
 	// The identifier of the parent of the object.
-	ParentID *string `json:"parentID,omitempty" bson:"parentid,omitempty" mapstructure:"parentID,omitempty"`
+	ParentID *string `json:"parentID,omitempty" msgpack:"parentID,omitempty" bson:"parentid,omitempty" mapstructure:"parentID,omitempty"`
 
 	// The type of the parent of the object.
-	ParentType *string `json:"parentType,omitempty" bson:"parenttype,omitempty" mapstructure:"parentType,omitempty"`
+	ParentType *string `json:"parentType,omitempty" msgpack:"parentType,omitempty" bson:"parenttype,omitempty" mapstructure:"parentType,omitempty"`
 
 	// This attribute is readonly.
-	ReadOnly *string `json:"readOnly,omitempty" bson:"readonly,omitempty" mapstructure:"readOnly,omitempty"`
+	ReadOnly *string `json:"readOnly,omitempty" msgpack:"readOnly,omitempty" bson:"readonly,omitempty" mapstructure:"readOnly,omitempty"`
 
 	// This attribute is secret.
-	Secret *string `json:"secret,omitempty" bson:"secret,omitempty" mapstructure:"secret,omitempty"`
+	Secret *string `json:"secret,omitempty" msgpack:"secret,omitempty" bson:"secret,omitempty" mapstructure:"secret,omitempty"`
 
 	// this is a slice.
-	Slice *[]string `json:"slice,omitempty" bson:"slice,omitempty" mapstructure:"slice,omitempty"`
+	Slice *[]string `json:"slice,omitempty" msgpack:"slice,omitempty" bson:"slice,omitempty" mapstructure:"slice,omitempty"`
 
 	// This attribute is not exposed.
-	Unexposed *string `json:"-" bson:"unexposed,omitempty" mapstructure:"-,omitempty"`
+	Unexposed *string `json:"-" msgpack:"-" bson:"unexposed,omitempty" mapstructure:"-,omitempty"`
 
-	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
+	ModelVersion int `json:"-" msgpack:"-" bson:"_modelversion"`
 }
 
 // NewSparseList returns a new  SparseList.
@@ -930,11 +923,11 @@ func (o TasksList) DefaultOrder() []string {
 
 // ToSparse returns the TasksList converted to SparseTasksList.
 // Objects in the list will only contain the given fields. No field means entire field set.
-func (o TasksList) ToSparse(fields ...string) IdentifiablesList {
+func (o TasksList) ToSparse(fields ...string) Identifiables {
 
-	out := make(IdentifiablesList, len(o))
+	out := make(SparseTasksList, len(o))
 	for i := 0; i < len(o); i++ {
-		out[i] = o[i].ToSparse(fields...)
+		out[i] = o[i].ToSparse(fields...).(*SparseTask)
 	}
 
 	return out
@@ -949,26 +942,24 @@ func (o TasksList) Version() int {
 // Task represents the model of a task
 type Task struct {
 	// The identifier.
-	ID string `json:"ID" bson:"_id" mapstructure:"ID,omitempty"`
+	ID string `json:"ID" msgpack:"ID" bson:"_id" mapstructure:"ID,omitempty"`
 
 	// The description.
-	Description string `json:"description" bson:"description" mapstructure:"description,omitempty"`
+	Description string `json:"description" msgpack:"description" bson:"description" mapstructure:"description,omitempty"`
 
 	// The name.
-	Name string `json:"name" bson:"name" mapstructure:"name,omitempty"`
+	Name string `json:"name" msgpack:"name" bson:"name" mapstructure:"name,omitempty"`
 
 	// The identifier of the parent of the object.
-	ParentID string `json:"parentID" bson:"parentid" mapstructure:"parentID,omitempty"`
+	ParentID string `json:"parentID" msgpack:"parentID" bson:"parentid" mapstructure:"parentID,omitempty"`
 
 	// The type of the parent of the object.
-	ParentType string `json:"parentType" bson:"parenttype" mapstructure:"parentType,omitempty"`
+	ParentType string `json:"parentType" msgpack:"parentType" bson:"parenttype" mapstructure:"parentType,omitempty"`
 
 	// The status of the task.
-	Status TaskStatusValue `json:"status" bson:"status" mapstructure:"status,omitempty"`
+	Status TaskStatusValue `json:"status" msgpack:"status" bson:"status" mapstructure:"status,omitempty"`
 
-	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
+	ModelVersion int `json:"-" msgpack:"-" bson:"_modelversion"`
 }
 
 // NewTask returns a new *Task
@@ -976,7 +967,6 @@ func NewTask() *Task {
 
 	return &Task{
 		ModelVersion: 1,
-		Mutex:        &sync.Mutex{},
 		Status:       TaskStatusTODO,
 	}
 }
@@ -1129,11 +1119,11 @@ func (o *Task) Validate() error {
 	requiredErrors := Errors{}
 
 	if err := ValidateRequiredString("name", o.Name); err != nil {
-		requiredErrors = append(requiredErrors, err)
+		requiredErrors = requiredErrors.Append(err)
 	}
 
 	if err := ValidateStringInList("status", string(o.Status), []string{"DONE", "PROGRESS", "TODO"}, false); err != nil {
-		errors = append(errors, err)
+		errors = errors.Append(err)
 	}
 
 	if len(requiredErrors) > 0 {
@@ -1417,26 +1407,24 @@ func (o SparseTasksList) Version() int {
 // SparseTask represents the sparse version of a task.
 type SparseTask struct {
 	// The identifier.
-	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
 
 	// The description.
-	Description *string `json:"description,omitempty" bson:"description,omitempty" mapstructure:"description,omitempty"`
+	Description *string `json:"description,omitempty" msgpack:"description,omitempty" bson:"description,omitempty" mapstructure:"description,omitempty"`
 
 	// The name.
-	Name *string `json:"name,omitempty" bson:"name,omitempty" mapstructure:"name,omitempty"`
+	Name *string `json:"name,omitempty" msgpack:"name,omitempty" bson:"name,omitempty" mapstructure:"name,omitempty"`
 
 	// The identifier of the parent of the object.
-	ParentID *string `json:"parentID,omitempty" bson:"parentid,omitempty" mapstructure:"parentID,omitempty"`
+	ParentID *string `json:"parentID,omitempty" msgpack:"parentID,omitempty" bson:"parentid,omitempty" mapstructure:"parentID,omitempty"`
 
 	// The type of the parent of the object.
-	ParentType *string `json:"parentType,omitempty" bson:"parenttype,omitempty" mapstructure:"parentType,omitempty"`
+	ParentType *string `json:"parentType,omitempty" msgpack:"parentType,omitempty" bson:"parenttype,omitempty" mapstructure:"parentType,omitempty"`
 
 	// The status of the task.
-	Status *TaskStatusValue `json:"status,omitempty" bson:"status,omitempty" mapstructure:"status,omitempty"`
+	Status *TaskStatusValue `json:"status,omitempty" msgpack:"status,omitempty" bson:"status,omitempty" mapstructure:"status,omitempty"`
 
-	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
+	ModelVersion int `json:"-" msgpack:"-" bson:"_modelversion"`
 }
 
 // NewSparseTask returns a new  SparseTask.
@@ -1610,6 +1598,16 @@ func (o *UnmarshalableList) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("error marshalling")
 }
 
+// UnmarshalMsgpack makes the UnmarshalableList not unmarshalable.
+func (o *UnmarshalableList) UnmarshalMsgpack([]byte) error {
+	return fmt.Errorf("error unmarshalling")
+}
+
+// MarshalMsgpack makes the UnmarshalableList not marshalable.
+func (o *UnmarshalableList) MarshalMsgpack() ([]byte, error) {
+	return nil, fmt.Errorf("error marshalling")
+}
+
 // Validate validates the data
 func (o *UnmarshalableList) Validate() Errors { return nil }
 
@@ -1625,6 +1623,16 @@ func (o *UnmarshalableError) UnmarshalJSON([]byte) error {
 
 // MarshalJSON makes the UnmarshalableError not marshalable.
 func (o *UnmarshalableError) MarshalJSON() ([]byte, error) {
+	return nil, fmt.Errorf("error marshalling")
+}
+
+// UnmarshalMsgpack makes the UnmarshalableError not unmarshalable.
+func (o *UnmarshalableError) UnmarshalMsgpack([]byte) error {
+	return fmt.Errorf("error unmarshalling")
+}
+
+// MarshalMsgpack makes the UnmarshalableError not marshalable.
+func (o *UnmarshalableError) MarshalMsgpack() ([]byte, error) {
 	return nil, fmt.Errorf("error marshalling")
 }
 
@@ -1682,11 +1690,11 @@ func (o UsersList) DefaultOrder() []string {
 
 // ToSparse returns the UsersList converted to SparseUsersList.
 // Objects in the list will only contain the given fields. No field means entire field set.
-func (o UsersList) ToSparse(fields ...string) IdentifiablesList {
+func (o UsersList) ToSparse(fields ...string) Identifiables {
 
-	out := make(IdentifiablesList, len(o))
+	out := make(SparseUsersList, len(o))
 	for i := 0; i < len(o); i++ {
-		out[i] = o[i].ToSparse(fields...)
+		out[i] = o[i].ToSparse(fields...).(*SparseUser)
 	}
 
 	return out
@@ -1701,26 +1709,24 @@ func (o UsersList) Version() int {
 // User represents the model of a user
 type User struct {
 	// The identifier.
-	ID string `json:"ID" bson:"_id" mapstructure:"ID,omitempty"`
+	ID string `json:"ID" msgpack:"ID" bson:"_id" mapstructure:"ID,omitempty"`
 
 	// The first name.
-	FirstName string `json:"firstName" bson:"firstname" mapstructure:"firstName,omitempty"`
+	FirstName string `json:"firstName" msgpack:"firstName" bson:"firstname" mapstructure:"firstName,omitempty"`
 
 	// The last name.
-	LastName string `json:"lastName" bson:"lastname" mapstructure:"lastName,omitempty"`
+	LastName string `json:"lastName" msgpack:"lastName" bson:"lastname" mapstructure:"lastName,omitempty"`
 
 	// The identifier of the parent of the object.
-	ParentID string `json:"parentID" bson:"parentid" mapstructure:"parentID,omitempty"`
+	ParentID string `json:"parentID" msgpack:"parentID" bson:"parentid" mapstructure:"parentID,omitempty"`
 
 	// The type of the parent of the object.
-	ParentType string `json:"parentType" bson:"parenttype" mapstructure:"parentType,omitempty"`
+	ParentType string `json:"parentType" msgpack:"parentType" bson:"parenttype" mapstructure:"parentType,omitempty"`
 
 	// the login.
-	UserName string `json:"userName" bson:"username" mapstructure:"userName,omitempty"`
+	UserName string `json:"userName" msgpack:"userName" bson:"username" mapstructure:"userName,omitempty"`
 
-	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
+	ModelVersion int `json:"-" msgpack:"-" bson:"_modelversion"`
 }
 
 // NewUser returns a new *User
@@ -1728,7 +1734,6 @@ func NewUser() *User {
 
 	return &User{
 		ModelVersion: 1,
-		Mutex:        &sync.Mutex{},
 	}
 }
 
@@ -1868,15 +1873,15 @@ func (o *User) Validate() error {
 	requiredErrors := Errors{}
 
 	if err := ValidateRequiredString("firstName", o.FirstName); err != nil {
-		requiredErrors = append(requiredErrors, err)
+		requiredErrors = requiredErrors.Append(err)
 	}
 
 	if err := ValidateRequiredString("lastName", o.LastName); err != nil {
-		requiredErrors = append(requiredErrors, err)
+		requiredErrors = requiredErrors.Append(err)
 	}
 
 	if err := ValidateRequiredString("userName", o.UserName); err != nil {
-		requiredErrors = append(requiredErrors, err)
+		requiredErrors = requiredErrors.Append(err)
 	}
 
 	// Custom object validation.
@@ -2160,26 +2165,24 @@ func (o SparseUsersList) Version() int {
 // SparseUser represents the sparse version of a user.
 type SparseUser struct {
 	// The identifier.
-	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
 
 	// The first name.
-	FirstName *string `json:"firstName,omitempty" bson:"firstname,omitempty" mapstructure:"firstName,omitempty"`
+	FirstName *string `json:"firstName,omitempty" msgpack:"firstName,omitempty" bson:"firstname,omitempty" mapstructure:"firstName,omitempty"`
 
 	// The last name.
-	LastName *string `json:"lastName,omitempty" bson:"lastname,omitempty" mapstructure:"lastName,omitempty"`
+	LastName *string `json:"lastName,omitempty" msgpack:"lastName,omitempty" bson:"lastname,omitempty" mapstructure:"lastName,omitempty"`
 
 	// The identifier of the parent of the object.
-	ParentID *string `json:"parentID,omitempty" bson:"parentid,omitempty" mapstructure:"parentID,omitempty"`
+	ParentID *string `json:"parentID,omitempty" msgpack:"parentID,omitempty" bson:"parentid,omitempty" mapstructure:"parentID,omitempty"`
 
 	// The type of the parent of the object.
-	ParentType *string `json:"parentType,omitempty" bson:"parenttype,omitempty" mapstructure:"parentType,omitempty"`
+	ParentType *string `json:"parentType,omitempty" msgpack:"parentType,omitempty" bson:"parenttype,omitempty" mapstructure:"parentType,omitempty"`
 
 	// the login.
-	UserName *string `json:"userName,omitempty" bson:"username,omitempty" mapstructure:"userName,omitempty"`
+	UserName *string `json:"userName,omitempty" msgpack:"userName,omitempty" bson:"username,omitempty" mapstructure:"userName,omitempty"`
 
-	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
+	ModelVersion int `json:"-" msgpack:"-" bson:"_modelversion"`
 }
 
 // NewSparseUser returns a new  SparseUser.
@@ -2266,9 +2269,7 @@ func (o *SparseUser) DeepCopyInto(out *SparseUser) {
 
 // Root represents the model of a root
 type Root struct {
-	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
+	ModelVersion int `json:"-" msgpack:"-" bson:"_modelversion"`
 }
 
 // NewRoot returns a new *Root
@@ -2276,7 +2277,6 @@ func NewRoot() *Root {
 
 	return &Root{
 		ModelVersion: 1,
-		Mutex:        &sync.Mutex{},
 	}
 }
 

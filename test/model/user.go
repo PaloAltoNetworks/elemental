@@ -2,7 +2,6 @@ package testmodel
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/mitchellh/copystructure"
 	"go.aporeto.io/elemental"
@@ -62,11 +61,11 @@ func (o UsersList) DefaultOrder() []string {
 
 // ToSparse returns the UsersList converted to SparseUsersList.
 // Objects in the list will only contain the given fields. No field means entire field set.
-func (o UsersList) ToSparse(fields ...string) elemental.IdentifiablesList {
+func (o UsersList) ToSparse(fields ...string) elemental.Identifiables {
 
-	out := make(elemental.IdentifiablesList, len(o))
+	out := make(SparseUsersList, len(o))
 	for i := 0; i < len(o); i++ {
-		out[i] = o[i].ToSparse(fields...)
+		out[i] = o[i].ToSparse(fields...).(*SparseUser)
 	}
 
 	return out
@@ -81,26 +80,24 @@ func (o UsersList) Version() int {
 // User represents the model of a user
 type User struct {
 	// The identifier.
-	ID string `json:"ID" bson:"_id" mapstructure:"ID,omitempty"`
+	ID string `json:"ID" msgpack:"ID" bson:"_id" mapstructure:"ID,omitempty"`
 
 	// The first name.
-	FirstName string `json:"firstName" bson:"firstname" mapstructure:"firstName,omitempty"`
+	FirstName string `json:"firstName" msgpack:"firstName" bson:"firstname" mapstructure:"firstName,omitempty"`
 
 	// The last name.
-	LastName string `json:"lastName" bson:"lastname" mapstructure:"lastName,omitempty"`
+	LastName string `json:"lastName" msgpack:"lastName" bson:"lastname" mapstructure:"lastName,omitempty"`
 
 	// The identifier of the parent of the object.
-	ParentID string `json:"parentID" bson:"parentid" mapstructure:"parentID,omitempty"`
+	ParentID string `json:"parentID" msgpack:"parentID" bson:"parentid" mapstructure:"parentID,omitempty"`
 
 	// The type of the parent of the object.
-	ParentType string `json:"parentType" bson:"parenttype" mapstructure:"parentType,omitempty"`
+	ParentType string `json:"parentType" msgpack:"parentType" bson:"parenttype" mapstructure:"parentType,omitempty"`
 
 	// the login.
-	UserName string `json:"userName" bson:"username" mapstructure:"userName,omitempty"`
+	UserName string `json:"userName" msgpack:"userName" bson:"username" mapstructure:"userName,omitempty"`
 
-	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
+	ModelVersion int `json:"-" msgpack:"-" bson:"_modelversion"`
 }
 
 // NewUser returns a new *User
@@ -108,7 +105,6 @@ func NewUser() *User {
 
 	return &User{
 		ModelVersion: 1,
-		Mutex:        &sync.Mutex{},
 	}
 }
 
@@ -248,15 +244,15 @@ func (o *User) Validate() error {
 	requiredErrors := elemental.Errors{}
 
 	if err := elemental.ValidateRequiredString("firstName", o.FirstName); err != nil {
-		requiredErrors = append(requiredErrors, err)
+		requiredErrors = requiredErrors.Append(err)
 	}
 
 	if err := elemental.ValidateRequiredString("lastName", o.LastName); err != nil {
-		requiredErrors = append(requiredErrors, err)
+		requiredErrors = requiredErrors.Append(err)
 	}
 
 	if err := elemental.ValidateRequiredString("userName", o.UserName); err != nil {
-		requiredErrors = append(requiredErrors, err)
+		requiredErrors = requiredErrors.Append(err)
 	}
 
 	// Custom object validation.
@@ -540,26 +536,24 @@ func (o SparseUsersList) Version() int {
 // SparseUser represents the sparse version of a user.
 type SparseUser struct {
 	// The identifier.
-	ID *string `json:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
 
 	// The first name.
-	FirstName *string `json:"firstName,omitempty" bson:"firstname,omitempty" mapstructure:"firstName,omitempty"`
+	FirstName *string `json:"firstName,omitempty" msgpack:"firstName,omitempty" bson:"firstname,omitempty" mapstructure:"firstName,omitempty"`
 
 	// The last name.
-	LastName *string `json:"lastName,omitempty" bson:"lastname,omitempty" mapstructure:"lastName,omitempty"`
+	LastName *string `json:"lastName,omitempty" msgpack:"lastName,omitempty" bson:"lastname,omitempty" mapstructure:"lastName,omitempty"`
 
 	// The identifier of the parent of the object.
-	ParentID *string `json:"parentID,omitempty" bson:"parentid,omitempty" mapstructure:"parentID,omitempty"`
+	ParentID *string `json:"parentID,omitempty" msgpack:"parentID,omitempty" bson:"parentid,omitempty" mapstructure:"parentID,omitempty"`
 
 	// The type of the parent of the object.
-	ParentType *string `json:"parentType,omitempty" bson:"parenttype,omitempty" mapstructure:"parentType,omitempty"`
+	ParentType *string `json:"parentType,omitempty" msgpack:"parentType,omitempty" bson:"parenttype,omitempty" mapstructure:"parentType,omitempty"`
 
 	// the login.
-	UserName *string `json:"userName,omitempty" bson:"username,omitempty" mapstructure:"userName,omitempty"`
+	UserName *string `json:"userName,omitempty" msgpack:"userName,omitempty" bson:"username,omitempty" mapstructure:"userName,omitempty"`
 
-	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
+	ModelVersion int `json:"-" msgpack:"-" bson:"_modelversion"`
 }
 
 // NewSparseUser returns a new  SparseUser.

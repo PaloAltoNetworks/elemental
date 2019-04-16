@@ -92,31 +92,48 @@ func TestError_NewErrors(t *testing.T) {
 			So(errs.Code(), ShouldEqual, -1)
 		})
 	})
+}
 
-	Convey("Given I create an elemental.Errors with a standard error", t, func() {
+func TestError_Append(t *testing.T) {
 
-		e := fmt.Errorf("wesh")
-		errs := NewErrors(e)
+	Convey("Given I append to an elemental.Errors some other errors", t, func() {
 
-		Convey("Then the Error should be correctly initialized", func() {
-			So(errs, ShouldResemble, Errors{e})
-			So(errs.Code(), ShouldEqual, -1)
+		e0 := NewError("bad", "something bad", "containers", 42)
+		errs := NewErrors(e0)
+
+		e1 := NewError("bad", "something bad", "containers", 42)
+		e2 := NewError("bad", "something bad", "containers", 42)
+
+		errs2 := errs.Append(e1, e2, errs, fmt.Errorf("boom"))
+
+		Convey("Then out should be correct", func() {
+			So(errs2[0], ShouldResemble, e0)
+			So(errs2[1], ShouldResemble, e1)
+			So(errs2[2], ShouldResemble, e2)
+			So(errs2[3], ShouldResemble, e0)
+			So(errs2[4], ShouldResemble, NewError("Internal Server Error", "boom", "elemental", 500))
 		})
 	})
 }
 
-func TestError_At(t *testing.T) {
+func TestError_SetTraceID(t *testing.T) {
 
-	Convey("Given I create an elemental.Errors with some errors", t, func() {
+	Convey("Given I append to an elemental.Errors some other errors", t, func() {
 
+		e0 := NewError("bad", "something bad", "containers", 42)
 		e1 := NewError("bad", "something bad", "containers", 42)
-		e2 := fmt.Errorf("not good")
+		e2 := NewError("bad", "something bad", "containers", 42)
+		errs := NewErrors(e0, e1, e2)
 
-		errs := NewErrors(e1, e2)
+		Convey("When I call setTraceID", func() {
 
-		Convey("Then the Error should be correctly initialized", func() {
-			So(errs.At(0), ShouldResemble, e1)
-			So(errs.At(1).Code, ShouldEqual, -1)
+			errs = errs.Trace("trace")
+
+			Convey("Then the trace is set in all errors", func() {
+				So(errs[0].Trace, ShouldEqual, "trace")
+				So(errs[1].Trace, ShouldEqual, "trace")
+				So(errs[2].Trace, ShouldEqual, "trace")
+			})
 		})
 	})
 }

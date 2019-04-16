@@ -7,8 +7,8 @@ import (
 
 // A PushFilter represents an abstract filter for filtering out push notifications.
 type PushFilter struct {
-	Identities map[string][]EventType `json:"identities"`
-	Params     url.Values             `json:"parameters"`
+	Identities map[string][]EventType `msgpack:"identities" json:"identities"`
+	Params     url.Values             `msgpack:"parameters" json:"parameters"`
 }
 
 // NewPushFilter returns a new PushFilter.

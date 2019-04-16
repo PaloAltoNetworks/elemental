@@ -2,7 +2,6 @@ package elemental
 
 import (
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -23,7 +22,7 @@ type Request struct {
 	ObjectID             string
 	ParentIdentity       Identity
 	ParentID             string
-	Data                 json.RawMessage
+	Data                 []byte
 	Parameters           Parameters
 	Headers              http.Header
 	Username             string
@@ -34,6 +33,8 @@ type Request struct {
 	Version              int
 	ExternalTrackingID   string
 	ExternalTrackingType string
+	ContentType          EncodingType
+	Accept               EncodingType
 
 	Metadata           map[string]interface{}
 	ClientIP           string
@@ -201,13 +202,11 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	}
 
 	if len(qKeys) > 0 {
-		errs := make([]error, len(qKeys))
-		var i int
+		errs := NewErrors()
 		for k := range qKeys {
-			errs[i] = NewError("Bad Request", fmt.Sprintf("Unknown parameter: `%s`", k), "elemental", http.StatusBadRequest)
-			i++
+			errs = errs.Append(NewError("Bad Request", fmt.Sprintf("Unknown parameter: `%s`", k), "elemental", http.StatusBadRequest))
 		}
-		return nil, NewErrors(errs...)
+		return nil, errs
 	}
 
 	rel := RelationshipInfoForOperation(manager.Relationships(), identity, parentIdentity, operation)
@@ -224,6 +223,11 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		clientIP = ip
 	} else {
 		clientIP = req.RemoteAddr
+	}
+
+	contentType, acceptType, err := EncodingFromHeaders(req.Header)
+	if err != nil {
+		return nil, err
 	}
 
 	return &Request{
@@ -250,6 +254,8 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
 		Order:                order,
 		ClientIP:             clientIP,
+		ContentType:          contentType,
+		Accept:               acceptType,
 		req:                  req,
 	}, nil
 }
@@ -279,6 +285,8 @@ func (r *Request) Duplicate() *Request {
 	req.ClientIP = r.ClientIP
 	req.Order = append([]string{}, r.Order...)
 	req.req = r.req
+	req.ContentType = r.ContentType
+	req.Accept = r.Accept
 
 	for k, v := range r.Headers {
 		req.Headers[k] = v
@@ -295,27 +303,15 @@ func (r *Request) Duplicate() *Request {
 	return req
 }
 
-// Encode encodes the given identifiable into the request.
-func (r *Request) Encode(entity Identifiable) error {
-
-	data, err := json.Marshal(entity)
-	if err != nil {
-		return err
-	}
-
-	r.Data = data
-
-	return nil
+// GetEncoding returns the encoding used to encode the body.
+func (r *Request) GetEncoding() EncodingType {
+	return r.ContentType
 }
 
-// Decode decodes the data into the given destination
+// Decode decodes the data into the given destination.
 func (r *Request) Decode(dst interface{}) error {
 
-	if err := json.Unmarshal(r.Data, &dst); err != nil {
-		return NewError("Bad Request", err.Error(), "elemental", http.StatusBadRequest)
-	}
-
-	return nil
+	return Decode(r.GetEncoding(), r.Data, dst)
 }
 
 // HTTPRequest returns the native http.Request, if any.

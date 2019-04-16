@@ -26,44 +26,95 @@ const (
 
 // An Event represents a computational event.
 type Event struct {
-	Entity    json.RawMessage `json:"entity"`
-	Identity  string          `json:"identity"`
-	Type      EventType       `json:"type"`
-	Timestamp time.Time       `json:"timestamp"`
+	RawData   []byte          `msgpack:"entity" json:"-"`
+	JSONData  json.RawMessage `msgpack:"-" json:"entity"`
+	Identity  string          `msgpack:"identity" json:"identity"`
+	Type      EventType       `msgpack:"type" json:"type"`
+	Timestamp time.Time       `msgpack:"timestamp" json:"timestamp"`
+	Encoding  EncodingType    `msgpack:"encoding" json:"encoding"`
 }
 
 // NewEvent returns a new Event.
 func NewEvent(t EventType, o Identifiable) *Event {
-
-	return NewEventWithMarshaler(t, o, json.Marshal)
+	return NewEventWithEncoding(t, o, EncodingTypeMSGPACK)
 }
 
-// NewEventWithMarshaler returns a new Event with the identifiable encoded with the provided marshalFunc.
-func NewEventWithMarshaler(t EventType, o Identifiable, marshalFunc func(interface{}) ([]byte, error)) *Event {
+// NewEventWithEncoding returns a new Event using the given encoding
+func NewEventWithEncoding(t EventType, o Identifiable, encoding EncodingType) *Event {
 
-	data, err := marshalFunc(o)
+	data, err := Encode(encoding, o)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("unable to create new event: %s", err))
 	}
 
-	return &Event{
+	evt := &Event{
 		Type:      t,
-		Entity:    data,
 		Identity:  o.Identity().Name,
 		Timestamp: time.Now(),
+		Encoding:  encoding,
 	}
+
+	if encoding == EncodingTypeJSON {
+		evt.JSONData = json.RawMessage(data)
+	} else {
+		evt.RawData = data
+	}
+
+	return evt
+}
+
+// GetEncoding returns the encoding used to encode the entity.
+func (e *Event) GetEncoding() EncodingType {
+	return e.Encoding
 }
 
 // Decode decodes the data into the given destination.
 func (e *Event) Decode(dst interface{}) error {
-
-	return e.DecodeWithUnmarshaler(dst, json.Unmarshal)
+	return Decode(e.GetEncoding(), e.Entity(), dst)
 }
 
-// DecodeWithUnmarshaler decodes the data into the given destination using the given unmarshaller
-func (e *Event) DecodeWithUnmarshaler(dst interface{}, unmarshalFunc func([]byte, interface{}) error) error {
+// Convert converts the internal encoded data to the given
+// encoding.
+func (e *Event) Convert(encoding EncodingType) error {
 
-	return unmarshalFunc(e.Entity, &dst)
+	switch e.Encoding {
+
+	case encoding:
+		return nil
+
+	case EncodingTypeMSGPACK:
+
+		d, err := Convert(e.Encoding, encoding, e.RawData)
+		if err != nil {
+			return err
+		}
+		e.JSONData = json.RawMessage(d)
+		e.RawData = nil
+
+	default:
+
+		d, err := Convert(e.Encoding, encoding, []byte(e.JSONData))
+		if err != nil {
+			return err
+		}
+		e.JSONData = nil
+		e.RawData = d
+	}
+
+	e.Encoding = encoding
+
+	return nil
+}
+
+// Entity returns the byte encoded entity.
+func (e *Event) Entity() []byte {
+
+	switch e.Encoding {
+	case EncodingTypeMSGPACK:
+		return e.RawData
+	default:
+		return []byte(e.JSONData)
+	}
 }
 
 func (e *Event) String() string {
@@ -76,9 +127,11 @@ func (e *Event) Duplicate() *Event {
 
 	return &Event{
 		Type:      e.Type,
-		Entity:    e.Entity,
+		JSONData:  e.JSONData[:],
+		RawData:   e.RawData[:],
 		Identity:  e.Identity,
 		Timestamp: e.Timestamp,
+		Encoding:  e.Encoding,
 	}
 }
 

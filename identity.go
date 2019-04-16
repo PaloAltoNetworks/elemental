@@ -24,7 +24,7 @@ type Identifiables interface {
 type PlainIdentifiables interface {
 
 	// ToSparse returns a sparsed version of the object.
-	ToSparse(...string) IdentifiablesList
+	ToSparse(...string) Identifiables
 
 	Identifiables
 }
@@ -86,10 +86,10 @@ type DefaultOrderer interface {
 //
 // For instance, "cat" and "cats".
 type Identity struct {
-	Name     string `json:"name"`
-	Category string `json:"category"`
-	Private  bool   `json:"-"`
-	Package  string `json:"-"`
+	Name     string `msgpack:"name" json:"name"`
+	Category string `msgpack:"category" json:"category"`
+	Private  bool   `msgpack:"-" json:"-"`
+	Package  string `msgpack:"-" json:"-"`
 }
 
 // MakeIdentity returns a new Identity.

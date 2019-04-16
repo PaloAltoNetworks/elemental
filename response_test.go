@@ -1,7 +1,6 @@
 package elemental
 
 import (
-	"net/http"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -20,81 +19,50 @@ func TestResponse_NewResponse(t *testing.T) {
 	})
 }
 
-func TestResponse_EncodeDecode(t *testing.T) {
+func TestEncode(t *testing.T) {
 
-	Convey("Given I create a new response", t, func() {
-		r := NewResponse(&Request{RequestID: "x"})
+	Convey("Given I have a list and a request that Accepts JSON", t, func() {
 
-		Convey("When I encode an object into the response", func() {
+		req := &Request{
+			Accept: EncodingTypeJSON,
+		}
+		resp := NewResponse(req)
 
-			o := &List{ID: "1", Name: "hello"}
-			err := r.Encode(o)
+		Convey("When I call Encode", func() {
+
+			lst := NewList()
+			err := resp.Encode(lst)
 
 			Convey("Then err should be nil", func() {
 				So(err, ShouldBeNil)
 			})
 
-			Convey("Then data should not be nil", func() {
-				So(len(r.Data), ShouldNotBeEmpty)
-			})
-
-			Convey("When I Decode it", func() {
-				o1 := &List{}
-
-				err := r.Decode(&o1)
-
-				Convey("Then err should be nil", func() {
-					So(err, ShouldBeNil)
-				})
-
-				Convey("Then o2 should resemble to o", func() {
-					So(o1, ShouldResemble, o)
-				})
-			})
-
-			Convey("When I Decode it but the response code is set to 204", func() {
-
-				r.Data = nil
-				r.StatusCode = http.StatusNoContent
-				err := r.Decode(nil)
-
-				Convey("Then err should be nil", func() {
-					So(err, ShouldBeNil)
-				})
-			})
-
-			Convey("When I Decode an nil object but the response code is not set to 204", func() {
-
-				r.Data = nil
-				err := r.Decode(nil)
-
-				Convey("Then err should be nil", func() {
-					So(err, ShouldNotBeNil)
-				})
+			Convey("Then it should be correctly encoded", func() {
+				l, _ := Encode(EncodingTypeJSON, lst)
+				So(resp.Data, ShouldResemble, l)
 			})
 		})
+	})
 
-		Convey("When I encode an unmarshallable object into the response", func() {
+	Convey("Given I have a list and a request that Accepts MSGPACK", t, func() {
 
-			o := &UnmarshalableList{}
-			err := r.Encode(o)
+		req := &Request{
+			Accept: EncodingTypeMSGPACK,
+		}
+		resp := NewResponse(req)
 
-			Convey("Then err should not be nil", func() {
-				So(err, ShouldNotBeNil)
+		Convey("When I call Encode", func() {
+
+			lst := NewList()
+			err := resp.Encode(lst)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
 			})
 
-			Convey("Then data should be empty", func() {
-				So(len(r.Data), ShouldEqual, 0)
-			})
-
-			Convey("When I Decode it", func() {
-				o1 := &List{}
-
-				err := r.Decode(&o1)
-
-				Convey("Then err should not be nil", func() {
-					So(err, ShouldNotBeNil)
-				})
+			Convey("Then it should be correctly encoded", func() {
+				l, _ := Encode(EncodingTypeMSGPACK, lst)
+				So(resp.Data, ShouldResemble, l)
 			})
 		})
 	})

@@ -2,7 +2,6 @@ package testmodel
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/mitchellh/copystructure"
 	"go.aporeto.io/elemental"
@@ -18,9 +17,7 @@ var RootIdentity = elemental.Identity{
 
 // Root represents the model of a root
 type Root struct {
-	ModelVersion int `json:"-" bson:"_modelversion"`
-
-	*sync.Mutex `json:"-" bson:"-"`
+	ModelVersion int `json:"-" msgpack:"-" bson:"_modelversion"`
 }
 
 // NewRoot returns a new *Root
@@ -28,7 +25,6 @@ func NewRoot() *Root {
 
 	return &Root{
 		ModelVersion: 1,
-		Mutex:        &sync.Mutex{},
 	}
 }
 
