@@ -6,6 +6,7 @@ import (
 	"mime"
 	"net/http"
 	"reflect"
+	"strings"
 	"sync"
 	"time"
 
@@ -167,18 +168,41 @@ func EncodingFromHeaders(header http.Header) (read EncodingType, write EncodingT
 		if err != nil {
 			return "", "", NewError("Bad Request", fmt.Sprintf("Invalid Content-Type header: %s", err), "elemental", http.StatusBadRequest)
 		}
-		read = EncodingType(ct)
+
+		switch ct {
+		case "application/msgpack":
+			read = EncodingTypeMSGPACK
+		case "application/*", "*/*", "application/json":
+			read = EncodingTypeJSON
+		default:
+			return "", "", NewError("Unsupported Media Type", fmt.Sprintf("Cannot find any acceptable Content-Type media type in provided header: %s", v), "elemental", http.StatusUnsupportedMediaType)
+		}
 	}
 
 	if v := header.Get("Accept"); v != "" {
-		at, _, err := mime.ParseMediaType(v)
-		if err != nil {
-			return "", "", NewError("Bad Request", fmt.Sprintf("Invalid Accept header: %s", err), "elemental", http.StatusBadRequest)
+		var agreed bool
+	L:
+		for _, item := range strings.Split(v, ",") {
+			at, _, err := mime.ParseMediaType(item)
+			if err != nil {
+				return "", "", NewError("Bad Request", fmt.Sprintf("Invalid Accept header: %s", err), "elemental", http.StatusBadRequest)
+			}
+			switch at {
+			case "application/msgpack":
+				write = EncodingTypeMSGPACK
+				agreed = true
+				break L
+			case "application/*", "*/*", "application/json":
+				write = EncodingTypeJSON
+				agreed = true
+				break L
+			}
 		}
-		write = EncodingType(at)
-	}
 
-	// TODO: handle unsupported types.
+		if !agreed {
+			return "", "", NewError("Unsupported Media Type", fmt.Sprintf("Cannot find any acceptable Accept media type in provided header: %s", v), "elemental", http.StatusUnsupportedMediaType)
+		}
+	}
 
 	return read, write, nil
 }

@@ -250,7 +250,7 @@ func TestEncodingFromHeader(t *testing.T) {
 		})
 	})
 
-	Convey("Given I have good header", t, func() {
+	Convey("Given I have good msgpack header", t, func() {
 
 		h := http.Header{}
 		h.Set("Content-Type", "application/msgpack; something=cool")
@@ -270,6 +270,88 @@ func TestEncodingFromHeader(t *testing.T) {
 
 			Convey("Then w should be correct", func() {
 				So(w, ShouldEqual, EncodingTypeMSGPACK)
+			})
+		})
+	})
+
+	Convey("Given I have good json header", t, func() {
+
+		h := http.Header{}
+		h.Set("Content-Type", "application/json; something=cool")
+		h.Set("Accept", "application/json")
+
+		Convey("When I call EncodingFromHeaders", func() {
+
+			r, w, err := EncodingFromHeaders(h)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then r should be correct", func() {
+				So(r, ShouldEqual, EncodingTypeJSON)
+			})
+
+			Convey("Then w should be correct", func() {
+				So(w, ShouldEqual, EncodingTypeJSON)
+			})
+		})
+	})
+
+	Convey("Given I have a classic browser Accept header", t, func() {
+
+		h := http.Header{}
+		h.Set("Content-Type", "application/msgpack; something=cool")
+		h.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3")
+
+		Convey("When I call EncodingFromHeaders", func() {
+
+			r, w, err := EncodingFromHeaders(h)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then r should be correct", func() {
+				So(r, ShouldEqual, EncodingTypeMSGPACK)
+			})
+
+			Convey("Then w should be correct", func() {
+				So(w, ShouldEqual, EncodingTypeJSON)
+			})
+		})
+	})
+
+	Convey("Given I have an unaccepatble content-type header", t, func() {
+
+		h := http.Header{}
+		h.Set("Content-Type", "application/ppt")
+		h.Set("Accept", "application/msgpack")
+
+		Convey("When I call EncodingFromHeaders", func() {
+
+			_, _, err := EncodingFromHeaders(h)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, `error 415 (elemental): Unsupported Media Type: Cannot find any acceptable Content-Type media type in provided header: application/ppt`)
+			})
+		})
+	})
+
+	Convey("Given I have an unaccepatble accept header", t, func() {
+
+		h := http.Header{}
+		h.Set("Content-Type", "application/msgpack")
+		h.Set("Accept", "application/ppt,application/toto")
+
+		Convey("When I call EncodingFromHeaders", func() {
+
+			_, _, err := EncodingFromHeaders(h)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, `error 415 (elemental): Unsupported Media Type: Cannot find any acceptable Accept media type in provided header: application/ppt,application/toto`)
 			})
 		})
 	})
