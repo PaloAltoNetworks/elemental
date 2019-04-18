@@ -13,6 +13,25 @@ import (
 	"github.com/ugorji/go/codec"
 )
 
+var (
+	externalSupportedContentType = map[string]struct{}{}
+	externalSupportedAcceptType  = map[string]struct{}{}
+)
+
+// RegisterSupportedContentType registers a new media type
+// that elemental should support for Content-Type.
+// Note that this needs external intervention to handle encoding.
+func RegisterSupportedContentType(mimetype string) {
+	externalSupportedContentType[mimetype] = struct{}{}
+}
+
+// RegisterSupportedAcceptType registers a new media type
+// that elemental should support for Accept.
+// Note that this needs external intervention to handle decoding.
+func RegisterSupportedAcceptType(mimetype string) {
+	externalSupportedAcceptType[mimetype] = struct{}{}
+}
+
 // An Encodable is the interface of objects
 // that can hold encoding information.
 type Encodable interface {
@@ -170,12 +189,24 @@ func EncodingFromHeaders(header http.Header) (read EncodingType, write EncodingT
 		}
 
 		switch ct {
+
 		case "application/msgpack":
 			read = EncodingTypeMSGPACK
+
 		case "application/*", "*/*", "application/json":
 			read = EncodingTypeJSON
+
 		default:
-			return "", "", NewError("Unsupported Media Type", fmt.Sprintf("Cannot find any acceptable Content-Type media type in provided header: %s", v), "elemental", http.StatusUnsupportedMediaType)
+			var supported bool
+			for t := range externalSupportedContentType {
+				if ct == t {
+					supported = true
+					break
+				}
+			}
+			if !supported {
+				return "", "", NewError("Unsupported Media Type", fmt.Sprintf("Cannot find any acceptable Content-Type media type in provided header: %s", v), "elemental", http.StatusUnsupportedMediaType)
+			}
 		}
 	}
 
@@ -183,19 +214,31 @@ func EncodingFromHeaders(header http.Header) (read EncodingType, write EncodingT
 		var agreed bool
 	L:
 		for _, item := range strings.Split(v, ",") {
+
 			at, _, err := mime.ParseMediaType(item)
 			if err != nil {
 				return "", "", NewError("Bad Request", fmt.Sprintf("Invalid Accept header: %s", err), "elemental", http.StatusBadRequest)
 			}
+
 			switch at {
+
 			case "application/msgpack":
 				write = EncodingTypeMSGPACK
 				agreed = true
 				break L
+
 			case "application/*", "*/*", "application/json":
 				write = EncodingTypeJSON
 				agreed = true
 				break L
+
+			default:
+				for t := range externalSupportedAcceptType {
+					if at == t {
+						agreed = true
+						break L
+					}
+				}
 			}
 		}
 

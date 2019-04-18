@@ -349,7 +349,7 @@ func TestEncodingFromHeader(t *testing.T) {
 
 			_, _, err := EncodingFromHeaders(h)
 
-			Convey("Then err should be nil", func() {
+			Convey("Then err should not be nil", func() {
 				So(err, ShouldNotBeNil)
 				So(err.Error(), ShouldEqual, `error 415 (elemental): Unsupported Media Type: Cannot find any acceptable Accept media type in provided header: application/ppt,application/toto`)
 			})
@@ -386,6 +386,40 @@ func TestEncodingFromHeader(t *testing.T) {
 			Convey("Then err should be nil", func() {
 				So(err, ShouldNotBeNil)
 				So(err.Error(), ShouldEqual, `error 400 (elemental): Bad Request: Invalid Accept header: mime: expected slash after first token`)
+			})
+		})
+	})
+
+	Convey("Given I have an registered content-type header", t, func() {
+
+		h := http.Header{}
+		h.Set("Content-Type", "application/aaaa")
+		h.Set("Accept", "application/msgpack")
+		RegisterSupportedContentType("application/aaaa")
+
+		Convey("When I call EncodingFromHeaders", func() {
+
+			_, _, err := EncodingFromHeaders(h)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have an registered accept header", t, func() {
+
+		h := http.Header{}
+		h.Set("Content-Type", "application/msgpack")
+		h.Set("Accept", "application/ppt,application/toto,application/aaaa")
+		RegisterSupportedAcceptType("application/aaaa")
+
+		Convey("When I call EncodingFromHeaders", func() {
+
+			_, _, err := EncodingFromHeaders(h)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
 			})
 		})
 	})
