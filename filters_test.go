@@ -233,6 +233,106 @@ func TestFilter_NewComposer(t *testing.T) {
 					So(f.String(), ShouldEqual, `hello == 1 and x != true`)
 				})
 			})
+
+			Convey("When I add a or", func() {
+				f.Or(NewFilter().WithKey("x").NotEquals(true).Done())
+
+				Convey("Then the filter should be correctly populated", func() {
+					So(f.keys, ShouldResemble, FilterKeys{
+						"hello",
+						"",
+					})
+					So(f.Values(), ShouldResemble, FilterValues{
+						FilterValue{1},
+						nil,
+					})
+					So(f.Operators(), ShouldResemble, FilterOperators{
+						AndOperator,
+						OrFilterOperator,
+					})
+					So(f.Comparators(), ShouldResemble, FilterComparators{
+						EqualComparator,
+						emptyComparator,
+					})
+					So(f.OrFilters(), ShouldResemble, SubFilters{
+						nil,
+						SubFilter{
+							NewFilter().WithKey("x").NotEquals(true).Done(),
+						},
+					})
+					So(f.String(), ShouldEqual, `hello == 1 or ((x != true))`)
+				})
+			})
+
+			Convey("When I add a and", func() {
+				f.And(NewFilter().WithKey("x").NotEquals(true).Done())
+
+				Convey("Then the filter should be correctly populated", func() {
+					So(f.keys, ShouldResemble, FilterKeys{
+						"hello",
+						"",
+					})
+					So(f.Values(), ShouldResemble, FilterValues{
+						FilterValue{1},
+						nil,
+					})
+					So(f.Operators(), ShouldResemble, FilterOperators{
+						AndOperator,
+						AndFilterOperator,
+					})
+					So(f.Comparators(), ShouldResemble, FilterComparators{
+						EqualComparator,
+						emptyComparator,
+					})
+					So(f.AndFilters(), ShouldResemble, SubFilters{
+						nil,
+						SubFilter{
+							NewFilter().WithKey("x").NotEquals(true).Done(),
+						},
+					})
+					So(f.String(), ShouldEqual, `hello == 1 and ((x != true))`)
+				})
+			})
+		})
+	})
+}
+
+func TestFilter_NewFilterFromString(t *testing.T) {
+
+	Convey("Given I have a valid filter string", t, func() {
+
+		str := "name == hello"
+
+		Convey("When I call NewFilterFromString", func() {
+
+			filter, err := NewFilterFromString(str)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then filter should be correct", func() {
+				So(filter, ShouldResemble, NewFilterComposer().WithKey("name").Equals("hello"))
+			})
+		})
+	})
+
+	Convey("Given I have a invalid filter string", t, func() {
+
+		str := "name ="
+
+		Convey("When I call NewFilterFromString", func() {
+
+			filter, err := NewFilterFromString(str)
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, `invalid operator. found = instead of (==, !=, <, <=, >, >=, contains, in, matches, exists)`)
+			})
+
+			Convey("Then filter should be nil", func() {
+				So(filter, ShouldBeNil)
+			})
 		})
 	})
 }
@@ -301,6 +401,22 @@ func TestFilter_Date(t *testing.T) {
 	})
 }
 
+func TestFilter_Struct(t *testing.T) {
+
+	Convey("Given I have a filter with struct", t, func() {
+
+		f := NewFilterComposer().WithKey("struct").Equals(struct{}{}).Done()
+
+		Convey("When I call String", func() {
+
+			s := f.String()
+
+			Convey("Then the string should be correct", func() {
+				So(s, ShouldEqual, `struct == {}`)
+			})
+		})
+	})
+}
 func TestFilter_SubFilters(t *testing.T) {
 
 	Convey("Given I have a composed filters", t, func() {
@@ -347,6 +463,72 @@ func TestFilter_Exists(t *testing.T) {
 
 		Convey("When I call string it should be correct ", func() {
 			So(f.String(), ShouldEqual, "key1 exists and key2 not exists")
+		})
+	})
+}
+
+func Test_translateComparator(t *testing.T) {
+	type args struct {
+		comparator FilterComparator
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"==", args{EqualComparator}, "=="},
+		{"!=", args{NotEqualComparator}, "!="},
+		{">=", args{GreaterOrEqualComparator}, ">="},
+		{">", args{GreaterComparator}, ">"},
+		{"<=", args{LesserOrEqualComparator}, "<="},
+		{"<", args{LesserComparator}, "<"},
+		{"in", args{InComparator}, "in"},
+		{"not in", args{NotInComparator}, "not in"},
+		{"contains", args{ContainComparator}, "contains"},
+		{"not contains", args{NotContainComparator}, "not contains"},
+		{"matches", args{MatchComparator}, "matches"},
+		{"exists", args{ExistsComparator}, "exists"},
+		{"not exists", args{NotExistsComparator}, "not exists"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := translateComparator(tt.args.comparator); got != tt.want {
+				t.Errorf("translateComparator() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+
+	Convey("When I pass an unknown comparator to translateComparator", t, func() {
+		Convey("Then it should should panic", func() {
+			So(func() { translateComparator(FilterComparator(42)) }, ShouldPanicWith, `Unknown comparator: 42`)
+		})
+	})
+}
+
+func Test_translateOperator(t *testing.T) {
+	type args struct {
+		operator FilterOperator
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"AndOperator", args{AndOperator}, "and"},
+		{"AndFilterOperator", args{AndOperator}, "and"},
+		{"OrFilterOperator", args{OrFilterOperator}, "or"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := translateOperator(tt.args.operator); got != tt.want {
+				t.Errorf("translateOperator() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+
+	Convey("When I pass an unknown operator to translateOperator", t, func() {
+		Convey("Then it should should panic", func() {
+			So(func() { translateOperator(FilterOperator(42)) }, ShouldPanicWith, `Unknown operator: 42`)
 		})
 	})
 }
