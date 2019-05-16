@@ -11,3 +11,4 @@ cmd/elegen/build
 *.cov
 artifacts
 profile.out
+.idea/*

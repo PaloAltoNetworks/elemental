@@ -141,7 +141,7 @@ func Decode(encoding EncodingType, data []byte, dest interface{}) error {
 // from the given acceptType.
 func Encode(encoding EncodingType, obj interface{}) ([]byte, error) {
 
-	if obj == nil {
+	if obj == nil || reflect.ValueOf(obj).IsNil() {
 		return nil, fmt.Errorf("encode received a nil object")
 	}
 

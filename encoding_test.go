@@ -110,6 +110,23 @@ func TestEncodeDecode(t *testing.T) {
 				So(err, ShouldNotBeNil)
 			})
 		})
+
+		Convey(fmt.Sprintf("Encode will throw an error if passed in a nil interface or an interface holding a nil value using encoding %s", encoding), t, func() {
+
+			var nilPointer *int
+			cases := map[string]interface{}{
+				"nil interface": nil,
+				"nil pointer":   nilPointer,
+			}
+
+			for description, object := range cases {
+				Convey(fmt.Sprintf("passing in a %s should result in an error", description), func() {
+					data, err := Encode(encoding, object)
+					So(data, ShouldBeNil)
+					So(err, ShouldNotBeNil)
+				})
+			}
+		})
 	}
 
 	test(EncodingTypeJSON)
