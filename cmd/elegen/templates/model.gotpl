@@ -339,13 +339,18 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
     {{ end }}
 
     {{ if eq .Type "ref" }}
-    if err := o.{{ .ConvertedName }}.Validate(); err != nil {
-        errors = errors.Append(err)
+    if o.{{ .ConvertedName }} != nil {
+        if err := o.{{ .ConvertedName }}.Validate(); err != nil {
+            errors = errors.Append(err)
+        }
     }
     {{ end }}
 
     {{ if or (eq .Type "refList") (eq .Type "refMap") }}
     for _, sub := range o.{{ .ConvertedName }} {
+        if sub == nil {
+            continue
+        }
         if err := sub.Validate(); err != nil {
             errors = errors.Append(err)
         }
