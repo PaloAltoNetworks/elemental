@@ -19,7 +19,6 @@ import (
 	"reflect"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/ugorji/go/codec"
 )
@@ -97,8 +96,6 @@ var (
 )
 
 func init() {
-	time.Local = time.UTC
-
 	// If you need to understand all of this, go there http://ugorji.net/blog/go-codec-primer
 	// But you should not need to touch that.
 	jsonHandle.Canonical = true
