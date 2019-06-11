@@ -58,10 +58,12 @@ type Request struct {
 func NewRequest() *Request {
 
 	return &Request{
-		RequestID:  uuid.Must(uuid.NewV4()).String(),
-		Parameters: Parameters{},
-		Headers:    http.Header{},
-		Metadata:   map[string]interface{}{},
+		RequestID:   uuid.Must(uuid.NewV4()).String(),
+		Parameters:  Parameters{},
+		Headers:     http.Header{},
+		Metadata:    map[string]interface{}{},
+		ContentType: EncodingTypeJSON,
+		Accept:      EncodingTypeJSON,
 	}
 }
 
