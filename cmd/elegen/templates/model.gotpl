@@ -171,6 +171,12 @@ func (o *{{ .Spec.Model.EntityName }}) Version() int {
 }
 {{- end }}
 
+// BleveType implements the bleve.Classifier Interface.
+func (o *{{ .Spec.Model.EntityName }}) BleveType() string {
+
+    return "{{ .Spec.Model.RestName }}"
+}
+
 {{- if not .Spec.Model.Detached }}
 // DefaultOrder returns the list of default ordering fields.
 func (o *{{ .Spec.Model.EntityName  }}) DefaultOrder() []string {
