@@ -171,6 +171,12 @@ func (o *{{ .Spec.Model.EntityName }}) Version() int {
 }
 {{- end }}
 
+// BleveType implements the bleve.Classifier Interface.
+func (o *{{ .Spec.Model.EntityName }}) BleveType() string {
+
+    return "{{ .Spec.Model.RestName }}"
+}
+
 {{- if not .Spec.Model.Detached }}
 // DefaultOrder returns the list of default ordering fields.
 func (o *{{ .Spec.Model.EntityName  }}) DefaultOrder() []string {
@@ -227,7 +233,11 @@ func (o *{{ .Spec.Model.EntityName }}) ToSparse(fields ...string) elemental.Spar
         // nolint: goimports
         return &Sparse{{ .Spec.Model.EntityName }} {
             {{- range .Spec.Attributes $latestVersion }}
+            {{- if hasPrefix (attrToType $.Set false .) "*" }}
+            {{ .ConvertedName }}: o.{{ .ConvertedName }},
+            {{- else }}
             {{ .ConvertedName }}: &o.{{ .ConvertedName }},
+            {{- end }}
             {{- end }}
         }
     }
@@ -237,7 +247,11 @@ func (o *{{ .Spec.Model.EntityName }}) ToSparse(fields ...string) elemental.Spar
         switch f {
             {{- range .Spec.Attributes $latestVersion }}
             case "{{ .Name }}":
+                {{- if hasPrefix (attrToType $.Set false .) "*" }}
+                sp.{{ .ConvertedName}} = o.{{ .ConvertedName }}
+                {{- else }}
                 sp.{{ .ConvertedName}} = &(o.{{ .ConvertedName }})
+                {{- end }}
             {{- end }}
         }
     }
@@ -258,7 +272,11 @@ func (o *{{ .Spec.Model.EntityName }}) Patch(sparse elemental.SparseIdentifiable
 
     {{- range $attrs }}
     if so.{{ .ConvertedName }} != nil {
+        {{- if hasPrefix (attrToType $.Set false .) "*" }}
+        o.{{ .ConvertedName }} = so.{{ .ConvertedName }}
+        {{- else }}
         o.{{ .ConvertedName }} = *so.{{ .ConvertedName }}
+        {{- end }}
     }
    {{- end }}
    {{- end }}
@@ -784,7 +802,11 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) ToPlain() elemental.PlainIdentifiab
     out := New{{ .Spec.Model.EntityName }}()
     {{- range .Spec.Attributes $latestVersion }}
     if o.{{ .ConvertedName}} != nil  {
+        {{- if hasPrefix (attrToType $.Set false .) "*" }}
+        out.{{ .ConvertedName }} = o.{{ .ConvertedName }}
+        {{- else }}
         out.{{ .ConvertedName }} = *o.{{ .ConvertedName }}
+        {{- end }}
     }
     {{- end }}
 

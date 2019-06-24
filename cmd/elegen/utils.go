@@ -90,6 +90,42 @@ func attributeNameConverter(attrName string) string {
 	return strings.Title(attrName)
 }
 
+func attrToType(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) string {
+
+	var pointer string
+	if mode, ok := attr.Extensions["refMode"]; ok && mode == "pointer" {
+		pointer = "*"
+	}
+
+	var pointerShadow string
+	if shadow {
+		pointerShadow = "*"
+	}
+
+	var convertedType string
+	switch attr.Type {
+	case spec.AttributeTypeRef:
+		convertedType = pointerShadow + pointer + set.Specification(attr.SubType).Model().EntityName
+	case spec.AttributeTypeRefList:
+		remoteSpec := set.Specification(attr.SubType)
+		if remoteSpec.Model().Detached {
+			convertedType = pointerShadow + "[]" + pointer + remoteSpec.Model().EntityName
+		} else {
+			convertedType = pointerShadow + pointer + remoteSpec.Model().EntityNamePlural + "List"
+		}
+	case spec.AttributeTypeRefMap:
+		convertedType = pointerShadow + "map[string]" + pointer + set.Specification(attr.SubType).Model().EntityName
+	default:
+		convertedType = pointerShadow + attr.ConvertedType
+	}
+
+	if strings.HasPrefix(convertedType, "**") {
+		convertedType = convertedType[1:]
+	}
+
+	return convertedType
+}
+
 func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) string {
 
 	json := attr.Name
@@ -119,32 +155,7 @@ func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) s
 		descLines[i] = "// " + escapeBackticks(descLines[i])
 	}
 
-	var pointer string
-	if mode, ok := attr.Extensions["refMode"]; ok && mode == "pointer" {
-		pointer = "*"
-	}
-
-	var pointerShadow string
-	if shadow {
-		pointerShadow = "*"
-	}
-
-	var convertedType string
-	switch attr.Type {
-	case spec.AttributeTypeRef:
-		convertedType = pointerShadow + pointer + set.Specification(attr.SubType).Model().EntityName
-	case spec.AttributeTypeRefList:
-		remoteSpec := set.Specification(attr.SubType)
-		if remoteSpec.Model().Detached {
-			convertedType = pointerShadow + "[]" + pointer + remoteSpec.Model().EntityName
-		} else {
-			convertedType = pointerShadow + pointer + remoteSpec.Model().EntityNamePlural + "List"
-		}
-	case spec.AttributeTypeRefMap:
-		convertedType = pointerShadow + "map[string]" + pointer + set.Specification(attr.SubType).Model().EntityName
-	default:
-		convertedType = pointerShadow + attr.ConvertedType
-	}
+	convertedType := attrToType(set, shadow, attr)
 
 	return fmt.Sprintf(
 		"%s\n    %s %s `json:\"%s\" msgpack:\"%s\" bson:\"%s\" mapstructure:\"%s,omitempty\"`\n\n",
