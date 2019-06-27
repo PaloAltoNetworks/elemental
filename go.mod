@@ -14,7 +14,7 @@ require (
 	github.com/ugorji/go/codec v1.1.5-pre
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
-	github.com/xeipuuv/gojsonschema v1.1.0 // indirect
+	github.com/xeipuuv/gojsonschema v0.0.0-20170528113821-0c8571ac0ce1 // indirect
 	go.aporeto.io/regolithe v1.29.0
 	go.uber.org/zap v1.10.0
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
