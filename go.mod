@@ -9,7 +9,7 @@ require (
 	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a
 	github.com/spf13/viper v1.4.0
 	github.com/ugorji/go/codec v1.1.5-pre
-	go.aporeto.io/regolithe v1.30.0
+	go.aporeto.io/regolithe v1.31.0
 	go.uber.org/zap v1.10.0
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/tools v0.0.0-20190627185803-429858501117
