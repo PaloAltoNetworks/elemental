@@ -12,6 +12,9 @@ require (
 	github.com/ugorji/go v1.1.4
 	go.aporeto.io/regolithe v1.32.0
 	go.uber.org/zap v1.10.0
+	golang.org/x/net v0.0.0-20190628185345-da137c7871d7 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/tools v0.0.0-20190628175203-6cfa55603c28
+	golang.org/x/tools v0.0.0-20190628185430-d5de6b6fc58b
 )
+
+exclude github.com/ugorji/go/codec v1.1.5-pre
