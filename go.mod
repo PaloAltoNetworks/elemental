@@ -9,9 +9,9 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.1 // indirect
 	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a
 	github.com/spf13/viper v1.4.0
-	github.com/ugorji/go/codec v1.1.5-pre
+	github.com/ugorji/go v1.1.4
 	go.aporeto.io/regolithe v1.32.0
 	go.uber.org/zap v1.10.0
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/tools v0.0.0-20190628021728-85b1a4bcd4e6
+	golang.org/x/tools v0.0.0-20190628175203-6cfa55603c28
 )
