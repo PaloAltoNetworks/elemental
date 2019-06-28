@@ -8,6 +8,7 @@ require (
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/mitchellh/copystructure v1.0.0
+	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a
 	github.com/spf13/viper v1.4.0
 	github.com/ugorji/go v1.1.4
 	go.aporeto.io/regolithe v1.33.0
