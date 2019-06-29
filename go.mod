@@ -4,9 +4,7 @@ go 1.12
 
 exclude github.com/ugorji/go/codec v1.1.5-pre
 
-require (
-	go.aporeto.io/regolithe master
-)
+require go.aporeto.io/regolithe v1.33.0
 
 require (
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
