@@ -18,7 +18,7 @@ import (
 // control how much time you are willing to wait for the job to complete.
 //
 // If you wish to change some external state from within the job function,
-// it is your responsability to ensure everything is thread safe.
+// it is your responsibility to ensure everything is thread safe.
 func AtomicJob(job func() error) func(context.Context) error {
 
 	var l sync.RWMutex
