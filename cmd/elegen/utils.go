@@ -128,9 +128,14 @@ func attrToType(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) st
 
 func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) string {
 
-	json := attr.Name
-	msgpack := attr.Name
-	bson := strings.ToLower(attr.Name)
+	exposedName := attr.Name
+	if attr.ExposedName != "" {
+		exposedName = attr.ExposedName
+	}
+
+	json := exposedName
+	msgpack := exposedName
+	bson := strings.ToLower(exposedName)
 
 	if !attr.Exposed {
 		json = "-"

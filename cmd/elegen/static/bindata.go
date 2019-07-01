@@ -126,7 +126,7 @@ func templatesModelGotpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/model.gotpl", size: 26663, mode: os.FileMode(420), modTime: time.Unix(1561417471, 0)}
+	info := bindataFileInfo{name: "templates/model.gotpl", size: 26663, mode: os.FileMode(420), modTime: time.Unix(1561426851, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
