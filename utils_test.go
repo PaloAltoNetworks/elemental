@@ -426,7 +426,6 @@ func TestVerify_areFieldValuesEqualWithEncoding(t *testing.T) {
 		d1, _ := json.Marshal(s1)
 		_ = json.Unmarshal(d1, s1)
 
-		time.Local = time.FixedZone("PST", 0)
 		s2 := &timeList{
 			Time:    now,
 			Times:   []time.Time{now, now},

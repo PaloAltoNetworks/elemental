@@ -121,3 +121,55 @@ func ResetDefaultForZeroValues(obj AttributeSpecifiable) {
 		reflect.Indirect(reflect.ValueOf(obj)).FieldByName(field).Set(reflect.ValueOf(spec.DefaultValue))
 	}
 }
+
+// ResetMaps recursively empty all kinds of maps in the given
+// reflect.Value.
+func ResetMaps(v reflect.Value) {
+
+	indirect := func(vv reflect.Value) reflect.Value {
+		for ; vv.Kind() == reflect.Ptr; vv = vv.Elem() {
+		}
+		return vv
+	}
+
+	v = indirect(v)
+
+	if !v.IsValid() {
+		return
+	}
+
+	reset := func(f reflect.Value) {
+
+		switch f.Kind() {
+		case reflect.Map:
+
+			if f.IsNil() {
+				return
+			}
+
+			for _, k := range f.MapKeys() {
+				f.SetMapIndex(k, reflect.Value{})
+			}
+
+		case reflect.Struct, reflect.Slice:
+			ResetMaps(f)
+		}
+	}
+
+	switch v.Kind() {
+
+	case reflect.Map:
+		reset(v)
+
+	case reflect.Slice:
+		for i := 0; i < v.Len(); i++ {
+			reset(indirect(v.Index(i)))
+		}
+
+	case reflect.Struct:
+
+		for i := 0; i < v.NumField(); i++ {
+			reset(indirect(v.Field(i)))
+		}
+	}
+}
