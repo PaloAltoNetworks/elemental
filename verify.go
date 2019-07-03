@@ -167,7 +167,6 @@ func ResetMaps(v reflect.Value) {
 		}
 
 	case reflect.Struct:
-
 		for i := 0; i < v.NumField(); i++ {
 			reset(indirect(v.Field(i)))
 		}
