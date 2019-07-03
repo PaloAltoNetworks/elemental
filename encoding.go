@@ -99,14 +99,20 @@ func init() {
 	// If you need to understand all of this, go there http://ugorji.net/blog/go-codec-primer
 	// But you should not need to touch that.
 	jsonHandle.Canonical = true
+	msgpackHandle.Canonical = true
 	jsonHandle.MapType = reflect.ValueOf(map[string]interface{}{}).Type()
 	jsonHandle.MapValueReset = true
+	jsonHandle.SliceElementReset = true
+	jsonHandle.InterfaceReset = true
 
 	msgpackHandle.WriteExt = true
 	msgpackHandle.Canonical = true
-	msgpackHandle.TypeInfos = codec.NewTypeInfos([]string{"msgpack"})
 	msgpackHandle.MapType = reflect.ValueOf(map[string]interface{}{}).Type()
 	msgpackHandle.MapValueReset = true
+	msgpackHandle.SliceElementReset = true
+	msgpackHandle.InterfaceReset = true
+	msgpackHandle.TypeInfos = codec.NewTypeInfos([]string{"msgpack"})
+
 }
 
 // Decode decodes the given data using an appropriate decoder chosen
