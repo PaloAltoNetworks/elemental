@@ -101,18 +101,17 @@ func init() {
 	jsonHandle.Canonical = true
 	msgpackHandle.Canonical = true
 	jsonHandle.MapType = reflect.ValueOf(map[string]interface{}{}).Type()
-	jsonHandle.MapValueReset = true
-	jsonHandle.SliceElementReset = true
-	jsonHandle.InterfaceReset = true
+	// jsonHandle.MapValueReset = true
+	// jsonHandle.SliceElementReset = true
+	// jsonHandle.InterfaceReset = true
 
 	msgpackHandle.WriteExt = true
 	msgpackHandle.Canonical = true
 	msgpackHandle.MapType = reflect.ValueOf(map[string]interface{}{}).Type()
-	msgpackHandle.MapValueReset = true
-	msgpackHandle.SliceElementReset = true
-	msgpackHandle.InterfaceReset = true
 	msgpackHandle.TypeInfos = codec.NewTypeInfos([]string{"msgpack"})
-
+	// msgpackHandle.MapValueReset = true
+	// msgpackHandle.SliceElementReset = true
+	// msgpackHandle.InterfaceReset = true
 }
 
 // Decode decodes the given data using an appropriate decoder chosen
