@@ -43,7 +43,10 @@ func AtomicJob(job func() error) func(context.Context) error {
 
 				l.Lock()
 				for _, ch := range errorChs {
-					ch <- err
+					select {
+					case ch <- err:
+					default:
+					}
 				}
 				errorChs = nil
 				l.Unlock()

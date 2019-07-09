@@ -80,6 +80,34 @@ func TestAtomicJob(t *testing.T) {
 		})
 	})
 
+	Convey("Given I call a wrapped job but context cancels in the middle", t, func() {
+
+		var counter int64
+
+		f := AtomicJob(func() error {
+			time.Sleep(3 * time.Second)
+			atomic.AddInt64(&counter, 1)
+			return nil
+		})
+
+		ctx, cancel := context.WithCancel(context.Background())
+		go func() {
+			time.Sleep(300 * time.Millisecond)
+			cancel()
+		}()
+
+		err := f(ctx)
+
+		Convey("Then err should not be nil", func() {
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldEqual, "context canceled")
+		})
+
+		Convey("Then the job should have been executed", func() {
+			So(atomic.LoadInt64(&counter), ShouldEqual, 0)
+		})
+	})
+
 	Convey("Given I call a wrapped job twice and it fails", t, func() {
 
 		var counter int64
