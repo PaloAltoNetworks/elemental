@@ -157,7 +157,7 @@ func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) s
 
 	descLines := strings.Split(attr.Description, "\n")
 	for i := 0; i < len(descLines); i++ {
-		descLines[i] = "// " + escapeBackticks(descLines[i])
+		descLines[i] = "// " + descLines[i]
 	}
 
 	convertedType := attrToType(set, shadow, attr)

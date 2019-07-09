@@ -13,6 +13,7 @@ package elemental
 
 import (
 	"net/http"
+	"reflect"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -213,5 +214,374 @@ func TestVerify_ResetDefaultForZeroValues(t *testing.T) {
 			})
 		})
 
+	})
+}
+
+func TestVerify_ResetMaps(t *testing.T) {
+
+	Convey("Given I have a simple struct", t, func() {
+
+		s := struct {
+			A int
+			B string
+		}{
+			A: 1,
+			B: "hello",
+		}
+
+		Convey("When I call ResetMaps", func() {
+
+			ResetMaps(reflect.ValueOf(s))
+
+			Convey("Then s should be the same", func() {
+				So(s.A, ShouldEqual, 1)
+				So(s.B, ShouldEqual, "hello")
+			})
+		})
+	})
+
+	Convey("Given I have a simple pointer to struct", t, func() {
+
+		s := &struct {
+			A int
+			B string
+		}{
+			A: 1,
+			B: "hello",
+		}
+
+		Convey("When I call ResetMaps", func() {
+
+			ResetMaps(reflect.ValueOf(s))
+
+			Convey("Then s should be the same", func() {
+				So(s.A, ShouldEqual, 1)
+				So(s.B, ShouldEqual, "hello")
+			})
+		})
+	})
+
+	Convey("Given I have a simple pointer to pointer to struct", t, func() {
+
+		s := &struct {
+			A int
+			B string
+		}{
+			A: 1,
+			B: "hello",
+		}
+
+		Convey("When I call ResetMaps", func() {
+
+			ResetMaps(reflect.ValueOf(&s))
+
+			Convey("Then s should be the same", func() {
+				So(s.A, ShouldEqual, 1)
+				So(s.B, ShouldEqual, "hello")
+			})
+		})
+	})
+
+	Convey("Given I have a nil value", t, func() {
+
+		Convey("When I call ResetMaps, nothing should happen", func() {
+			ResetMaps(reflect.ValueOf(nil))
+		})
+	})
+
+	Convey("Given I have a pointer to nil value", t, func() {
+
+		s := (*struct{})(nil)
+
+		Convey("When I call ResetMaps, nothing should happen", func() {
+			ResetMaps(reflect.ValueOf(s))
+		})
+	})
+
+	Convey("Given I have a pointer to pointer to nil value", t, func() {
+
+		s := (*struct{})(nil)
+
+		Convey("When I call ResetMaps, nothing should happen", func() {
+			ResetMaps(reflect.ValueOf(&s))
+		})
+	})
+
+	Convey("Given I have a map value", t, func() {
+
+		m := map[string]interface{}{
+			"a": 1,
+			"b": 2,
+		}
+
+		Convey("When I call ResetMaps, nothing should happen", func() {
+			ResetMaps(reflect.ValueOf(m))
+			So(m, ShouldResemble, map[string]interface{}{})
+		})
+	})
+
+	Convey("Given I have a pointer to map value", t, func() {
+
+		m := &map[string]interface{}{
+			"a": 1,
+			"b": 2,
+		}
+
+		Convey("When I call ResetMaps, nothing should happen", func() {
+			ResetMaps(reflect.ValueOf(m))
+			So(m, ShouldResemble, &map[string]interface{}{})
+		})
+	})
+
+	Convey("Given I have a pointer to pointer to map value", t, func() {
+
+		m := &map[string]interface{}{
+			"a": 1,
+			"b": 2,
+		}
+
+		Convey("When I call ResetMaps, nothing should happen", func() {
+			ResetMaps(reflect.ValueOf(&m))
+			So(m, ShouldResemble, &map[string]interface{}{})
+		})
+	})
+
+	Convey("Given I have a struct with a map", t, func() {
+
+		s := &struct {
+			A int
+			B string
+			M map[string]interface{}
+		}{
+			A: 1,
+			B: "hello",
+			M: map[string]interface{}{
+				"a": 1,
+				"b": 2,
+			},
+		}
+
+		Convey("When I call ResetMaps", func() {
+
+			ResetMaps(reflect.ValueOf(s))
+
+			Convey("Then s should be the same", func() {
+				So(s.A, ShouldEqual, 1)
+				So(s.B, ShouldEqual, "hello")
+				So(s.M, ShouldResemble, map[string]interface{}{})
+			})
+		})
+	})
+
+	Convey("Given I have a struct with a pointer to map", t, func() {
+
+		s := struct {
+			A int
+			B string
+			M *map[string]interface{}
+		}{
+			A: 1,
+			B: "hello",
+			M: &map[string]interface{}{
+				"a": 1,
+				"b": 2,
+			},
+		}
+
+		Convey("When I call ResetMaps", func() {
+
+			ResetMaps(reflect.ValueOf(s))
+
+			Convey("Then s should be the same", func() {
+				So(s.A, ShouldEqual, 1)
+				So(s.B, ShouldEqual, "hello")
+				So(s.M, ShouldResemble, &map[string]interface{}{})
+			})
+		})
+	})
+
+	Convey("Given I have a pointer to struct with a pointer to map", t, func() {
+
+		s := &struct {
+			A int
+			B string
+			M *map[string]interface{}
+		}{
+			A: 1,
+			B: "hello",
+			M: &map[string]interface{}{
+				"a": 1,
+				"b": 2,
+			},
+		}
+
+		Convey("When I call ResetMaps", func() {
+
+			ResetMaps(reflect.ValueOf(s))
+
+			Convey("Then s should be the same", func() {
+				So(s.A, ShouldEqual, 1)
+				So(s.B, ShouldEqual, "hello")
+				So(s.M, ShouldResemble, &map[string]interface{}{})
+			})
+		})
+	})
+
+	Convey("Given I have a pointer to pointer to struct with a pointer to map", t, func() {
+
+		s := &struct {
+			A int
+			B string
+			M *map[string]interface{}
+		}{
+			A: 1,
+			B: "hello",
+			M: &map[string]interface{}{
+				"a": 1,
+				"b": 2,
+			},
+		}
+
+		Convey("When I call ResetMaps", func() {
+
+			ResetMaps(reflect.ValueOf(&s))
+
+			Convey("Then s should be the same", func() {
+				So(s.A, ShouldEqual, 1)
+				So(s.B, ShouldEqual, "hello")
+				So(s.M, ShouldResemble, &map[string]interface{}{})
+			})
+		})
+	})
+
+	Convey("Given I have a struct with a nil map", t, func() {
+
+		s := &struct {
+			A int
+			B string
+			M map[string]interface{}
+		}{
+			A: 1,
+			B: "hello",
+			M: nil,
+		}
+
+		Convey("When I call ResetMaps", func() {
+
+			ResetMaps(reflect.ValueOf(s))
+
+			Convey("Then s should be the same", func() {
+				So(s.A, ShouldEqual, 1)
+				So(s.B, ShouldEqual, "hello")
+				So(s.M, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given I have a nested struct with maps", t, func() {
+
+		s := &struct {
+			A int
+			B string
+			M map[string]interface{}
+			S struct {
+				M map[string]interface{}
+			}
+		}{
+			A: 1,
+			B: "hello",
+			M: map[string]interface{}{
+				"a": 1,
+				"b": 2,
+			},
+			S: struct {
+				M map[string]interface{}
+			}{
+				M: map[string]interface{}{
+					"a": 1,
+					"b": 2,
+				},
+			},
+		}
+
+		Convey("When I call ResetMaps", func() {
+
+			ResetMaps(reflect.ValueOf(s))
+
+			Convey("Then s should be the same", func() {
+				So(s.A, ShouldEqual, 1)
+				So(s.B, ShouldEqual, "hello")
+				So(s.M, ShouldResemble, map[string]interface{}{})
+				So(s.S.M, ShouldResemble, map[string]interface{}{})
+			})
+		})
+	})
+
+	Convey("Given I have a nested pointer to struct with maps", t, func() {
+
+		s := &struct {
+			A int
+			B string
+			M map[string]interface{}
+			S *struct {
+				M map[string]interface{}
+			}
+		}{
+			A: 1,
+			B: "hello",
+			M: map[string]interface{}{
+				"a": 1,
+				"b": 2,
+			},
+			S: &struct {
+				M map[string]interface{}
+			}{
+				M: map[string]interface{}{
+					"a": 1,
+					"b": 2,
+				},
+			},
+		}
+
+		Convey("When I call ResetMaps", func() {
+
+			ResetMaps(reflect.ValueOf(s))
+
+			Convey("Then s should be the same", func() {
+				So(s.A, ShouldEqual, 1)
+				So(s.B, ShouldEqual, "hello")
+				So(s.M, ShouldResemble, map[string]interface{}{})
+				So(s.S.M, ShouldResemble, map[string]interface{}{})
+			})
+		})
+	})
+
+	Convey("Given I have a struct with a slice of map", t, func() {
+
+		s := &struct {
+			A int
+			B string
+			M []map[string]interface{}
+		}{
+			A: 1,
+			B: "hello",
+			M: []map[string]interface{}{
+				map[string]interface{}{
+					"a": 1,
+					"b": 2,
+				},
+			},
+		}
+
+		Convey("When I call ResetMaps", func() {
+
+			ResetMaps(reflect.ValueOf(s))
+
+			Convey("Then s should be the same", func() {
+				So(s.A, ShouldEqual, 1)
+				So(s.B, ShouldEqual, "hello")
+				So(s.M[0], ShouldResemble, map[string]interface{}{})
+			})
+		})
 	})
 }
