@@ -14,12 +14,15 @@ package elemental
 import (
 	"fmt"
 	"net/url"
+	"sync"
 )
 
 // A PushFilter represents an abstract filter for filtering out push notifications.
 type PushFilter struct {
 	Identities map[string][]EventType `msgpack:"identities" json:"identities"`
 	Params     url.Values             `msgpack:"parameters" json:"parameters"`
+
+	sync.RWMutex
 }
 
 // NewPushFilter returns a new PushFilter.
@@ -58,6 +61,9 @@ func (f *PushFilter) Parameters() url.Values {
 // FilterIdentity adds the given identity for the given eventTypes in the PushFilter.
 func (f *PushFilter) FilterIdentity(identityName string, eventTypes ...EventType) {
 
+	f.Lock()
+	defer f.Unlock()
+
 	f.Identities[identityName] = eventTypes
 }
 
@@ -65,12 +71,16 @@ func (f *PushFilter) FilterIdentity(identityName string, eventTypes ...EventType
 func (f *PushFilter) IsFilteredOut(identityName string, eventType EventType) bool {
 
 	// if the identities list is empty, we filter nothing.
+	f.RLock()
 	if len(f.Identities) == 0 {
+		f.RUnlock()
 		return false
 	}
 
 	// If it contains something, but not the identity, we filter out.
 	types, ok := f.Identities[identityName]
+	f.RUnlock()
+
 	if !ok {
 		return true
 	}
@@ -96,9 +106,11 @@ func (f *PushFilter) Duplicate() *PushFilter {
 
 	nf := NewPushFilter()
 
+	f.RLock()
 	for id, types := range f.Identities {
 		nf.FilterIdentity(id, types...)
 	}
+	f.RUnlock()
 
 	for k, v := range f.Params {
 		nf.SetParameter(k, v...)
@@ -108,6 +120,9 @@ func (f *PushFilter) Duplicate() *PushFilter {
 }
 
 func (f *PushFilter) String() string {
+
+	f.RLock()
+	defer f.RUnlock()
 
 	return fmt.Sprintf("<pushfilter identities:%s>", f.Identities)
 }
