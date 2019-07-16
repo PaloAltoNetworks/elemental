@@ -28,7 +28,7 @@ func AtomicJob(job func() error) func(context.Context) error {
 
 	return func(ctx context.Context) error {
 
-		errCh := make(chan error)
+		errCh := make(chan error, 1)
 
 		l.Lock()
 		errorChs = append(errorChs, errCh)
