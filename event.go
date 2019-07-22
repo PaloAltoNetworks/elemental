@@ -136,13 +136,11 @@ func (e *Event) Duplicate() *Event {
 	var rd []byte
 
 	if e.JSONData != nil {
-		jd = make(json.RawMessage, len(e.JSONData))
-		copy(jd, e.JSONData)
+		jd = append(json.RawMessage{}, e.JSONData...)
 	}
 
 	if e.RawData != nil {
-		rd = make([]byte, len(e.RawData))
-		copy(rd, e.RawData)
+		rd = append([]byte{}, e.RawData...)
 	}
 
 	return &Event{
