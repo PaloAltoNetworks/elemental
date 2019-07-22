@@ -132,10 +132,23 @@ func (e *Event) String() string {
 // Duplicate creates a copy of the event.
 func (e *Event) Duplicate() *Event {
 
+	var jd json.RawMessage
+	var rd []byte
+
+	if e.JSONData != nil {
+		jd = make(json.RawMessage, len(e.JSONData))
+		copy(jd, e.JSONData)
+	}
+
+	if e.RawData != nil {
+		rd = make([]byte, len(e.RawData))
+		copy(rd, e.RawData)
+	}
+
 	return &Event{
 		Type:      e.Type,
-		JSONData:  e.JSONData[:],
-		RawData:   e.RawData[:],
+		JSONData:  jd,
+		RawData:   rd,
 		Identity:  e.Identity,
 		Timestamp: e.Timestamp,
 		Encoding:  e.Encoding,
