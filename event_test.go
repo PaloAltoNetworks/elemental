@@ -13,6 +13,7 @@ package elemental
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -250,10 +251,32 @@ func TestEvent_Convert(t *testing.T) {
 
 func TestEvent_Duplicate(t *testing.T) {
 
-	Convey("Given I have an Event", t, func() {
+	Convey("Given I have an Event with encoding set to json", t, func() {
 
 		list := &List{}
-		e1 := NewEvent(EventCreate, list)
+		e1 := NewEventWithEncoding(EventCreate, list, EncodingTypeJSON)
+
+		Convey("When I Duplicate ", func() {
+
+			e2 := e1.Duplicate()
+
+			Convey("Then the duplicated event should be correct", func() {
+				So(e2.Type, ShouldEqual, e1.Type)
+				So(e2.Entity(), ShouldResemble, e1.Entity())
+				So(e2.RawData, ShouldBeNil)
+				So(e2.JSONData, ShouldResemble, e1.JSONData)
+				So(fmt.Sprintf("%p", e2.JSONData), ShouldNotEqual, fmt.Sprintf("%p", e1.JSONData))
+				So(e2.Identity, ShouldEqual, e1.Identity)
+				So(e2.Timestamp, ShouldEqual, e1.Timestamp)
+				So(e2.Encoding, ShouldEqual, e1.Encoding)
+			})
+		})
+	})
+
+	Convey("Given I have an Event with encoding set to msgpack", t, func() {
+
+		list := &List{}
+		e1 := NewEventWithEncoding(EventCreate, list, EncodingTypeMSGPACK)
 
 		Convey("When I Duplicate ", func() {
 
@@ -263,7 +286,8 @@ func TestEvent_Duplicate(t *testing.T) {
 				So(e2.Type, ShouldEqual, e1.Type)
 				So(e2.Entity(), ShouldResemble, e1.Entity())
 				So(e2.RawData, ShouldResemble, e1.RawData)
-				So(e2.JSONData, ShouldResemble, e1.JSONData)
+				So(fmt.Sprintf("%p", e2.RawData), ShouldNotEqual, fmt.Sprintf("%p", e1.RawData))
+				So(e2.JSONData, ShouldBeNil)
 				So(e2.Identity, ShouldEqual, e1.Identity)
 				So(e2.Timestamp, ShouldEqual, e1.Timestamp)
 				So(e2.Encoding, ShouldEqual, e1.Encoding)
