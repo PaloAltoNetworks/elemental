@@ -762,6 +762,66 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 			})
 		})
 	})
+
+	Convey("Given I have a http request %00 as order parameter ", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/?order=%00", nil)
+		req.Header.Set("Content-Type", "application/json")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, "error 400 (elemental): Bad Request: Parameter `order` must be set when provided")
+			})
+		})
+	})
+
+	Convey("Given I have a http request %00 as page parameter", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/?page=%00", nil)
+		req.Header.Set("Content-Type", "application/json")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, "error 400 (elemental): Bad Request: Parameter `page` must be an integer")
+			})
+		})
+	})
+
+	Convey("Given I have a http request %00 as pagesize parameter", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/?pagesize=%00", nil)
+		req.Header.Set("Content-Type", "application/json")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, "error 400 (elemental): Bad Request: Parameter `pagesize` must be an integer")
+			})
+		})
+	})
 }
 
 func TestRequest_Duplicate(t *testing.T) {

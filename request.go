@@ -195,6 +195,11 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	}
 
 	if v, ok := q["order"]; ok {
+		for _, o := range v {
+			if o == "" || o == "\u0000" {
+				return nil, NewError("Bad Request", "Parameter `order` must be set when provided", "elemental", http.StatusBadRequest)
+			}
+		}
 		order = v
 		q.Del("order")
 	}
