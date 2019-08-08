@@ -170,7 +170,7 @@ func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) s
 		json,
 		msgpack,
 		bson,
-		attr.Name,
+		strings.Replace(json, ",omitempty", "", 1),
 	)
 }
 
