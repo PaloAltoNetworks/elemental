@@ -135,7 +135,7 @@ func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) s
 
 	json := exposedName
 	msgpack := exposedName
-	bson := strings.ToLower(exposedName)
+	bson := strings.ToLower(attr.Name)
 
 	if !attr.Exposed {
 		json = "-"
