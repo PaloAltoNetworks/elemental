@@ -49,6 +49,7 @@ type Request struct {
 
 	Metadata           map[string]interface{}
 	ClientIP           string
+	ClientIPSource     string
 	TLSConnectionState *tls.ConnectionState
 
 	req *http.Request
@@ -235,12 +236,16 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	}
 
 	var clientIP string
+	var clientIPSource string
 	if ip := req.Header.Get("X-Forwarded-For"); ip != "" {
 		clientIP = ip
+		clientIPSource = "X-Forwarded-For"
 	} else if ip := req.Header.Get("X-Real-IP"); ip != "" {
 		clientIP = ip
+		clientIPSource = "X-Real-IP"
 	} else {
 		clientIP = req.RemoteAddr
+		clientIPSource = "RemoteAddr"
 	}
 
 	contentType, acceptType, err := EncodingFromHeaders(req.Header)
@@ -272,6 +277,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
 		Order:                order,
 		ClientIP:             clientIP,
+		ClientIPSource:       clientIPSource,
 		ContentType:          contentType,
 		Accept:               acceptType,
 		req:                  req,
