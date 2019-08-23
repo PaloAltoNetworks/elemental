@@ -11,7 +11,15 @@
 
 package elemental
 
-import "reflect"
+import (
+	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"encoding/base64"
+	"fmt"
+	"reflect"
+)
 
 // An AttributeSpecifiable is the interface an object must implement in order to access specification of its attributes.
 type AttributeSpecifiable interface {
@@ -232,4 +240,93 @@ func ResetSecretAttributesValues(obj interface{}) {
 			strip(i)
 		}
 	}
+}
+
+// aesAttributeEncrypter is an elemental.AttributeEncrypter
+// using AES encryption.
+type aesAttributeEncrypter struct {
+	passphrase []byte
+}
+
+// NewAESAttributeEncrypter returns a new elemental.AttributeEncrypter
+// implementing AES encryption.
+func NewAESAttributeEncrypter(passphrase string) (AttributeEncrypter, error) {
+
+	passbytes := []byte(passphrase)
+	if len(passbytes) != aes.BlockSize {
+		return nil, fmt.Errorf("invalid passphrase: size must be exactly %d bytes", aes.BlockSize)
+	}
+
+	return &aesAttributeEncrypter{
+		passphrase: passbytes,
+	}, nil
+}
+
+// EncryptString encrypts the given string.
+func (e *aesAttributeEncrypter) EncryptString(value string) (string, error) {
+
+	if value == "" {
+		return "", nil
+	}
+
+	data, err := e.pad([]byte(value))
+	if err != nil {
+		return "", err
+	}
+
+	iv := make([]byte, aes.BlockSize)
+	if _, err := rand.Read(iv); err != nil {
+		return "", err
+	}
+
+	c, err := aes.NewCipher(e.passphrase)
+	if err != nil {
+		return "", err
+	}
+
+	encrypter := cipher.NewCBCEncrypter(c, iv)
+
+	encryptedData := make([]byte, aes.BlockSize+len(data))
+	encrypter.CryptBlocks(encryptedData[aes.BlockSize:], data)
+	copy(encryptedData[:aes.BlockSize], iv)
+
+	return base64.StdEncoding.EncodeToString(encryptedData), nil
+}
+
+// DecryptString decrypts the given string.
+func (e *aesAttributeEncrypter) DecryptString(value string) (string, error) {
+
+	if value == "" {
+		return "", nil
+	}
+
+	data, err := base64.StdEncoding.DecodeString(value)
+	if err != nil {
+		return "", err
+	}
+
+	c, err := aes.NewCipher(e.passphrase)
+	if err != nil {
+		return "", err
+	}
+
+	iv := data[:aes.BlockSize]
+
+	data = data[aes.BlockSize:]
+	decryptedData := make([]byte, len(data))
+
+	decrypter := cipher.NewCBCDecrypter(c, iv)
+	decrypter.CryptBlocks(decryptedData, data)
+
+	return string(decryptedData), nil
+}
+
+func (e *aesAttributeEncrypter) pad(b []byte) ([]byte, error) {
+
+	n := aes.BlockSize - (len(b) % aes.BlockSize)
+	pb := make([]byte, len(b)+n)
+	copy(pb, b)
+	copy(pb[len(b):], bytes.Repeat([]byte{byte(n)}, n))
+
+	return pb, nil
 }
