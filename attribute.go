@@ -15,9 +15,28 @@ import "reflect"
 
 // An AttributeSpecifiable is the interface an object must implement in order to access specification of its attributes.
 type AttributeSpecifiable interface {
+
+	// SpecificationForAttribute returns the AttributeSpecification for
+	// given attribute name
 	SpecificationForAttribute(string) AttributeSpecification
+
+	// AttributeSpecifications returns all the AttributeSpecification mapped by
+	// attribute name
 	AttributeSpecifications() map[string]AttributeSpecification
+
+	// ValueForAttribute returns tghe value for the given attribute
 	ValueForAttribute(name string) interface{}
+}
+
+// AttributeEncrypter is the interface that must be
+// implement to manage encrypted attributes.
+type AttributeEncrypter interface {
+
+	// EncryptString encrypts the given string and returns the encrypted version.
+	EncryptString(string) (string, error)
+
+	// DecryptString decrypts the given string and returns the encrypted version.
+	DecryptString(string) (string, error)
 }
 
 // An AttributeSpecification represents all the metadata of an attribute.
@@ -165,6 +184,9 @@ type AttributeSpecification struct {
 
 	// Type defines the raw Monolithe type.
 	Type string
+
+	// Encrypted defines if the attribute needs encryption.
+	Encrypted bool
 }
 
 // ResetSecretAttributesValues will reset any attributes marked

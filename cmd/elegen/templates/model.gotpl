@@ -107,9 +107,10 @@ func (o {{ .Spec.Model.EntityNamePlural }}List) Version() int {
 {{ end }}
 {{- end }}
 
+{{- $isEncryptable := false }}
 // {{ .Spec.Model.EntityName }} represents the model of a {{ .Spec.Model.RestName }}
 type {{ .Spec.Model.EntityName }} struct {
-{{ range .Spec.Attributes $latestVersion -}}
+{{- range .Spec.Attributes $latestVersion -}}{{- if .Encrypted }}{{- $isEncryptable = true }}{{- end }}
 {{ attrToField $.Set false . }}
 {{- end }}
 
@@ -258,6 +259,36 @@ func (o *{{ .Spec.Model.EntityName }}) ToSparse(fields ...string) elemental.Spar
 
     return sp
 }
+
+{{- if $isEncryptable }}
+// EncryptAttributes encrypts the attributes marked as `encrypted` using the given encrypter.
+func (o *{{ .Spec.Model.EntityName }}) EncryptAttributes(encrypter elemental.AttributeEncrypter) (err error) {
+    {{ range .Spec.Attributes $latestVersion }}
+    {{- if .Encrypted }}
+    if o.{{ .ConvertedName}}, err = encrypter.EncryptString(o.{{ .ConvertedName}}); err != nil {
+        return fmt.Errorf("unable to encrypt attribute '{{ .ConvertedName}}': %s", err)
+    }
+    {{- end }}
+    {{- end }}
+
+    return nil
+}
+
+// DecryptAttributes decrypts the attributes marked as `encrypted` using the given decrypter.
+func (o *{{ .Spec.Model.EntityName }}) DecryptAttributes(encrypter elemental.AttributeEncrypter) (err error) {
+    {{ range .Spec.Attributes $latestVersion }}
+    {{- if .Encrypted }}
+    if o.{{ .ConvertedName}}, err = encrypter.DecryptString(o.{{ .ConvertedName}}); err != nil {
+        return fmt.Errorf("unable to decrypt attribute '{{ .ConvertedName}}': %s", err)
+    }
+    {{- end }}
+    {{- end }}
+
+    return nil
+}
+
+{{- end }}
+
 
 // Patch apply the non nil value of a *Sparse{{ .Spec.Model.EntityName }} to the object.
 func (o *{{ .Spec.Model.EntityName }}) Patch(sparse elemental.SparseIdentifiable) {
@@ -520,6 +551,9 @@ var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSp
         {{- if .Description }}
         Description: `{{ escBackticks .Description }}`,
         {{- end }}
+        {{- if .Encrypted }}
+        Encrypted: {{ .Encrypted }},
+        {{- end }}
         {{- if .Exposed }}
         Exposed: {{ .Exposed }},
         {{- end }}
@@ -615,6 +649,9 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
         {{- end }}
         {{- if .Description }}
         Description: `{{ escBackticks .Description }}`,
+        {{- end }}
+        {{- if .Encrypted }}
+        Encrypted: {{ .Encrypted }},
         {{- end }}
         {{- if .Exposed }}
         Exposed: {{ .Exposed }},
@@ -812,6 +849,34 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) ToPlain() elemental.PlainIdentifiab
 
     return out
 }
+
+{{- if $isEncryptable }}
+// EncryptAttributes encrypts the attributes marked as `encrypted` using the given encrypter.
+func (o *Sparse{{ .Spec.Model.EntityName }}) EncryptAttributes(encrypter elemental.AttributeEncrypter) (err error) {
+    {{ range .Spec.Attributes $latestVersion }}
+    {{- if .Encrypted }}
+    if *o.{{ .ConvertedName}}, err = encrypter.EncryptString(*o.{{ .ConvertedName}}); err != nil {
+        return fmt.Errorf("unable to encrypt attribute '{{ .ConvertedName}}': %s", err)
+    }
+    {{- end }}
+    {{- end }}
+
+    return nil
+}
+
+// DecryptAttributes decrypts the attributes marked as `encrypted` using the given decrypter.
+func (o *Sparse{{ .Spec.Model.EntityName }}) DecryptAttributes(encrypter elemental.AttributeEncrypter) (err error) {
+    {{ range .Spec.Attributes $latestVersion }}
+    {{- if .Encrypted }}
+    if *o.{{ .ConvertedName}}, err = encrypter.DecryptString(*o.{{ .ConvertedName}}); err != nil {
+        return fmt.Errorf("unable to decrypt attribute '{{ .ConvertedName}}': %s", err)
+    }
+    {{- end }}
+    {{- end }}
+
+    return nil
+}
+{{- end }}
 
 {{ range .Spec.Attributes $latestVersion }}
 {{ if shouldGenerateGetter . $.PublicMode }}

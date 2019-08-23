@@ -88,6 +88,13 @@ type DefaultOrderer interface {
 	DefaultOrder() []string
 }
 
+// AttributeEncryptable is the interface of on object that
+// has encryptable
+type AttributeEncryptable interface {
+	EncryptAttributes(encrypter AttributeEncrypter) error
+	DecryptAttributes(encrypter AttributeEncrypter) error
+}
+
 // An Identity is a structure that contains the necessary information about an Identifiable.
 // The Name is usually the singular form of the Category.
 //
