@@ -236,17 +236,22 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	}
 
 	var clientIP string
-	var clientIPSource string
 	if ip := req.Header.Get("X-Forwarded-For"); ip != "" {
 		clientIP = ip
-		clientIPSource = "X-Forwarded-For"
 	} else if ip := req.Header.Get("X-Real-IP"); ip != "" {
 		clientIP = ip
-		clientIPSource = "X-Real-IP"
 	} else {
 		clientIP = req.RemoteAddr
-		clientIPSource = "RemoteAddr"
 	}
+
+	clientIPSource := ""
+	if ip := req.Header.Get("X-Forwarded-For"); ip != "" {
+		clientIPSource += " X-Forwarded-For: " + ip
+	}
+	if ip := req.Header.Get("X-Real-IP"); ip != "" {
+		clientIPSource += " X-Real-IP: " + ip
+	}
+	clientIPSource += " RemoteAddr: " + req.RemoteAddr
 
 	contentType, acceptType, err := EncodingFromHeaders(req.Header)
 	if err != nil {
