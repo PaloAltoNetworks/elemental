@@ -266,7 +266,7 @@ func (o *{{ .Spec.Model.EntityName }}) EncryptAttributes(encrypter elemental.Att
     {{ range .Spec.Attributes $latestVersion }}
     {{- if .Encrypted }}
     if o.{{ .ConvertedName}}, err = encrypter.EncryptString(o.{{ .ConvertedName}}); err != nil {
-        return fmt.Errorf("unable to encrypt attribute '{{ .ConvertedName}}': %s", err)
+        return fmt.Errorf("unable to encrypt attribute '{{ .ConvertedName}}' for '{{ $.Spec.Model.EntityName }}' (%s): %s", o.Identifier(), err)
     }
     {{- end }}
     {{- end }}
@@ -279,7 +279,7 @@ func (o *{{ .Spec.Model.EntityName }}) DecryptAttributes(encrypter elemental.Att
     {{ range .Spec.Attributes $latestVersion }}
     {{- if .Encrypted }}
     if o.{{ .ConvertedName}}, err = encrypter.DecryptString(o.{{ .ConvertedName}}); err != nil {
-        return fmt.Errorf("unable to decrypt attribute '{{ .ConvertedName}}': %s", err)
+        return fmt.Errorf("unable to decrypt attribute '{{ .ConvertedName}}' for '{{ $.Spec.Model.EntityName }}' (%s): %s", o.Identifier(), err)
     }
     {{- end }}
     {{- end }}
@@ -856,7 +856,7 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) EncryptAttributes(encrypter element
     {{ range .Spec.Attributes $latestVersion }}
     {{- if .Encrypted }}
     if *o.{{ .ConvertedName}}, err = encrypter.EncryptString(*o.{{ .ConvertedName}}); err != nil {
-        return fmt.Errorf("unable to encrypt attribute '{{ .ConvertedName}}': %s", err)
+        return fmt.Errorf("unable to encrypt attribute '{{ .ConvertedName}}' for 'Sparse{{ $.Spec.Model.EntityName }}' (%s): %s", o.Identifier(), err)
     }
     {{- end }}
     {{- end }}
@@ -869,7 +869,7 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) DecryptAttributes(encrypter element
     {{ range .Spec.Attributes $latestVersion }}
     {{- if .Encrypted }}
     if *o.{{ .ConvertedName}}, err = encrypter.DecryptString(*o.{{ .ConvertedName}}); err != nil {
-        return fmt.Errorf("unable to decrypt attribute '{{ .ConvertedName}}': %s", err)
+        return fmt.Errorf("unable to decrypt attribute '{{ .ConvertedName}}' for 'Sparse{{ $.Spec.Model.EntityName }}' (%s): %s", o.Identifier(), err)
     }
     {{- end }}
     {{- end }}
