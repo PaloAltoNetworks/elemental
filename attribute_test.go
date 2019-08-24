@@ -238,7 +238,7 @@ func TestAESEncrypterEncryption(t *testing.T) {
 
 	Convey("Given I have an AESAttributeEncrypter ", t, func() {
 
-		value := "hello world2"
+		value := "hello world"
 		enc, _ := NewAESAttributeEncrypter("0123456789ABCDEF")
 
 		Convey("When I encrypt some data", func() {
@@ -261,12 +261,13 @@ func TestAESEncrypterEncryption(t *testing.T) {
 			Convey("When I decrypt the data", func() {
 
 				decstring, err := enc.DecryptString(encstring)
+
 				Convey("Then err should be nil", func() {
 					So(err, ShouldBeNil)
 				})
 
 				Convey("Then decstring should be decrypted", func() {
-					So(decstring, ShouldNotEqual, value)
+					So(decstring, ShouldEqual, value)
 				})
 			})
 		})
@@ -274,6 +275,7 @@ func TestAESEncrypterEncryption(t *testing.T) {
 		Convey("When I encrypt empty string", func() {
 
 			encstring, err := enc.EncryptString("")
+
 			Convey("Then err should be nil", func() {
 				So(err, ShouldBeNil)
 			})
@@ -286,8 +288,37 @@ func TestAESEncrypterEncryption(t *testing.T) {
 		Convey("When I decrypt empty string", func() {
 
 			decstring, err := enc.DecryptString("")
+
 			Convey("Then err should be nil", func() {
 				So(err, ShouldBeNil)
+			})
+
+			Convey("Then decstring should be empty", func() {
+				So(decstring, ShouldEqual, "")
+			})
+		})
+
+		Convey("When I decrypt non base64", func() {
+
+			decstring, err := enc.DecryptString("1")
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, "illegal base64 data at input byte 0")
+			})
+
+			Convey("Then decstring should be empty", func() {
+				So(decstring, ShouldEqual, "")
+			})
+		})
+
+		Convey("When I decrypt too small data", func() {
+
+			decstring, err := enc.DecryptString("abcd")
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, "data is too small")
 			})
 
 			Convey("Then decstring should be empty", func() {

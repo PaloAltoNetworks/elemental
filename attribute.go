@@ -12,12 +12,12 @@
 package elemental
 
 import (
-	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"reflect"
 )
 
@@ -269,28 +269,24 @@ func (e *aesAttributeEncrypter) EncryptString(value string) (string, error) {
 		return "", nil
 	}
 
-	data, err := e.pad([]byte(value))
-	if err != nil {
-		return "", err
-	}
-
-	iv := make([]byte, aes.BlockSize)
-	if _, err := rand.Read(iv); err != nil {
-		return "", err
-	}
+	data := []byte(value)
 
 	c, err := aes.NewCipher(e.passphrase)
 	if err != nil {
 		return "", err
 	}
 
-	encrypter := cipher.NewCBCEncrypter(c, iv)
+	gcm, err := cipher.NewGCM(c)
+	if err != nil {
+		return "", err
+	}
 
-	encryptedData := make([]byte, aes.BlockSize+len(data))
-	encrypter.CryptBlocks(encryptedData[aes.BlockSize:], data)
-	copy(encryptedData[:aes.BlockSize], iv)
+	nonce := make([]byte, gcm.NonceSize())
+	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+		return "", err
+	}
 
-	return base64.StdEncoding.EncodeToString(encryptedData), nil
+	return base64.StdEncoding.EncodeToString(gcm.Seal(nonce, nonce, data, nil)), nil
 }
 
 // DecryptString decrypts the given string.
@@ -310,23 +306,17 @@ func (e *aesAttributeEncrypter) DecryptString(value string) (string, error) {
 		return "", err
 	}
 
-	iv := data[:aes.BlockSize]
+	gcm, err := cipher.NewGCM(c)
 
-	data = data[aes.BlockSize:]
-	decryptedData := make([]byte, len(data))
+	nonceSize := gcm.NonceSize()
+	if len(data) < nonceSize {
+		return "", fmt.Errorf("data is too small")
+	}
 
-	decrypter := cipher.NewCBCDecrypter(c, iv)
-	decrypter.CryptBlocks(decryptedData, data)
+	out, err := gcm.Open(nil, data[:nonceSize], data[nonceSize:], nil)
+	if err != nil {
+		return "", err
+	}
 
-	return string(decryptedData), nil
-}
-
-func (e *aesAttributeEncrypter) pad(b []byte) ([]byte, error) {
-
-	n := aes.BlockSize - (len(b) % aes.BlockSize)
-	pb := make([]byte, len(b)+n)
-	copy(pb, b)
-	copy(pb[len(b):], bytes.Repeat([]byte{byte(n)}, n))
-
-	return pb, nil
+	return string(out), nil
 }
