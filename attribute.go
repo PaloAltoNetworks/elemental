@@ -32,7 +32,7 @@ type AttributeSpecifiable interface {
 	// attribute name
 	AttributeSpecifications() map[string]AttributeSpecification
 
-	// ValueForAttribute returns tghe value for the given attribute
+	// ValueForAttribute returns the value for the given attribute
 	ValueForAttribute(name string) interface{}
 }
 
@@ -307,6 +307,9 @@ func (e *aesAttributeEncrypter) DecryptString(value string) (string, error) {
 	}
 
 	gcm, err := cipher.NewGCM(c)
+	if err != nil {
+		return "", err
+	}
 
 	nonceSize := gcm.NonceSize()
 	if len(data) < nonceSize {
