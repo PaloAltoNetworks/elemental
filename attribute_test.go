@@ -12,6 +12,7 @@
 package elemental
 
 import (
+	"encoding/base64"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -184,6 +185,144 @@ func Test_ResetSecretAttributesValues(t *testing.T) {
 
 			Convey("Then the secret should have been erased", func() {
 				So(l.Secret, ShouldEqual, "it's a secret to everybody")
+			})
+		})
+	})
+}
+
+func TestNewAESEncrypter(t *testing.T) {
+
+	Convey("Given I call AESAttributeEncrypter with valid passphrase", t, func() {
+
+		enc, err := NewAESAttributeEncrypter("0123456789ABCDEF")
+
+		Convey("Then err should be nil", func() {
+			So(err, ShouldBeNil)
+		})
+
+		Convey("Then enc should be correct", func() {
+			So(enc.(*aesAttributeEncrypter).passphrase, ShouldResemble, []byte("0123456789ABCDEF"))
+		})
+	})
+
+	Convey("Given I call AESAttributeEncrypter with passphrase that is too small", t, func() {
+
+		enc, err := NewAESAttributeEncrypter("0123456789ABCDE")
+
+		Convey("Then err should not be nil", func() {
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldEqual, "invalid passphrase: size must be exactly 16 bytes")
+		})
+
+		Convey("Then enc should be nil", func() {
+			So(enc, ShouldBeNil)
+		})
+	})
+
+	Convey("Given I call AESAttributeEncrypter with passphrase that is too long", t, func() {
+
+		enc, err := NewAESAttributeEncrypter("0123456789ABCDE WEEEE")
+
+		Convey("Then err should not be nil", func() {
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldEqual, "invalid passphrase: size must be exactly 16 bytes")
+		})
+
+		Convey("Then enc should be nil", func() {
+			So(enc, ShouldBeNil)
+		})
+	})
+}
+
+func TestAESEncrypterEncryption(t *testing.T) {
+
+	Convey("Given I have an AESAttributeEncrypter ", t, func() {
+
+		value := "hello world"
+		enc, _ := NewAESAttributeEncrypter("0123456789ABCDEF")
+
+		Convey("When I encrypt some data", func() {
+
+			encstring, err := enc.EncryptString(value)
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			b64decodeddata, err1 := base64.StdEncoding.DecodeString(encstring)
+			Convey("Then err1 should be nil", func() {
+				So(err1, ShouldBeNil)
+			})
+
+			Convey("Then encstring should be encrypted", func() {
+				So(encstring, ShouldNotEqual, value)
+				So(b64decodeddata, ShouldNotEqual, value)
+			})
+
+			Convey("When I decrypt the data", func() {
+
+				decstring, err := enc.DecryptString(encstring)
+
+				Convey("Then err should be nil", func() {
+					So(err, ShouldBeNil)
+				})
+
+				Convey("Then decstring should be decrypted", func() {
+					So(decstring, ShouldEqual, value)
+				})
+			})
+		})
+
+		Convey("When I encrypt empty string", func() {
+
+			encstring, err := enc.EncryptString("")
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then encstring should be empty", func() {
+				So(encstring, ShouldEqual, "")
+			})
+		})
+
+		Convey("When I decrypt empty string", func() {
+
+			decstring, err := enc.DecryptString("")
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then decstring should be empty", func() {
+				So(decstring, ShouldEqual, "")
+			})
+		})
+
+		Convey("When I decrypt non base64", func() {
+
+			decstring, err := enc.DecryptString("1")
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, "illegal base64 data at input byte 0")
+			})
+
+			Convey("Then decstring should be empty", func() {
+				So(decstring, ShouldEqual, "")
+			})
+		})
+
+		Convey("When I decrypt too small data", func() {
+
+			decstring, err := enc.DecryptString("abcd")
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, "data is too small")
+			})
+
+			Convey("Then decstring should be empty", func() {
+				So(decstring, ShouldEqual, "")
 			})
 		})
 	})
