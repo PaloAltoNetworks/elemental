@@ -32,6 +32,7 @@ var functions = template.FuncMap{
 	"hasPrefix":                       strings.HasPrefix,
 	"attrToType":                      attrToType,
 	"attrToField":                     attrToField,
+	"attrToMongoField":                attrToMongoField,
 	"escBackticks":                    escapeBackticks,
 	"buildEnums":                      buildEnums,
 	"shouldGenerateGetter":            shouldGenerateGetter,
