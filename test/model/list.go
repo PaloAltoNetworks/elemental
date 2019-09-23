@@ -1,20 +1,10 @@
-// Copyright 2019 Aporeto Inc.
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//     http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package testmodel
 
 import (
 	"fmt"
 	"time"
 
+	"github.com/globalsign/mgo/bson"
 	"github.com/mitchellh/copystructure"
 	"go.aporeto.io/elemental"
 )
@@ -92,7 +82,7 @@ func (o ListsList) Version() int {
 // List represents the model of a list
 type List struct {
 	// The identifier.
-	ID string `json:"ID" msgpack:"ID" bson:"_id" mapstructure:"ID,omitempty"`
+	ID string `json:"ID" msgpack:"ID" bson:"-" mapstructure:"ID,omitempty"`
 
 	// This attribute is creation only.
 	CreationOnly string `json:"creationOnly" msgpack:"creationOnly" bson:"creationonly" mapstructure:"creationOnly,omitempty"`
@@ -154,10 +144,61 @@ func (o *List) SetIdentifier(id string) {
 	o.ID = id
 }
 
+// GetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *List) GetBSON() (interface{}, error) {
+
+	s := &mongoAttributesList{}
+
+	s.ID = bson.ObjectIdHex(o.ID)
+	s.CreationOnly = o.CreationOnly
+	s.Date = o.Date
+	s.Description = o.Description
+	s.Name = o.Name
+	s.ParentID = o.ParentID
+	s.ParentType = o.ParentType
+	s.ReadOnly = o.ReadOnly
+	s.Secret = o.Secret
+	s.Slice = o.Slice
+	s.Unexposed = o.Unexposed
+
+	return s, nil
+}
+
+// SetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *List) SetBSON(raw bson.Raw) error {
+
+	s := &mongoAttributesList{}
+	if err := raw.Unmarshal(s); err != nil {
+		return err
+	}
+
+	o.ID = s.ID.Hex()
+	o.CreationOnly = s.CreationOnly
+	o.Date = s.Date
+	o.Description = s.Description
+	o.Name = s.Name
+	o.ParentID = s.ParentID
+	o.ParentType = s.ParentType
+	o.ReadOnly = s.ReadOnly
+	o.Secret = s.Secret
+	o.Slice = s.Slice
+	o.Unexposed = s.Unexposed
+
+	return nil
+}
+
 // Version returns the hardcoded version of the model.
 func (o *List) Version() int {
 
 	return 1
+}
+
+// BleveType implements the bleve.Classifier Interface.
+func (o *List) BleveType() string {
+
+	return "list"
 }
 
 // DefaultOrder returns the list of default ordering fields.
@@ -722,7 +763,7 @@ func (o SparseListsList) Version() int {
 // SparseList represents the sparse version of a list.
 type SparseList struct {
 	// The identifier.
-	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"-" mapstructure:"ID,omitempty"`
 
 	// This attribute is creation only.
 	CreationOnly *string `json:"creationOnly,omitempty" msgpack:"creationOnly,omitempty" bson:"creationonly,omitempty" mapstructure:"creationOnly,omitempty"`
@@ -781,6 +822,92 @@ func (o *SparseList) Identifier() string {
 func (o *SparseList) SetIdentifier(id string) {
 
 	o.ID = &id
+}
+
+// GetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *SparseList) GetBSON() (interface{}, error) {
+
+	s := &mongoAttributesSparseList{}
+
+	s.ID = bson.ObjectIdHex(*o.ID)
+	if o.CreationOnly != nil {
+		s.CreationOnly = o.CreationOnly
+	}
+	if o.Date != nil {
+		s.Date = o.Date
+	}
+	if o.Description != nil {
+		s.Description = o.Description
+	}
+	if o.Name != nil {
+		s.Name = o.Name
+	}
+	if o.ParentID != nil {
+		s.ParentID = o.ParentID
+	}
+	if o.ParentType != nil {
+		s.ParentType = o.ParentType
+	}
+	if o.ReadOnly != nil {
+		s.ReadOnly = o.ReadOnly
+	}
+	if o.Secret != nil {
+		s.Secret = o.Secret
+	}
+	if o.Slice != nil {
+		s.Slice = o.Slice
+	}
+	if o.Unexposed != nil {
+		s.Unexposed = o.Unexposed
+	}
+
+	return s, nil
+}
+
+// SetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *SparseList) SetBSON(raw bson.Raw) error {
+
+	s := &mongoAttributesSparseList{}
+	if err := raw.Unmarshal(s); err != nil {
+		return err
+	}
+
+	id := s.ID.Hex()
+	o.ID = &id
+	if s.CreationOnly != nil {
+		o.CreationOnly = s.CreationOnly
+	}
+	if s.Date != nil {
+		o.Date = s.Date
+	}
+	if s.Description != nil {
+		o.Description = s.Description
+	}
+	if s.Name != nil {
+		o.Name = s.Name
+	}
+	if s.ParentID != nil {
+		o.ParentID = s.ParentID
+	}
+	if s.ParentType != nil {
+		o.ParentType = s.ParentType
+	}
+	if s.ReadOnly != nil {
+		o.ReadOnly = s.ReadOnly
+	}
+	if s.Secret != nil {
+		o.Secret = s.Secret
+	}
+	if s.Slice != nil {
+		o.Slice = s.Slice
+	}
+	if s.Unexposed != nil {
+		o.Unexposed = s.Unexposed
+	}
+
+	return nil
 }
 
 // Version returns the hardcoded version of the model.
@@ -864,4 +991,31 @@ func (o *SparseList) DeepCopyInto(out *SparseList) {
 	}
 
 	*out = *target.(*SparseList)
+}
+
+type mongoAttributesList struct {
+	ID           bson.ObjectId `bson:"_id"`
+	CreationOnly string        `bson:"creationonly"`
+	Date         time.Time     `bson:"date"`
+	Description  string        `bson:"description"`
+	Name         string        `bson:"name"`
+	ParentID     string        `bson:"parentid"`
+	ParentType   string        `bson:"parenttype"`
+	ReadOnly     string        `bson:"readonly"`
+	Secret       string        `bson:"secret"`
+	Slice        []string      `bson:"slice"`
+	Unexposed    string        `bson:"unexposed"`
+}
+type mongoAttributesSparseList struct {
+	ID           bson.ObjectId `bson:"_id"`
+	CreationOnly *string       `bson:"creationonly,omitempty"`
+	Date         *time.Time    `bson:"date,omitempty"`
+	Description  *string       `bson:"description,omitempty"`
+	Name         *string       `bson:"name,omitempty"`
+	ParentID     *string       `bson:"parentid,omitempty"`
+	ParentType   *string       `bson:"parenttype,omitempty"`
+	ReadOnly     *string       `bson:"readonly,omitempty"`
+	Secret       *string       `bson:"secret,omitempty"`
+	Slice        *[]string     `bson:"slice,omitempty"`
+	Unexposed    *string       `bson:"unexposed,omitempty"`
 }
