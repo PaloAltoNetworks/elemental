@@ -165,7 +165,6 @@ func (o *{{ .Spec.Model.EntityName }}) SetIdentifier(id string) {
 }
 {{- end }}
 
-{{ if .Spec.Identifier }}
 // GetBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
 func (o *{{ .Spec.Model.EntityName }}) GetBSON() (interface{}, error) {
@@ -183,9 +182,7 @@ func (o *{{ .Spec.Model.EntityName }}) GetBSON() (interface{}, error) {
 
     return s, nil
 }
-{{- end }}
 
-{{ if .Spec.Identifier }}
 // SetBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
 func (o *{{ .Spec.Model.EntityName }}) SetBSON(raw bson.Raw) error {
@@ -206,7 +203,6 @@ func (o *{{ .Spec.Model.EntityName }}) SetBSON(raw bson.Raw) error {
 
     return nil
 }
-{{ end }}
 
 {{- if not .Spec.Model.Detached }}
 // Version returns the hardcoded version of the model.
@@ -871,7 +867,6 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) SetIdentifier(id string) {
     {{- end }}
 }
 
-{{ if .Spec.Identifier }}
 // GetBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
 func (o *Sparse{{ .Spec.Model.EntityName }}) GetBSON() (interface{}, error) {
@@ -891,9 +886,7 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) GetBSON() (interface{}, error) {
 
     return s, nil
 }
-{{- end }}
 
-{{ if .Spec.Identifier }}
 // SetBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
 func (o *Sparse{{ .Spec.Model.EntityName }}) SetBSON(raw bson.Raw) error {
@@ -917,7 +910,6 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) SetBSON(raw bson.Raw) error {
 
     return nil
 }
-{{ end }}
 
 // Version returns the hardcoded version of the model.
 func (o *Sparse{{ .Spec.Model.EntityName }}) Version() int {
@@ -1021,6 +1013,7 @@ type mongoAttributes{{ .Spec.Model.EntityName }} struct {
     {{- end }}
 }
 
+{{- if and (not .Spec.Model.Detached) (not .Spec.Model.IsRoot) }}
 type mongoAttributesSparse{{ .Spec.Model.EntityName }} struct {
     {{- range .Spec.Attributes $latestVersion -}}
     {{- if .Stored }}
@@ -1028,3 +1021,4 @@ type mongoAttributesSparse{{ .Spec.Model.EntityName }} struct {
     {{- end }}
     {{- end }}
 }
+{{- end }}
