@@ -169,6 +169,10 @@ func (o *{{ .Spec.Model.EntityName }}) SetIdentifier(id string) {
 // This is used to transparently convert ID to MongoDBID as ObectID.
 func (o *{{ .Spec.Model.EntityName }}) GetBSON() (interface{}, error) {
 
+    if o == nil {
+        return nil, nil
+    }
+
     s := &mongoAttributes{{ .Spec.Model.EntityName }}{}
     {{ range .Spec.Attributes $latestVersion -}}
     {{- if .Stored }}
@@ -186,6 +190,10 @@ func (o *{{ .Spec.Model.EntityName }}) GetBSON() (interface{}, error) {
 // SetBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
 func (o *{{ .Spec.Model.EntityName }}) SetBSON(raw bson.Raw) error {
+
+    if o == nil {
+        return nil
+    }
 
     s := &mongoAttributes{{ .Spec.Model.EntityName }}{}
     if err := raw.Unmarshal(s); err != nil {
@@ -871,6 +879,10 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) SetIdentifier(id string) {
 // This is used to transparently convert ID to MongoDBID as ObectID.
 func (o *Sparse{{ .Spec.Model.EntityName }}) GetBSON() (interface{}, error) {
 
+    if o == nil {
+        return nil, nil
+    }
+
     s := &mongoAttributesSparse{{ .Spec.Model.EntityName }}{}
     {{ range .Spec.Attributes $latestVersion -}}
     {{- if .Stored }}
@@ -890,6 +902,10 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) GetBSON() (interface{}, error) {
 // SetBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
 func (o *Sparse{{ .Spec.Model.EntityName }}) SetBSON(raw bson.Raw) error {
+
+    if o == nil {
+        return nil
+    }
 
     s := &mongoAttributesSparse{{ .Spec.Model.EntityName }}{}
     if err := raw.Unmarshal(s); err != nil {
