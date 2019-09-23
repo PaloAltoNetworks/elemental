@@ -31,6 +31,7 @@ lint:
 		--enable=misspell \
 		--enable=prealloc \
 		--enable=nakedret \
+		--skip-files data_test.go \
 		./...
 
 .PHONY: test
