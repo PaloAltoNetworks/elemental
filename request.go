@@ -40,6 +40,7 @@ type Request struct {
 	Password             string
 	Page                 int
 	PageSize             int
+	After                string
 	OverrideProtection   bool
 	Version              int
 	ExternalTrackingID   string
@@ -165,6 +166,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 
 	var page, pageSize int
 	var recursive, override bool
+	var after string
 	var order []string
 
 	q := req.URL.Query()
@@ -187,6 +189,11 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	if v := q.Get("recursive"); v != "" {
 		recursive = true
 		q.Del("recursive")
+	}
+
+	if v := q.Get("after"); v != "" {
+		after = v
+		q.Del("after")
 	}
 
 	if v := q.Get("override"); v != "" {
@@ -254,6 +261,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		Recursive:            recursive,
 		Page:                 page,
 		PageSize:             pageSize,
+		After:                after,
 		Operation:            operation,
 		Identity:             identity,
 		ObjectID:             ID,
@@ -287,6 +295,7 @@ func (r *Request) Duplicate() *Request {
 	req.Recursive = r.Recursive
 	req.Page = r.Page
 	req.PageSize = r.PageSize
+	req.After = r.After
 	req.Operation = r.Operation
 	req.Identity = r.Identity
 	req.ObjectID = r.ObjectID

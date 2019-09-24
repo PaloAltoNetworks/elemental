@@ -41,7 +41,7 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 	Convey("Given I have a get http request on /lists", t, func() {
 
-		req, err := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
+		req, err := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&after=42&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
 		req.Header.Set("X-Namespace", "ns")
 		req.Header.Set("X-Forwarded-for", "1.1.1.1")
 		req.Header.Set("X-Real-IP", "2.2.2.2")
@@ -119,6 +119,10 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 			Convey("Then the PageSize should be 2", func() {
 				So(r.PageSize, ShouldEqual, 2)
+			})
+
+			Convey("Then the After should be 42", func() {
+				So(r.After, ShouldEqual, "42")
 			})
 
 			Convey("Then the Recursive should be true", func() {
@@ -837,6 +841,7 @@ func TestRequest_Duplicate(t *testing.T) {
 		req.Operation = OperationPatch
 		req.Page = 1
 		req.PageSize = 2
+		req.After = "after"
 		req.Parameters = Parameters{
 			"p1": Parameter{
 				ptype:  ParameterTypeString,
@@ -871,6 +876,7 @@ func TestRequest_Duplicate(t *testing.T) {
 				So(req2.ObjectID, ShouldEqual, req.ObjectID)
 				So(req2.Operation, ShouldEqual, req.Operation)
 				So(req2.Page, ShouldEqual, req.Page)
+				So(req2.PageSize, ShouldEqual, req.PageSize)
 				So(req2.PageSize, ShouldEqual, req.PageSize)
 				So(req2.Parameters, ShouldResemble, req.Parameters)
 				So(req2.ParentID, ShouldEqual, req.ParentID)
