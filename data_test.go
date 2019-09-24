@@ -1,20 +1,10 @@
-// Copyright 2019 Aporeto Inc.
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//     http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package elemental
 
 import (
 	"fmt"
 	"time"
 
+	"github.com/globalsign/mgo/bson"
 	"github.com/mitchellh/copystructure"
 )
 
@@ -92,7 +82,7 @@ func (o ListsList) Version() int {
 // List represents the model of a list
 type List struct {
 	// The identifier.
-	ID string `json:"ID" msgpack:"ID" bson:"_id" mapstructure:"ID,omitempty"`
+	ID string `json:"ID" msgpack:"ID" bson:"-" mapstructure:"ID,omitempty"`
 
 	// This attribute is creation only.
 	CreationOnly string `json:"creationOnly" msgpack:"creationOnly" bson:"creationonly" mapstructure:"creationOnly,omitempty"`
@@ -154,10 +144,61 @@ func (o *List) SetIdentifier(id string) {
 	o.ID = id
 }
 
+// GetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *List) GetBSON() (interface{}, error) {
+
+	s := &mongoAttributesList{}
+
+	s.ID = bson.ObjectIdHex(o.ID)
+	s.CreationOnly = o.CreationOnly
+	s.Date = o.Date
+	s.Description = o.Description
+	s.Name = o.Name
+	s.ParentID = o.ParentID
+	s.ParentType = o.ParentType
+	s.ReadOnly = o.ReadOnly
+	s.Secret = o.Secret
+	s.Slice = o.Slice
+	s.Unexposed = o.Unexposed
+
+	return s, nil
+}
+
+// SetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *List) SetBSON(raw bson.Raw) error {
+
+	s := &mongoAttributesList{}
+	if err := raw.Unmarshal(s); err != nil {
+		return err
+	}
+
+	o.ID = s.ID.Hex()
+	o.CreationOnly = s.CreationOnly
+	o.Date = s.Date
+	o.Description = s.Description
+	o.Name = s.Name
+	o.ParentID = s.ParentID
+	o.ParentType = s.ParentType
+	o.ReadOnly = s.ReadOnly
+	o.Secret = s.Secret
+	o.Slice = s.Slice
+	o.Unexposed = s.Unexposed
+
+	return nil
+}
+
 // Version returns the hardcoded version of the model.
 func (o *List) Version() int {
 
 	return 1
+}
+
+// BleveType implements the bleve.Classifier Interface.
+func (o *List) BleveType() string {
+
+	return "list"
 }
 
 // DefaultOrder returns the list of default ordering fields.
@@ -722,7 +763,7 @@ func (o SparseListsList) Version() int {
 // SparseList represents the sparse version of a list.
 type SparseList struct {
 	// The identifier.
-	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"-" mapstructure:"ID,omitempty"`
 
 	// This attribute is creation only.
 	CreationOnly *string `json:"creationOnly,omitempty" msgpack:"creationOnly,omitempty" bson:"creationonly,omitempty" mapstructure:"creationOnly,omitempty"`
@@ -781,6 +822,92 @@ func (o *SparseList) Identifier() string {
 func (o *SparseList) SetIdentifier(id string) {
 
 	o.ID = &id
+}
+
+// GetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *SparseList) GetBSON() (interface{}, error) {
+
+	s := &mongoAttributesSparseList{}
+
+	s.ID = bson.ObjectIdHex(*o.ID)
+	if o.CreationOnly != nil {
+		s.CreationOnly = o.CreationOnly
+	}
+	if o.Date != nil {
+		s.Date = o.Date
+	}
+	if o.Description != nil {
+		s.Description = o.Description
+	}
+	if o.Name != nil {
+		s.Name = o.Name
+	}
+	if o.ParentID != nil {
+		s.ParentID = o.ParentID
+	}
+	if o.ParentType != nil {
+		s.ParentType = o.ParentType
+	}
+	if o.ReadOnly != nil {
+		s.ReadOnly = o.ReadOnly
+	}
+	if o.Secret != nil {
+		s.Secret = o.Secret
+	}
+	if o.Slice != nil {
+		s.Slice = o.Slice
+	}
+	if o.Unexposed != nil {
+		s.Unexposed = o.Unexposed
+	}
+
+	return s, nil
+}
+
+// SetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *SparseList) SetBSON(raw bson.Raw) error {
+
+	s := &mongoAttributesSparseList{}
+	if err := raw.Unmarshal(s); err != nil {
+		return err
+	}
+
+	id := s.ID.Hex()
+	o.ID = &id
+	if s.CreationOnly != nil {
+		o.CreationOnly = s.CreationOnly
+	}
+	if s.Date != nil {
+		o.Date = s.Date
+	}
+	if s.Description != nil {
+		o.Description = s.Description
+	}
+	if s.Name != nil {
+		o.Name = s.Name
+	}
+	if s.ParentID != nil {
+		o.ParentID = s.ParentID
+	}
+	if s.ParentType != nil {
+		o.ParentType = s.ParentType
+	}
+	if s.ReadOnly != nil {
+		o.ReadOnly = s.ReadOnly
+	}
+	if s.Secret != nil {
+		o.Secret = s.Secret
+	}
+	if s.Slice != nil {
+		o.Slice = s.Slice
+	}
+	if s.Unexposed != nil {
+		o.Unexposed = s.Unexposed
+	}
+
+	return nil
 }
 
 // Version returns the hardcoded version of the model.
@@ -864,6 +991,33 @@ func (o *SparseList) DeepCopyInto(out *SparseList) {
 	}
 
 	*out = *target.(*SparseList)
+}
+
+type mongoAttributesList struct {
+	ID           bson.ObjectId `bson:"_id"`
+	CreationOnly string        `bson:"creationonly"`
+	Date         time.Time     `bson:"date"`
+	Description  string        `bson:"description"`
+	Name         string        `bson:"name"`
+	ParentID     string        `bson:"parentid"`
+	ParentType   string        `bson:"parenttype"`
+	ReadOnly     string        `bson:"readonly"`
+	Secret       string        `bson:"secret"`
+	Slice        []string      `bson:"slice"`
+	Unexposed    string        `bson:"unexposed"`
+}
+type mongoAttributesSparseList struct {
+	ID           bson.ObjectId `bson:"_id"`
+	CreationOnly *string       `bson:"creationonly,omitempty"`
+	Date         *time.Time    `bson:"date,omitempty"`
+	Description  *string       `bson:"description,omitempty"`
+	Name         *string       `bson:"name,omitempty"`
+	ParentID     *string       `bson:"parentid,omitempty"`
+	ParentType   *string       `bson:"parenttype,omitempty"`
+	ReadOnly     *string       `bson:"readonly,omitempty"`
+	Secret       *string       `bson:"secret,omitempty"`
+	Slice        *[]string     `bson:"slice,omitempty"`
+	Unexposed    *string       `bson:"unexposed,omitempty"`
 }
 
 // TaskStatusValue represents the possible values for attribute "status".
@@ -953,7 +1107,7 @@ func (o TasksList) Version() int {
 // Task represents the model of a task
 type Task struct {
 	// The identifier.
-	ID string `json:"ID" msgpack:"ID" bson:"_id" mapstructure:"ID,omitempty"`
+	ID string `json:"ID" msgpack:"ID" bson:"-" mapstructure:"ID,omitempty"`
 
 	// The description.
 	Description string `json:"description" msgpack:"description" bson:"description" mapstructure:"description,omitempty"`
@@ -1000,10 +1154,51 @@ func (o *Task) SetIdentifier(id string) {
 	o.ID = id
 }
 
+// GetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *Task) GetBSON() (interface{}, error) {
+
+	s := &mongoAttributesTask{}
+
+	s.ID = bson.ObjectIdHex(o.ID)
+	s.Description = o.Description
+	s.Name = o.Name
+	s.ParentID = o.ParentID
+	s.ParentType = o.ParentType
+	s.Status = o.Status
+
+	return s, nil
+}
+
+// SetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *Task) SetBSON(raw bson.Raw) error {
+
+	s := &mongoAttributesTask{}
+	if err := raw.Unmarshal(s); err != nil {
+		return err
+	}
+
+	o.ID = s.ID.Hex()
+	o.Description = s.Description
+	o.Name = s.Name
+	o.ParentID = s.ParentID
+	o.ParentType = s.ParentType
+	o.Status = s.Status
+
+	return nil
+}
+
 // Version returns the hardcoded version of the model.
 func (o *Task) Version() int {
 
 	return 1
+}
+
+// BleveType implements the bleve.Classifier Interface.
+func (o *Task) BleveType() string {
+
+	return "task"
 }
 
 // DefaultOrder returns the list of default ordering fields.
@@ -1418,7 +1613,7 @@ func (o SparseTasksList) Version() int {
 // SparseTask represents the sparse version of a task.
 type SparseTask struct {
 	// The identifier.
-	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"-" mapstructure:"ID,omitempty"`
 
 	// The description.
 	Description *string `json:"description,omitempty" msgpack:"description,omitempty" bson:"description,omitempty" mapstructure:"description,omitempty"`
@@ -1462,6 +1657,62 @@ func (o *SparseTask) Identifier() string {
 func (o *SparseTask) SetIdentifier(id string) {
 
 	o.ID = &id
+}
+
+// GetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *SparseTask) GetBSON() (interface{}, error) {
+
+	s := &mongoAttributesSparseTask{}
+
+	s.ID = bson.ObjectIdHex(*o.ID)
+	if o.Description != nil {
+		s.Description = o.Description
+	}
+	if o.Name != nil {
+		s.Name = o.Name
+	}
+	if o.ParentID != nil {
+		s.ParentID = o.ParentID
+	}
+	if o.ParentType != nil {
+		s.ParentType = o.ParentType
+	}
+	if o.Status != nil {
+		s.Status = o.Status
+	}
+
+	return s, nil
+}
+
+// SetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *SparseTask) SetBSON(raw bson.Raw) error {
+
+	s := &mongoAttributesSparseTask{}
+	if err := raw.Unmarshal(s); err != nil {
+		return err
+	}
+
+	id := s.ID.Hex()
+	o.ID = &id
+	if s.Description != nil {
+		o.Description = s.Description
+	}
+	if s.Name != nil {
+		o.Name = s.Name
+	}
+	if s.ParentID != nil {
+		o.ParentID = s.ParentID
+	}
+	if s.ParentType != nil {
+		o.ParentType = s.ParentType
+	}
+	if s.Status != nil {
+		o.Status = s.Status
+	}
+
+	return nil
 }
 
 // Version returns the hardcoded version of the model.
@@ -1532,6 +1783,24 @@ func (o *SparseTask) DeepCopyInto(out *SparseTask) {
 	*out = *target.(*SparseTask)
 }
 
+type mongoAttributesTask struct {
+	ID          bson.ObjectId   `bson:"_id"`
+	Description string          `bson:"description"`
+	Name        string          `bson:"name"`
+	ParentID    string          `bson:"parentid"`
+	ParentType  string          `bson:"parenttype"`
+	Status      TaskStatusValue `bson:"status"`
+}
+type mongoAttributesSparseTask struct {
+	ID          bson.ObjectId    `bson:"_id"`
+	Description *string          `bson:"description,omitempty"`
+	Name        *string          `bson:"name,omitempty"`
+	ParentID    *string          `bson:"parentid,omitempty"`
+	ParentType  *string          `bson:"parenttype,omitempty"`
+	Status      *TaskStatusValue `bson:"status,omitempty"`
+}
+
+// UnmarshalableListIdentity represents the Identity of the object.
 var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
 
 // UnmarshalableListsList represents a list of UnmarshalableLists
@@ -1720,7 +1989,7 @@ func (o UsersList) Version() int {
 // User represents the model of a user
 type User struct {
 	// The identifier.
-	ID string `json:"ID" msgpack:"ID" bson:"_id" mapstructure:"ID,omitempty"`
+	ID string `json:"ID" msgpack:"ID" bson:"-" mapstructure:"ID,omitempty"`
 
 	// The first name.
 	FirstName string `json:"firstName" msgpack:"firstName" bson:"firstname" mapstructure:"firstName,omitempty"`
@@ -1766,10 +2035,51 @@ func (o *User) SetIdentifier(id string) {
 	o.ID = id
 }
 
+// GetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *User) GetBSON() (interface{}, error) {
+
+	s := &mongoAttributesUser{}
+
+	s.ID = bson.ObjectIdHex(o.ID)
+	s.FirstName = o.FirstName
+	s.LastName = o.LastName
+	s.ParentID = o.ParentID
+	s.ParentType = o.ParentType
+	s.UserName = o.UserName
+
+	return s, nil
+}
+
+// SetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *User) SetBSON(raw bson.Raw) error {
+
+	s := &mongoAttributesUser{}
+	if err := raw.Unmarshal(s); err != nil {
+		return err
+	}
+
+	o.ID = s.ID.Hex()
+	o.FirstName = s.FirstName
+	o.LastName = s.LastName
+	o.ParentID = s.ParentID
+	o.ParentType = s.ParentType
+	o.UserName = s.UserName
+
+	return nil
+}
+
 // Version returns the hardcoded version of the model.
 func (o *User) Version() int {
 
 	return 1
+}
+
+// BleveType implements the bleve.Classifier Interface.
+func (o *User) BleveType() string {
+
+	return "user"
 }
 
 // DefaultOrder returns the list of default ordering fields.
@@ -2176,7 +2486,7 @@ func (o SparseUsersList) Version() int {
 // SparseUser represents the sparse version of a user.
 type SparseUser struct {
 	// The identifier.
-	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"-" mapstructure:"ID,omitempty"`
 
 	// The first name.
 	FirstName *string `json:"firstName,omitempty" msgpack:"firstName,omitempty" bson:"firstname,omitempty" mapstructure:"firstName,omitempty"`
@@ -2220,6 +2530,62 @@ func (o *SparseUser) Identifier() string {
 func (o *SparseUser) SetIdentifier(id string) {
 
 	o.ID = &id
+}
+
+// GetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *SparseUser) GetBSON() (interface{}, error) {
+
+	s := &mongoAttributesSparseUser{}
+
+	s.ID = bson.ObjectIdHex(*o.ID)
+	if o.FirstName != nil {
+		s.FirstName = o.FirstName
+	}
+	if o.LastName != nil {
+		s.LastName = o.LastName
+	}
+	if o.ParentID != nil {
+		s.ParentID = o.ParentID
+	}
+	if o.ParentType != nil {
+		s.ParentType = o.ParentType
+	}
+	if o.UserName != nil {
+		s.UserName = o.UserName
+	}
+
+	return s, nil
+}
+
+// SetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *SparseUser) SetBSON(raw bson.Raw) error {
+
+	s := &mongoAttributesSparseUser{}
+	if err := raw.Unmarshal(s); err != nil {
+		return err
+	}
+
+	id := s.ID.Hex()
+	o.ID = &id
+	if s.FirstName != nil {
+		o.FirstName = s.FirstName
+	}
+	if s.LastName != nil {
+		o.LastName = s.LastName
+	}
+	if s.ParentID != nil {
+		o.ParentID = s.ParentID
+	}
+	if s.ParentType != nil {
+		o.ParentType = s.ParentType
+	}
+	if s.UserName != nil {
+		o.UserName = s.UserName
+	}
+
+	return nil
 }
 
 // Version returns the hardcoded version of the model.
@@ -2278,6 +2644,23 @@ func (o *SparseUser) DeepCopyInto(out *SparseUser) {
 	*out = *target.(*SparseUser)
 }
 
+type mongoAttributesUser struct {
+	ID         bson.ObjectId `bson:"_id"`
+	FirstName  string        `bson:"firstname"`
+	LastName   string        `bson:"lastname"`
+	ParentID   string        `bson:"parentid"`
+	ParentType string        `bson:"parenttype"`
+	UserName   string        `bson:"username"`
+}
+type mongoAttributesSparseUser struct {
+	ID         bson.ObjectId `bson:"_id"`
+	FirstName  *string       `bson:"firstname,omitempty"`
+	LastName   *string       `bson:"lastname,omitempty"`
+	ParentID   *string       `bson:"parentid,omitempty"`
+	ParentType *string       `bson:"parenttype,omitempty"`
+	UserName   *string       `bson:"username,omitempty"`
+}
+
 // Root represents the model of a root
 type Root struct {
 	ModelVersion int `json:"-" msgpack:"-" bson:"_modelversion"`
@@ -2308,10 +2691,37 @@ func (o *Root) SetIdentifier(id string) {
 
 }
 
+// GetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *Root) GetBSON() (interface{}, error) {
+
+	s := &mongoAttributesRoot{}
+
+	return s, nil
+}
+
+// SetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *Root) SetBSON(raw bson.Raw) error {
+
+	s := &mongoAttributesRoot{}
+	if err := raw.Unmarshal(s); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Version returns the hardcoded version of the model.
 func (o *Root) Version() int {
 
 	return 1
+}
+
+// BleveType implements the bleve.Classifier Interface.
+func (o *Root) BleveType() string {
+
+	return "root"
 }
 
 // DefaultOrder returns the list of default ordering fields.
@@ -2405,6 +2815,10 @@ var RootAttributesMap = map[string]AttributeSpecification{}
 
 // RootLowerCaseAttributesMap represents the map of attribute for Root.
 var RootLowerCaseAttributesMap = map[string]AttributeSpecification{}
+
+type mongoAttributesRoot struct {
+}
+
 var (
 	identityNamesMap = map[string]Identity{
 		"list": ListIdentity,

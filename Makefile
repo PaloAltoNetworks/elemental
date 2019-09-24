@@ -17,6 +17,7 @@ lint:
 	# --enable=unparam
 	golangci-lint run \
 		--disable-all \
+		--skip-files data_test.go \
 		--exclude-use-default=false \
 		--enable=errcheck \
 		--enable=goimports \

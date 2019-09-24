@@ -1,19 +1,9 @@
-// Copyright 2019 Aporeto Inc.
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//     http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package testmodel
 
 import (
 	"fmt"
 
+	"github.com/globalsign/mgo/bson"
 	"github.com/mitchellh/copystructure"
 	"go.aporeto.io/elemental"
 )
@@ -56,10 +46,37 @@ func (o *Root) SetIdentifier(id string) {
 
 }
 
+// GetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *Root) GetBSON() (interface{}, error) {
+
+	s := &mongoAttributesRoot{}
+
+	return s, nil
+}
+
+// SetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *Root) SetBSON(raw bson.Raw) error {
+
+	s := &mongoAttributesRoot{}
+	if err := raw.Unmarshal(s); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Version returns the hardcoded version of the model.
 func (o *Root) Version() int {
 
 	return 1
+}
+
+// BleveType implements the bleve.Classifier Interface.
+func (o *Root) BleveType() string {
+
+	return "root"
 }
 
 // DefaultOrder returns the list of default ordering fields.
@@ -153,3 +170,6 @@ var RootAttributesMap = map[string]elemental.AttributeSpecification{}
 
 // RootLowerCaseAttributesMap represents the map of attribute for Root.
 var RootLowerCaseAttributesMap = map[string]elemental.AttributeSpecification{}
+
+type mongoAttributesRoot struct {
+}

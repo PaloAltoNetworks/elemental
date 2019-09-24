@@ -15,17 +15,18 @@ import (
 	"fmt"
 	"time"
 
+    "github.com/globalsign/mgo/bson"
     "github.com/mitchellh/copystructure"
 )
 
 //lint:file-ignore U1000 auto generated code.
 EOF
 {
-    tail -n +11 model/list.go;
-    tail -n +10 model/task.go;
-    tail -n +10 model/unmarshalable.go;
-    tail -n +10 model/user.go;
-    tail -n +18 model/root.go;
+    tail -n +12 model/list.go;
+    tail -n +11 model/task.go;
+    tail -n +19 model/unmarshalable.go;
+    tail -n +11 model/user.go;
+    tail -n +19 model/root.go;
     tail -n +5 model/identities_registry.go;
     tail -n +4 model/relationships_registry.go;
 }>> ../data_test.go

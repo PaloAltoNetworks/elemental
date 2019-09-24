@@ -1,19 +1,9 @@
-// Copyright 2019 Aporeto Inc.
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//     http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package testmodel
 
 import (
 	"fmt"
 
+	"github.com/globalsign/mgo/bson"
 	"github.com/mitchellh/copystructure"
 	"go.aporeto.io/elemental"
 )
@@ -91,7 +81,7 @@ func (o UsersList) Version() int {
 // User represents the model of a user
 type User struct {
 	// The identifier.
-	ID string `json:"ID" msgpack:"ID" bson:"_id" mapstructure:"ID,omitempty"`
+	ID string `json:"ID" msgpack:"ID" bson:"-" mapstructure:"ID,omitempty"`
 
 	// The first name.
 	FirstName string `json:"firstName" msgpack:"firstName" bson:"firstname" mapstructure:"firstName,omitempty"`
@@ -137,10 +127,51 @@ func (o *User) SetIdentifier(id string) {
 	o.ID = id
 }
 
+// GetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *User) GetBSON() (interface{}, error) {
+
+	s := &mongoAttributesUser{}
+
+	s.ID = bson.ObjectIdHex(o.ID)
+	s.FirstName = o.FirstName
+	s.LastName = o.LastName
+	s.ParentID = o.ParentID
+	s.ParentType = o.ParentType
+	s.UserName = o.UserName
+
+	return s, nil
+}
+
+// SetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *User) SetBSON(raw bson.Raw) error {
+
+	s := &mongoAttributesUser{}
+	if err := raw.Unmarshal(s); err != nil {
+		return err
+	}
+
+	o.ID = s.ID.Hex()
+	o.FirstName = s.FirstName
+	o.LastName = s.LastName
+	o.ParentID = s.ParentID
+	o.ParentType = s.ParentType
+	o.UserName = s.UserName
+
+	return nil
+}
+
 // Version returns the hardcoded version of the model.
 func (o *User) Version() int {
 
 	return 1
+}
+
+// BleveType implements the bleve.Classifier Interface.
+func (o *User) BleveType() string {
+
+	return "user"
 }
 
 // DefaultOrder returns the list of default ordering fields.
@@ -547,7 +578,7 @@ func (o SparseUsersList) Version() int {
 // SparseUser represents the sparse version of a user.
 type SparseUser struct {
 	// The identifier.
-	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"-" mapstructure:"ID,omitempty"`
 
 	// The first name.
 	FirstName *string `json:"firstName,omitempty" msgpack:"firstName,omitempty" bson:"firstname,omitempty" mapstructure:"firstName,omitempty"`
@@ -591,6 +622,62 @@ func (o *SparseUser) Identifier() string {
 func (o *SparseUser) SetIdentifier(id string) {
 
 	o.ID = &id
+}
+
+// GetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *SparseUser) GetBSON() (interface{}, error) {
+
+	s := &mongoAttributesSparseUser{}
+
+	s.ID = bson.ObjectIdHex(*o.ID)
+	if o.FirstName != nil {
+		s.FirstName = o.FirstName
+	}
+	if o.LastName != nil {
+		s.LastName = o.LastName
+	}
+	if o.ParentID != nil {
+		s.ParentID = o.ParentID
+	}
+	if o.ParentType != nil {
+		s.ParentType = o.ParentType
+	}
+	if o.UserName != nil {
+		s.UserName = o.UserName
+	}
+
+	return s, nil
+}
+
+// SetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *SparseUser) SetBSON(raw bson.Raw) error {
+
+	s := &mongoAttributesSparseUser{}
+	if err := raw.Unmarshal(s); err != nil {
+		return err
+	}
+
+	id := s.ID.Hex()
+	o.ID = &id
+	if s.FirstName != nil {
+		o.FirstName = s.FirstName
+	}
+	if s.LastName != nil {
+		o.LastName = s.LastName
+	}
+	if s.ParentID != nil {
+		o.ParentID = s.ParentID
+	}
+	if s.ParentType != nil {
+		o.ParentType = s.ParentType
+	}
+	if s.UserName != nil {
+		o.UserName = s.UserName
+	}
+
+	return nil
 }
 
 // Version returns the hardcoded version of the model.
@@ -647,4 +734,21 @@ func (o *SparseUser) DeepCopyInto(out *SparseUser) {
 	}
 
 	*out = *target.(*SparseUser)
+}
+
+type mongoAttributesUser struct {
+	ID         bson.ObjectId `bson:"_id"`
+	FirstName  string        `bson:"firstname"`
+	LastName   string        `bson:"lastname"`
+	ParentID   string        `bson:"parentid"`
+	ParentType string        `bson:"parenttype"`
+	UserName   string        `bson:"username"`
+}
+type mongoAttributesSparseUser struct {
+	ID         bson.ObjectId `bson:"_id"`
+	FirstName  *string       `bson:"firstname,omitempty"`
+	LastName   *string       `bson:"lastname,omitempty"`
+	ParentID   *string       `bson:"parentid,omitempty"`
+	ParentType *string       `bson:"parenttype,omitempty"`
+	UserName   *string       `bson:"username,omitempty"`
 }

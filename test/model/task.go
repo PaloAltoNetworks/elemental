@@ -1,19 +1,9 @@
-// Copyright 2019 Aporeto Inc.
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//     http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package testmodel
 
 import (
 	"fmt"
 
+	"github.com/globalsign/mgo/bson"
 	"github.com/mitchellh/copystructure"
 	"go.aporeto.io/elemental"
 )
@@ -105,7 +95,7 @@ func (o TasksList) Version() int {
 // Task represents the model of a task
 type Task struct {
 	// The identifier.
-	ID string `json:"ID" msgpack:"ID" bson:"_id" mapstructure:"ID,omitempty"`
+	ID string `json:"ID" msgpack:"ID" bson:"-" mapstructure:"ID,omitempty"`
 
 	// The description.
 	Description string `json:"description" msgpack:"description" bson:"description" mapstructure:"description,omitempty"`
@@ -152,10 +142,51 @@ func (o *Task) SetIdentifier(id string) {
 	o.ID = id
 }
 
+// GetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *Task) GetBSON() (interface{}, error) {
+
+	s := &mongoAttributesTask{}
+
+	s.ID = bson.ObjectIdHex(o.ID)
+	s.Description = o.Description
+	s.Name = o.Name
+	s.ParentID = o.ParentID
+	s.ParentType = o.ParentType
+	s.Status = o.Status
+
+	return s, nil
+}
+
+// SetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *Task) SetBSON(raw bson.Raw) error {
+
+	s := &mongoAttributesTask{}
+	if err := raw.Unmarshal(s); err != nil {
+		return err
+	}
+
+	o.ID = s.ID.Hex()
+	o.Description = s.Description
+	o.Name = s.Name
+	o.ParentID = s.ParentID
+	o.ParentType = s.ParentType
+	o.Status = s.Status
+
+	return nil
+}
+
 // Version returns the hardcoded version of the model.
 func (o *Task) Version() int {
 
 	return 1
+}
+
+// BleveType implements the bleve.Classifier Interface.
+func (o *Task) BleveType() string {
+
+	return "task"
 }
 
 // DefaultOrder returns the list of default ordering fields.
@@ -570,7 +601,7 @@ func (o SparseTasksList) Version() int {
 // SparseTask represents the sparse version of a task.
 type SparseTask struct {
 	// The identifier.
-	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"_id" mapstructure:"ID,omitempty"`
+	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"-" mapstructure:"ID,omitempty"`
 
 	// The description.
 	Description *string `json:"description,omitempty" msgpack:"description,omitempty" bson:"description,omitempty" mapstructure:"description,omitempty"`
@@ -614,6 +645,62 @@ func (o *SparseTask) Identifier() string {
 func (o *SparseTask) SetIdentifier(id string) {
 
 	o.ID = &id
+}
+
+// GetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *SparseTask) GetBSON() (interface{}, error) {
+
+	s := &mongoAttributesSparseTask{}
+
+	s.ID = bson.ObjectIdHex(*o.ID)
+	if o.Description != nil {
+		s.Description = o.Description
+	}
+	if o.Name != nil {
+		s.Name = o.Name
+	}
+	if o.ParentID != nil {
+		s.ParentID = o.ParentID
+	}
+	if o.ParentType != nil {
+		s.ParentType = o.ParentType
+	}
+	if o.Status != nil {
+		s.Status = o.Status
+	}
+
+	return s, nil
+}
+
+// SetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *SparseTask) SetBSON(raw bson.Raw) error {
+
+	s := &mongoAttributesSparseTask{}
+	if err := raw.Unmarshal(s); err != nil {
+		return err
+	}
+
+	id := s.ID.Hex()
+	o.ID = &id
+	if s.Description != nil {
+		o.Description = s.Description
+	}
+	if s.Name != nil {
+		o.Name = s.Name
+	}
+	if s.ParentID != nil {
+		o.ParentID = s.ParentID
+	}
+	if s.ParentType != nil {
+		o.ParentType = s.ParentType
+	}
+	if s.Status != nil {
+		o.Status = s.Status
+	}
+
+	return nil
 }
 
 // Version returns the hardcoded version of the model.
@@ -682,4 +769,21 @@ func (o *SparseTask) DeepCopyInto(out *SparseTask) {
 	}
 
 	*out = *target.(*SparseTask)
+}
+
+type mongoAttributesTask struct {
+	ID          bson.ObjectId   `bson:"_id"`
+	Description string          `bson:"description"`
+	Name        string          `bson:"name"`
+	ParentID    string          `bson:"parentid"`
+	ParentType  string          `bson:"parenttype"`
+	Status      TaskStatusValue `bson:"status"`
+}
+type mongoAttributesSparseTask struct {
+	ID          bson.ObjectId    `bson:"_id"`
+	Description *string          `bson:"description,omitempty"`
+	Name        *string          `bson:"name,omitempty"`
+	ParentID    *string          `bson:"parentid,omitempty"`
+	ParentType  *string          `bson:"parenttype,omitempty"`
+	Status      *TaskStatusValue `bson:"status,omitempty"`
 }
