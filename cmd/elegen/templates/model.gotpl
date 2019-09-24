@@ -81,8 +81,8 @@ func (o {{ .Spec.Model.EntityNamePlural }}List) List() elemental.IdentifiablesLi
 func (o {{ .Spec.Model.EntityNamePlural }}List) DefaultOrder() []string {
 
     return []string{
-        {{ range .Spec.OrderingAttributes $latestVersion -}}
-        "{{ .Name }}",
+        {{ range .Spec.DefaultOrder -}}
+        "{{ . }}",
         {{ end }}
     }
 }
@@ -231,8 +231,8 @@ func (o *{{ .Spec.Model.EntityName }}) BleveType() string {
 func (o *{{ .Spec.Model.EntityName  }}) DefaultOrder() []string {
 
     return []string{
-        {{ range .Spec.OrderingAttributes $latestVersion -}}
-        "{{ .Name }}",
+        {{ range .Spec.DefaultOrder -}}
+        "{{ . }}",
         {{ end }}
     }
 }
@@ -587,9 +587,6 @@ var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSp
         {{- if .CreationOnly }}
         CreationOnly: {{ .CreationOnly }},
         {{- end }}
-        {{- if .DefaultOrder }}
-        DefaultOrder: {{ .DefaultOrder }},
-        {{- end }}
         {{- if .DefaultValue }}
         DefaultValue: {{ writeDefaultValue $.Set $.Spec . }},
         {{- end }}
@@ -685,9 +682,6 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
         {{- end }}
         {{- if .CreationOnly }}
         CreationOnly: {{ .CreationOnly }},
-        {{- end }}
-        {{- if .DefaultOrder }}
-        DefaultOrder: {{ .DefaultOrder }},
         {{- end }}
         {{- if .DefaultValue }}
         DefaultValue: {{ writeDefaultValue $.Set $.Spec . }},
@@ -811,8 +805,8 @@ func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) List() elemental.Identifia
 func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) DefaultOrder() []string {
 
     return []string{
-        {{ range .Spec.OrderingAttributes $latestVersion -}}
-        "{{ .Name }}",
+        {{ range .Spec.DefaultOrder -}}
+        "{{ . }}",
         {{ end }}
     }
 }
