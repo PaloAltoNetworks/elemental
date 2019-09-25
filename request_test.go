@@ -39,9 +39,9 @@ func TestRequest_NewRequest(t *testing.T) {
 
 func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
-	Convey("Given I have a get http request on /lists", t, func() {
+	Convey("Given I have a get http request on /lists with page", t, func() {
 
-		req, err := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&after=42&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
+		req, err := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
 		req.Header.Set("X-Namespace", "ns")
 		req.Header.Set("X-Forwarded-for", "1.1.1.1")
 		req.Header.Set("X-Real-IP", "2.2.2.2")
@@ -115,6 +115,110 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 			Convey("Then the Page should be 1", func() {
 				So(r.Page, ShouldEqual, 1)
+			})
+
+			Convey("Then the PageSize should be 2", func() {
+				So(r.PageSize, ShouldEqual, 2)
+			})
+
+			Convey("Then the After should be 42", func() {
+				So(r.After, ShouldEqual, "")
+			})
+
+			Convey("Then the Recursive should be true", func() {
+				So(r.Recursive, ShouldBeTrue)
+			})
+
+			Convey("Then the OverrideProtection should be true", func() {
+				So(r.OverrideProtection, ShouldBeTrue)
+			})
+
+			Convey("Then the Accept should be EncodingTypeMSGPACK", func() {
+				So(r.Accept, ShouldEqual, EncodingTypeMSGPACK)
+			})
+
+			Convey("Then the ContentType should be EncodingTypeJSON", func() {
+				So(r.ContentType, ShouldEqual, EncodingTypeJSON)
+			})
+
+			Convey("Then I can retrieve the original request", func() {
+				So(r.HTTPRequest(), ShouldEqual, req)
+			})
+		})
+	})
+
+	Convey("Given I have a get http request on /lists with after", t, func() {
+
+		req, err := http.NewRequest(http.MethodGet, "http://server/v/10/lists?after=42&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
+		req.Header.Set("X-Namespace", "ns")
+		req.Header.Set("X-Forwarded-for", "1.1.1.1")
+		req.Header.Set("X-Real-IP", "2.2.2.2")
+		req.Header.Set("Accept", "application/msgpack")
+		req.Header.Set("Content-Type", "application/json")
+		req.RemoteAddr = "42.42.42.42"
+
+		Convey("Then err should be nil", func() {
+			So(err, ShouldBeNil)
+		})
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should not be nil", func() {
+				So(r, ShouldNotBeNil)
+			})
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then the operation should be OperationRetrieveMany", func() {
+				So(r.Operation, ShouldEqual, OperationRetrieveMany)
+			})
+
+			Convey("Then the version should be 10", func() {
+				So(r.Version, ShouldEqual, 10)
+			})
+
+			Convey("Then the Namespace should be ns", func() {
+				So(r.Namespace, ShouldResemble, "ns")
+			})
+
+			Convey("Then the RequestID should not be empty", func() {
+				So(r.RequestID, ShouldNotBeEmpty)
+			})
+
+			Convey("Then the identity should be ListIdentity", func() {
+				So(r.Identity, ShouldResemble, ListIdentity)
+			})
+
+			Convey("Then the ObjectID should be empty", func() {
+				So(r.ObjectID, ShouldBeEmpty)
+			})
+
+			Convey("Then the parent identity should be empty", func() {
+				So(r.ParentIdentity, ShouldResemble, RootIdentity)
+			})
+
+			Convey("Then the ParentID should be empty", func() {
+				So(r.ParentID, ShouldBeEmpty)
+			})
+
+			Convey("Then the Username should be empty", func() {
+				So(r.Username, ShouldBeEmpty)
+			})
+
+			Convey("Then the Password should be empty", func() {
+				So(r.Password, ShouldBeEmpty)
+			})
+
+			Convey("Then the Data should be empty", func() {
+				So(r.Data, ShouldBeEmpty)
+			})
+
+			Convey("Then the ClientIP should be set", func() {
+				So(r.ClientIP, ShouldEqual, "1.1.1.1")
 			})
 
 			Convey("Then the PageSize should be 2", func() {
@@ -823,6 +927,66 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 			Convey("Then err should not be nil", func() {
 				So(err, ShouldNotBeNil)
 				So(err.Error(), ShouldEqual, "error 400 (elemental): Bad Request: Parameter `pagesize` must be an integer")
+			})
+		})
+	})
+
+	Convey("Given I have a http request %00 as after parameter ", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/?after=%00", nil)
+		req.Header.Set("Content-Type", "application/json")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, "error 400 (elemental): Bad Request: Parameter `after` must be set when provided")
+			})
+		})
+	})
+
+	Convey("Given I have a http request with after and 2 order parameters", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/?after=xxx&order=a&order=b", nil)
+		req.Header.Set("Content-Type", "application/json")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, "error 400 (elemental): Bad Request: You can only order on a single field when using 'after'")
+			})
+		})
+	})
+
+	Convey("Given I have a http request with after and page parameters", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/?after=xxx&page=2", nil)
+		req.Header.Set("Content-Type", "application/json")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, "error 400 (elemental): Bad Request: You cannot set 'after' and 'page' at the same time")
 			})
 		})
 	})

@@ -191,11 +191,6 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		q.Del("recursive")
 	}
 
-	if v := q.Get("after"); v != "" {
-		after = v
-		q.Del("after")
-	}
-
 	if v := q.Get("override"); v != "" {
 		override = true
 		q.Del("override")
@@ -209,6 +204,20 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		}
 		order = v
 		q.Del("order")
+	}
+
+	if v := q.Get("after"); v != "" {
+		if v == "" || v == "\u0000" {
+			return nil, NewError("Bad Request", "Parameter `after` must be set when provided", "elemental", http.StatusBadRequest)
+		}
+		if len(order) > 1 {
+			return nil, NewError("Bad Request", "You can only order on a single field when using 'after'", "elemental", http.StatusBadRequest)
+		}
+		if page != 0 {
+			return nil, NewError("Bad Request", "You cannot set 'after' and 'page' at the same time", "elemental", http.StatusBadRequest)
+		}
+		after = v
+		q.Del("after")
 	}
 
 	paramsMap := Parameters{}
