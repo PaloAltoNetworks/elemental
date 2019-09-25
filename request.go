@@ -40,6 +40,8 @@ type Request struct {
 	Password             string
 	Page                 int
 	PageSize             int
+	After                string
+	Limit                int
 	OverrideProtection   bool
 	Version              int
 	ExternalTrackingID   string
@@ -163,8 +165,9 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		}
 	}
 
-	var page, pageSize int
+	var page, pageSize, limit int
 	var recursive, override bool
+	var after string
 	var order []string
 
 	q := req.URL.Query()
@@ -202,6 +205,31 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		}
 		order = v
 		q.Del("order")
+	}
+
+	if v := q.Get("limit"); v != "" {
+		limit, err = strconv.Atoi(v)
+		if pageSize != 0 {
+			return nil, NewError("Bad Request", "You cannot set 'limit' and 'pagesize' at the same time", "elemental", http.StatusBadRequest)
+		}
+		if err != nil {
+			return nil, NewError("Bad Request", "Parameter `limit` must be an integer", "elemental", http.StatusBadRequest)
+		}
+		q.Del("limit")
+	}
+
+	if v := q.Get("after"); v != "" {
+		if v == "" || v == "\u0000" {
+			return nil, NewError("Bad Request", "Parameter `after` must be set when provided", "elemental", http.StatusBadRequest)
+		}
+		if len(order) > 1 {
+			return nil, NewError("Bad Request", "You can only order on a single field when using 'after'", "elemental", http.StatusBadRequest)
+		}
+		if page != 0 {
+			return nil, NewError("Bad Request", "You cannot set 'after' and 'page' at the same time", "elemental", http.StatusBadRequest)
+		}
+		after = v
+		q.Del("after")
 	}
 
 	paramsMap := Parameters{}
@@ -254,6 +282,8 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		Recursive:            recursive,
 		Page:                 page,
 		PageSize:             pageSize,
+		After:                after,
+		Limit:                limit,
 		Operation:            operation,
 		Identity:             identity,
 		ObjectID:             ID,
@@ -287,6 +317,8 @@ func (r *Request) Duplicate() *Request {
 	req.Recursive = r.Recursive
 	req.Page = r.Page
 	req.PageSize = r.PageSize
+	req.After = r.After
+	req.Limit = r.Limit
 	req.Operation = r.Operation
 	req.Identity = r.Identity
 	req.ObjectID = r.ObjectID

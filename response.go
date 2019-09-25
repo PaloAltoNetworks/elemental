@@ -17,6 +17,7 @@ type Response struct {
 	Data       []byte
 	Count      int
 	Total      int
+	Next       string
 	Messages   []string
 	Redirect   string
 	RequestID  string
