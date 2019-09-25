@@ -41,6 +41,7 @@ type Request struct {
 	Page                 int
 	PageSize             int
 	After                string
+	Limit                int
 	OverrideProtection   bool
 	Version              int
 	ExternalTrackingID   string
@@ -164,7 +165,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		}
 	}
 
-	var page, pageSize int
+	var page, pageSize, limit int
 	var recursive, override bool
 	var after string
 	var order []string
@@ -204,6 +205,17 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		}
 		order = v
 		q.Del("order")
+	}
+
+	if v := q.Get("limit"); v != "" {
+		limit, err = strconv.Atoi(v)
+		if pageSize != 0 {
+			return nil, NewError("Bad Request", "You cannot set 'limit' and 'pagesize' at the same time", "elemental", http.StatusBadRequest)
+		}
+		if err != nil {
+			return nil, NewError("Bad Request", "Parameter `limit` must be an integer", "elemental", http.StatusBadRequest)
+		}
+		q.Del("limit")
 	}
 
 	if v := q.Get("after"); v != "" {
@@ -271,6 +283,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		Page:                 page,
 		PageSize:             pageSize,
 		After:                after,
+		Limit:                limit,
 		Operation:            operation,
 		Identity:             identity,
 		ObjectID:             ID,
@@ -305,6 +318,7 @@ func (r *Request) Duplicate() *Request {
 	req.Page = r.Page
 	req.PageSize = r.PageSize
 	req.After = r.After
+	req.Limit = r.Limit
 	req.Operation = r.Operation
 	req.Identity = r.Identity
 	req.ObjectID = r.ObjectID
