@@ -437,6 +437,7 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
 
     {{ if eq .Type "ref" }}
     if o.{{ .ConvertedName }} != nil {
+        elemental.ResetDefaultForZeroValues(o.{{ .ConvertedName }})
         if err := o.{{ .ConvertedName }}.Validate(); err != nil {
             errors = errors.Append(err)
         }
@@ -448,6 +449,7 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
         if sub == nil {
             continue
         }
+        elemental.ResetDefaultForZeroValues(sub)
         if err := sub.Validate(); err != nil {
             errors = errors.Append(err)
         }
