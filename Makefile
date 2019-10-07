@@ -6,12 +6,9 @@ PROJECT_VERSION ?= $(lastword $(shell git tag --sort version:refname --merged $(
 PROJECT_RELEASE ?= dev
 
 export GO111MODULE = on
+export GOPRIVATE = '*'
 
-ci: init lint test codecov
-
-init:
-	GO111MODULE=off go get -u github.com/aporeto-inc/go-bindata/...
-	GO111MODULE=off go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+ci: lint test codecov
 
 lint:
 	# --enable=unparam
