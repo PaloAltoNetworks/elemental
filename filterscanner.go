@@ -30,7 +30,7 @@ func newScanner(
 	input string,
 ) *scanner {
 	var buf bytes.Buffer
-	buf.WriteString(input)
+	_, _ = buf.WriteString(input)
 
 	return &scanner{
 		buf:          buf,
@@ -109,7 +109,7 @@ func (s *scanner) scan() (parserToken, string) {
 func (s *scanner) scanWhitespace() (parserToken, string) {
 
 	var buf bytes.Buffer
-	buf.WriteRune(s.read())
+	_, _ = buf.WriteRune(s.read())
 
 	for {
 		if ch := s.read(); ch == runeEOF {
@@ -118,7 +118,7 @@ func (s *scanner) scanWhitespace() (parserToken, string) {
 			s.unread()
 			break
 		} else {
-			buf.WriteRune(ch)
+			_, _ = buf.WriteRune(ch)
 		}
 	}
 
@@ -129,7 +129,7 @@ func (s *scanner) scanWhitespace() (parserToken, string) {
 func (s *scanner) scanWord() (parserToken, string) {
 
 	var buf bytes.Buffer
-	buf.WriteRune(s.read())
+	_, _ = buf.WriteRune(s.read())
 
 	for {
 		if ch := s.read(); ch == runeEOF {
@@ -160,7 +160,7 @@ func (s *scanner) scanWord() (parserToken, string) {
 				}
 			}
 
-			buf.WriteRune(ch)
+			_, _ = buf.WriteRune(ch)
 		}
 	}
 

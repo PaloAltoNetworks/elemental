@@ -49,7 +49,7 @@ func generator(sets []spec.SpecificationSet, out string) error {
 	set := sets[0]
 	publicMode := viper.GetBool("public")
 	outFolder := path.Join(out, "elemental")
-	if err := os.MkdirAll(outFolder, 0755); err != nil && !os.IsExist(err) {
+	if err := os.MkdirAll(outFolder, 0750); err != nil && !os.IsExist(err) {
 		return err
 	}
 
