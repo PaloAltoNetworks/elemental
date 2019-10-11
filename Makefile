@@ -3,7 +3,7 @@ SHELL := /bin/bash -o pipefail
 
 export GO111MODULE = on
 
-default: lint test
+default: lint test sec
 
 lint:
 	golangci-lint run \
@@ -25,6 +25,9 @@ lint:
 		--enable=nakedret \
 		--enable=unparam \
 		./...
+
+sec:
+	gosec -quiet ./...
 
 .PHONY: test
 test:
