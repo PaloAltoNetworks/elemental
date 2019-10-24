@@ -985,7 +985,11 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) DecryptAttributes(encrypter element
 {{ range .Spec.Attributes $latestVersion }}
 {{ if shouldGenerateGetter . $.PublicMode }}
 // Get{{ .ConvertedName }} returns the {{ .ConvertedName }} of the receiver.
-func (o *Sparse{{ $.Spec.Model.EntityName }}) Get{{ .ConvertedName }}() {{ .ConvertedType }} {
+func (o *Sparse{{ $.Spec.Model.EntityName }}) Get{{ .ConvertedName }}() (out {{ .ConvertedType }}) {
+
+    if o.{{ .ConvertedName }} == nil {
+        return
+    }
 
     return *o.{{ .ConvertedName }}
 }
