@@ -3,6 +3,7 @@ package {{ .Set.Configuration.Name }}
 import (
     "fmt"
     "go.aporeto.io/elemental"
+    "github.com/globalsign/mgo/bson"
     "github.com/mitchellh/copystructure"
     {{- range .Spec.TypeProviders }}
     "{{ . }}"
@@ -80,8 +81,8 @@ func (o {{ .Spec.Model.EntityNamePlural }}List) List() elemental.IdentifiablesLi
 func (o {{ .Spec.Model.EntityNamePlural }}List) DefaultOrder() []string {
 
     return []string{
-        {{ range .Spec.OrderingAttributes $latestVersion -}}
-        "{{ .Name }}",
+        {{ range .Spec.DefaultOrder -}}
+        "{{ . }}",
         {{ end }}
     }
 }
@@ -164,6 +165,53 @@ func (o *{{ .Spec.Model.EntityName }}) SetIdentifier(id string) {
 }
 {{- end }}
 
+// GetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *{{ .Spec.Model.EntityName }}) GetBSON() (interface{}, error) {
+
+    if o == nil {
+        return nil, nil
+    }
+
+    s := &mongoAttributes{{ .Spec.Model.EntityName }}{}
+    {{ range .Spec.Attributes $latestVersion -}}
+    {{- if .Stored }}
+    {{- if .Identifier }}
+    s.{{ .ConvertedName }} = bson.ObjectIdHex(o.{{ .ConvertedName }})
+    {{- else }}
+    s.{{ .ConvertedName }} = o.{{ .ConvertedName }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+
+    return s, nil
+}
+
+// SetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *{{ .Spec.Model.EntityName }}) SetBSON(raw bson.Raw) error {
+
+    if o == nil {
+        return nil
+    }
+
+    s := &mongoAttributes{{ .Spec.Model.EntityName }}{}
+    if err := raw.Unmarshal(s); err != nil {
+        return err
+    }
+    {{ range .Spec.Attributes $latestVersion -}}
+    {{- if .Stored }}
+    {{- if .Identifier }}
+    o.{{ .ConvertedName }} = s.{{ .ConvertedName }}.Hex()
+    {{- else }}
+    o.{{ .ConvertedName }} = s.{{ .ConvertedName }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+
+    return nil
+}
+
 {{- if not .Spec.Model.Detached }}
 // Version returns the hardcoded version of the model.
 func (o *{{ .Spec.Model.EntityName }}) Version() int {
@@ -183,8 +231,8 @@ func (o *{{ .Spec.Model.EntityName }}) BleveType() string {
 func (o *{{ .Spec.Model.EntityName  }}) DefaultOrder() []string {
 
     return []string{
-        {{ range .Spec.OrderingAttributes $latestVersion -}}
-        "{{ .Name }}",
+        {{ range .Spec.DefaultOrder -}}
+        "{{ . }}",
         {{ end }}
     }
 }
@@ -389,6 +437,7 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
 
     {{ if eq .Type "ref" }}
     if o.{{ .ConvertedName }} != nil {
+        elemental.ResetDefaultForZeroValues(o.{{ .ConvertedName }})
         if err := o.{{ .ConvertedName }}.Validate(); err != nil {
             errors = errors.Append(err)
         }
@@ -400,6 +449,7 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
         if sub == nil {
             continue
         }
+        elemental.ResetDefaultForZeroValues(sub)
         if err := sub.Validate(); err != nil {
             errors = errors.Append(err)
         }
@@ -539,9 +589,6 @@ var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSp
         {{- if .CreationOnly }}
         CreationOnly: {{ .CreationOnly }},
         {{- end }}
-        {{- if .DefaultOrder }}
-        DefaultOrder: {{ .DefaultOrder }},
-        {{- end }}
         {{- if .DefaultValue }}
         DefaultValue: {{ writeDefaultValue $.Set $.Spec . }},
         {{- end }}
@@ -637,9 +684,6 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
         {{- end }}
         {{- if .CreationOnly }}
         CreationOnly: {{ .CreationOnly }},
-        {{- end }}
-        {{- if .DefaultOrder }}
-        DefaultOrder: {{ .DefaultOrder }},
         {{- end }}
         {{- if .DefaultValue }}
         DefaultValue: {{ writeDefaultValue $.Set $.Spec . }},
@@ -763,8 +807,8 @@ func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) List() elemental.Identifia
 func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) DefaultOrder() []string {
 
     return []string{
-        {{ range .Spec.OrderingAttributes $latestVersion -}}
-        "{{ .Name }}",
+        {{ range .Spec.DefaultOrder -}}
+        "{{ . }}",
         {{ end }}
     }
 }
@@ -825,6 +869,58 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) SetIdentifier(id string) {
     {{ if .Spec.Identifier -}}
     o.{{ .Spec.Identifier.ConvertedName }} = &id
     {{- end }}
+}
+
+// GetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *Sparse{{ .Spec.Model.EntityName }}) GetBSON() (interface{}, error) {
+
+    if o == nil {
+        return nil, nil
+    }
+
+    s := &mongoAttributesSparse{{ .Spec.Model.EntityName }}{}
+    {{ range .Spec.Attributes $latestVersion -}}
+    {{- if .Stored }}
+    {{- if .Identifier }}
+    s.{{ .ConvertedName }} = bson.ObjectIdHex(*o.{{ .ConvertedName }})
+    {{- else }}
+    if o.{{ .ConvertedName}} != nil {
+    s.{{ .ConvertedName }} = o.{{ .ConvertedName }}
+    }
+    {{- end }}
+    {{- end }}
+    {{- end }}
+
+    return s, nil
+}
+
+// SetBSON implements the bson marshaling interface.
+// This is used to transparently convert ID to MongoDBID as ObectID.
+func (o *Sparse{{ .Spec.Model.EntityName }}) SetBSON(raw bson.Raw) error {
+
+    if o == nil {
+        return nil
+    }
+
+    s := &mongoAttributesSparse{{ .Spec.Model.EntityName }}{}
+    if err := raw.Unmarshal(s); err != nil {
+        return err
+    }
+    {{ range .Spec.Attributes $latestVersion -}}
+    {{- if .Stored }}
+    {{- if .Identifier }}
+    id := s.{{ .ConvertedName }}.Hex()
+    o.{{ .ConvertedName }} = &id
+    {{- else }}
+    if s.{{ .ConvertedName}} != nil {
+    o.{{ .ConvertedName }} = s.{{ .ConvertedName }}
+    }
+    {{- end }}
+    {{- end }}
+    {{- end }}
+
+    return nil
 }
 
 // Version returns the hardcoded version of the model.
@@ -920,3 +1016,21 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) DeepCopyInto(out *Sparse{{ .Spec.Mo
 	*out = *target.(*Sparse{{ .Spec.Model.EntityName }})
 }
 {{ end }}
+
+type mongoAttributes{{ .Spec.Model.EntityName }} struct {
+    {{- range .Spec.Attributes $latestVersion -}}
+    {{- if .Stored }}
+    {{ attrToMongoField $.Set false . }}
+    {{- end }}
+    {{- end }}
+}
+
+{{- if and (not .Spec.Model.Detached) (not .Spec.Model.IsRoot) }}
+type mongoAttributesSparse{{ .Spec.Model.EntityName }} struct {
+    {{- range .Spec.Attributes $latestVersion -}}
+    {{- if .Stored }}
+    {{ attrToMongoField $.Set true . }}
+    {{- end }}
+    {{- end }}
+}
+{{- end }}

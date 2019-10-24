@@ -47,7 +47,6 @@ func TestAttribute_SpecificationForAttribute(t *testing.T) {
 				So(spec.Availability, ShouldBeEmpty)
 				So(spec.Channel, ShouldBeEmpty)
 				So(spec.CreationOnly, ShouldBeFalse)
-				So(spec.DefaultOrder, ShouldBeFalse)
 				So(spec.Deprecated, ShouldBeFalse)
 				So(spec.Exposed, ShouldBeTrue)
 				So(spec.Filterable, ShouldBeTrue)

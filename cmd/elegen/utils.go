@@ -150,7 +150,7 @@ func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) s
 	if !attr.Stored {
 		bson = "-"
 	} else if attr.Identifier {
-		bson = "_" + bson
+		bson = "-"
 	} else if shadow {
 		bson += ",omitempty"
 	}
@@ -171,6 +171,36 @@ func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) s
 		msgpack,
 		bson,
 		strings.Replace(json, ",omitempty", "", 1),
+	)
+}
+
+func attrToMongoField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) string {
+
+	if !attr.Stored {
+		panic(fmt.Sprintf("cannot use attrToMongoField on a non stored attribute: %s", attr.Name))
+	}
+
+	bson := strings.ToLower(attr.Name)
+
+	if attr.Identifier {
+		bson = "_id"
+	} else if shadow {
+		bson += ",omitempty"
+	}
+
+	var convertedType string
+
+	if attr.Identifier {
+		convertedType = "bson.ObjectId"
+	} else {
+		convertedType = attrToType(set, shadow, attr)
+	}
+
+	return fmt.Sprintf(
+		"%s %s `bson:\"%s\"`",
+		attr.ConvertedName,
+		convertedType,
+		bson,
 	)
 }
 

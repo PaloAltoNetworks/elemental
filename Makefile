@@ -1,22 +1,14 @@
 MAKEFLAGS += --warn-undefined-variables
 SHELL := /bin/bash -o pipefail
 
-PROJECT_SHA ?= $(shell git rev-parse HEAD)
-PROJECT_VERSION ?= $(lastword $(shell git tag --sort version:refname --merged $(shell git rev-parse --abbrev-ref HEAD)))
-PROJECT_RELEASE ?= dev
-
 export GO111MODULE = on
 
-ci: init lint test codecov
-
-init:
-	GO111MODULE=off go get -u github.com/aporeto-inc/go-bindata/...
-	GO111MODULE=off go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+default: lint test sec
 
 lint:
-	# --enable=unparam
 	golangci-lint run \
 		--disable-all \
+		--skip-files data_test.go \
 		--exclude-use-default=false \
 		--enable=errcheck \
 		--enable=goimports \
@@ -31,23 +23,12 @@ lint:
 		--enable=misspell \
 		--enable=prealloc \
 		--enable=nakedret \
-		--skip-files data_test.go \
+		--enable=unparam \
 		./...
+
+sec:
+	gosec -quiet ./...
 
 .PHONY: test
 test:
-	@ echo 'mode: atomic' > unit_coverage.cov
-	@ for d in $(shell go list ./... | grep -v vendor); do \
-		go test -race -coverprofile=profile.out -covermode=atomic "$$d"; \
-		if [ -f profile.out ]; then tail -q -n +2 profile.out >> unit_coverage.cov; rm -f profile.out; fi; \
-	done;
-
-coverage_aggregate:
-	@ mkdir -p artifacts
-	@ for f in `find . -maxdepth 1 -name '*.cov' -type f`; do \
-		filename="$${f##*/}" && \
-		go tool cover -html=$$f -o artifacts/$${filename%.*}.html; \
-	done;
-
-codecov: coverage_aggregate
-	bash <(curl -s https://codecov.io/bash)
+	go test ./... -race -cover -covermode=atomic -coverprofile=unit_coverage.cov

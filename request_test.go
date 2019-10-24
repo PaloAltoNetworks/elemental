@@ -39,7 +39,7 @@ func TestRequest_NewRequest(t *testing.T) {
 
 func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
-	Convey("Given I have a get http request on /lists", t, func() {
+	Convey("Given I have a get http request on /lists with page", t, func() {
 
 		req, err := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
 		req.Header.Set("X-Namespace", "ns")
@@ -57,68 +57,75 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 			r, err := NewRequestFromHTTPRequest(req, Manager())
 
-			Convey("Then r should not be nil", func() {
+			Convey("Then err should be nil", func() {
 				So(r, ShouldNotBeNil)
 			})
+
+			Convey("Then r should be correct", func() {
+				So(err, ShouldBeNil)
+				So(r.Operation, ShouldEqual, OperationRetrieveMany)
+				So(r.Version, ShouldEqual, 10)
+				So(r.Namespace, ShouldResemble, "ns")
+				So(r.RequestID, ShouldNotBeEmpty)
+				So(r.Identity, ShouldResemble, ListIdentity)
+				So(r.ObjectID, ShouldBeEmpty)
+				So(r.ParentIdentity, ShouldResemble, RootIdentity)
+				So(r.ParentID, ShouldBeEmpty)
+				So(r.Username, ShouldBeEmpty)
+				So(r.Password, ShouldBeEmpty)
+				So(r.Data, ShouldBeEmpty)
+				So(r.ClientIP, ShouldEqual, "1.1.1.1")
+				So(r.Page, ShouldEqual, 1)
+				So(r.PageSize, ShouldEqual, 2)
+				So(r.After, ShouldEqual, "")
+				So(r.Limit, ShouldEqual, 0)
+				So(r.Recursive, ShouldBeTrue)
+				So(r.OverrideProtection, ShouldBeTrue)
+				So(r.Accept, ShouldEqual, EncodingTypeMSGPACK)
+				So(r.ContentType, ShouldEqual, EncodingTypeJSON)
+				So(r.HTTPRequest(), ShouldEqual, req)
+			})
+		})
+	})
+
+	Convey("Given I have a get http request on /lists with after", t, func() {
+
+		req, err := http.NewRequest(http.MethodGet, "http://server/v/10/lists?after=42&limit=2&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
+		req.Header.Set("X-Namespace", "ns")
+		req.Header.Set("X-Forwarded-for", "1.1.1.1")
+		req.Header.Set("X-Real-IP", "2.2.2.2")
+		req.Header.Set("Accept", "application/msgpack")
+		req.Header.Set("Content-Type", "application/json")
+		req.RemoteAddr = "42.42.42.42"
+
+		Convey("Then err should be nil", func() {
+			So(err, ShouldBeNil)
+		})
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
 
 			Convey("Then err should be nil", func() {
 				So(err, ShouldBeNil)
 			})
 
-			Convey("Then the operation should be OperationRetrieveMany", func() {
+			Convey("Then r should be correct", func() {
 				So(r.Operation, ShouldEqual, OperationRetrieveMany)
-			})
-
-			Convey("Then the version should be 10", func() {
 				So(r.Version, ShouldEqual, 10)
-			})
-
-			Convey("Then the Namespace should be ns", func() {
 				So(r.Namespace, ShouldResemble, "ns")
-			})
-
-			Convey("Then the RequestID should not be empty", func() {
 				So(r.RequestID, ShouldNotBeEmpty)
-			})
-
-			Convey("Then the identity should be ListIdentity", func() {
 				So(r.Identity, ShouldResemble, ListIdentity)
-			})
-
-			Convey("Then the ObjectID should be empty", func() {
 				So(r.ObjectID, ShouldBeEmpty)
-			})
-
-			Convey("Then the parent identity should be empty", func() {
 				So(r.ParentIdentity, ShouldResemble, RootIdentity)
-			})
-
-			Convey("Then the ParentID should be empty", func() {
 				So(r.ParentID, ShouldBeEmpty)
-			})
-
-			Convey("Then the Username should be empty", func() {
 				So(r.Username, ShouldBeEmpty)
-			})
-
-			Convey("Then the Password should be empty", func() {
 				So(r.Password, ShouldBeEmpty)
-			})
-
-			Convey("Then the Data should be empty", func() {
 				So(r.Data, ShouldBeEmpty)
-			})
-
-			Convey("Then the ClientIP should be set", func() {
 				So(r.ClientIP, ShouldEqual, "1.1.1.1")
-			})
-
-			Convey("Then the Page should be 1", func() {
-				So(r.Page, ShouldEqual, 1)
-			})
-
-			Convey("Then the PageSize should be 2", func() {
-				So(r.PageSize, ShouldEqual, 2)
+				So(r.PageSize, ShouldEqual, 0)
+				So(r.After, ShouldEqual, "42")
+				So(r.Limit, ShouldEqual, 2)
 			})
 
 			Convey("Then the Recursive should be true", func() {
@@ -156,55 +163,21 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 			r, err := NewRequestFromHTTPRequest(req, Manager())
 
-			Convey("Then r should not be nil", func() {
-				So(r, ShouldNotBeNil)
-			})
-
 			Convey("Then err should be nil", func() {
 				So(err, ShouldBeNil)
 			})
 
-			Convey("Then the operation should be OperationInfo", func() {
+			Convey("Then r should be correct", func() {
 				So(r.Operation, ShouldEqual, OperationInfo)
-			})
-
-			Convey("Then the Namespace should be ns", func() {
 				So(r.Namespace, ShouldResemble, "ns")
-			})
-
-			Convey("Then the RequestID should not be empty", func() {
 				So(r.RequestID, ShouldNotBeEmpty)
-			})
-
-			Convey("Then the identity should be ListIdentity", func() {
 				So(r.Identity, ShouldResemble, ListIdentity)
-			})
-
-			Convey("Then the ObjectID should be empty", func() {
 				So(r.ObjectID, ShouldBeEmpty)
-			})
-
-			Convey("Then the parent identity should be empty", func() {
 				So(r.ParentIdentity, ShouldResemble, RootIdentity)
-			})
-
-			Convey("Then the ParentID should be empty", func() {
 				So(r.ParentID, ShouldBeEmpty)
-			})
-
-			Convey("Then the Username should be user", func() {
 				So(r.Username, ShouldEqual, "user")
-			})
-
-			Convey("Then the Password should be pass", func() {
 				So(r.Password, ShouldEqual, "pass")
-			})
-
-			Convey("Then the Data should be empty", func() {
 				So(r.Data, ShouldBeEmpty)
-			})
-
-			Convey("Then the ClientIP should be set", func() {
 				So(r.ClientIP, ShouldEqual, "2.2.2.2")
 			})
 		})
@@ -221,55 +194,21 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 			r, err := NewRequestFromHTTPRequest(req, Manager())
 
-			Convey("Then r should not be nil", func() {
-				So(r, ShouldNotBeNil)
-			})
-
 			Convey("Then err should be nil", func() {
 				So(err, ShouldBeNil)
 			})
 
-			Convey("Then the operation should be OperationPatch", func() {
+			Convey("Then r should be correct", func() {
 				So(r.Operation, ShouldEqual, OperationPatch)
-			})
-
-			Convey("Then the Namespace should be ns", func() {
 				So(r.Namespace, ShouldResemble, "ns")
-			})
-
-			Convey("Then the RequestID should not be empty", func() {
 				So(r.RequestID, ShouldNotBeEmpty)
-			})
-
-			Convey("Then the identity should be ListIdentity", func() {
 				So(r.Identity, ShouldResemble, ListIdentity)
-			})
-
-			Convey("Then the ObjectID should be empty", func() {
 				So(r.ObjectID, ShouldBeEmpty)
-			})
-
-			Convey("Then the parent identity should be empty", func() {
 				So(r.ParentIdentity, ShouldResemble, RootIdentity)
-			})
-
-			Convey("Then the ParentID should be empty", func() {
 				So(r.ParentID, ShouldBeEmpty)
-			})
-
-			Convey("Then the Username should be user", func() {
 				So(r.Username, ShouldEqual, "user")
-			})
-
-			Convey("Then the Password should be pass", func() {
 				So(r.Password, ShouldEqual, "pass")
-			})
-
-			Convey("Then the Data should be correct", func() {
 				So(string(r.Data), ShouldEqual, `{"name": "toto"}`)
-			})
-
-			Convey("Then the order should be nil", func() {
 				So(r.Order, ShouldBeNil)
 			})
 		})
@@ -286,55 +225,21 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 			r, err := NewRequestFromHTTPRequest(req, Manager())
 
-			Convey("Then r should not be nil", func() {
-				So(r, ShouldNotBeNil)
-			})
-
 			Convey("Then err should be nil", func() {
 				So(err, ShouldBeNil)
 			})
 
-			Convey("Then the operation should be OperationCreate", func() {
+			Convey("Then r should be correct", func() {
 				So(r.Operation, ShouldEqual, OperationCreate)
-			})
-
-			Convey("Then the Namespace should be ns", func() {
 				So(r.Namespace, ShouldResemble, "ns")
-			})
-
-			Convey("Then the RequestID should not be empty", func() {
 				So(r.RequestID, ShouldNotBeEmpty)
-			})
-
-			Convey("Then the order should be correct", func() {
 				So(r.Order, ShouldResemble, []string{"name", "toto"})
-			})
-
-			Convey("Then the identity should be ListIdentity", func() {
 				So(r.Identity, ShouldResemble, ListIdentity)
-			})
-
-			Convey("Then the ObjectID should be empty", func() {
 				So(r.ObjectID, ShouldBeEmpty)
-			})
-
-			Convey("Then the parent identity should be empty", func() {
 				So(r.ParentIdentity, ShouldResemble, RootIdentity)
-			})
-
-			Convey("Then the ParentID should be empty", func() {
 				So(r.ParentID, ShouldBeEmpty)
-			})
-
-			Convey("Then the Username should be user", func() {
 				So(r.Username, ShouldEqual, "user")
-			})
-
-			Convey("Then the Password should be pass", func() {
 				So(r.Password, ShouldEqual, "pass")
-			})
-
-			Convey("Then the Data should be correct", func() {
 				So(string(r.Data), ShouldEqual, `{"name": "toto"}`)
 			})
 		})
@@ -350,51 +255,20 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 			r, err := NewRequestFromHTTPRequest(req, Manager())
 
-			Convey("Then r should not be nil", func() {
-				So(r, ShouldNotBeNil)
-			})
-
 			Convey("Then err should be nil", func() {
 				So(err, ShouldBeNil)
 			})
 
-			Convey("Then the operation should be OperationRetrieve", func() {
+			Convey("Then r should be correct", func() {
 				So(r.Operation, ShouldEqual, OperationRetrieve)
-			})
-
-			Convey("Then the Namespace should be ns", func() {
 				So(r.Namespace, ShouldResemble, "ns")
-			})
-
-			Convey("Then the RequestID should not be empty", func() {
 				So(r.RequestID, ShouldNotBeEmpty)
-			})
-
-			Convey("Then the identity should be ListIdentity", func() {
 				So(r.Identity, ShouldResemble, ListIdentity)
-			})
-
-			Convey("Then the ObjectID should be xx", func() {
 				So(r.ObjectID, ShouldEqual, "xx")
-			})
-
-			Convey("Then the parent identity should be empty", func() {
 				So(r.ParentIdentity, ShouldResemble, RootIdentity)
-			})
-
-			Convey("Then the ParentID should be empty", func() {
 				So(r.ParentID, ShouldBeEmpty)
-			})
-
-			Convey("Then the Username should be user", func() {
 				So(r.Username, ShouldEqual, "user")
-			})
-
-			Convey("Then the Password should be pass", func() {
 				So(r.Password, ShouldEqual, "pass")
-			})
-
-			Convey("Then the Data should be correct", func() {
 				So(r.Data, ShouldBeEmpty)
 			})
 		})
@@ -411,51 +285,20 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 			r, err := NewRequestFromHTTPRequest(req, Manager())
 
-			Convey("Then r should not be nil", func() {
-				So(r, ShouldNotBeNil)
-			})
-
 			Convey("Then err should be nil", func() {
 				So(err, ShouldBeNil)
 			})
 
-			Convey("Then the operation should be OperationUpdate", func() {
+			Convey("Then r should be correct", func() {
 				So(r.Operation, ShouldEqual, OperationUpdate)
-			})
-
-			Convey("Then the Namespace should be ns", func() {
 				So(r.Namespace, ShouldResemble, "ns")
-			})
-
-			Convey("Then the RequestID should not be empty", func() {
 				So(r.RequestID, ShouldNotBeEmpty)
-			})
-
-			Convey("Then the identity should be ListIdentity", func() {
 				So(r.Identity, ShouldResemble, ListIdentity)
-			})
-
-			Convey("Then the ObjectID should be xx", func() {
 				So(r.ObjectID, ShouldEqual, "xx")
-			})
-
-			Convey("Then the parent identity should be empty", func() {
 				So(r.ParentIdentity, ShouldResemble, RootIdentity)
-			})
-
-			Convey("Then the ParentID should be empty", func() {
 				So(r.ParentID, ShouldBeEmpty)
-			})
-
-			Convey("Then the Username should be user", func() {
 				So(r.Username, ShouldEqual, "user")
-			})
-
-			Convey("Then the Password should be pass", func() {
 				So(r.Password, ShouldEqual, "pass")
-			})
-
-			Convey("Then the Data should be correct", func() {
 				So(string(r.Data), ShouldEqual, `{"name": "toto"}`)
 			})
 		})
@@ -471,51 +314,20 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 			r, err := NewRequestFromHTTPRequest(req, Manager())
 
-			Convey("Then r should not be nil", func() {
-				So(r, ShouldNotBeNil)
-			})
-
 			Convey("Then err should be nil", func() {
 				So(err, ShouldBeNil)
 			})
 
-			Convey("Then the operation should be OperationDelete", func() {
+			Convey("Then r should be correct", func() {
 				So(r.Operation, ShouldEqual, OperationDelete)
-			})
-
-			Convey("Then the Namespace should be ns", func() {
 				So(r.Namespace, ShouldResemble, "ns")
-			})
-
-			Convey("Then the RequestID should not be empty", func() {
 				So(r.RequestID, ShouldNotBeEmpty)
-			})
-
-			Convey("Then the identity should be ListIdentity", func() {
 				So(r.Identity, ShouldResemble, ListIdentity)
-			})
-
-			Convey("Then the ObjectID should be xx", func() {
 				So(r.ObjectID, ShouldEqual, "xx")
-			})
-
-			Convey("Then the parent identity should be empty", func() {
 				So(r.ParentIdentity, ShouldResemble, RootIdentity)
-			})
-
-			Convey("Then the ParentID should be empty", func() {
 				So(r.ParentID, ShouldBeEmpty)
-			})
-
-			Convey("Then the Username should be user", func() {
 				So(r.Username, ShouldEqual, "user")
-			})
-
-			Convey("Then the Password should be pass", func() {
 				So(r.Password, ShouldEqual, "pass")
-			})
-
-			Convey("Then the Data should be correct", func() {
 				So(r.Data, ShouldBeEmpty)
 			})
 		})
@@ -531,51 +343,20 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 			r, err := NewRequestFromHTTPRequest(req, Manager())
 
-			Convey("Then r should not be nil", func() {
-				So(r, ShouldNotBeNil)
-			})
-
 			Convey("Then err should be nil", func() {
 				So(err, ShouldBeNil)
 			})
 
-			Convey("Then the operation should be OperationRetrieveMany", func() {
+			Convey("Then r should be correct", func() {
 				So(r.Operation, ShouldEqual, OperationRetrieveMany)
-			})
-
-			Convey("Then the Namespace should be ns", func() {
 				So(r.Namespace, ShouldResemble, "ns")
-			})
-
-			Convey("Then the RequestID should not be empty", func() {
 				So(r.RequestID, ShouldNotBeEmpty)
-			})
-
-			Convey("Then the identity should be TaskIdentity", func() {
 				So(r.Identity, ShouldResemble, TaskIdentity)
-			})
-
-			Convey("Then the ObjectID should be empty", func() {
 				So(r.ObjectID, ShouldBeEmpty)
-			})
-
-			Convey("Then the parent identity should be ListIdentity", func() {
 				So(r.ParentIdentity, ShouldResemble, ListIdentity)
-			})
-
-			Convey("Then the ParentID should be empty", func() {
 				So(r.ParentID, ShouldEqual, "xx")
-			})
-
-			Convey("Then the Username should be user", func() {
 				So(r.Username, ShouldEqual, "user")
-			})
-
-			Convey("Then the Password should be pass", func() {
 				So(r.Password, ShouldEqual, "pass")
-			})
-
-			Convey("Then the Data should be correct", func() {
 				So(r.Data, ShouldBeEmpty)
 			})
 		})
@@ -822,6 +603,104 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 			})
 		})
 	})
+
+	Convey("Given I have a http request %00 as after parameter ", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/?after=%00", nil)
+		req.Header.Set("Content-Type", "application/json")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, "error 400 (elemental): Bad Request: Parameter `after` must be set when provided")
+			})
+		})
+	})
+
+	Convey("Given I have a http request with after and 2 order parameters", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/?after=xxx&order=a&order=b", nil)
+		req.Header.Set("Content-Type", "application/json")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, "error 400 (elemental): Bad Request: You can only order on a single field when using 'after'")
+			})
+		})
+	})
+
+	Convey("Given I have a http request with after and page parameters", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/?after=xxx&page=2", nil)
+		req.Header.Set("Content-Type", "application/json")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, "error 400 (elemental): Bad Request: You cannot set 'after' and 'page' at the same time")
+			})
+		})
+	})
+
+	Convey("Given I have a http request with pagesize and limit parameters", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/?limit=xxx&pagesize=2", nil)
+		req.Header.Set("Content-Type", "application/json")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldEqual, "error 400 (elemental): Bad Request: You cannot set 'limit' and 'pagesize' at the same time")
+			})
+		})
+	})
+
+	Convey("Given I have a http request with a limit that is not a number", t, func() {
+
+		req, _ := http.NewRequest(http.MethodGet, "http://server/lists/xx/tasks?limit=not-int", nil)
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then r should be nil", func() {
+				So(r, ShouldBeNil)
+			})
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+			})
+		})
+	})
 }
 
 func TestRequest_Duplicate(t *testing.T) {
@@ -837,6 +716,8 @@ func TestRequest_Duplicate(t *testing.T) {
 		req.Operation = OperationPatch
 		req.Page = 1
 		req.PageSize = 2
+		req.Limit = 2
+		req.After = "after"
 		req.Parameters = Parameters{
 			"p1": Parameter{
 				ptype:  ParameterTypeString,
@@ -872,6 +753,7 @@ func TestRequest_Duplicate(t *testing.T) {
 				So(req2.Operation, ShouldEqual, req.Operation)
 				So(req2.Page, ShouldEqual, req.Page)
 				So(req2.PageSize, ShouldEqual, req.PageSize)
+				So(req2.PageSize, ShouldEqual, req.PageSize)
 				So(req2.Parameters, ShouldResemble, req.Parameters)
 				So(req2.ParentID, ShouldEqual, req.ParentID)
 				So(req2.ParentIdentity.IsEqual(req.ParentIdentity), ShouldBeTrue)
@@ -885,6 +767,8 @@ func TestRequest_Duplicate(t *testing.T) {
 				So(req2.Metadata, ShouldResemble, req.Metadata)
 				So(req2.ContentType, ShouldEqual, req.ContentType)
 				So(req2.Accept, ShouldEqual, req.Accept)
+				So(req2.After, ShouldEqual, req.After)
+				So(req2.Limit, ShouldEqual, req.Limit)
 			})
 		})
 	})
