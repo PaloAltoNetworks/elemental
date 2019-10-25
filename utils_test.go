@@ -698,3 +698,228 @@ func TestIsZero(t *testing.T) {
 		})
 	}
 }
+
+func TestRemoveZeroValues(t *testing.T) {
+
+	now := time.Now()
+
+	Convey("Verify removing zero values on string works", t, func() {
+
+		type s struct {
+			NilString            *string
+			ZeroString           *string
+			String               *string
+			NonPointerString     string
+			NonPointerZeroString string
+		}
+
+		o1 := &s{
+			NilString:            nil,
+			ZeroString:           func() *string { v := ""; return &v }(),
+			String:               func() *string { v := "string"; return &v }(),
+			NonPointerString:     "string",
+			NonPointerZeroString: "",
+		}
+
+		o2 := &s{
+			NilString:            nil,
+			ZeroString:           nil,
+			String:               func() *string { v := "string"; return &v }(),
+			NonPointerString:     "string",
+			NonPointerZeroString: "",
+		}
+
+		RemoveZeroValues(o1)
+
+		So(o1, ShouldResemble, o2)
+	})
+
+	Convey("Verify removing zero values on bool works", t, func() {
+
+		type s struct {
+			NilBool            *bool
+			ZeroBool           *bool
+			Bool               *bool
+			NonPointerBool     bool
+			NonPointerZeroBool bool
+		}
+
+		o1 := &s{
+			NilBool:            nil,
+			ZeroBool:           func() *bool { v := false; return &v }(),
+			Bool:               func() *bool { v := true; return &v }(),
+			NonPointerBool:     true,
+			NonPointerZeroBool: false,
+		}
+
+		o2 := &s{
+			NilBool:            nil,
+			ZeroBool:           nil,
+			Bool:               func() *bool { v := true; return &v }(),
+			NonPointerBool:     true,
+			NonPointerZeroBool: false,
+		}
+
+		RemoveZeroValues(o1)
+
+		So(o1, ShouldResemble, o2)
+	})
+
+	Convey("Verify removing zero values on numbers works", t, func() {
+
+		type s struct {
+			NilInt            *int
+			ZeroInt           *int
+			Int               *int
+			NonPointerInt     int
+			NonPointerZeroInt int
+
+			NilFloat            *float64
+			ZeroFloat           *float64
+			Float               *float64
+			NonPointerFloat     float64
+			NonPointerZeroFloat float64
+		}
+
+		o1 := &s{
+			NilInt:            nil,
+			ZeroInt:           func() *int { v := 0; return &v }(),
+			Int:               func() *int { v := 3; return &v }(),
+			NonPointerInt:     1,
+			NonPointerZeroInt: 0,
+
+			NilFloat:            nil,
+			ZeroFloat:           func() *float64 { v := 0.0; return &v }(),
+			Float:               func() *float64 { v := 0.0001; return &v }(),
+			NonPointerFloat:     0.1,
+			NonPointerZeroFloat: 0.0,
+		}
+
+		o2 := &s{
+			NilInt:            nil,
+			ZeroInt:           nil,
+			Int:               func() *int { v := 3; return &v }(),
+			NonPointerInt:     1,
+			NonPointerZeroInt: 0,
+
+			NilFloat:            nil,
+			ZeroFloat:           nil,
+			Float:               func() *float64 { v := 0.0001; return &v }(),
+			NonPointerFloat:     0.1,
+			NonPointerZeroFloat: 0.0,
+		}
+
+		RemoveZeroValues(o1)
+
+		So(o1, ShouldResemble, o2)
+	})
+
+	Convey("Verify removing zero values on time works", t, func() {
+
+		type s struct {
+			NilTime  *time.Time
+			ZeroTime *time.Time
+			Time     *time.Time
+
+			NonPointerZeroTime time.Time
+			NonPointerTime     time.Time
+		}
+
+		o1 := &s{
+			NilTime:  nil,
+			ZeroTime: func() *time.Time { v := time.Time{}; return &v }(),
+			Time:     func() *time.Time { v := now; return &v }(),
+
+			NonPointerZeroTime: time.Time{},
+			NonPointerTime:     now,
+		}
+
+		o2 := &s{
+			NilTime:  nil,
+			ZeroTime: nil,
+			Time:     func() *time.Time { v := now; return &v }(),
+
+			NonPointerZeroTime: time.Time{},
+			NonPointerTime:     now,
+		}
+
+		RemoveZeroValues(o1)
+
+		So(o1, ShouldResemble, o2)
+	})
+
+	Convey("Verify removing zero values on slice works", t, func() {
+
+		type s struct {
+			ZeroSlice  *[]string
+			EmptySlice *[]string
+			Slice      *[]string
+
+			NonPointerZeroSlice  []string
+			NonPointerEmptySlice []string
+			NonPointerSlice      []string
+		}
+
+		o1 := &s{
+			ZeroSlice:  func() *[]string { v := []string(nil); return &v }(),
+			EmptySlice: func() *[]string { v := []string{}; return &v }(),
+			Slice:      func() *[]string { v := []string{"a"}; return &v }(),
+
+			NonPointerZeroSlice:  nil,
+			NonPointerEmptySlice: []string{},
+			NonPointerSlice:      []string{"a"},
+		}
+
+		o2 := &s{
+			ZeroSlice:  nil,
+			EmptySlice: nil,
+			Slice:      func() *[]string { v := []string{"a"}; return &v }(),
+
+			NonPointerZeroSlice:  nil,
+			NonPointerEmptySlice: []string{},
+			NonPointerSlice:      []string{"a"},
+		}
+
+		RemoveZeroValues(o1)
+
+		So(o1, ShouldResemble, o2)
+	})
+
+	Convey("Verify removing zero values on map works", t, func() {
+
+		type s struct {
+			ZeroMap  *map[string]string
+			EmptyMap *map[string]string
+			Map      *map[string]string
+
+			NonPointerZeroMap  map[string]string
+			NonPointerEmptyMap map[string]string
+			NonPointerMap      map[string]string
+		}
+
+		o1 := &s{
+			ZeroMap:  func() *map[string]string { v := map[string]string(nil); return &v }(),
+			EmptyMap: func() *map[string]string { v := map[string]string{}; return &v }(),
+			Map:      func() *map[string]string { v := map[string]string{"a": "a"}; return &v }(),
+
+			NonPointerZeroMap:  nil,
+			NonPointerEmptyMap: map[string]string{},
+			NonPointerMap:      map[string]string{"a": "a"},
+		}
+
+		o2 := &s{
+			ZeroMap:  nil,
+			EmptyMap: nil,
+			Map:      func() *map[string]string { v := map[string]string{"a": "a"}; return &v }(),
+
+			NonPointerZeroMap:  nil,
+			NonPointerEmptyMap: map[string]string{},
+			NonPointerMap:      map[string]string{"a": "a"},
+		}
+
+		RemoveZeroValues(o1)
+
+		So(o1, ShouldResemble, o2)
+	})
+
+}

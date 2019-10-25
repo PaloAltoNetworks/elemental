@@ -16,6 +16,42 @@ import (
 	"time"
 )
 
+// RemoveZeroValues reset all pointer fields that are pointing to a zero value to nil
+func RemoveZeroValues(obj interface{}) {
+
+	vo := reflect.ValueOf(obj)
+	vv := reflect.Indirect(vo)
+
+	for _, field := range extractFieldNames(obj) {
+		v := vv.FieldByName(field)
+
+		if v.Kind() != reflect.Ptr {
+			continue
+		}
+
+		if v.IsNil() {
+			continue
+		}
+
+		uv := reflect.Indirect(v)
+
+		switch uv.Kind() {
+		case reflect.Map, reflect.Slice, reflect.Array:
+			if uv.Len() == 0 {
+				v.Set(reflect.Zero(v.Type()))
+				break
+			}
+
+			fallthrough
+
+		default:
+			if uv.IsZero() {
+				v.Set(reflect.Zero(v.Type()))
+			}
+		}
+	}
+}
+
 // extractFieldNames returns all the field Name of the given
 // object using reflection.
 func extractFieldNames(obj interface{}) []string {

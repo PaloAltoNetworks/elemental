@@ -177,7 +177,9 @@ func (o *{{ .Spec.Model.EntityName }}) GetBSON() (interface{}, error) {
     {{ range .Spec.Attributes $latestVersion -}}
     {{- if .Stored }}
     {{- if .Identifier }}
-    s.{{ .ConvertedName }} = bson.ObjectIdHex(o.{{ .ConvertedName }})
+    if o.{{ .ConvertedName }} != "" {
+        s.{{ .ConvertedName }} = bson.ObjectIdHex(o.{{ .ConvertedName }})
+    }
     {{- else }}
     s.{{ .ConvertedName }} = o.{{ .ConvertedName }}
     {{- end }}
@@ -867,7 +869,11 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) Identifier() string {
 func (o *Sparse{{ .Spec.Model.EntityName }}) SetIdentifier(id string) {
 
     {{ if .Spec.Identifier -}}
-    o.{{ .Spec.Identifier.ConvertedName }} = &id
+    if id != "" {
+        o.{{ .Spec.Identifier.ConvertedName }} = &id
+    } else {
+        o.{{ .Spec.Identifier.ConvertedName }} = nil
+    }
     {{- end }}
 }
 
@@ -883,7 +889,9 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) GetBSON() (interface{}, error) {
     {{ range .Spec.Attributes $latestVersion -}}
     {{- if .Stored }}
     {{- if .Identifier }}
-    s.{{ .ConvertedName }} = bson.ObjectIdHex(*o.{{ .ConvertedName }})
+    if o.{{ .ConvertedName }} != nil {
+        s.{{ .ConvertedName }} = bson.ObjectIdHex(*o.{{ .ConvertedName }})
+    }
     {{- else }}
     if o.{{ .ConvertedName}} != nil {
     s.{{ .ConvertedName }} = o.{{ .ConvertedName }}
@@ -977,7 +985,11 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) DecryptAttributes(encrypter element
 {{ range .Spec.Attributes $latestVersion }}
 {{ if shouldGenerateGetter . $.PublicMode }}
 // Get{{ .ConvertedName }} returns the {{ .ConvertedName }} of the receiver.
-func (o *Sparse{{ $.Spec.Model.EntityName }}) Get{{ .ConvertedName }}() {{ .ConvertedType }} {
+func (o *Sparse{{ $.Spec.Model.EntityName }}) Get{{ .ConvertedName }}() (out {{ .ConvertedType }}) {
+
+    if o.{{ .ConvertedName }} == nil {
+        return
+    }
 
     return *o.{{ .ConvertedName }}
 }

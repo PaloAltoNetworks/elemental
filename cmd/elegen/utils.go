@@ -183,8 +183,8 @@ func attrToMongoField(set spec.SpecificationSet, shadow bool, attr *spec.Attribu
 	bson := strings.ToLower(attr.Name)
 
 	if attr.Identifier {
-		bson = "_id"
-	} else if shadow {
+		bson = "_id,omitempty"
+	} else if shadow || attr.OmitEmpty {
 		bson += ",omitempty"
 	}
 
