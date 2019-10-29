@@ -1,6 +1,6 @@
 module go.aporeto.io/elemental
 
-go 1.12
+go 1.13
 
 require go.aporeto.io/regolithe v1.50.1-0.20191011181323-a84eb0eb88ba
 
