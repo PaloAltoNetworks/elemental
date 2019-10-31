@@ -831,6 +831,336 @@ func TestMatchesFilter(t *testing.T) {
 			expectedMatch: true,
 			expectedError: false,
 		},
+		"should be able to handle a long chain of OrFilterOperator's - match case": {
+
+			filter: elemental.NewFilterComposer().
+				Or(
+					elemental.NewFilterComposer().
+						Or(
+							elemental.NewFilterComposer().
+								Or(
+									elemental.NewFilterComposer().
+										Or(
+											elemental.NewFilterComposer().
+												Or(
+													elemental.NewFilterComposer().
+														Or(
+															elemental.NewFilterComposer().
+																Or(
+																	elemental.NewFilterComposer().
+																		Or(elemental.NewFilterComposer().
+																			WithKey("attr1").
+																			Equals(true).
+																			Done()).
+																		Done()).
+																Done()).
+														Done()).
+												Done()).
+										Done()).
+								Done()).
+						Done(),
+				).Done(),
+
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+
+				mockAS.EXPECT().
+					ValueForAttribute("attr1").
+					Return(interface{}(true)).
+					Times(1)
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should be able to handle a long chain of OrFilterOperator's - no match case": {
+
+			filter: elemental.NewFilterComposer().
+				Or(
+					elemental.NewFilterComposer().
+						Or(
+							elemental.NewFilterComposer().
+								Or(
+									elemental.NewFilterComposer().
+										Or(
+											elemental.NewFilterComposer().
+												Or(
+													elemental.NewFilterComposer().
+														Or(
+															elemental.NewFilterComposer().
+																Or(
+																	elemental.NewFilterComposer().
+																		Or(elemental.NewFilterComposer().
+																			WithKey("attr1").
+																			Equals(false).
+																			Done()).
+																		Done()).
+																Done()).
+														Done()).
+												Done()).
+										Done()).
+								Done()).
+						Done(),
+				).Done(),
+
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+
+				mockAS.EXPECT().
+					ValueForAttribute("attr1").
+					Return(interface{}(true)).
+					Times(1)
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should be able to handle a long chain of AndFilterOperator's - match case": {
+
+			filter: elemental.NewFilterComposer().
+				And(
+					elemental.NewFilterComposer().
+						WithKey("attr1").
+						Equals(true).
+						Done(),
+					elemental.NewFilterComposer().
+						And(
+							elemental.NewFilterComposer().
+								WithKey("attr1").
+								Equals(true).
+								Done(),
+							elemental.NewFilterComposer().
+								And(
+									elemental.NewFilterComposer().
+										WithKey("attr1").
+										Equals(true).
+										Done(),
+									elemental.NewFilterComposer().
+										And(
+											elemental.NewFilterComposer().
+												WithKey("attr1").
+												Equals(true).
+												Done(),
+											elemental.NewFilterComposer().
+												And(
+													elemental.NewFilterComposer().
+														WithKey("attr1").
+														Equals(false).
+														Done(),
+													elemental.NewFilterComposer().
+														And(
+															elemental.NewFilterComposer().
+																WithKey("attr1").
+																Equals(true).
+																Done(),
+															elemental.NewFilterComposer().
+																And(
+																	elemental.NewFilterComposer().
+																		And(elemental.NewFilterComposer().
+																			WithKey("attr1").
+																			Equals(true).
+																			Done()).
+																		Done()).
+																Done()).
+														Done()).
+												Done()).
+										Done()).
+								Done()).
+						Done(),
+				).Done(),
+
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+
+				mockAS.EXPECT().
+					ValueForAttribute("attr1").
+					Return([]bool{
+						false,
+						false,
+						false,
+						false,
+						false,
+						true,
+					}).
+					Times(7)
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should be able to handle a long chain of AndFilterOperator's - no match case": {
+
+			filter: elemental.NewFilterComposer().
+				And(
+					elemental.NewFilterComposer().
+						WithKey("attr1").
+						Equals(true).
+						Done(),
+					elemental.NewFilterComposer().
+						And(
+							elemental.NewFilterComposer().
+								WithKey("attr1").
+								Equals(true).
+								Done(),
+							elemental.NewFilterComposer().
+								And(
+									elemental.NewFilterComposer().
+										WithKey("attr1").
+										Equals(true).
+										Done(),
+									elemental.NewFilterComposer().
+										And(
+											elemental.NewFilterComposer().
+												WithKey("attr1").
+												Equals(true).
+												Done(),
+											elemental.NewFilterComposer().
+												And(
+													elemental.NewFilterComposer().
+														WithKey("attr1").
+														Equals(false).
+														Done(),
+													elemental.NewFilterComposer().
+														And(
+															elemental.NewFilterComposer().
+																WithKey("attr1").
+																Equals(true).
+																Done(),
+															elemental.NewFilterComposer().
+																And(
+																	elemental.NewFilterComposer().
+																		And(elemental.NewFilterComposer().
+																			WithKey("attr1").
+																			Equals("WILL NOT MATCH").
+																			Done()).
+																		Done()).
+																Done()).
+														Done()).
+												Done()).
+										Done()).
+								Done()).
+						Done(),
+				).Done(),
+
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+
+				mockAS.EXPECT().
+					ValueForAttribute("attr1").
+					Return([]bool{
+						false,
+						false,
+						false,
+						false,
+						false,
+						true,
+					}).
+					Times(7)
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should be able to handle a mix of AndFilterOperator & OrFilterOperator": {
+			filter: elemental.NewFilterComposer().
+				And(
+					elemental.NewFilterComposer().
+						Or(
+							elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+								"hello",
+								[]bool{
+									true,
+									true,
+								},
+								"amir",
+								"cristiano",
+							}).Done(),
+							elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+								"hello",
+								[]bool{
+									true,
+									true,
+								},
+								"amir",
+								"cristiano",
+							}).Done(),
+							elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+								"hello",
+								[]bool{
+									true,
+									true,
+								},
+								"amir",
+								"cristiano",
+							}).Done(),
+							elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+								"hello",
+								[]bool{
+									true,
+									true,
+								},
+								"amir",
+								"cristiano",
+							}).Done(),
+							elemental.NewFilterComposer().WithKey("attr1").Equals(true).Done(),
+							elemental.NewFilterComposer().WithKey("attr1").Equals(true).Done(),
+							elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+								false,
+								false,
+								false,
+								"cristiano",
+							}).Done(),
+						).
+						Done(),
+				).And(
+				elemental.NewFilterComposer().
+					WithKey("attr1").Equals("cristiano").
+					WithKey("attr1").Equals("cristiano").
+					WithKey("attr1").Equals("cristiano").
+					WithKey("attr1").Equals("cristiano").
+					WithKey("attr1").Equals([]interface{}{false, false, false, "cristiano"}).
+					WithKey("attr1").Equals("cristiano").
+					WithKey("attr1").Equals("cristiano").
+					WithKey("attr1").Equals("cristiano").
+					WithKey("attr1").Equals("cristiano").
+					WithKey("attr1").Equals("cristiano").
+					Done(),
+				elemental.NewFilterComposer().
+					Or(
+						elemental.NewFilterComposer().WithKey("attr1").Equals(false).Done(),
+						elemental.NewFilterComposer().WithKey("attr1").Equals("amir").Done(),
+						elemental.NewFilterComposer().WithKey("attr1").Equals("cristiano").Done(),
+					).
+					Done(),
+			).Done(),
+
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+
+				mockAS.EXPECT().
+					ValueForAttribute("attr1").
+					Return([]interface{}{
+						false,
+						false,
+						false,
+						"cristiano",
+					}).
+					AnyTimes()
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
 	}
 
 	for description, tc := range testCases {
@@ -930,4 +1260,117 @@ func TestUnsupportedComparators(t *testing.T) {
 			}
 		})
 	}
+}
+
+type benchFixture struct {
+}
+
+func (f *benchFixture) SpecificationForAttribute(string) elemental.AttributeSpecification {
+	return elemental.AttributeSpecification{}
+}
+
+func (f *benchFixture) AttributeSpecifications() map[string]elemental.AttributeSpecification {
+	return nil
+}
+
+func (f *benchFixture) ValueForAttribute(name string) interface{} {
+	switch name {
+	case "attr1":
+		return []interface{}{
+			false,
+			false,
+			false,
+			"cristiano",
+		}
+	}
+
+	return nil
+}
+
+// this is to avoid compiler optimization which may ruin the benchmark
+var matchResult bool
+
+func BenchmarkMatchesFilterStress(b *testing.B) {
+	b.ReportAllocs()
+
+	testFixture := &benchFixture{}
+	testFilter := elemental.NewFilterComposer().
+		And(
+			elemental.NewFilterComposer().
+				Or(
+					elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+						"hello",
+						[]bool{
+							true,
+							true,
+						},
+						"amir",
+						"cristiano",
+					}).Done(),
+					elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+						"hello",
+						[]bool{
+							true,
+							true,
+						},
+						"amir",
+						"cristiano",
+					}).Done(),
+					elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+						"hello",
+						[]bool{
+							true,
+							true,
+						},
+						"amir",
+						"cristiano",
+					}).Done(),
+					elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+						"hello",
+						[]bool{
+							true,
+							true,
+						},
+						"amir",
+						"cristiano",
+					}).Done(),
+					elemental.NewFilterComposer().WithKey("attr1").Equals(true).Done(),
+					elemental.NewFilterComposer().WithKey("attr1").Equals(true).Done(),
+					elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+						false,
+						false,
+						false,
+						"cristiano",
+					}).Done(),
+				).
+				Done(),
+		).And(
+		elemental.NewFilterComposer().
+			WithKey("attr1").Equals("cristiano").
+			WithKey("attr1").Equals("cristiano").
+			WithKey("attr1").Equals("cristiano").
+			WithKey("attr1").Equals("cristiano").
+			WithKey("attr1").Equals([]interface{}{false, false, false, "cristiano"}).
+			WithKey("attr1").Equals("cristiano").
+			WithKey("attr1").Equals("cristiano").
+			WithKey("attr1").Equals("cristiano").
+			WithKey("attr1").Equals("cristiano").
+			WithKey("attr1").Equals("cristiano").
+			Done(),
+		elemental.NewFilterComposer().
+			Or(
+				elemental.NewFilterComposer().WithKey("attr1").Equals(false).Done(),
+				elemental.NewFilterComposer().WithKey("attr1").Equals("amir").Done(),
+				elemental.NewFilterComposer().WithKey("attr1").Equals("cristiano").Done(),
+			).
+			Done(),
+	).Done()
+
+	var matched bool
+	for n := 0; n < b.N; n++ {
+		// recording the result so the compiler doesn't avoid the function call
+		matched, _ = elemental.MatchesFilter(testFixture, testFilter)
+	}
+
+	matchResult = matched
 }
