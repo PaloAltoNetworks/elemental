@@ -1367,9 +1367,17 @@ func BenchmarkMatchesFilterStress(b *testing.B) {
 	).Done()
 
 	var matched bool
+	var err error
 	for n := 0; n < b.N; n++ {
 		// recording the result so the compiler doesn't avoid the function call
-		matched, _ = elemental.MatchesFilter(testFixture, testFilter)
+		matched, err = elemental.MatchesFilter(testFixture, testFilter)
+		if err != nil {
+			b.Errorf("benchmark test case should not have resulted in an error - %s", err)
+		}
+
+		if !matched {
+			b.Error("benchmark test case should have resulted in a match")
+		}
 	}
 
 	matchResult = matched
