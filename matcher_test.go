@@ -6,11 +6,10 @@ import (
 	"testing"
 	"time"
 
-	testmodel "go.aporeto.io/elemental/test/model"
-
 	"github.com/golang/mock/gomock"
 	"go.aporeto.io/elemental"
 	"go.aporeto.io/elemental/internal"
+	testmodel "go.aporeto.io/elemental/test/model"
 )
 
 // this unit test suite tests the functionality of the EqualComparator when used in conjunction with the helper

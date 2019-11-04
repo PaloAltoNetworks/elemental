@@ -7,19 +7,27 @@ import (
 
 // MatchesFilter determines whether an identity matches a filter
 func MatchesFilter(identifiable AttributeSpecifiable, filter *Filter, opts ...MatcherOption) (bool, error) {
+	if identifiable == nil {
+		panic(fmt.Errorf("elemental: identifiable cannot be nil"))
+	}
+
+	return matcher(identifiable, filter, make(map[*Filter]bool))
+}
+
+func matcher(identifiable AttributeSpecifiable, filter *Filter, seen map[*Filter]bool) (bool, error) {
 
 	if filter == nil {
 		panic(fmt.Errorf("elemental: filter cannot be nil"))
-	}
-
-	if identifiable == nil {
-		panic(fmt.Errorf("elemental: identifiable cannot be nil"))
 	}
 
 	matched := true
 	var err error
 
 	for i, op := range filter.Operators() {
+		if result, seen := seen[filter]; seen {
+			return result, nil
+		}
+
 		switch op {
 		case AndOperator:
 			comparator := filter.Comparators()[i]
@@ -34,7 +42,8 @@ func MatchesFilter(identifiable AttributeSpecifiable, filter *Filter, opts ...Ma
 
 			switch comparator {
 			case EqualComparator:
-				if equal := equals(attributeValue, filter.Values()[i][0]); !equal {
+				seen[filter] = equals(attributeValue, filter.Values()[i][0])
+				if !seen[filter] {
 					return false, nil
 				}
 			case NotEqualComparator,
@@ -57,7 +66,7 @@ func MatchesFilter(identifiable AttributeSpecifiable, filter *Filter, opts ...Ma
 		case OrFilterOperator:
 			for _, f := range filter.OrFilters()[i] {
 				// only one 'or' filter must match for it to be considered a successful match
-				if matched, err = MatchesFilter(identifiable, f); err != nil || matched {
+				if matched, err = matcher(identifiable, f, seen); err != nil || matched {
 					break
 				}
 			}
@@ -65,7 +74,7 @@ func MatchesFilter(identifiable AttributeSpecifiable, filter *Filter, opts ...Ma
 			var subFilterMatched bool
 			for _, f := range filter.AndFilters()[i] {
 				// all 'and' filters must match for it to be considered a successful match
-				subFilterMatched, err = MatchesFilter(identifiable, f)
+				subFilterMatched, err = matcher(identifiable, f, seen)
 				matched = matched && subFilterMatched
 				if err != nil || !matched {
 					break
