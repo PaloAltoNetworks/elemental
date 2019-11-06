@@ -37,8 +37,11 @@ func MatchesFilter(identifiable AttributeSpecifiable, filter *Filter, opts ...Ma
 				if equal := equals(attributeValue, filter.Values()[i][0]); !equal {
 					return false, nil
 				}
-			case NotEqualComparator,
-				GreaterComparator,
+			case NotEqualComparator:
+				if notEqual := notEquals(attributeValue, filter.Values()[i][0]); !notEqual {
+					return false, nil
+				}
+			case GreaterComparator,
 				GreaterOrEqualComparator,
 				LesserComparator,
 				LesserOrEqualComparator,
@@ -87,10 +90,33 @@ func equals(field, value interface{}) bool {
 	// this is for queries that are checking whether an attribute does not exist, for example:
 	//     db.getCollection('somecollection').find({ invalidAttribute: { $eq: null } })
 	//     in the query above, all documents that DO NOT contain 'invalidAttribute' will be returned
-	// so the equivalent translation of that for equality is to return true
+	//     so the equivalent translation of that for equality is to return true
 	if field == nil && value == nil {
 		return true
 	}
+
+	return equalsCommon(field, value)
+}
+
+/// notEquals implements the elemental.NotEqualComparator behaviour by implementing the Go equivalent of
+// https://docs.mongodb.com/manual/reference/operator/query/ne
+//
+// {field: {$ne: value} }
+func notEquals(field, value interface{}) bool {
+
+	// deals with the 'nil' case where an attribute that does not exist with a null value has been specified
+	// Example query:
+	//     db.getCollection('someCollection').find({ invalidAttribute: { $ne: null } })
+	//     in the query above, no match will ever be possible, therefore the equivalent behavioural translation for this
+	//     is to simply return false
+	if field == nil && value == nil {
+		return false
+	}
+
+	return !equalsCommon(field, value)
+}
+
+func equalsCommon(field, value interface{}) bool {
 
 	// check to see if we are dealing with an attribute that does not exist on the provided identifiable.
 	// recall `field` will be nil in the event that `ValueForAttribute` returns an empty nil interface

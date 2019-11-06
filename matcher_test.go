@@ -1203,9 +1203,6 @@ func TestUnsupportedComparators(t *testing.T) {
 	tests := map[string]struct {
 		filter *elemental.Filter
 	}{
-		"not equals": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).NotEquals("").Done(),
-		},
 		"greater than": {
 			filter: elemental.NewFilterComposer().WithKey(testAttribute).GreaterThan("").Done(),
 		},
@@ -1257,6 +1254,760 @@ func TestUnsupportedComparators(t *testing.T) {
 
 			if matched {
 				t.Errorf("a match should never occur when using an unsupported operator")
+			}
+		})
+	}
+}
+
+// this unit test suite tests the functionality of the NotEqualComparator when used in conjunction with the helper
+// MatchesFilter for filtering an AttributeSpecifiable using the supplied filter
+func TestNotEqualComparator(t *testing.T) {
+
+	testAttributeName := "someAttribute"
+	tests := map[string]struct {
+		filter        *elemental.Filter
+		mockSetupFunc func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable
+		expectedMatch bool
+		expectedError bool
+	}{
+		"should return true if the attribute value does NOT match the desired value": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals("john").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}("amir"))
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return false if the attribute value DOES match the desired value": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals("amir").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}("amir"))
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return true if the attribute does not exist on the provided identifiable": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals("john").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(nil))
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+
+		// deals with db.getCollection('collection').find( { invalidAttribute: { $eq: null } } )
+		// in such a query, no match will ever be possible
+
+		"should return false if the specified attribute is missing in the identifiable and the value provided is nil": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals(nil).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(nil))
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return true if the specified attribute (a slice) does not contain the value ": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals("Thierry Henry").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([]string{
+						"Zinedine Zidane",
+						"Dennis Bergkamp",
+						"Patrick Vieira",
+					}))
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return true if the specified attribute (an array) does not contain the value ": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals("Thierry Henry").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([...]string{
+						"Zinedine Zidane",
+						"Dennis Bergkamp",
+						"Patrick Vieira",
+					}))
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return false if the specified attribute (a slice) DOES contain the value ": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals("Thierry Henry").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([]string{
+						"Zinedine Zidane",
+						"Dennis Bergkamp",
+						"Patrick Vieira",
+						"Thierry Henry",
+					}))
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false if the specified attribute (an array) DOES contain the value ": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals("Thierry Henry").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([...]string{
+						"Zinedine Zidane",
+						"Dennis Bergkamp",
+						"Patrick Vieira",
+						"Thierry Henry",
+					}))
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false if the specified attribute (an array) matches the value (an array) exactly": {
+			filter: elemental.NewFilterComposer().
+
+				// note: order matters here!
+
+				WithKey(testAttributeName).
+				NotEquals([...]string{
+					"Zinedine Zidane",
+					"Dennis Bergkamp",
+					"Patrick Vieira",
+					"Thierry Henry",
+				}).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([...]string{
+						"Zinedine Zidane",
+						"Dennis Bergkamp",
+						"Patrick Vieira",
+						"Thierry Henry",
+					}))
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false if the specified attribute (a slice) matches the value (an array) exactly": {
+			filter: elemental.NewFilterComposer().
+
+				// note: order matters here!
+
+				WithKey(testAttributeName).
+				NotEquals([...]string{
+					"Zinedine Zidane",
+					"Dennis Bergkamp",
+					"Patrick Vieira",
+					"Thierry Henry",
+				}).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([]string{
+						"Zinedine Zidane",
+						"Dennis Bergkamp",
+						"Patrick Vieira",
+						"Thierry Henry",
+					}))
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false if the specified attribute (a slice) matches the value (a slice) exactly": {
+			filter: elemental.NewFilterComposer().
+
+				// note: order matters here!
+
+				WithKey(testAttributeName).
+				NotEquals([]string{
+					"Zinedine Zidane",
+					"Dennis Bergkamp",
+					"Patrick Vieira",
+					"Thierry Henry",
+				}).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([]string{
+						"Zinedine Zidane",
+						"Dennis Bergkamp",
+						"Patrick Vieira",
+						"Thierry Henry",
+					}))
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false if the specified attribute (an array) matches the value (a slice) exactly": {
+			filter: elemental.NewFilterComposer().
+
+				// note: order matters here!
+
+				WithKey(testAttributeName).
+				NotEquals([]string{
+					"Zinedine Zidane",
+					"Dennis Bergkamp",
+					"Patrick Vieira",
+					"Thierry Henry",
+				}).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([...]string{
+						"Zinedine Zidane",
+						"Dennis Bergkamp",
+						"Patrick Vieira",
+						"Thierry Henry",
+					}))
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return true if the specified attribute (an array) does NOT match the value (an array) exactly": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals([...]string{
+					"Zinedine Zidane",
+					"Dennis Bergkamp",
+					"Patrick Vieira",
+					"Thierry Henry",
+				}).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([...]string{
+						"Dennis Bergkamp",
+						"Patrick Vieira",
+						"Zinedine Zidane", // notice how Zinedine is now at a different index
+						"Thierry Henry",
+					}))
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return true if the specified attribute (a slice) does NOT match the value (an array) exactly": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals([...]string{
+					"Zinedine Zidane",
+					"Dennis Bergkamp",
+					"Patrick Vieira",
+					"Thierry Henry",
+				}).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([]string{
+						"Dennis Bergkamp",
+						"Patrick Vieira",
+						"Zinedine Zidane", // notice how Zinedine is now at a different index
+						"Thierry Henry",
+					}))
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return true if the specified attribute (an array) does NOT match the value (a slice) exactly": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals([]string{
+					"Zinedine Zidane",
+					"Dennis Bergkamp",
+					"Patrick Vieira",
+					"Thierry Henry",
+				}).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([...]string{
+						"Dennis Bergkamp",
+						"Patrick Vieira",
+						"Zinedine Zidane", // notice how Zinedine is now at a different index
+						"Thierry Henry",
+					}))
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return true if the specified attribute (a slice) does NOT match the value (a slice) exactly": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals([]string{
+					"Zinedine Zidane",
+					"Dennis Bergkamp",
+					"Patrick Vieira",
+					"Thierry Henry",
+				}).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([]string{
+						"Dennis Bergkamp",
+						"Patrick Vieira",
+						"Zinedine Zidane", // notice how Zinedine is now at a different index
+						"Thierry Henry",
+					}))
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return false if the specified attribute (a slice of slice) contains an element that matches the value (a slice) exactly": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals([]string{
+					"Zinedine Zidane",
+					"Dennis Bergkamp",
+					"Patrick Vieira",
+					"Thierry Henry",
+				}).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([][]string{
+						{
+							"a",
+						},
+						{
+							"b",
+						},
+						{
+							"c",
+						},
+						{
+							"Zinedine Zidane",
+							"Dennis Bergkamp",
+							"Patrick Vieira",
+							"Thierry Henry",
+						},
+					}))
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false if the specified attribute (a slice of slice) contains an element that matches the value (an array) exactly": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals([...]string{
+					"Zinedine Zidane",
+					"Dennis Bergkamp",
+					"Patrick Vieira",
+					"Thierry Henry",
+				}).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([][]string{
+						{
+							"a",
+						},
+						{
+							"b",
+						},
+						{
+							"c",
+						},
+						{
+							"Zinedine Zidane",
+							"Dennis Bergkamp",
+							"Patrick Vieira",
+							"Thierry Henry",
+						},
+					}))
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false if the specified attribute (an array of slice) contains an element that matches the value (a slice) exactly": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals([]string{
+					"Zinedine Zidane",
+					"Dennis Bergkamp",
+					"Patrick Vieira",
+					"Thierry Henry",
+				}).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([...][]string{
+						{
+							"a",
+						},
+						{
+							"b",
+						},
+						{
+							"c",
+						},
+						{
+							"Zinedine Zidane",
+							"Dennis Bergkamp",
+							"Patrick Vieira",
+							"Thierry Henry",
+						},
+					}))
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false if the specified attribute (an array of slice) contains an element that matches the value (an array) exactly": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals([...]string{
+					"Zinedine Zidane",
+					"Dennis Bergkamp",
+					"Patrick Vieira",
+					"Thierry Henry",
+				}).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([...][]string{
+						{
+							"a",
+						},
+						{
+							"b",
+						},
+						{
+							"c",
+						},
+						{
+							"Zinedine Zidane",
+							"Dennis Bergkamp",
+							"Patrick Vieira",
+							"Thierry Henry",
+						},
+					}))
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return true if the specified attribute (a slice of slice) does NOT contain an element that matches the value (a slice) exactly": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals([]string{
+					"Zinedine Zidane",
+					"Dennis Bergkamp",
+					"Patrick Vieira",
+					"Thierry Henry",
+				}).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([][]string{
+						{
+							"a",
+						},
+						{
+							"b",
+						},
+						{
+							"c",
+						},
+						{
+							"Dennis Bergkamp",
+							"Zinedine Zidane", // notice the index of zinedine is different on the attribute
+							"Patrick Vieira",
+							"Thierry Henry",
+						},
+					}))
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return true if the specified attribute (a slice of slice) does NOT contain an element that matches the value (an array) exactly": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals([...]string{
+					"Zinedine Zidane",
+					"Dennis Bergkamp",
+					"Patrick Vieira",
+					"Thierry Henry",
+				}).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([][]string{
+						{
+							"a",
+						},
+						{
+							"b",
+						},
+						{
+							"c",
+						},
+						{
+							"Dennis Bergkamp",
+							"Zinedine Zidane", // notice the index of zinedine is different on the attribute
+							"Patrick Vieira",
+							"Thierry Henry",
+						},
+					}))
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return false if the specified attribute (an array of slice) does NOT contain an element that matches the value (a slice) exactly": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals([]string{
+					"Zinedine Zidane",
+					"Dennis Bergkamp",
+					"Patrick Vieira",
+					"Thierry Henry",
+				}).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([...][]string{
+						{
+							"a",
+						},
+						{
+							"b",
+						},
+						{
+							"c",
+						},
+						{
+							"Dennis Bergkamp",
+							"Zinedine Zidane", // notice the index of zinedine is different on the attribute
+							"Patrick Vieira",
+							"Thierry Henry",
+						},
+					}))
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return true if the specified attribute (an array of slice) does NOT contain an element that matches the value (an array) exactly": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotEquals([...]string{
+					"Zinedine Zidane",
+					"Dennis Bergkamp",
+					"Patrick Vieira",
+					"Thierry Henry",
+				}).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([...][]string{
+						{
+							"a",
+						},
+						{
+							"b",
+						},
+						{
+							"c",
+						},
+						{
+							"Dennis Bergkamp",
+							"Zinedine Zidane", // notice the index of zinedine is different on the attribute
+							"Patrick Vieira",
+							"Thierry Henry",
+						},
+					}))
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+	}
+
+	for description, tc := range tests {
+		t.Run(description, func(t *testing.T) {
+
+			identity := tc.mockSetupFunc(t, gomock.NewController(t))
+			matched, err := elemental.MatchesFilter(identity, tc.filter)
+
+			if (err != nil) != tc.expectedError {
+				t.Errorf("\n"+
+					"error expectation failued:\n"+
+					"expected an error: %t\n"+
+					"actual error: %+v\n",
+					tc.expectedError,
+					err)
+			}
+
+			if matched != tc.expectedMatch {
+				t.Errorf("\n"+
+					"match expectation failed:\n"+
+					"expected a match: %t\n"+
+					"matched occurred: %+v\n",
+					tc.expectedMatch,
+					matched)
 			}
 		})
 	}
