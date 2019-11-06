@@ -6,11 +6,10 @@ import (
 	"testing"
 	"time"
 
-	testmodel "go.aporeto.io/elemental/test/model"
-
 	"github.com/golang/mock/gomock"
 	"go.aporeto.io/elemental"
 	"go.aporeto.io/elemental/internal"
+	testmodel "go.aporeto.io/elemental/test/model"
 )
 
 // this unit test suite tests the functionality of the EqualComparator when used in conjunction with the helper
@@ -1230,12 +1229,6 @@ func TestUnsupportedComparators(t *testing.T) {
 		"matches": {
 			filter: elemental.NewFilterComposer().WithKey(testAttribute).Matches(".*").Done(),
 		},
-		"exists": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).Exists().Done(),
-		},
-		"not exists": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).NotExists().Done(),
-		},
 	}
 
 	for description, test := range tests {
@@ -1982,6 +1975,492 @@ func TestNotEqualComparator(t *testing.T) {
 				return mockAS
 			},
 			expectedMatch: true,
+			expectedError: false,
+		},
+	}
+
+	for description, tc := range tests {
+		t.Run(description, func(t *testing.T) {
+
+			identity := tc.mockSetupFunc(t, gomock.NewController(t))
+			matched, err := elemental.MatchesFilter(identity, tc.filter)
+
+			if (err != nil) != tc.expectedError {
+				t.Errorf("\n"+
+					"error expectation failued:\n"+
+					"expected an error: %t\n"+
+					"actual error: %+v\n",
+					tc.expectedError,
+					err)
+			}
+
+			if matched != tc.expectedMatch {
+				t.Errorf("\n"+
+					"match expectation failed:\n"+
+					"expected a match: %t\n"+
+					"matched occurred: %+v\n",
+					tc.expectedMatch,
+					matched)
+			}
+		})
+	}
+}
+
+// this unit test suite tests the functionality of the ExistsComparator when used in conjunction with the helper
+// MatchesFilter for filtering an AttributeSpecifiable using the supplied filter
+func TestExistsComparator(t *testing.T) {
+
+	// nil fixtures
+	var (
+		nilPointer   *interface{}          = nil
+		nilMap       map[struct{}]struct{} = nil
+		nilFunc      func()                = nil
+		nilChan      chan struct{}         = nil
+		nilInterface interface{}           = nil
+		nilSlice     []interface{}         = nil
+	)
+
+	testAttributeName := "someAttribute"
+	tests := map[string]struct {
+		filter        *elemental.Filter
+		mockSetupFunc func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable
+		expectedMatch bool
+		expectedError bool
+	}{
+		"should return false if the attribute does not exist on the identifiable": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Exists().
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(nil)).
+					Times(1)
+
+				mockAS.
+					EXPECT().
+					AttributeSpecifications().
+
+					// IMPORTANT: notice how this is returning a map which does not contain the attribute specified in the filter
+
+					Return(map[string]elemental.AttributeSpecification{
+						"someOtherAttribute": {},
+					}).
+					Times(1)
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return true if the attribute exists, but is a nil pointer": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Exists().
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(nilPointer)).
+					Times(1)
+
+				mockAS.
+					EXPECT().
+					AttributeSpecifications().
+					Return(map[string]elemental.AttributeSpecification{
+						testAttributeName: {},
+					}).
+					Times(1)
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return true if the attribute exists, but is a nil map": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Exists().
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(nilMap)).
+					Times(1)
+
+				mockAS.
+					EXPECT().
+					AttributeSpecifications().
+					Return(map[string]elemental.AttributeSpecification{
+						testAttributeName: {},
+					}).
+					Times(1)
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return true if the attribute exists, but is a nil func": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Exists().
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(nilFunc)).
+					Times(1)
+
+				mockAS.
+					EXPECT().
+					AttributeSpecifications().
+					Return(map[string]elemental.AttributeSpecification{
+						testAttributeName: {},
+					}).
+					Times(1)
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return true if the attribute exists, but is a nil channel": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Exists().
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(nilChan)).
+					Times(1)
+
+				mockAS.
+					EXPECT().
+					AttributeSpecifications().
+					Return(map[string]elemental.AttributeSpecification{
+						testAttributeName: {},
+					}).
+					Times(1)
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return true if the attribute exists, but is a nil interface": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Exists().
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					// nolint - i want to be explicit about the fact that ValueForAttribute is returning an interface{}
+					Return(interface{}(nilInterface)).
+					Times(1)
+
+				mockAS.
+					EXPECT().
+					AttributeSpecifications().
+					Return(map[string]elemental.AttributeSpecification{
+						testAttributeName: {},
+					}).
+					Times(1)
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return true if the attribute exists, but is a nil slice": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Exists().
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(nilSlice)).
+					Times(1)
+
+				mockAS.
+					EXPECT().
+					AttributeSpecifications().
+					Return(map[string]elemental.AttributeSpecification{
+						testAttributeName: {},
+					}).
+					Times(1)
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+	}
+
+	for description, tc := range tests {
+		t.Run(description, func(t *testing.T) {
+
+			identity := tc.mockSetupFunc(t, gomock.NewController(t))
+			matched, err := elemental.MatchesFilter(identity, tc.filter)
+
+			if (err != nil) != tc.expectedError {
+				t.Errorf("\n"+
+					"error expectation failued:\n"+
+					"expected an error: %t\n"+
+					"actual error: %+v\n",
+					tc.expectedError,
+					err)
+			}
+
+			if matched != tc.expectedMatch {
+				t.Errorf("\n"+
+					"match expectation failed:\n"+
+					"expected a match: %t\n"+
+					"matched occurred: %+v\n",
+					tc.expectedMatch,
+					matched)
+			}
+		})
+	}
+}
+
+// this unit test suite tests the functionality of the NotExists when used in conjunction with the helper
+// MatchesFilter for filtering an AttributeSpecifiable using the supplied filter
+func TestNotExistsComparator(t *testing.T) {
+
+	// nil fixtures
+	var (
+		nilPointer   *interface{}          = nil
+		nilMap       map[struct{}]struct{} = nil
+		nilFunc      func()                = nil
+		nilChan      chan struct{}         = nil
+		nilInterface interface{}           = nil
+		nilSlice     []interface{}         = nil
+	)
+
+	testAttributeName := "someAttribute"
+	tests := map[string]struct {
+		filter        *elemental.Filter
+		mockSetupFunc func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable
+		expectedMatch bool
+		expectedError bool
+	}{
+		"should return true if the attribute does not exist on the identifiable": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotExists().
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(nil)).
+					Times(1)
+
+				mockAS.
+					EXPECT().
+					AttributeSpecifications().
+
+					// IMPORTANT: notice how this is returning a map which does not contain the attribute specified in the filter
+
+					Return(map[string]elemental.AttributeSpecification{
+						"someOtherAttribute": {},
+					}).
+					Times(1)
+
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return false if the attribute exists, but is a nil pointer": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotExists().
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(nilPointer)).
+					Times(1)
+
+				mockAS.
+					EXPECT().
+					AttributeSpecifications().
+					Return(map[string]elemental.AttributeSpecification{
+						testAttributeName: {},
+					}).
+					Times(1)
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false if the attribute exists, but is a nil map": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotExists().
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(nilMap)).
+					Times(1)
+
+				mockAS.
+					EXPECT().
+					AttributeSpecifications().
+					Return(map[string]elemental.AttributeSpecification{
+						testAttributeName: {},
+					}).
+					Times(1)
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false if the attribute exists, but is a nil func": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotExists().
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(nilFunc)).
+					Times(1)
+
+				mockAS.
+					EXPECT().
+					AttributeSpecifications().
+					Return(map[string]elemental.AttributeSpecification{
+						testAttributeName: {},
+					}).
+					Times(1)
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false if the attribute exists, but is a nil channel": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotExists().
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(nilChan)).
+					Times(1)
+
+				mockAS.
+					EXPECT().
+					AttributeSpecifications().
+					Return(map[string]elemental.AttributeSpecification{
+						testAttributeName: {},
+					}).
+					Times(1)
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false if the attribute exists, but is a nil interface": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotExists().
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					// nolint - i want to be explicit about the fact that ValueForAttribute is returning an interface{}
+					Return(interface{}(nilInterface)).
+					Times(1)
+
+				mockAS.
+					EXPECT().
+					AttributeSpecifications().
+					Return(map[string]elemental.AttributeSpecification{
+						testAttributeName: {},
+					}).
+					Times(1)
+
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false if the attribute exists, but is a nil slice": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				NotExists().
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(nilSlice)).
+					Times(1)
+
+				mockAS.
+					EXPECT().
+					AttributeSpecifications().
+					Return(map[string]elemental.AttributeSpecification{
+						testAttributeName: {},
+					}).
+					Times(1)
+
+				return mockAS
+			},
+			expectedMatch: false,
 			expectedError: false,
 		},
 	}

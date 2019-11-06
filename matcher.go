@@ -30,29 +30,36 @@ func MatchesFilter(identifiable AttributeSpecifiable, filter *Filter, opts ...Ma
 			//    - an error occurred by your comparator
 			//    - the comparator failed to find a match
 			//
-			// this is because we are dealing with AND semantics here; success is only guaranteed if all AndOperator's find a match
+			// this is because we are dealing with AND semantics here; success is only possible when all AndOperator's find a match
 
 			switch comparator {
 			case EqualComparator:
-				if equal := equals(attributeValue, filter.Values()[i][0]); !equal {
+				if !equals(attributeValue, filter.Values()[i][0]) {
 					return false, nil
 				}
 			case NotEqualComparator:
-				if notEqual := notEquals(attributeValue, filter.Values()[i][0]); !notEqual {
+				if !notEquals(attributeValue, filter.Values()[i][0]) {
 					return false, nil
 				}
-			case GreaterComparator,
+			case ExistsComparator:
+				if !exists(attributeName, identifiable.AttributeSpecifications()) {
+					return false, nil
+				}
+			case NotExistsComparator:
+				if !notExists(attributeName, identifiable.AttributeSpecifications()) {
+					return false, nil
+				}
+			case
+				MatchComparator,
+				NotMatchComparator,
+				GreaterComparator,
 				GreaterOrEqualComparator,
 				LesserComparator,
 				LesserOrEqualComparator,
 				InComparator,
 				NotInComparator,
 				ContainComparator,
-				NotContainComparator,
-				MatchComparator,
-				NotMatchComparator,
-				ExistsComparator,
-				NotExistsComparator:
+				NotContainComparator:
 				return false, fmt.Errorf("elemental: unsuported comparator %q", translateComparator(filter.Comparators()[i]))
 			default:
 				panic(fmt.Errorf("elemental: unknown comparator %q", translateComparator(filter.Comparators()[i])))
@@ -80,6 +87,33 @@ func MatchesFilter(identifiable AttributeSpecifiable, filter *Filter, opts ...Ma
 	return matched, err
 }
 
+// exists implements the elemental.ExistsComparator behaviour by implementing the Go equivalent of
+// https://docs.mongodb.com/manual/reference/operator/query/exists/ where the value of the boolean is TRUE
+//
+// { field: { $exists: <boolean> (true) } }
+//  Quote from docs:
+//     When <boolean> is true, $exists matches the documents that contain the field, including documents where
+//     the field value is null.
+//
+// exists will return true as long as the identifiable has the attribute irrespective of its value (even if it is nil)
+func exists(attributeName string, attributes map[string]AttributeSpecification) bool {
+	// check to see if we are dealing with an attribute that does not exist on the provided identifiable.
+	_, exists := attributes[attributeName]
+	return exists
+}
+
+// notExists implements the elemental.NotExistsComparator by implementing the Go equivalent of
+// https://docs.mongodb.com/manual/reference/operator/query/exists/ where the value of the boolean is FALSE
+//
+// { field: { $exists: <boolean> (false) } }
+//
+// Quote from docs:
+//     if <boolean> is false, the query returns only the documents that do not contain the field.
+func notExists(attributeName string, attributes map[string]AttributeSpecification) bool {
+	_, exists := attributes[attributeName]
+	return !exists
+}
+
 // equals implements the elemental.EqualComparator behaviour by implementing the Go equivalent of
 // https://docs.mongodb.com/manual/reference/operator/query/eq
 //
@@ -98,7 +132,7 @@ func equals(field, value interface{}) bool {
 	return equalsCommon(field, value)
 }
 
-/// notEquals implements the elemental.NotEqualComparator behaviour by implementing the Go equivalent of
+// notEquals implements the elemental.NotEqualComparator behaviour by implementing the Go equivalent of
 // https://docs.mongodb.com/manual/reference/operator/query/ne
 //
 // {field: {$ne: value} }
