@@ -3,6 +3,7 @@ package elemental
 import (
 	"fmt"
 	"reflect"
+	"regexp"
 )
 
 // MatchesFilter determines whether an identity matches a filter
@@ -49,9 +50,11 @@ func MatchesFilter(identifiable AttributeSpecifiable, filter *Filter, opts ...Ma
 				if !notExists(attributeName, identifiable.AttributeSpecifications()) {
 					return false, nil
 				}
-			case
-				MatchComparator,
-				NotMatchComparator,
+			case MatchComparator:
+				if !matches(attributeValue, filter.Values()[i]) {
+					return false, nil
+				}
+			case NotMatchComparator,
 				GreaterComparator,
 				GreaterOrEqualComparator,
 				LesserComparator,
@@ -85,6 +88,69 @@ func MatchesFilter(identifiable AttributeSpecifiable, filter *Filter, opts ...Ma
 	}
 
 	return matched, err
+}
+
+// matches applies the slice a regular expressions (strings) supplied with the comparator to the attribute - a match is
+// found if any of the expressions provided yields a match on the attribute.
+//
+// for example, if the comparator was supplied with the following filter: elemental.NewFilter().WithKey("name").Matches("amir", ".*").Done()
+// matches would replicate the equivalent behaviour of following mongo query:
+//
+//		{
+//			"$or": [{
+//				"name": {
+//					"$regex": "amir"
+//				}
+//			}, {
+//				"name": {
+//					"$regex": ".*"
+//				}
+//			}]
+//		}
+//
+// see: https://docs.mongodb.com/manual/reference/operator/query/regex/#regex
+//
+// restrictions:
+//   - the attribute MUST exist and must be a string or a slice/array of strings
+//   - the comparator query values must be strings that can be compiled to valid Go regular expressions
+func matches(attributeValue interface{}, queries FilterValue) bool {
+
+	// if the attribute doesn't exist, no match is possible
+	if attributeValue == nil {
+		return false
+	}
+
+	// we can only match on strings, so if the attribute is a string or is an array/slice of a type that can be converted
+	// into a string let's adapt to a slice of strings to make the computation straightforward
+	attributeValues := toStringSlice(attributeValue)
+
+	// short-circuit in the event that none of the attribute values were strings or could be converted to a string
+	if len(attributeValues) == 0 {
+		return false
+	}
+
+	// we are dealing with OR semantics here - we can short-circuit in the moment we find one successful match
+	for _, q := range queries {
+		// check if the comparator value is a string or a type that could be converted to a string
+		qs, ok := isString(reflect.ValueOf(q))
+		if !ok {
+			continue
+		}
+
+		// if the provided comparator value could not be compiled to a regex, just continue to the next value provided
+		regex, err := regexp.Compile(qs)
+		if err != nil {
+			continue
+		}
+
+		for _, av := range attributeValues {
+			if regex.Match([]byte(av)) {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 // exists implements the elemental.ExistsComparator behaviour by implementing the Go equivalent of
@@ -248,4 +314,30 @@ func isArrayLike(v reflect.Value) bool {
 	default:
 		return false
 	}
+}
+
+func toStringSlice(v interface{}) []string {
+	var ss []string
+
+	switch v := reflect.ValueOf(v); v.Kind() {
+	case reflect.String:
+		ss = append(ss, v.String())
+	case reflect.Slice, reflect.Array:
+		// we only add to the slice if the element is a string (or can be converted to one)
+		for i := 0; i < v.Len(); i++ {
+			if s, ok := isString(v.Index(i)); ok {
+				ss = append(ss, s)
+			}
+		}
+	}
+
+	return ss
+}
+
+func isString(v reflect.Value) (string, bool) {
+	switch v.Kind() {
+	case reflect.String:
+		return v.String(), true
+	}
+	return "", false
 }
