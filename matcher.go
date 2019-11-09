@@ -317,27 +317,27 @@ func isArrayLike(v reflect.Value) bool {
 }
 
 func toStringSlice(v interface{}) []string {
-	var ss []string
-
 	switch v := reflect.ValueOf(v); v.Kind() {
 	case reflect.String:
-		ss = append(ss, v.String())
+		return []string{v.String()}
 	case reflect.Slice, reflect.Array:
+		ss := make([]string, 0, v.Len())
 		// we only add to the slice if the element is a string (or can be converted to one)
 		for i := 0; i < v.Len(); i++ {
 			if s, ok := isString(v.Index(i)); ok {
 				ss = append(ss, s)
 			}
 		}
+		return ss
 	}
 
-	return ss
+	return nil
 }
 
 func isString(v reflect.Value) (string, bool) {
-	switch v.Kind() {
-	case reflect.String:
-		return v.String(), true
+	if v.Kind() != reflect.String {
+		return "", false
 	}
-	return "", false
+
+	return v.String(), true
 }
