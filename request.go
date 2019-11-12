@@ -143,26 +143,26 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	case http.MethodPatch:
 		operation = OperationPatch
 		data, err = ioutil.ReadAll(req.Body)
-		defer req.Body.Close() // nolint: errcheck
 		if err != nil {
-			return nil, err
+			return nil, NewError("Bad Request", fmt.Sprintf("Unable to read body of request: %s", err), "elemental", http.StatusBadRequest)
 		}
+		defer req.Body.Close() // nolint: errcheck
 
 	case http.MethodPost:
 		operation = OperationCreate
 		data, err = ioutil.ReadAll(req.Body)
-		defer req.Body.Close() // nolint: errcheck
 		if err != nil {
-			return nil, err
+			return nil, NewError("Bad Request", fmt.Sprintf("Unable to read body of request: %s", err), "elemental", http.StatusBadRequest)
 		}
+		defer req.Body.Close() // nolint: errcheck
 
 	case http.MethodPut:
 		operation = OperationUpdate
 		data, err = ioutil.ReadAll(req.Body)
-		defer req.Body.Close() // nolint: errcheck
 		if err != nil {
-			return nil, err
+			return nil, NewError("Bad Request", fmt.Sprintf("Unable to read body of request: %s", err), "elemental", http.StatusBadRequest)
 		}
+		defer req.Body.Close() // nolint: errcheck
 	}
 
 	var page, pageSize, limit int
