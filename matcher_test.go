@@ -2723,7 +2723,7 @@ func TestMatchComparator(t *testing.T) {
 			filter: elemental.NewFilterComposer().
 				WithKey(testAttributeName).
 				Matches(
-					// nope, not a string, should be skippep
+					// nope, not a string, should be skipped
 					1234,
 					// nope, not a string, should be skipped
 					[]string{"yolo"},
