@@ -5,6 +5,7 @@
 */debug
 codegen
 vendor
+.idea
 cmd/elegen/elegen
 cmd/elegen/build
 *.lock
