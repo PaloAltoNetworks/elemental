@@ -16,22 +16,40 @@ import (
 	"net/url"
 )
 
-// A PushFilter represents an abstract filter for filtering out push notifications.
-type PushFilter struct {
-	Identities map[string][]EventType `msgpack:"identities" json:"identities"`
-	Params     url.Values             `msgpack:"parameters" json:"parameters"`
+// A PushFilter represents an abstract filter for filtering out push notifications. This is now aliased to PushConfig as a
+// result of re-naming the type.
+//
+// Deprecated: use the new name PushConfig instead
+type PushFilter = PushConfig
+
+// NewPushFilter returns a new PushFilter. NewPushFilter is now aliased to NewPushConfig. This was done for backwards
+// compatibility as a result of the re-naming of PushFilter to PushConfig.
+//
+// Deprecated: use the new name NewPushConfig instead
+var NewPushFilter = NewPushConfig
+
+// A PushConfig represents an abstract filter for filtering out push notifications.
+//
+// The 'IdentityFilters' field is a mapping between a filtered identity and the string representation of an elemental.Filter.
+// A client will supply this attribute if they want fine-grained filtering on the set of identities that they are filtering on.
+// If this attribute has been supplied, the identities passed to 'IdentityFilters' must be a subset of the identities passed to
+// 'Identities'; passing in identities that are not provided in the 'Identities' field will be ignored.
+type PushConfig struct {
+	Identities      map[string][]EventType `msgpack:"identities" json:"identities"`
+	IdentityFilters map[string]string      `msgpack:"filters"    json:"filters"`
+	Params          url.Values             `msgpack:"parameters" json:"parameters"`
 }
 
-// NewPushFilter returns a new PushFilter.
-func NewPushFilter() *PushFilter {
+// NewPushConfig returns a new PushConfig.
+func NewPushConfig() *PushConfig {
 
-	return &PushFilter{
+	return &PushConfig{
 		Identities: map[string][]EventType{},
 	}
 }
 
 // SetParameter sets the values of the parameter with the given key.
-func (f *PushFilter) SetParameter(key string, values ...string) {
+func (f *PushConfig) SetParameter(key string, values ...string) {
 
 	if f.Params == nil {
 		f.Params = url.Values{}
@@ -41,7 +59,7 @@ func (f *PushFilter) SetParameter(key string, values ...string) {
 }
 
 // Parameters returns a copy of all the parameters.
-func (f *PushFilter) Parameters() url.Values {
+func (f *PushConfig) Parameters() url.Values {
 
 	if f.Params == nil {
 		return nil
@@ -55,14 +73,14 @@ func (f *PushFilter) Parameters() url.Values {
 	return out
 }
 
-// FilterIdentity adds the given identity for the given eventTypes in the PushFilter.
-func (f *PushFilter) FilterIdentity(identityName string, eventTypes ...EventType) {
+// FilterIdentity adds the given identity for the given eventTypes in the PushConfig.
+func (f *PushConfig) FilterIdentity(identityName string, eventTypes ...EventType) {
 
 	f.Identities[identityName] = eventTypes
 }
 
-// IsFilteredOut returns true if the given Identity is not part of the PushFilter.
-func (f *PushFilter) IsFilteredOut(identityName string, eventType EventType) bool {
+// IsFilteredOut returns true if the given Identity is not part of the PushConfig.
+func (f *PushConfig) IsFilteredOut(identityName string, eventType EventType) bool {
 
 	// if the identities list is empty, we filter nothing.
 	if len(f.Identities) == 0 {
@@ -91,10 +109,10 @@ func (f *PushFilter) IsFilteredOut(identityName string, eventType EventType) boo
 	return true
 }
 
-// Duplicate duplicates the PushFilter.
-func (f *PushFilter) Duplicate() *PushFilter {
+// Duplicate duplicates the PushConfig.
+func (f *PushConfig) Duplicate() *PushConfig {
 
-	nf := NewPushFilter()
+	nf := NewPushConfig()
 
 	for id, types := range f.Identities {
 		nf.FilterIdentity(id, types...)
@@ -107,7 +125,7 @@ func (f *PushFilter) Duplicate() *PushFilter {
 	return nf
 }
 
-func (f *PushFilter) String() string {
+func (f *PushConfig) String() string {
 
 	return fmt.Sprintf("<pushfilter identities:%s>", f.Identities)
 }

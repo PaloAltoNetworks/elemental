@@ -18,11 +18,11 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestPushFilter_NewPushFilter(t *testing.T) {
+func TestPushFilter_NewPushConfig(t *testing.T) {
 
 	Convey("Given I create a new PushFilter", t, func() {
 
-		f := NewPushFilter()
+		f := NewPushConfig()
 
 		Convey("Then it should be correctly initialized", func() {
 			So(f.Identities, ShouldNotBeNil)
@@ -35,7 +35,7 @@ func TestPushFilter_Duplicate(t *testing.T) {
 
 	Convey("Given I create a new PushFilter", t, func() {
 
-		f := NewPushFilter()
+		f := NewPushConfig()
 
 		f.SetParameter("key", "values")
 
@@ -61,7 +61,7 @@ func TestPushFilter_Parameters(t *testing.T) {
 
 	Convey("Given I create a new PushFilter", t, func() {
 
-		f := NewPushFilter()
+		f := NewPushConfig()
 
 		Convey("When I call SetParameter", func() {
 
@@ -82,7 +82,7 @@ func TestPushFilter_Parameters(t *testing.T) {
 
 	Convey("Given I have a push filter with no parameters", t, func() {
 
-		f := NewPushFilter()
+		f := NewPushConfig()
 
 		Convey("When I call Parameters", func() {
 
@@ -99,7 +99,7 @@ func TestPushFilter_IsFilteredOut(t *testing.T) {
 
 	Convey("Given I create a new PushFilter", t, func() {
 
-		f := NewPushFilter()
+		f := NewPushConfig()
 
 		Convey("When I check if i1 is filtered with a nil value for identities", func() {
 
@@ -192,7 +192,7 @@ func TestPushFilter_String(t *testing.T) {
 
 	Convey("Given I create a new PushFilter", t, func() {
 
-		f := NewPushFilter()
+		f := NewPushConfig()
 
 		f.FilterIdentity("i1", EventCreate, EventDelete)
 
