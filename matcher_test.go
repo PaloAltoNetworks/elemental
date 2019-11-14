@@ -1226,9 +1226,6 @@ func TestUnsupportedComparators(t *testing.T) {
 		"not contains": {
 			filter: elemental.NewFilterComposer().WithKey(testAttribute).NotContains("a", "b", "c").Done(),
 		},
-		"matches": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).Matches(".*").Done(),
-		},
 	}
 
 	for description, test := range tests {
@@ -2458,6 +2455,432 @@ func TestNotExistsComparator(t *testing.T) {
 					}).
 					Times(1)
 
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+	}
+
+	for description, tc := range tests {
+		t.Run(description, func(t *testing.T) {
+
+			identity := tc.mockSetupFunc(t, gomock.NewController(t))
+			matched, err := elemental.MatchesFilter(identity, tc.filter)
+
+			if (err != nil) != tc.expectedError {
+				t.Errorf("\n"+
+					"error expectation failued:\n"+
+					"expected an error: %t\n"+
+					"actual error: %+v\n",
+					tc.expectedError,
+					err)
+			}
+
+			if matched != tc.expectedMatch {
+				t.Errorf("\n"+
+					"match expectation failed:\n"+
+					"expected a match: %t\n"+
+					"matched occurred: %+v\n",
+					tc.expectedMatch,
+					matched)
+			}
+		})
+	}
+}
+
+// this unit test suite tests the functionality of the MatchComparator comparator when used in conjunction with the helper
+// MatchesFilter for filtering an AttributeSpecifiable using a supplied filter
+func TestMatchComparator(t *testing.T) {
+
+	// some type that has a string has its underlying type
+	type someCustomStringType string
+	testAttributeName := "someAttribute"
+	tests := map[string]struct {
+		filter        *elemental.Filter
+		mockSetupFunc func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable
+		expectedMatch bool
+		expectedError bool
+	}{
+		"should return true if the attribute (a string) matches the pattern supplied to the comparator": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Matches("Vancouver").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}("It rains a lot in Vancouver")).
+					Times(1)
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should return false if the attribute (a string) does not match the pattern supplied to the comparator": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Matches("Vancouver").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}("It's sunny in Phuket")).
+					Times(1)
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should support pattern matching the elements of an attribute that is a slice using the supplied pattern (match case)": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Matches(`\$identity=.*`).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([]string{
+						"$identity=automation",
+						"$name=Test Automation",
+						"$namespace=/account-9bb41b0a-8703-40ca-b3e6-975d727fcba7",
+						"$id=5d5208a1339d6456750010b5",
+					})).
+					Times(1)
+				return mockAS
+			},
+
+			// expecting a match because the attribute contains an element ($identity=automation) matching the pattern provided (^\\$identity=.*)
+
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should support pattern matching the elements of an attribute that is a slice using the supplied pattern (no match case)": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Matches("WILL NOT MATCH ANYTHING").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([]string{
+						"$identity=automation",
+						"$name=Test Automation",
+						"$namespace=/account-9bb41b0a-8703-40ca-b3e6-975d727fcba7",
+						"$id=5d5208a1339d6456750010b5",
+					})).
+					Times(1)
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should support pattern matching the elements of an attribute that is an array using the supplied pattern (match case)": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Matches(`\$identity=.*`).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([4]string{
+						"$identity=automation",
+						"$name=Test Automation",
+						"$namespace=/account-9bb41b0a-8703-40ca-b3e6-975d727fcba7",
+						"$id=5d5208a1339d6456750010b5",
+					})).
+					Times(1)
+				return mockAS
+			},
+
+			// expecting a match because the attribute contains an element ($identity=automation) matching the pattern provided (^\\$identity=.*)
+
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should support pattern matching the elements of an attribute that is an array using the supplied pattern (no match case)": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Matches("WILL NOT MATCH ANYTHING").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([4]string{
+						"$identity=automation",
+						"$name=Test Automation",
+						"$namespace=/account-9bb41b0a-8703-40ca-b3e6-975d727fcba7",
+						"$id=5d5208a1339d6456750010b5",
+					})).
+					Times(1)
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false if none of the attribute elements is a string or is type based off a string": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Matches("yolo").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([]interface{}{
+						123,
+						[]string{"yolo"},
+					})).
+					Times(1)
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false is the attribute being matched on is NOT a string": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Matches("123456789").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(123456789)).
+					Times(1)
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false if no patterns have been provided to the comparator to match on": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+
+				// notice how this is being passed nil
+
+				Matches(nil).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([]string{
+						"$identity=automation",
+						"$name=Test Automation",
+						"$namespace=/account-9bb41b0a-8703-40ca-b3e6-975d727fcba7",
+						"$id=5d5208a1339d6456750010b5",
+					})).
+					Times(1)
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should return false if the attribute being matched on does not exist on the identifiable": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Matches(".*").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(nil)).
+					Times(1)
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should ignore non-string patterns passed into the match comparator parameters (match case)": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Matches(
+					// nope, not a string, should be skipped
+					1234,
+					// nope, not a string, should be skipped
+					[]string{"yolo"},
+					// this should result in a match on ("$identity=automation")
+					`^\$identity=.*`,
+				).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}("$identity=policy")).
+					Times(1)
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should ignore non-string patterns passed into the match comparator parameters (no match case)": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Matches(
+					// nope, not a string, should be skipped
+					1234,
+					// nope, not a string, should be skipped
+					[]string{"yolo"},
+					// nope, not a string, should be skipped
+					interface{}(123),
+				).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}("yolo")).
+					Times(1)
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+		"should support matching on attribute types that have a string as their underlying type (match case)": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Matches(".*amir$").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+
+					// notice the type of the attribute - someCustomStringType - which has a string as its underlying type!
+
+					Return(interface{}(
+						someCustomStringType("###############amir"),
+					)).
+					Times(1)
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+
+		// in this test, we verify the behaviour that for each pattern provided, it should be matched against each of the
+		// attribute values to determine if a match is possible. this also verifies that we are dealing with OR semantics because
+		// a match is found as long as just one of the provided patterns matches
+
+		"should support matching on multiple patterns for an attribute that is a slice (match case)": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Matches(
+					".*somepattern$",
+					"nope$",
+					// this should match the last attribute element! ($id=5d5208a1339d6456750010b5)
+					`^\$id=5d5208.*`).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([]string{
+						"$identity=automation",
+						"$name=Test Automation",
+						"$namespace=/account-9bb41b0a-8703-40ca-b3e6-975d727fcba7",
+						"$id=5d5208a1339d6456750010b5",
+					})).
+					Times(1)
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should ignore regex patterns that result in errors (match case)": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Matches(
+					// missing argument to repetition operator: `*`
+					"*",
+					// missing argument to repetition operator: `+`
+					"+",
+					// unexpected ): `abc)`
+					"abc)",
+					// this is a valid regex and should match the first attribute element ($identity=automation)
+					`^\$identity=`,
+				).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([]string{
+						"$identity=automation",
+						"$name=Test Automation",
+						"$namespace=/account-9bb41b0a-8703-40ca-b3e6-975d727fcba7",
+						"$id=5d5208a1339d6456750010b5",
+					})).
+					Times(1)
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should ignore regex patterns that result in errors (no match case)": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Matches(
+					// missing argument to repetition operator: `*`
+					"*",
+					// missing argument to repetition operator: `+`
+					"+",
+					// unexpected ): `abc)`
+					"abc)",
+				).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}([]string{
+						"$identity=automation",
+						"$name=Test Automation",
+						"$namespace=/account-9bb41b0a-8703-40ca-b3e6-975d727fcba7",
+						"$id=5d5208a1339d6456750010b5",
+					})).
+					Times(1)
 				return mockAS
 			},
 			expectedMatch: false,
