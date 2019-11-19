@@ -22,12 +22,6 @@ import (
 // Deprecated: use the new name PushConfig instead
 type PushFilter = PushConfig
 
-// NewPushFilter returns a new PushFilter. NewPushFilter is now aliased to NewPushConfig. This was done for backwards
-// compatibility as a result of the re-naming of PushFilter to PushConfig.
-//
-// Deprecated: use the new name NewPushConfig instead
-var NewPushFilter = NewPushConfig
-
 // A PushConfig represents an abstract filter for filtering out push notifications.
 //
 // The 'IdentityFilters' field is a mapping between a filtered identity and the string representation of an elemental.Filter.
@@ -38,13 +32,33 @@ type PushConfig struct {
 	Identities      map[string][]EventType `msgpack:"identities" json:"identities"`
 	IdentityFilters map[string]string      `msgpack:"filters"    json:"filters"`
 	Params          url.Values             `msgpack:"parameters" json:"parameters"`
+
+	// parsedIdentityFilters holds the parsed `IdentityFilters` to avoid re-parsing the configured filters on each push
+	// event that is using the same config.
+	parsedIdentityFilters map[string]*Filter
+}
+
+// NewPushFilter returns a new PushFilter. NewPushFilter is now aliased to NewPushConfig. This was done for backwards
+// compatibility as a result of the re-naming of PushFilter to PushConfig.
+//
+// Deprecated: use the constructor with the new name, NewPushConfig, instead
+func NewPushFilter() *PushFilter {
+	fmt.Println("DEPRECATED: elemental.NewPushFilter is deprecated, use elemental.NewPushConfig instead")
+
+	return &PushFilter{
+		Identities:            map[string][]EventType{},
+		IdentityFilters:       map[string]string{},
+		parsedIdentityFilters: map[string]*Filter{},
+	}
 }
 
 // NewPushConfig returns a new PushConfig.
 func NewPushConfig() *PushConfig {
 
 	return &PushConfig{
-		Identities: map[string][]EventType{},
+		Identities:            map[string][]EventType{},
+		IdentityFilters:       map[string]string{},
+		parsedIdentityFilters: map[string]*Filter{},
 	}
 }
 
@@ -79,7 +93,30 @@ func (f *PushConfig) FilterIdentity(identityName string, eventTypes ...EventType
 	f.Identities[identityName] = eventTypes
 }
 
-// IsFilteredOut returns true if the given Identity is not part of the PushConfig.
+// ParseIdentityFilters does something...
+//
+// TODO:
+//  - add a proper comment explaining what this API does
+//  - add unit tests
+func (f *PushConfig) ParseIdentityFilters() error {
+
+	for identity, unparsedFilter := range f.IdentityFilters {
+		if _, found := f.Identities[identity]; !found {
+			return fmt.Errorf("elemental: cannot declare an identity filter on %q as that was not declared in 'Identities'", identity)
+		}
+
+		filter, err := NewFilterParser(unparsedFilter).Parse()
+		if err != nil {
+			return fmt.Errorf("elemental: unable to parse filter %q: %s", unparsedFilter, err)
+		}
+
+		f.parsedIdentityFilters[identity] = filter
+	}
+
+	return nil
+}
+
+// IsFilteredOut returns true if the given Identity is not part of the PushConfig's Identity mapping
 func (f *PushConfig) IsFilteredOut(identityName string, eventType EventType) bool {
 
 	// if the identities list is empty, we filter nothing.
@@ -112,20 +149,28 @@ func (f *PushConfig) IsFilteredOut(identityName string, eventType EventType) boo
 // Duplicate duplicates the PushConfig.
 func (f *PushConfig) Duplicate() *PushConfig {
 
-	nf := NewPushConfig()
+	pc := NewPushConfig()
 
 	for id, types := range f.Identities {
-		nf.FilterIdentity(id, types...)
+		pc.FilterIdentity(id, types...)
+	}
+
+	for id, f := range f.IdentityFilters {
+		pc.IdentityFilters[id] = f
+	}
+
+	for id, f := range f.parsedIdentityFilters {
+		pc.parsedIdentityFilters[id] = f
 	}
 
 	for k, v := range f.Params {
-		nf.SetParameter(k, v...)
+		pc.SetParameter(k, v...)
 	}
 
-	return nf
+	return pc
 }
 
 func (f *PushConfig) String() string {
 
-	return fmt.Sprintf("<pushfilter identities:%s>", f.Identities)
+	return fmt.Sprintf("<pushconfig identities:%s identityfilters:%s>", f.Identities, f.IdentityFilters)
 }

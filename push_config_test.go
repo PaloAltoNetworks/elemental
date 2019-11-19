@@ -18,22 +18,24 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestPushFilter_NewPushConfig(t *testing.T) {
+func TestPushConfig_NewPushConfig(t *testing.T) {
 
-	Convey("Given I create a new PushFilter", t, func() {
+	Convey("Given I create a new PushConfig", t, func() {
 
 		f := NewPushConfig()
 
 		Convey("Then it should be correctly initialized", func() {
 			So(f.Identities, ShouldNotBeNil)
+			So(f.IdentityFilters, ShouldNotBeNil)
+			So(f.parsedIdentityFilters, ShouldNotBeNil)
 			So(f.Params, ShouldBeNil)
 		})
 	})
 }
 
-func TestPushFilter_Duplicate(t *testing.T) {
+func TestPushConfig_Duplicate(t *testing.T) {
 
-	Convey("Given I create a new PushFilter", t, func() {
+	Convey("Given I create a new PushConfig", t, func() {
 
 		f := NewPushConfig()
 
@@ -41,6 +43,25 @@ func TestPushFilter_Duplicate(t *testing.T) {
 
 		f.FilterIdentity("i1", EventCreate, EventDelete)
 		f.FilterIdentity("i2", EventCreate, EventDelete)
+
+		testFilter := NewFilterComposer().
+			And(
+				NewFilterComposer().
+					WithKey("propertyA").
+					Equals("someValue").
+					Done(),
+				NewFilterComposer().
+					WithKey("propertyB").
+					Equals("someValue").
+					Done(),
+			).Done()
+
+		f.IdentityFilters = map[string]string{
+			"i1": testFilter.String(),
+		}
+
+		// parse the identity filters so the private attribute 'IdentityFilters' gets populated
+		So(f.ParseIdentityFilters(), ShouldBeNil)
 
 		Convey("When I call Duplicate", func() {
 
@@ -50,6 +71,12 @@ func TestPushFilter_Duplicate(t *testing.T) {
 				So(dup.Identities, ShouldResemble, f.Identities)
 				So(dup.Identities, ShouldNotEqual, f.Identities)
 
+				So(dup.IdentityFilters, ShouldResemble, f.IdentityFilters)
+				So(dup.IdentityFilters, ShouldNotEqual, f.IdentityFilters)
+
+				So(dup.parsedIdentityFilters, ShouldResemble, f.parsedIdentityFilters)
+				So(dup.parsedIdentityFilters, ShouldNotEqual, f.parsedIdentityFilters)
+
 				So(dup.Params, ShouldResemble, f.Params)
 				So(dup.Params, ShouldNotEqual, f.Params)
 			})
@@ -57,9 +84,9 @@ func TestPushFilter_Duplicate(t *testing.T) {
 	})
 }
 
-func TestPushFilter_Parameters(t *testing.T) {
+func TestPushConfig_Parameters(t *testing.T) {
 
-	Convey("Given I create a new PushFilter", t, func() {
+	Convey("Given I create a new PushConfig", t, func() {
 
 		f := NewPushConfig()
 
@@ -95,9 +122,9 @@ func TestPushFilter_Parameters(t *testing.T) {
 	})
 }
 
-func TestPushFilter_IsFilteredOut(t *testing.T) {
+func TestPushConfig_IsFilteredOut(t *testing.T) {
 
-	Convey("Given I create a new PushFilter", t, func() {
+	Convey("Given I create a new PushConfig", t, func() {
 
 		f := NewPushConfig()
 
@@ -188,19 +215,35 @@ func TestPushFilter_IsFilteredOut(t *testing.T) {
 	})
 }
 
-func TestPushFilter_String(t *testing.T) {
+func TestPushConfig_String(t *testing.T) {
 
-	Convey("Given I create a new PushFilter", t, func() {
+	Convey("Given I create a new PushConfig", t, func() {
 
 		f := NewPushConfig()
 
 		f.FilterIdentity("i1", EventCreate, EventDelete)
 
+		testFilter := NewFilterComposer().
+			And(
+				NewFilterComposer().
+					WithKey("propertyA").
+					Equals("someValue").
+					Done(),
+				NewFilterComposer().
+					WithKey("propertyB").
+					Equals("someValue").
+					Done(),
+			).Done()
+
+		f.IdentityFilters = map[string]string{
+			"i1": testFilter.String(),
+		}
+
 		Convey("When I call the String Method", func() {
 			s := f.String()
 
 			Convey("Then it should be correctly printed", func() {
-				So(s, ShouldEqual, "<pushfilter identities:map[i1:[create delete]]>")
+				So(s, ShouldEqual, `<pushconfig identities:map[i1:[create delete]] identityfilters:map[i1:((propertyA == "someValue") and (propertyB == "someValue"))]>`)
 			})
 		})
 	})
