@@ -33,6 +33,22 @@ func TestPushConfig_NewPushConfig(t *testing.T) {
 	})
 }
 
+// just keeping this for backwards compatibility so we don't break the API by accident by removing the old constructor API
+func TestPushConfig_NewPushFilter(t *testing.T) {
+
+	Convey("Given I create a new NewPushFilter", t, func() {
+
+		f := NewPushFilter()
+
+		Convey("Then it should be correctly initialized", func() {
+			So(f.Identities, ShouldNotBeNil)
+			So(f.IdentityFilters, ShouldNotBeNil)
+			So(f.parsedIdentityFilters, ShouldNotBeNil)
+			So(f.Params, ShouldBeNil)
+		})
+	})
+}
+
 func TestPushConfig_Duplicate(t *testing.T) {
 
 	Convey("Given I create a new PushConfig", t, func() {
