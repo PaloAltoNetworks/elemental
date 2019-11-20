@@ -1,8 +1,9 @@
 package elemental_test
 
 import (
+	"errors"
 	"fmt"
-	"strings"
+	"reflect"
 	"testing"
 	"time"
 
@@ -1200,31 +1201,40 @@ func TestUnsupportedComparators(t *testing.T) {
 	testAttribute := "firstName"
 
 	tests := map[string]struct {
-		filter *elemental.Filter
+		filter     *elemental.Filter
+		comparator string
 	}{
 		"greater than": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).GreaterThan("").Done(),
+			filter:     elemental.NewFilterComposer().WithKey(testAttribute).GreaterThan("").Done(),
+			comparator: ">",
 		},
 		"greater than equal": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).GreaterOrEqualThan("").Done(),
+			filter:     elemental.NewFilterComposer().WithKey(testAttribute).GreaterOrEqualThan("").Done(),
+			comparator: ">=",
 		},
 		"lesser than": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).LesserThan("").Done(),
+			filter:     elemental.NewFilterComposer().WithKey(testAttribute).LesserThan("").Done(),
+			comparator: "<",
 		},
 		"lesser than or equal": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).LesserOrEqualThan("").Done(),
+			filter:     elemental.NewFilterComposer().WithKey(testAttribute).LesserOrEqualThan("").Done(),
+			comparator: "<=",
 		},
 		"in": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).In("a", "b").Done(),
+			filter:     elemental.NewFilterComposer().WithKey(testAttribute).In("a", "b").Done(),
+			comparator: "in",
 		},
 		"not in": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).NotIn("a", "b").Done(),
+			filter:     elemental.NewFilterComposer().WithKey(testAttribute).NotIn("a", "b").Done(),
+			comparator: "not in",
 		},
 		"contains": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).Contains("a", "b", "c").Done(),
+			filter:     elemental.NewFilterComposer().WithKey(testAttribute).Contains("a", "b", "c").Done(),
+			comparator: "contains",
 		},
 		"not contains": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).NotContains("a", "b", "c").Done(),
+			filter:     elemental.NewFilterComposer().WithKey(testAttribute).NotContains("a", "b", "c").Done(),
+			comparator: "not contains",
 		},
 	}
 
@@ -1233,17 +1243,37 @@ func TestUnsupportedComparators(t *testing.T) {
 			matched, err := elemental.MatchesFilter(identifiable, test.filter)
 
 			if err == nil {
-				t.Fatalf("expected an error to occur when using unsupported comparator")
-			}
-
-			if err != nil {
-				if !strings.Contains(err.Error(), "elemental: unsuported comparator") {
-					t.Errorf("expected the error to be due to using an unsupported comparator, but it was: %s", err)
-				}
+				t.Fatalf("expected an error to occur when using unsupported comparator\n" +
+					"Hint: if you just added support for a new comparator, you can now remove the failing test case for that comparator")
 			}
 
 			if matched {
 				t.Errorf("a match should never occur when using an unsupported operator")
+			}
+
+			var me *elemental.MatcherError
+			if ok := errors.As(err, &me); !ok {
+				t.Fatalf("expected underlying error type to be: *elemental.MatcherError\n"+
+					"actual error type was: %s\n"+
+					"WARNING: this is a major breaking change as you could break client error handling logic",
+					reflect.TypeOf(err))
+			}
+
+			if me.Kind() != elemental.KindUnsupportedComparator {
+				t.Errorf("expected *elemental.MatcherError kind to be: %s\n"+
+					"actual error kind: %s\n"+
+					"WARNING: this is a major breaking change as you could break client error handling logic",
+					elemental.KindUnsupportedComparator,
+					me.Kind(),
+				)
+			}
+
+			expectedErrCopy := fmt.Sprintf("elemental: unsuported comparator %q - kind: %s", test.comparator, elemental.KindUnsupportedComparator)
+			if me.Error() != expectedErrCopy {
+				t.Errorf("expected the error copy to equal: %s\n"+
+					"actual error copy: %s",
+					expectedErrCopy,
+					me.Error())
 			}
 		})
 	}
@@ -2910,6 +2940,34 @@ func TestMatchComparator(t *testing.T) {
 					"matched occurred: %+v\n",
 					tc.expectedMatch,
 					matched)
+			}
+		})
+	}
+}
+
+func TestMatcherError_String(t *testing.T) {
+
+	tests := map[string]struct {
+		kind elemental.MatcherErrorKind
+		want string
+	}{
+		"KindUnsupportedComparator": {
+			kind: elemental.KindUnsupportedComparator,
+			want: "KindUnsupportedComparator",
+		},
+		"UnknownMatcherErrorKind": {
+			kind: elemental.MatcherErrorKind(-1),
+			want: "UnknownMatcherErrorKind",
+		},
+	}
+
+	for scenario, test := range tests {
+		t.Run(scenario, func(t *testing.T) {
+			if actual := test.kind.String(); actual != test.want {
+				t.Errorf("expected: %s\n"+
+					"got: %s",
+					test.want,
+					actual)
 			}
 		})
 	}
