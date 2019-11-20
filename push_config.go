@@ -63,24 +63,24 @@ func NewPushConfig() *PushConfig {
 }
 
 // SetParameter sets the values of the parameter with the given key.
-func (f *PushConfig) SetParameter(key string, values ...string) {
+func (pc *PushConfig) SetParameter(key string, values ...string) {
 
-	if f.Params == nil {
-		f.Params = url.Values{}
+	if pc.Params == nil {
+		pc.Params = url.Values{}
 	}
 
-	f.Params[key] = values
+	pc.Params[key] = values
 }
 
 // Parameters returns a copy of all the parameters.
-func (f *PushConfig) Parameters() url.Values {
+func (pc *PushConfig) Parameters() url.Values {
 
-	if f.Params == nil {
+	if pc.Params == nil {
 		return nil
 	}
 
 	out := url.Values{}
-	for k, v := range f.Params {
+	for k, v := range pc.Params {
 		out[k] = v
 	}
 
@@ -88,9 +88,9 @@ func (f *PushConfig) Parameters() url.Values {
 }
 
 // FilterIdentity adds the given identity for the given eventTypes in the PushConfig.
-func (f *PushConfig) FilterIdentity(identityName string, eventTypes ...EventType) {
+func (pc *PushConfig) FilterIdentity(identityName string, eventTypes ...EventType) {
 
-	f.Identities[identityName] = eventTypes
+	pc.Identities[identityName] = eventTypes
 }
 
 // ParseIdentityFilters does something...
@@ -98,10 +98,10 @@ func (f *PushConfig) FilterIdentity(identityName string, eventTypes ...EventType
 // TODO:
 //  - add a proper comment explaining what this API does
 //  - add unit tests
-func (f *PushConfig) ParseIdentityFilters() error {
+func (pc *PushConfig) ParseIdentityFilters() error {
 
-	for identity, unparsedFilter := range f.IdentityFilters {
-		if _, found := f.Identities[identity]; !found {
+	for identity, unparsedFilter := range pc.IdentityFilters {
+		if _, found := pc.Identities[identity]; !found {
 			return fmt.Errorf("elemental: cannot declare an identity filter on %q as that was not declared in 'Identities'", identity)
 		}
 
@@ -110,22 +110,22 @@ func (f *PushConfig) ParseIdentityFilters() error {
 			return fmt.Errorf("elemental: unable to parse filter %q: %s", unparsedFilter, err)
 		}
 
-		f.parsedIdentityFilters[identity] = filter
+		pc.parsedIdentityFilters[identity] = filter
 	}
 
 	return nil
 }
 
 // IsFilteredOut returns true if the given Identity is not part of the PushConfig's Identity mapping
-func (f *PushConfig) IsFilteredOut(identityName string, eventType EventType) bool {
+func (pc *PushConfig) IsFilteredOut(identityName string, eventType EventType) bool {
 
 	// if the identities list is empty, we filter nothing.
-	if len(f.Identities) == 0 {
+	if len(pc.Identities) == 0 {
 		return false
 	}
 
 	// If it contains something, but not the identity, we filter out.
-	types, ok := f.Identities[identityName]
+	types, ok := pc.Identities[identityName]
 	if !ok {
 		return true
 	}
@@ -146,31 +146,38 @@ func (f *PushConfig) IsFilteredOut(identityName string, eventType EventType) boo
 	return true
 }
 
-// Duplicate duplicates the PushConfig.
-func (f *PushConfig) Duplicate() *PushConfig {
-
-	pc := NewPushConfig()
-
-	for id, types := range f.Identities {
-		pc.FilterIdentity(id, types...)
-	}
-
-	for id, f := range f.IdentityFilters {
-		pc.IdentityFilters[id] = f
-	}
-
-	for id, f := range f.parsedIdentityFilters {
-		pc.parsedIdentityFilters[id] = f
-	}
-
-	for k, v := range f.Params {
-		pc.SetParameter(k, v...)
-	}
-
-	return pc
+// FilterForIdentity returns the associated fine-grained filter for the given identity. In the event that no fine-grained
+// filter has been configured for the identity, the second return value (a boolean), will be set to false.
+func (pc *PushConfig) FilterForIdentity(identityName string) (*Filter, bool) {
+	filter, found := pc.parsedIdentityFilters[identityName]
+	return filter, found
 }
 
-func (f *PushConfig) String() string {
+// Duplicate duplicates the PushConfig.
+func (pc *PushConfig) Duplicate() *PushConfig {
 
-	return fmt.Sprintf("<pushconfig identities:%s identityfilters:%s>", f.Identities, f.IdentityFilters)
+	config := NewPushConfig()
+
+	for id, types := range pc.Identities {
+		config.FilterIdentity(id, types...)
+	}
+
+	for id, f := range pc.IdentityFilters {
+		config.IdentityFilters[id] = f
+	}
+
+	for id, f := range pc.parsedIdentityFilters {
+		config.parsedIdentityFilters[id] = f
+	}
+
+	for k, v := range pc.Params {
+		config.SetParameter(k, v...)
+	}
+
+	return config
+}
+
+func (pc *PushConfig) String() string {
+
+	return fmt.Sprintf("<pushconfig identities:%s identityfilters:%s>", pc.Identities, pc.IdentityFilters)
 }
