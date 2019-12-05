@@ -1259,16 +1259,17 @@ func TestUnsupportedComparators(t *testing.T) {
 					reflect.TypeOf(err))
 			}
 
-			if me.Kind() != elemental.KindUnsupportedComparator {
-				t.Errorf("expected *elemental.MatcherError kind to be: %s\n"+
-					"actual error kind: %s\n"+
+			// this verifies that the matcher error chain contains the expected error
+
+			if !errors.Is(err, elemental.ErrUnsupportedComparator) {
+				t.Errorf("expected the matcher error to contain an 'elemental.ErrUnsupportedComparator'\n"+
+					"actual error type: %s\n"+
 					"WARNING: this is a major breaking change as you could break client error handling logic",
-					elemental.KindUnsupportedComparator,
-					me.Kind(),
+					reflect.TypeOf(err),
 				)
 			}
 
-			expectedErrCopy := fmt.Sprintf("elemental: unsuported comparator %q - kind: %s", test.comparator, elemental.KindUnsupportedComparator)
+			expectedErrCopy := fmt.Sprintf("elemental: %s - comparator: %q", elemental.ErrUnsupportedComparator, test.comparator)
 			if me.Error() != expectedErrCopy {
 				t.Errorf("expected the error copy to equal: %s\n"+
 					"actual error copy: %s",
@@ -2945,33 +2946,33 @@ func TestMatchComparator(t *testing.T) {
 	}
 }
 
-func TestMatcherError_String(t *testing.T) {
-
-	tests := map[string]struct {
-		kind elemental.MatcherErrorKind
-		want string
-	}{
-		"KindUnsupportedComparator": {
-			kind: elemental.KindUnsupportedComparator,
-			want: "KindUnsupportedComparator",
-		},
-		"UnknownMatcherErrorKind": {
-			kind: elemental.MatcherErrorKind(-1),
-			want: "UnknownMatcherErrorKind",
-		},
-	}
-
-	for scenario, test := range tests {
-		t.Run(scenario, func(t *testing.T) {
-			if actual := test.kind.String(); actual != test.want {
-				t.Errorf("expected: %s\n"+
-					"got: %s",
-					test.want,
-					actual)
-			}
-		})
-	}
-}
+//func TestMatcherError_String(t *testing.T) {
+//
+//	tests := map[string]struct {
+//		kind elemental.MatcherErrorKind
+//		want string
+//	}{
+//		"KindUnsupportedComparator": {
+//			kind: elemental.KindUnsupportedComparator,
+//			want: "KindUnsupportedComparator",
+//		},
+//		"UnknownMatcherErrorKind": {
+//			kind: elemental.MatcherErrorKind(-1),
+//			want: "UnknownMatcherErrorKind",
+//		},
+//	}
+//
+//	for scenario, test := range tests {
+//		t.Run(scenario, func(t *testing.T) {
+//			if actual := test.kind.String(); actual != test.want {
+//				t.Errorf("expected: %s\n"+
+//					"got: %s",
+//					test.want,
+//					actual)
+//			}
+//		})
+//	}
+//}
 
 type benchFixture struct {
 }
