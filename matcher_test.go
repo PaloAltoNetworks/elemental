@@ -1,8 +1,9 @@
 package elemental_test
 
 import (
+	"errors"
 	"fmt"
-	"strings"
+	"reflect"
 	"testing"
 	"time"
 
@@ -1200,31 +1201,40 @@ func TestUnsupportedComparators(t *testing.T) {
 	testAttribute := "firstName"
 
 	tests := map[string]struct {
-		filter *elemental.Filter
+		filter     *elemental.Filter
+		comparator string
 	}{
 		"greater than": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).GreaterThan("").Done(),
+			filter:     elemental.NewFilterComposer().WithKey(testAttribute).GreaterThan("").Done(),
+			comparator: ">",
 		},
 		"greater than equal": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).GreaterOrEqualThan("").Done(),
+			filter:     elemental.NewFilterComposer().WithKey(testAttribute).GreaterOrEqualThan("").Done(),
+			comparator: ">=",
 		},
 		"lesser than": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).LesserThan("").Done(),
+			filter:     elemental.NewFilterComposer().WithKey(testAttribute).LesserThan("").Done(),
+			comparator: "<",
 		},
 		"lesser than or equal": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).LesserOrEqualThan("").Done(),
+			filter:     elemental.NewFilterComposer().WithKey(testAttribute).LesserOrEqualThan("").Done(),
+			comparator: "<=",
 		},
 		"in": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).In("a", "b").Done(),
+			filter:     elemental.NewFilterComposer().WithKey(testAttribute).In("a", "b").Done(),
+			comparator: "in",
 		},
 		"not in": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).NotIn("a", "b").Done(),
+			filter:     elemental.NewFilterComposer().WithKey(testAttribute).NotIn("a", "b").Done(),
+			comparator: "not in",
 		},
 		"contains": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).Contains("a", "b", "c").Done(),
+			filter:     elemental.NewFilterComposer().WithKey(testAttribute).Contains("a", "b", "c").Done(),
+			comparator: "contains",
 		},
 		"not contains": {
-			filter: elemental.NewFilterComposer().WithKey(testAttribute).NotContains("a", "b", "c").Done(),
+			filter:     elemental.NewFilterComposer().WithKey(testAttribute).NotContains("a", "b", "c").Done(),
+			comparator: "not contains",
 		},
 	}
 
@@ -1233,19 +1243,58 @@ func TestUnsupportedComparators(t *testing.T) {
 			matched, err := elemental.MatchesFilter(identifiable, test.filter)
 
 			if err == nil {
-				t.Fatalf("expected an error to occur when using unsupported comparator")
-			}
-
-			if err != nil {
-				if !strings.Contains(err.Error(), "elemental: unsuported comparator") {
-					t.Errorf("expected the error to be due to using an unsupported comparator, but it was: %s", err)
-				}
+				t.Fatalf("expected an error to occur when using unsupported comparator\n" +
+					"Hint: if you just added support for a new comparator, you can now remove the failing test case for that comparator")
 			}
 
 			if matched {
 				t.Errorf("a match should never occur when using an unsupported operator")
 			}
+
+			var me *elemental.MatcherError
+			if ok := errors.As(err, &me); !ok {
+				t.Fatalf("expected underlying error type to be: *elemental.MatcherError\n"+
+					"actual error type was: %s\n"+
+					"WARNING: this is a major breaking change as you could break client error handling logic",
+					reflect.TypeOf(err))
+			}
+
+			// this verifies that the matcher error chain contains the expected error
+
+			if !errors.Is(err, elemental.ErrUnsupportedComparator{}) {
+				t.Errorf("expected the matcher error to contain an 'elemental.ErrUnsupportedComparator'\n"+
+					"actual error type: %s\n"+
+					"WARNING: this is a major breaking change as you could break client error handling logic",
+					reflect.TypeOf(err),
+				)
+			}
+
+			expectedErrCopy := fmt.Sprintf("elemental: unable to match: unsupported comparator: %q", test.comparator)
+			if me.Error() != expectedErrCopy {
+				t.Errorf("expected the error copy to equal: %s\n"+
+					"actual error copy: %s",
+					expectedErrCopy,
+					me.Error())
+			}
 		})
+	}
+}
+
+func TestErrUnsupportedComparator_Unwrap(t *testing.T) {
+	wrappedError := errors.New("something bad happened")
+	comparatorErr := elemental.ErrUnsupportedComparator{Err: wrappedError}
+
+	var err error = comparatorErr
+	if _, ok := err.(interface{ Unwrap() error }); !ok {
+		t.Fatalf("error did not have the method 'Unwrap() error'")
+	}
+
+	if actual := comparatorErr.Unwrap(); actual != wrappedError {
+		t.Errorf("the unwrapped error did not equal the expected value\n"+
+			"expected type: %s\n"+
+			"actual type: %s",
+			reflect.TypeOf(wrappedError),
+			reflect.TypeOf(actual))
 	}
 }
 
