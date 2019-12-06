@@ -1280,6 +1280,19 @@ func TestUnsupportedComparators(t *testing.T) {
 	}
 }
 
+func TestErrUnsupportedComparator_Unwrap(t *testing.T) {
+	wrappedError := errors.New("something bad happened")
+	comparatorErr := elemental.ErrUnsupportedComparator{Err: wrappedError}
+
+	if actual := comparatorErr.Unwrap(); actual != wrappedError {
+		t.Errorf("the unwrapped error did not equal the expected value\n"+
+			"expected type: %s\n"+
+			"actual type: %s",
+			reflect.TypeOf(wrappedError),
+			reflect.TypeOf(actual))
+	}
+}
+
 // this unit test suite tests the functionality of the NotEqualComparator when used in conjunction with the helper
 // MatchesFilter for filtering an AttributeSpecifiable using the supplied filter
 func TestNotEqualComparator(t *testing.T) {
