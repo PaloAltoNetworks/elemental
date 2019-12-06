@@ -64,8 +64,7 @@ func MatchesFilter(identifiable AttributeSpecifiable, filter *Filter, opts ...Ma
 				ContainComparator,
 				NotContainComparator:
 				return false, &MatcherError{
-					err:   ErrUnsupportedComparator,
-					debug: fmt.Sprintf("comparator: %q", translateComparator(filter.Comparators()[i])),
+					err: ErrUnsupportedComparator{err: fmt.Errorf("unsupported comparator %q", translateComparator(filter.Comparators()[i]))},
 				}
 			default:
 				panic(fmt.Errorf("elemental: unknown comparator %q", translateComparator(filter.Comparators()[i])))
