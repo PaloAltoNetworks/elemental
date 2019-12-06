@@ -1269,7 +1269,7 @@ func TestUnsupportedComparators(t *testing.T) {
 				)
 			}
 
-			expectedErrCopy := fmt.Sprintf("elemental: unsupported comparator %q", test.comparator)
+			expectedErrCopy := fmt.Sprintf("elemental: unable to match: unsupported comparator %q", test.comparator)
 			if me.Error() != expectedErrCopy {
 				t.Errorf("expected the error copy to equal: %s\n"+
 					"actual error copy: %s",

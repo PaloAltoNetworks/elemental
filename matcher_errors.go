@@ -32,7 +32,7 @@ type MatcherError struct {
 }
 
 func (me *MatcherError) Error() string {
-	return fmt.Sprintf("elemental: %s", me.Err)
+	return fmt.Sprintf("elemental: unable to match: %s", me.Err)
 }
 
 // Unwrap returns the the error contained in 'MatcherError'. This is a special method that aids in error handling for clients
