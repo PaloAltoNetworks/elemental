@@ -1284,6 +1284,11 @@ func TestErrUnsupportedComparator_Unwrap(t *testing.T) {
 	wrappedError := errors.New("something bad happened")
 	comparatorErr := elemental.ErrUnsupportedComparator{Err: wrappedError}
 
+	var err error = comparatorErr
+	if _, ok := err.(interface{ Unwrap() error }); !ok {
+		t.Fatalf("error did not have the method 'Unwrap() error'")
+	}
+
 	if actual := comparatorErr.Unwrap(); actual != wrappedError {
 		t.Errorf("the unwrapped error did not equal the expected value\n"+
 			"expected type: %s\n"+
