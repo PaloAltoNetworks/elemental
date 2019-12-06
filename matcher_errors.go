@@ -23,7 +23,7 @@ func (e ErrUnsupportedComparator) Unwrap() error {
 }
 
 func (e ErrUnsupportedComparator) Error() string {
-	return e.Err.Error()
+	return fmt.Sprintf("unsupported comparator: %s", e.Err)
 }
 
 // MatcherError is the error type that will be returned by elemental.MatchesFilter in the event that it returns an error
