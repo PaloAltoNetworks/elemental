@@ -79,7 +79,7 @@ func (pc *PushConfig) Parameters() url.Values {
 		return nil
 	}
 
-	out := url.Values{}
+	out := make(url.Values, len(pc.Params))
 	for k, v := range pc.Params {
 		out[k] = v
 	}
@@ -93,20 +93,30 @@ func (pc *PushConfig) FilterIdentity(identityName string, eventTypes ...EventTyp
 	pc.Identities[identityName] = eventTypes
 }
 
-// ParseIdentityFilters does something...
+// ParseIdentityFilters parses the configured PushConfig's 'IdentityFilters' attribute to elemental filters.
+// The parsed filters will then be stored in the non-exposed 'parsedIdentityFilters' attribute of PushConfig. This is useful
+// for clients that wish the utilize the same filter multiple times without having to incur the overhead of parsing each time.
 //
-// TODO:
-//  - add a proper comment explaining what this API does
-//  - add unit tests
+// An error is returned in following situations:
+//   - when a filter is declared on an identity that is not defined in the PushConfig's 'Identities' attribute
+//   - when a filter cannot be parsed into an elemental.Filter
 func (pc *PushConfig) ParseIdentityFilters() error {
+
+	if pc.parsedIdentityFilters == nil {
+		pc.parsedIdentityFilters = map[string]*Filter{}
+	}
 
 	for identity, unparsedFilter := range pc.IdentityFilters {
 		if _, found := pc.Identities[identity]; !found {
+			// in the event an error occurs we zero out the parsed identities to avoid having a partially set of parsed identities
+			pc.parsedIdentityFilters = map[string]*Filter{}
 			return fmt.Errorf("elemental: cannot declare an identity filter on %q as that was not declared in 'Identities'", identity)
 		}
 
 		filter, err := NewFilterParser(unparsedFilter).Parse()
 		if err != nil {
+			// in the event an error occurs we zero out the parsed identities to avoid having a partially set of parsed identities
+			pc.parsedIdentityFilters = map[string]*Filter{}
 			return fmt.Errorf("elemental: unable to parse filter %q: %s", unparsedFilter, err)
 		}
 

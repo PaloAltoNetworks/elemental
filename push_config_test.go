@@ -13,10 +13,172 @@ package elemental
 
 import (
 	"net/url"
+	"reflect"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
+
+func TestPushConfig_ParseIdentityFilters(t *testing.T) {
+
+	tests := map[string]struct {
+		pushConfig      *PushConfig
+		expectedFilters map[string]*Filter
+		expectedError   bool
+	}{
+		"should successfully parse the filters and populate the parsed filters attribute of push config": {
+			pushConfig: &PushConfig{
+				Identities: map[string][]EventType{
+					"identity_one": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+					"identity_two": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+				},
+				IdentityFilters: map[string]string{
+					"identity_one": "namespace == /liverpool-fc and environment == production",
+					"identity_two": "namespace == /barcelona-fc and environment == staging",
+				},
+			},
+			expectedFilters: map[string]*Filter{
+				"identity_one": NewFilterComposer().And(
+					NewFilterComposer().WithKey("namespace").Equals("/liverpool-fc").Done(),
+					NewFilterComposer().WithKey("environment").Equals("production").Done(),
+				).Done(),
+				"identity_two": NewFilterComposer().And(
+					NewFilterComposer().WithKey("namespace").Equals("/barcelona-fc").Done(),
+					NewFilterComposer().WithKey("environment").Equals("staging").Done(),
+				).Done(),
+			},
+			expectedError: false,
+		},
+		"should return an error in the event that an identity filter is being defined on an identity that is NOT declared in the identities attribute": {
+			pushConfig: &PushConfig{
+				Identities: map[string][]EventType{},
+				IdentityFilters: map[string]string{
+					"identity_one": "namespace == /liverpool-fc and environment == production",
+				},
+			},
+			expectedFilters: map[string]*Filter{},
+			expectedError:   true,
+		},
+		"should return an error in the event that an identity filter could not be parsed": {
+			pushConfig: &PushConfig{
+				Identities: map[string][]EventType{
+					"identity_one": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+				},
+				IdentityFilters: map[string]string{
+					// notice how this will result in a parsing error due to an invalid comparator "======="
+					"identity_four": "namespace ======= /liverpool-fc",
+				},
+			},
+			expectedFilters: map[string]*Filter{},
+			expectedError:   true,
+		},
+		"should zero the parsed identity filters attribute in the event that an error occurs due to an undeclared identity": {
+			pushConfig: &PushConfig{
+				Identities: map[string][]EventType{
+					"identity_one": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+					"identity_two": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+					"identity_three": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+					"identity_four": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+				},
+				IdentityFilters: map[string]string{
+					// notice how this is an undeclared identity as 'identity_five' is not declared in the PushConfig's
+					// 'Identities' attribute
+					"identity_five": "namespace == /liverpool-fc and environment == production",
+				},
+			},
+			// the push config's parsed identities attribute should be zero'd out
+			expectedFilters: map[string]*Filter{},
+			expectedError:   true,
+		},
+		"should zero the parsed identity filters attribute in the event that an error occurs due to a parsing error": {
+			pushConfig: &PushConfig{
+				Identities: map[string][]EventType{
+					"identity_one": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+					"identity_two": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+					"identity_three": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+					"identity_four": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+				},
+				IdentityFilters: map[string]string{
+					// notice how this will result in a parsing error due to an invalid comparator "======="
+					"identity_four": "namespace ======= /liverpool-fc",
+				},
+			},
+			// the push config's parsed identities attribute should be zero'd out
+			expectedFilters: map[string]*Filter{},
+			expectedError:   true,
+		},
+	}
+
+	for scenario, testCase := range tests {
+		t.Run(scenario, func(t *testing.T) {
+			err := testCase.pushConfig.ParseIdentityFilters()
+
+			if (err != nil) != testCase.expectedError {
+				t.Errorf("\n"+
+					"error expectation failed\n"+
+					"test case expected an error: %t\n"+
+					"an error actually occur: %t\n"+
+					"actual error: %+v\n",
+					testCase.expectedError,
+					err != nil,
+					err,
+				)
+			}
+
+			if !reflect.DeepEqual(testCase.pushConfig.parsedIdentityFilters, testCase.expectedFilters) {
+				t.Errorf("the parsed filters did not match what was expected\n"+
+					"expected: %+v\n"+
+					"actual: %+v\n",
+					testCase.expectedFilters,
+					testCase.pushConfig.parsedIdentityFilters)
+			}
+		})
+	}
+}
 
 func TestPushConfig_NewPushConfig(t *testing.T) {
 
