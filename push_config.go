@@ -159,6 +159,11 @@ func (pc *PushConfig) IsFilteredOut(identityName string, eventType EventType) bo
 // FilterForIdentity returns the associated fine-grained filter for the given identity. In the event that no fine-grained
 // filter has been configured for the identity, the second return value (a boolean), will be set to false.
 func (pc *PushConfig) FilterForIdentity(identityName string) (*Filter, bool) {
+
+	if pc.parsedIdentityFilters == nil {
+		return nil, false
+	}
+
 	filter, found := pc.parsedIdentityFilters[identityName]
 	return filter, found
 }

@@ -19,6 +19,96 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+func TestPushConfig_FilterForIdentity(t *testing.T) {
+
+	tests := map[string]struct {
+		pushConfig     *PushConfig
+		identity       string
+		expectedFilter *Filter
+		expectedFound  bool
+	}{
+		"should return the identity filter for the given identity and true if it exists": {
+			pushConfig: &PushConfig{
+				Identities: map[string][]EventType{
+					"identity_one": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+				},
+				IdentityFilters: map[string]string{
+					"identity_one": "namespace == /liverpool-fc and environment == production",
+				},
+			},
+			identity: "identity_one",
+			expectedFilter: NewFilterComposer().And(
+				NewFilterComposer().WithKey("namespace").Equals("/liverpool-fc").Done(),
+				NewFilterComposer().WithKey("environment").Equals("production").Done(),
+			).Done(),
+			expectedFound: true,
+		},
+		"should return a nil filter and false if the push config has no identity filters configured": {
+			pushConfig: &PushConfig{
+				Identities: map[string][]EventType{
+					"identity_one": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+				},
+			},
+			identity:       "identity_one",
+			expectedFilter: nil,
+			expectedFound:  false,
+		},
+		"should return a nil filter and false if the push config has no identity filter for the provided identity": {
+			pushConfig: &PushConfig{
+				Identities: map[string][]EventType{
+					"identity_one": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+				},
+				IdentityFilters: map[string]string{
+					"identity_one": "namespace == /liverpool-fc and environment == production",
+				},
+			},
+			identity:       "some_other_identity",
+			expectedFilter: nil,
+			expectedFound:  false,
+		},
+	}
+
+	for scenario, testCase := range tests {
+		t.Run(scenario, func(t *testing.T) {
+			if testCase.pushConfig.IdentityFilters != nil && len(testCase.pushConfig.IdentityFilters) > 0 {
+				if err := testCase.pushConfig.ParseIdentityFilters(); err != nil {
+					t.Fatalf("test setup invalid - failed to parse identity filters for the configured push config: %+v", err)
+				}
+			}
+
+			filter, found := testCase.pushConfig.FilterForIdentity(testCase.identity)
+
+			if found != testCase.expectedFound {
+				t.Errorf("expectation failed\n"+
+					"expected identity to be found: %t\n"+
+					"actual: %t\n",
+					testCase.expectedFound,
+					found)
+			}
+
+			if !reflect.DeepEqual(filter, testCase.expectedFilter) {
+				t.Errorf("returned filter does not match expected filter\n"+
+					"expected: %+v\n"+
+					"actual: %+v\n",
+					testCase.expectedFilter,
+					filter)
+			}
+		})
+	}
+}
+
 func TestPushConfig_ParseIdentityFilters(t *testing.T) {
 
 	tests := map[string]struct {
