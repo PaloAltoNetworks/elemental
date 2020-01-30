@@ -11,6 +11,8 @@
 
 package elemental
 
+import "net/http"
+
 // A Response contains the response from a Request.
 type Response struct {
 	StatusCode int
@@ -22,6 +24,7 @@ type Response struct {
 	Redirect   string
 	RequestID  string
 	Request    *Request
+	Cookies    []*http.Cookie
 }
 
 // NewResponse returns a new Response
