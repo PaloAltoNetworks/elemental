@@ -12,11 +12,208 @@
 package elemental
 
 import (
+	"strings"
 	"testing"
 	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
+
+func TestParser_UnsupportedComparator(t *testing.T) {
+
+	tests := map[string]struct {
+		filter      string
+		opts        []FilterParserOption
+		shouldError bool
+	}{
+		"blacklisting the '==' comparator should result in an error if it is used in the filter": {
+			filter: `"country" == "canada"`,
+			opts: []FilterParserOption{OptUnsupportedComparators([]FilterComparator{
+				EqualComparator,
+			})},
+			shouldError: true,
+		},
+		"NOT blacklisting the '==' comparator should NOT result in an error if it is used in the filter": {
+			filter:      `"country" == "canada"`,
+			opts:        nil,
+			shouldError: false,
+		},
+		"blacklisting the '!=' comparator should result in an error if it is used in the filter": {
+			filter: `"country" != "canada"`,
+			opts: []FilterParserOption{OptUnsupportedComparators([]FilterComparator{
+				NotEqualComparator,
+			})},
+			shouldError: true,
+		},
+		"NOT blacklisting the '!=' comparator should NOT result in an error if it is used in the filter": {
+			filter:      `"country" != "canada"`,
+			opts:        nil,
+			shouldError: false,
+		},
+		"blacklisting the '<' comparator should result in an error if it is used in the filter": {
+			filter: `"country" < "canada"`,
+			opts: []FilterParserOption{OptUnsupportedComparators([]FilterComparator{
+				LesserComparator,
+			})},
+			shouldError: true,
+		},
+		"NOT blacklisting the '<' comparator should NOT result in an error if it is used in the filter": {
+			filter:      `"country" < "canada"`,
+			opts:        nil,
+			shouldError: false,
+		},
+		"blacklisting the '<=' comparator should result in an error if it is used in the filter": {
+			filter: `"country" <= "canada"`,
+			opts: []FilterParserOption{OptUnsupportedComparators([]FilterComparator{
+				LesserOrEqualComparator,
+			})},
+			shouldError: true,
+		},
+		"NOT blacklisting the '<=' comparator should NOT result in an error if it is used in the filter": {
+			filter:      `"country" <= "canada"`,
+			opts:        nil,
+			shouldError: false,
+		},
+		"blacklisting the '>' comparator should result in an error if it is used in the filter": {
+			filter: `"country" > "canada"`,
+			opts: []FilterParserOption{OptUnsupportedComparators([]FilterComparator{
+				GreaterComparator,
+			})},
+			shouldError: true,
+		},
+		"NOT blacklisting the '>' comparator should NOT result in an error if it is used in the filter": {
+			filter:      `"country" > "canada"`,
+			opts:        nil,
+			shouldError: false,
+		},
+		"blacklisting the '>=' comparator should result in an error if it is used in the filter": {
+			filter: `"country" >= "canada"`,
+			opts: []FilterParserOption{OptUnsupportedComparators([]FilterComparator{
+				GreaterOrEqualComparator,
+			})},
+			shouldError: true,
+		},
+		"NOT blacklisting the '>=' comparator should NOT result in an error if it is used in the filter": {
+			filter:      `"country" >= "canada"`,
+			opts:        nil,
+			shouldError: false,
+		},
+		"blacklisting the 'contains' comparator should result in an error if it is used in the filter": {
+			filter: `"country" contains ["canada"]`,
+			opts: []FilterParserOption{OptUnsupportedComparators([]FilterComparator{
+				ContainComparator,
+			})},
+			shouldError: true,
+		},
+		"NOT blacklisting the 'contains' comparator should NOT result in an error if it is used in the filter": {
+			filter:      `"country" contains ["canada"]`,
+			opts:        nil,
+			shouldError: false,
+		},
+		"blacklisting the 'not contains' comparator should result in an error if it is used in the filter": {
+			filter: `"country" not contains ["canada"]`,
+			opts: []FilterParserOption{OptUnsupportedComparators([]FilterComparator{
+				NotContainComparator,
+			})},
+			shouldError: true,
+		},
+		"NOT blacklisting the 'not contains' comparator should NOT result in an error if it is used in the filter": {
+			filter:      `"country" not contains ["canada"]`,
+			opts:        nil,
+			shouldError: false,
+		},
+		"blacklisting the 'matches' comparator should result in an error if it is used in the filter": {
+			filter: `"country" matches ["canada"]`,
+			opts: []FilterParserOption{OptUnsupportedComparators([]FilterComparator{
+				MatchComparator,
+			})},
+			shouldError: true,
+		},
+		"NOT blacklisting the 'matches' comparator should NOT result in an error if it is used in the filter": {
+			filter:      `"country" matches ["canada"]`,
+			opts:        nil,
+			shouldError: false,
+		},
+		"blacklisting the 'in' comparator should result in an error if it is used in the filter": {
+			filter: `"country" in ["canada"]`,
+			opts: []FilterParserOption{OptUnsupportedComparators([]FilterComparator{
+				InComparator,
+			})},
+			shouldError: true,
+		},
+		"NOT blacklisting the 'in' comparator should NOT result in an error if it is used in the filter": {
+			filter:      `"country" in ["canada"]`,
+			opts:        nil,
+			shouldError: false,
+		},
+		"blacklisting the 'not in' comparator should result in an error if it is used in the filter": {
+			filter: `"country" not in ["canada"]`,
+			opts: []FilterParserOption{OptUnsupportedComparators([]FilterComparator{
+				NotInComparator,
+			})},
+			shouldError: true,
+		},
+		"NOT blacklisting the 'not in' comparator should NOT result in an error if it is used in the filter": {
+			filter:      `"country" not in ["canada"]`,
+			opts:        nil,
+			shouldError: false,
+		},
+		"blacklisting the 'exists' comparator should result in an error if it is used in the filter": {
+			filter: `"country" exists`,
+			opts: []FilterParserOption{OptUnsupportedComparators([]FilterComparator{
+				ExistsComparator,
+			})},
+			shouldError: true,
+		},
+		"NOT blacklisting the 'exists' comparator should NOT result in an error if it is used in the filter": {
+			filter:      `"country" exists`,
+			opts:        nil,
+			shouldError: false,
+		},
+		"blacklisting the 'notexists' comparator should result in an error if it is used in the filter": {
+			filter: `"country" not exists`,
+			opts: []FilterParserOption{OptUnsupportedComparators([]FilterComparator{
+				NotExistsComparator,
+			})},
+			shouldError: true,
+		},
+		"NOT blacklisting the 'notexists' comparator should NOT result in an error if it is used in the filter": {
+			filter:      `"country" not exists`,
+			opts:        nil,
+			shouldError: false,
+		},
+		"should be able to deal with a complex filter": {
+			// this is a complex filter which utilizes a blacklisted comparator in a nested filter, therefore it should fail
+			// parsing
+			filter: `"namespace" == "coucou" and "number" == 32.900000 and (("name" == "toto" and "value" == 1) and ("color" contains ["red", "green", "blue", 43] and "something" in ["stuff"] or (("size" matches [".*"]) or ("size" == "medium" and "fat" == false) or ("size" in [true, false]))))`,
+			opts: []FilterParserOption{OptUnsupportedComparators([]FilterComparator{
+				MatchComparator,
+			})},
+			shouldError: true,
+		},
+	}
+
+	for scenario, tc := range tests {
+		t.Run(scenario, func(t *testing.T) {
+			parser := NewFilterParser(tc.filter, tc.opts...)
+			_, err := parser.Parse()
+			if (err != nil) != tc.shouldError {
+				t.Errorf(
+					"\n"+
+						"expected an error? %t\n"+
+						"error occurred? %t\n"+
+						"actual error: %+v",
+					tc.shouldError,
+					err != nil,
+					err)
+			}
+
+			if err != nil && !strings.Contains(err.Error(), "unsupported comparator") {
+				t.Errorf("the error returned was not due to using an unsupported comparator: %+s\n", err)
+			}
+		})
+	}
+}
 
 func TestParser_Spaces(t *testing.T) {
 
