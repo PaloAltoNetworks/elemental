@@ -27,7 +27,7 @@ func bindataRead(data []byte, name string) ([]byte, error) {
 	}
 
 	var buf bytes.Buffer
-	_, err = io.Copy(&buf, gz)
+	_, err = io.Copy(&buf, gz) // #nosec
 	clErr := gz.Close()
 
 	if err != nil {
@@ -126,7 +126,7 @@ func templatesModelGotpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/model.gotpl", size: 32593, mode: os.FileMode(420), modTime: time.Unix(1571959289, 0)}
+	info := bindataFileInfo{name: "templates/model.gotpl", size: 32593, mode: os.FileMode(420), modTime: time.Unix(1572279756, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
