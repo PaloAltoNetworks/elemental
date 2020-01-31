@@ -21,14 +21,17 @@ import (
 type EventType string
 
 const (
-	// EventCreate is the type of creation event.
+	// EventCreate is the type of creation events.
 	EventCreate EventType = "create"
 
-	// EventUpdate is the type of update event.
+	// EventUpdate is the type of update events.
 	EventUpdate EventType = "update"
 
-	// EventDelete is the type of delete event.
+	// EventDelete is the type of delete events.
 	EventDelete EventType = "delete"
+
+	// EventError is the type of error events.
+	EventError EventType = "error"
 )
 
 // An Event represents a computational event.
@@ -44,6 +47,32 @@ type Event struct {
 // NewEvent returns a new Event.
 func NewEvent(t EventType, o Identifiable) *Event {
 	return NewEventWithEncoding(t, o, EncodingTypeMSGPACK)
+}
+
+// NewErrorEvent returns a new (error) Event embedded with the provided elemental.Error
+func NewErrorEvent(ee Error, encoding EncodingType) *Event {
+
+	data, err := Encode(encoding, ee)
+	if err != nil {
+		panic(fmt.Sprintf("unable to create new error event: %s", err))
+	}
+
+	event := &Event{
+		Type: EventError,
+		// TODO: should we even populate this field at all? is it sufficient that the client can assume they should just
+		// deserialize this into an elemental error since the event type is error?
+		Identity:  string(EventError),
+		Timestamp: time.Now(),
+		Encoding:  encoding,
+	}
+
+	if encoding == EncodingTypeJSON {
+		event.JSONData = json.RawMessage(data)
+	} else {
+		event.RawData = data
+	}
+
+	return event
 }
 
 // NewEventWithEncoding returns a new Event using the given encoding
