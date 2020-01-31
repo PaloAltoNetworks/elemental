@@ -78,6 +78,15 @@ func attributeTypeConverter(typ spec.AttributeType, subtype string) (string, str
 		if subtype == "" || subtype == "object" {
 			return "[]interface{}", ""
 		}
+		if subtype == string(spec.AttributeTypeInt) {
+			return "[]int", ""
+		}
+		if subtype == string(spec.AttributeTypeBool) {
+			return "[]bool", ""
+		}
+		if subtype == string(spec.AttributeTypeFloat) {
+			return "[]float64", ""
+		}
 		return "[]" + subtype, ""
 
 	default:
