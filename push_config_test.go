@@ -241,6 +241,174 @@ func TestPushConfig_ParseIdentityFilters(t *testing.T) {
 			expectedFilters: map[string]*Filter{},
 			expectedError:   true,
 		},
+		"should result in error if an identity filter uses the unsupported comparator '>'": {
+			pushConfig: &PushConfig{
+				Identities: map[string][]EventType{
+					"identity_one": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+				},
+				IdentityFilters: map[string]string{
+					"identity_one": NewFilterComposer().
+						WithKey("someAttr").
+						GreaterThan(1).
+						Done().
+						String(),
+				},
+			},
+			// the push config's parsed identities attribute should be zero'd out
+			expectedFilters: map[string]*Filter{},
+			expectedError:   true,
+		},
+		"should result in error if an identity filter uses the unsupported comparator '>='": {
+			pushConfig: &PushConfig{
+				Identities: map[string][]EventType{
+					"identity_one": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+				},
+				IdentityFilters: map[string]string{
+					"identity_one": NewFilterComposer().
+						WithKey("someAttr").
+						GreaterOrEqualThan(1).
+						Done().
+						String(),
+				},
+			},
+			// the push config's parsed identities attribute should be zero'd out
+			expectedFilters: map[string]*Filter{},
+			expectedError:   true,
+		},
+		"should result in error if an identity filter uses the unsupported comparator '<'": {
+			pushConfig: &PushConfig{
+				Identities: map[string][]EventType{
+					"identity_one": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+				},
+				IdentityFilters: map[string]string{
+					"identity_one": NewFilterComposer().
+						WithKey("someAttr").
+						LesserThan(1).
+						Done().
+						String(),
+				},
+			},
+			// the push config's parsed identities attribute should be zero'd out
+			expectedFilters: map[string]*Filter{},
+			expectedError:   true,
+		},
+		"should result in error if an identity filter uses the unsupported comparator '<='": {
+			pushConfig: &PushConfig{
+				Identities: map[string][]EventType{
+					"identity_one": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+				},
+				IdentityFilters: map[string]string{
+					"identity_one": NewFilterComposer().
+						WithKey("someAttr").
+						LesserOrEqualThan(1).
+						Done().
+						String(),
+				},
+			},
+			// the push config's parsed identities attribute should be zero'd out
+			expectedFilters: map[string]*Filter{},
+			expectedError:   true,
+		},
+		"should result in error if an identity filter uses the unsupported comparator 'in": {
+			pushConfig: &PushConfig{
+				Identities: map[string][]EventType{
+					"identity_one": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+				},
+				IdentityFilters: map[string]string{
+					"identity_one": NewFilterComposer().
+						WithKey("someAttr").
+						In(1, 2, 3).
+						Done().
+						String(),
+				},
+			},
+			// the push config's parsed identities attribute should be zero'd out
+			expectedFilters: map[string]*Filter{},
+			expectedError:   true,
+		},
+		"should result in error if an identity filter uses the unsupported comparator 'not in": {
+			pushConfig: &PushConfig{
+				Identities: map[string][]EventType{
+					"identity_one": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+				},
+				IdentityFilters: map[string]string{
+					"identity_one": NewFilterComposer().
+						WithKey("someAttr").
+						NotIn(1, 2, 3).
+						Done().
+						String(),
+				},
+			},
+			// the push config's parsed identities attribute should be zero'd out
+			expectedFilters: map[string]*Filter{},
+			expectedError:   true,
+		},
+		"should result in error if an identity filter uses the unsupported comparator 'contains": {
+			pushConfig: &PushConfig{
+				Identities: map[string][]EventType{
+					"identity_one": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+				},
+				IdentityFilters: map[string]string{
+					"identity_one": NewFilterComposer().
+						WithKey("someAttr").
+						Contains(1, 2, 3).
+						Done().
+						String(),
+				},
+			},
+			// the push config's parsed identities attribute should be zero'd out
+			expectedFilters: map[string]*Filter{},
+			expectedError:   true,
+		},
+		"should result in error if an identity filter uses the unsupported comparator 'not contains": {
+			pushConfig: &PushConfig{
+				Identities: map[string][]EventType{
+					"identity_one": {
+						EventCreate,
+						EventUpdate,
+						EventDelete,
+					},
+				},
+				IdentityFilters: map[string]string{
+					"identity_one": NewFilterComposer().
+						WithKey("someAttr").
+						NotContains(1, 2, 3).
+						Done().
+						String(),
+				},
+			},
+			// the push config's parsed identities attribute should be zero'd out
+			expectedFilters: map[string]*Filter{},
+			expectedError:   true,
+		},
 	}
 
 	for scenario, testCase := range tests {
