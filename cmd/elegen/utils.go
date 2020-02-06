@@ -89,7 +89,7 @@ func attributeTypeConverter(typ spec.AttributeType, subtype string) (string, str
 			return "[]float64", ""
 		}
 		if subtype == string(spec.AttributeTypeTime) {
-			return "[]time", ""
+			return "[]time.Time", "time"
 		}
 		return "[]" + subtype, ""
 
