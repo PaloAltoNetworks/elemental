@@ -36,12 +36,13 @@ const (
 
 // An Event represents a computational event.
 type Event struct {
-	RawData   []byte          `msgpack:"entity" json:"-"`
-	JSONData  json.RawMessage `msgpack:"-" json:"entity"`
-	Identity  string          `msgpack:"identity" json:"identity"`
-	Type      EventType       `msgpack:"type" json:"type"`
-	Timestamp time.Time       `msgpack:"timestamp" json:"timestamp"`
-	Encoding  EncodingType    `msgpack:"encoding" json:"encoding"`
+	PushConfigID string          `msgpack:"pushconfigid,omitempty" json:"pushconfigid,omitempty"`
+	RawData      []byte          `msgpack:"entity" json:"-"`
+	JSONData     json.RawMessage `msgpack:"-" json:"entity"`
+	Identity     string          `msgpack:"identity" json:"identity"`
+	Type         EventType       `msgpack:"type" json:"type"`
+	Timestamp    time.Time       `msgpack:"timestamp" json:"timestamp"`
+	Encoding     EncodingType    `msgpack:"encoding" json:"encoding"`
 }
 
 // NewEvent returns a new Event.

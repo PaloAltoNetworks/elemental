@@ -29,6 +29,7 @@ type PushFilter = PushConfig
 // If this attribute has been supplied, the identities passed to 'IdentityFilters' must be a subset of the identities passed to
 // 'Identities'; passing in identities that are not provided in the 'Identities' field will be ignored.
 type PushConfig struct {
+	ID              string                 `msgpack:"id,omitempty" json:"id,omitempty"`
 	Identities      map[string][]EventType `msgpack:"identities" json:"identities"`
 	IdentityFilters map[string]string      `msgpack:"filters"    json:"filters"`
 	Params          url.Values             `msgpack:"parameters" json:"parameters"`
@@ -205,6 +206,8 @@ func (pc *PushConfig) Duplicate() *PushConfig {
 	for k, v := range pc.Params {
 		config.SetParameter(k, v...)
 	}
+
+	config.ID = pc.ID
 
 	return config
 }
