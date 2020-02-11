@@ -75,8 +75,21 @@ func attributeTypeConverter(typ spec.AttributeType, subtype string) (string, str
 		return "time.Time", "time"
 
 	case spec.AttributeTypeList:
+		// @TODO: pass subtype as a spec.AttributeType so we can make a recursive call here.
 		if subtype == "" || subtype == "object" {
 			return "[]interface{}", ""
+		}
+		if subtype == string(spec.AttributeTypeInt) {
+			return "[]int", ""
+		}
+		if subtype == string(spec.AttributeTypeBool) {
+			return "[]bool", ""
+		}
+		if subtype == string(spec.AttributeTypeFloat) {
+			return "[]float64", ""
+		}
+		if subtype == string(spec.AttributeTypeTime) {
+			return "[]time.Time", "time"
 		}
 		return "[]" + subtype, ""
 
