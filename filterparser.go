@@ -74,8 +74,7 @@ const (
 	wordTRUE        = "TRUE"
 	wordNOT         = "NOT"
 	wordEXISTS      = "EXISTS"
-	wordNOTEXISTS   = "NOTEXISTS"
-	wordNOTEXISTSSP = "NOT EXISTS"
+	wordNOTEXISTS   = "NOT EXISTS"
 	wordEOF         = "EOF"
 )
 
@@ -126,7 +125,6 @@ var (
 		wordNOT:         parserTokenNOT,
 		wordEXISTS:      parserTokenEXISTS,
 		wordNOTEXISTS:   parserTokenNOTEXISTS,
-		wordNOTEXISTSSP: parserTokenNOTEXISTS,
 	}
 
 	wordToToken = map[string]parserToken{
