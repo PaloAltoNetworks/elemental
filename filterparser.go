@@ -74,7 +74,7 @@ const (
 	wordTRUE        = "TRUE"
 	wordNOT         = "NOT"
 	wordEXISTS      = "EXISTS"
-	wordNOTEXISTS   = "NOTEXISTS"
+	wordNOTEXISTS   = "NOT EXISTS"
 	wordEOF         = "EOF"
 )
 
@@ -109,40 +109,42 @@ var operatorStart = map[rune]interface{}{
 	'!': nil,
 }
 
-var operatorsToToken = map[string]parserToken{
-	wordEQUAL:       parserTokenEQUAL,
-	wordNOTEQUAL:    parserTokenNOTEQUAL,
-	wordLT:          parserTokenLT,
-	wordLTE:         parserTokenLTE,
-	wordGT:          parserTokenGT,
-	wordGTE:         parserTokenGTE,
-	wordCONTAINS:    parserTokenCONTAINS,
-	wordNOTCONTAINS: parserTokenNOTCONTAINS,
-	wordMATCHES:     parserTokenMATCHES,
-	wordIN:          parserTokenIN,
-	wordNOTIN:       parserTokenNOTIN,
-	wordNOT:         parserTokenNOT,
-	wordEXISTS:      parserTokenEXISTS,
-	wordNOTEXISTS:   parserTokenNOTEXISTS,
-}
+var (
+	operatorsToToken = map[string]parserToken{
+		wordEQUAL:       parserTokenEQUAL,
+		wordNOTEQUAL:    parserTokenNOTEQUAL,
+		wordLT:          parserTokenLT,
+		wordLTE:         parserTokenLTE,
+		wordGT:          parserTokenGT,
+		wordGTE:         parserTokenGTE,
+		wordCONTAINS:    parserTokenCONTAINS,
+		wordNOTCONTAINS: parserTokenNOTCONTAINS,
+		wordMATCHES:     parserTokenMATCHES,
+		wordIN:          parserTokenIN,
+		wordNOTIN:       parserTokenNOTIN,
+		wordNOT:         parserTokenNOT,
+		wordEXISTS:      parserTokenEXISTS,
+		wordNOTEXISTS:   parserTokenNOTEXISTS,
+	}
 
-var wordToToken = map[string]parserToken{
-	wordAND:   parserTokenAND,
-	wordOR:    parserTokenOR,
-	wordTRUE:  parserTokenTRUE,
-	wordFALSE: parserTokenFALSE,
-}
+	wordToToken = map[string]parserToken{
+		wordAND:   parserTokenAND,
+		wordOR:    parserTokenOR,
+		wordTRUE:  parserTokenTRUE,
+		wordFALSE: parserTokenFALSE,
+	}
 
-var runeToToken = map[rune]parserToken{
-	runeEOF:                   parserTokenEOF,
-	runeLEFTPARENTHESE:        parserTokenLEFTPARENTHESE,
-	runeRIGHTPARENTHESE:       parserTokenRIGHTPARENTHESE,
-	runeQUOTE:                 parserTokenQUOTE,
-	runeSINGLEQUOTE:           parserTokenSINGLEQUOTE,
-	runeLEFTSQUAREPARENTHESE:  parserTokenLEFTSQUAREPARENTHESE,
-	runeRIGHTSQUAREPARENTHESE: parserTokenRIGHTSQUAREPARENTHESE,
-	runeCOMMA:                 parserTokenCOMMA,
-}
+	runeToToken = map[rune]parserToken{
+		runeEOF:                   parserTokenEOF,
+		runeLEFTPARENTHESE:        parserTokenLEFTPARENTHESE,
+		runeRIGHTPARENTHESE:       parserTokenRIGHTPARENTHESE,
+		runeQUOTE:                 parserTokenQUOTE,
+		runeSINGLEQUOTE:           parserTokenSINGLEQUOTE,
+		runeLEFTSQUAREPARENTHESE:  parserTokenLEFTSQUAREPARENTHESE,
+		runeRIGHTSQUAREPARENTHESE: parserTokenRIGHTSQUAREPARENTHESE,
+		runeCOMMA:                 parserTokenCOMMA,
+	}
+)
 
 var datePattern = regexp.MustCompile(`^date\((.*)\)$`)
 var nowPattern = regexp.MustCompile(`^now\((.*)\)$`)
@@ -153,6 +155,7 @@ var errorInvalidExpression = fmt.Errorf("invalid expression")
 // FilterParser represents a Parser
 type FilterParser struct {
 	scanner *scanner
+	config  filterParserConfig
 	buffer  struct {
 		token   parserToken // last read token
 		literal string      // last read literal
@@ -161,8 +164,15 @@ type FilterParser struct {
 }
 
 // NewFilterParser returns an instance of FilterParser for the given input
-func NewFilterParser(input string) *FilterParser {
+func NewFilterParser(input string, opts ...FilterParserOption) *FilterParser {
+
+	var config filterParserConfig
+	for _, o := range opts {
+		o(&config)
+	}
+
 	return &FilterParser{
+		config:  config,
 		scanner: newScanner(input),
 	}
 }
@@ -331,6 +341,10 @@ func (p *FilterParser) parseOperatorAndValue() (parserToken, interface{}, error)
 		return parserTokenILLEGAL, nil, err
 	}
 
+	if _, ok := p.config.unsupportedComparators[operator]; ok {
+		return parserTokenILLEGAL, nil, fmt.Errorf("unsupported comparator:  %s", tokenToOperator(operator))
+	}
+
 	if operator == parserTokenEXISTS || operator == parserTokenNOTEXISTS {
 		return operator, nil, nil
 	}
@@ -341,6 +355,17 @@ func (p *FilterParser) parseOperatorAndValue() (parserToken, interface{}, error)
 	}
 
 	return operator, value, nil
+}
+
+func tokenToOperator(t parserToken) string {
+
+	for operator, token := range operatorsToToken {
+		if t == token {
+			return operator
+		}
+	}
+
+	return ""
 }
 
 func (p *FilterParser) makeFilter(key string, operator parserToken, value interface{}) (*Filter, error) {
