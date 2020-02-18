@@ -15,7 +15,7 @@ type FilterParserOption func(*filterParserConfig)
 // If supplied, the parser will return an error if the filter being parsed contains a comparator provided in the blacklist.
 func OptUnsupportedComparators(blacklist []FilterComparator) FilterParserOption {
 	return func(config *filterParserConfig) {
-		config.unsupportedComparators = make(map[parserToken]struct{})
+		config.unsupportedComparators = map[parserToken]struct{}{}
 		for _, c := range blacklist {
 			if token, ok := operatorsToToken[strings.ToUpper(translateComparator(c))]; ok {
 				config.unsupportedComparators[token] = struct{}{}
