@@ -78,7 +78,7 @@ func TestNewErrorEvent(t *testing.T) {
 
 		Convey("Then the error Event should be correctly initialized", func() {
 			d, _ := Encode(EncodingTypeJSON, testErr)
-			So(e.Identity, ShouldEqual, "error")
+			So(e.Identity, ShouldEqual, "")
 			So(e.Type, ShouldEqual, EventError)
 			So(e.Encoding, ShouldEqual, EncodingTypeJSON)
 			So(e.JSONData, ShouldResemble, json.RawMessage(d))
@@ -93,7 +93,7 @@ func TestNewErrorEvent(t *testing.T) {
 
 		Convey("Then the error Event should be correctly initialized", func() {
 			d, _ := Encode(EncodingTypeMSGPACK, testErr)
-			So(e.Identity, ShouldEqual, "error")
+			So(e.Identity, ShouldEqual, "")
 			So(e.Type, ShouldEqual, EventError)
 			So(e.Encoding, ShouldEqual, EncodingTypeMSGPACK)
 			So(e.JSONData, ShouldBeNil)

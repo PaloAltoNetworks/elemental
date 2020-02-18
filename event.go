@@ -58,10 +58,7 @@ func NewErrorEvent(ee Error, encoding EncodingType) *Event {
 	}
 
 	event := &Event{
-		Type: EventError,
-		// TODO: should we even populate this field at all? is it sufficient that the client can assume they should just
-		// deserialize this into an elemental error since the event type is error?
-		Identity:  string(EventError),
+		Type:      EventError,
 		Timestamp: time.Now(),
 		Encoding:  encoding,
 	}
