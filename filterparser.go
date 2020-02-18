@@ -129,23 +129,6 @@ var (
 		wordNOTEXISTSSP: parserTokenNOTEXISTS,
 	}
 
-	tokensToOperator = map[parserToken]string{
-		parserTokenEQUAL:       wordEQUAL,
-		parserTokenNOTEQUAL:    wordNOTEQUAL,
-		parserTokenLT:          wordLT,
-		parserTokenLTE:         wordLTE,
-		parserTokenGT:          wordGT,
-		parserTokenGTE:         wordGTE,
-		parserTokenCONTAINS:    wordCONTAINS,
-		parserTokenNOTCONTAINS: wordNOTCONTAINS,
-		parserTokenMATCHES:     wordMATCHES,
-		parserTokenIN:          wordIN,
-		parserTokenNOTIN:       wordNOTIN,
-		parserTokenNOT:         wordNOT,
-		parserTokenEXISTS:      wordEXISTS,
-		parserTokenNOTEXISTS:   wordNOTEXISTSSP,
-	}
-
 	wordToToken = map[string]parserToken{
 		wordAND:   parserTokenAND,
 		wordOR:    parserTokenOR,
@@ -361,7 +344,7 @@ func (p *FilterParser) parseOperatorAndValue() (parserToken, interface{}, error)
 	}
 
 	if _, ok := p.config.unsupportedComparators[operator]; ok {
-		return parserTokenILLEGAL, nil, fmt.Errorf("unsupported comparator:  %s", tokensToOperator[operator])
+		return parserTokenILLEGAL, nil, fmt.Errorf("unsupported comparator:  %s", tokenToOperator(operator))
 	}
 
 	if operator == parserTokenEXISTS || operator == parserTokenNOTEXISTS {
@@ -374,6 +357,17 @@ func (p *FilterParser) parseOperatorAndValue() (parserToken, interface{}, error)
 	}
 
 	return operator, value, nil
+}
+
+func tokenToOperator(t parserToken) string {
+
+	for operator, token := range operatorsToToken {
+		if t == token {
+			return operator
+		}
+	}
+
+	return ""
 }
 
 func (p *FilterParser) makeFilter(key string, operator parserToken, value interface{}) (*Filter, error) {
