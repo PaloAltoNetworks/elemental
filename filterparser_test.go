@@ -215,6 +215,27 @@ func TestParser_UnsupportedComparator(t *testing.T) {
 	}
 }
 
+func Test_tokenToOperator(t *testing.T) {
+
+	tests := map[string]struct {
+		token parserToken
+		want  string
+	}{
+		"should return empty string if passed in an unknown/unsupported token": {
+			token: parserTokenILLEGAL,
+			want:  "",
+		},
+	}
+
+	for scenario, tc := range tests {
+		t.Run(scenario, func(t *testing.T) {
+			if op := tokenToOperator(tc.token); op != tc.want {
+				t.Errorf("%q did not match expected value of %q", op, tc.want)
+			}
+		})
+	}
+}
+
 func TestParser_Spaces(t *testing.T) {
 
 	Convey("Given the operator '==' is not separated by spaces but quoted", t, func() {
