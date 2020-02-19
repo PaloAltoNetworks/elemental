@@ -63,12 +63,7 @@ func NewErrorEvent(ee Error, encoding EncodingType) *Event {
 		Encoding:  encoding,
 	}
 
-	if encoding == EncodingTypeJSON {
-		event.JSONData = json.RawMessage(data)
-	} else {
-		event.RawData = data
-	}
-
+	event.configureData(encoding, data)
 	return event
 }
 
@@ -80,20 +75,24 @@ func NewEventWithEncoding(t EventType, o Identifiable, encoding EncodingType) *E
 		panic(fmt.Sprintf("unable to create new event: %s", err))
 	}
 
-	evt := &Event{
+	event := &Event{
 		Type:      t,
 		Identity:  o.Identity().Name,
 		Timestamp: time.Now(),
 		Encoding:  encoding,
 	}
 
-	if encoding == EncodingTypeJSON {
-		evt.JSONData = json.RawMessage(data)
-	} else {
-		evt.RawData = data
-	}
+	event.configureData(encoding, data)
+	return event
+}
 
-	return evt
+func (e *Event) configureData(encoding EncodingType, data []byte) {
+	switch encoding {
+	case EncodingTypeJSON:
+		e.JSONData = json.RawMessage(data)
+	case EncodingTypeMSGPACK:
+		e.RawData = data
+	}
 }
 
 // GetEncoding returns the encoding used to encode the entity.
