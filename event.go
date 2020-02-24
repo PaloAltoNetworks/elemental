@@ -21,14 +21,17 @@ import (
 type EventType string
 
 const (
-	// EventCreate is the type of creation event.
+	// EventCreate is the type of creation events.
 	EventCreate EventType = "create"
 
-	// EventUpdate is the type of update event.
+	// EventUpdate is the type of update events.
 	EventUpdate EventType = "update"
 
-	// EventDelete is the type of delete event.
+	// EventDelete is the type of delete events.
 	EventDelete EventType = "delete"
+
+	// EventError is the type of error events.
+	EventError EventType = "error"
 )
 
 // An Event represents a computational event.
@@ -46,6 +49,24 @@ func NewEvent(t EventType, o Identifiable) *Event {
 	return NewEventWithEncoding(t, o, EncodingTypeMSGPACK)
 }
 
+// NewErrorEvent returns a new (error) Event embedded with the provided elemental.Error
+func NewErrorEvent(ee Error, encoding EncodingType) *Event {
+
+	data, err := Encode(encoding, ee)
+	if err != nil {
+		panic(fmt.Sprintf("unable to create new error event: %s", err))
+	}
+
+	event := &Event{
+		Type:      EventError,
+		Timestamp: time.Now(),
+		Encoding:  encoding,
+	}
+
+	event.configureData(encoding, data)
+	return event
+}
+
 // NewEventWithEncoding returns a new Event using the given encoding
 func NewEventWithEncoding(t EventType, o Identifiable, encoding EncodingType) *Event {
 
@@ -54,20 +75,24 @@ func NewEventWithEncoding(t EventType, o Identifiable, encoding EncodingType) *E
 		panic(fmt.Sprintf("unable to create new event: %s", err))
 	}
 
-	evt := &Event{
+	event := &Event{
 		Type:      t,
 		Identity:  o.Identity().Name,
 		Timestamp: time.Now(),
 		Encoding:  encoding,
 	}
 
-	if encoding == EncodingTypeJSON {
-		evt.JSONData = json.RawMessage(data)
-	} else {
-		evt.RawData = data
-	}
+	event.configureData(encoding, data)
+	return event
+}
 
-	return evt
+func (e *Event) configureData(encoding EncodingType, data []byte) {
+	switch encoding {
+	case EncodingTypeJSON:
+		e.JSONData = json.RawMessage(data)
+	case EncodingTypeMSGPACK:
+		e.RawData = data
+	}
 }
 
 // GetEncoding returns the encoding used to encode the entity.

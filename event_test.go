@@ -61,6 +61,48 @@ func TestEvent_NewEvent(t *testing.T) {
 	})
 }
 
+func TestNewErrorEvent(t *testing.T) {
+
+	testErr := Error{
+		Description: "some description",
+		Subject:     "some subject",
+		Title:       "some title",
+		Data: map[string]interface{}{
+			"someKey": "someValue",
+		},
+	}
+
+	Convey("Given I create an error Event using EncodingTypeJSON", t, func() {
+
+		e := NewErrorEvent(testErr, EncodingTypeJSON)
+
+		Convey("Then the error Event should be correctly initialized", func() {
+			d, _ := Encode(EncodingTypeJSON, testErr)
+			So(e.Identity, ShouldEqual, "")
+			So(e.Type, ShouldEqual, EventError)
+			So(e.Encoding, ShouldEqual, EncodingTypeJSON)
+			So(e.JSONData, ShouldResemble, json.RawMessage(d))
+			So(e.RawData, ShouldBeNil)
+			So(e.Entity(), ShouldResemble, []byte(e.JSONData))
+		})
+	})
+
+	Convey("Given I create an error Event using EncodingTypeMSGPACK", t, func() {
+
+		e := NewErrorEvent(testErr, EncodingTypeMSGPACK)
+
+		Convey("Then the error Event should be correctly initialized", func() {
+			d, _ := Encode(EncodingTypeMSGPACK, testErr)
+			So(e.Identity, ShouldEqual, "")
+			So(e.Type, ShouldEqual, EventError)
+			So(e.Encoding, ShouldEqual, EncodingTypeMSGPACK)
+			So(e.JSONData, ShouldBeNil)
+			So(e.RawData, ShouldResemble, d)
+			So(e.Entity(), ShouldResemble, e.RawData)
+		})
+	})
+}
+
 func TestEvent_Decode(t *testing.T) {
 
 	Convey("Given I create an Event using EncodingTypeJSON", t, func() {

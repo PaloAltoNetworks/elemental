@@ -342,7 +342,7 @@ func (p *FilterParser) parseOperatorAndValue() (parserToken, interface{}, error)
 	}
 
 	if _, ok := p.config.unsupportedComparators[operator]; ok {
-		return parserTokenILLEGAL, nil, fmt.Errorf("unsupported comparator:  %s", tokenToOperator(operator))
+		return parserTokenILLEGAL, nil, fmt.Errorf("unsupported comparator: %s", tokenToOperator(operator))
 	}
 
 	if operator == parserTokenEXISTS || operator == parserTokenNOTEXISTS {

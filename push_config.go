@@ -38,6 +38,19 @@ type PushConfig struct {
 	parsedIdentityFilters map[string]*Filter
 }
 
+// unsupportedComparators is the list of comparators that are currently not handled by the elemental API 'MatchesFilter'
+// which is utilized for providing fine-grained identity filtering for websocket clients
+var unsupportedComparators []FilterComparator = []FilterComparator{
+	GreaterComparator,
+	GreaterOrEqualComparator,
+	LesserComparator,
+	LesserOrEqualComparator,
+	InComparator,
+	NotInComparator,
+	ContainComparator,
+	NotContainComparator,
+}
+
 // NewPushFilter returns a new PushFilter. NewPushFilter is now aliased to NewPushConfig. This was done for backwards
 // compatibility as a result of the re-naming of PushFilter to PushConfig.
 //
@@ -113,7 +126,11 @@ func (pc *PushConfig) ParseIdentityFilters() error {
 			return fmt.Errorf("elemental: cannot declare an identity filter on %q as that was not declared in 'Identities'", identity)
 		}
 
-		filter, err := NewFilterParser(unparsedFilter).Parse()
+		filter, err := NewFilterParser(unparsedFilter,
+			// blacklist unsupported comparators so socket can either be closed or if the client supports error events, an
+			// error can be emitted.
+			OptUnsupportedComparators(unsupportedComparators),
+		).Parse()
 		if err != nil {
 			// in the event an error occurs we zero out the parsed identities to avoid having a partially set of parsed identities
 			pc.parsedIdentityFilters = map[string]*Filter{}
