@@ -352,6 +352,9 @@ func isString(v reflect.Value) (string, bool) {
 }
 
 func safeConvert(to reflect.Type, fromV reflect.Value) (value reflect.Value) {
+
+	// note: the call to the 'Convert' could panic in the event the usual Go conversion rules do not allow conversion
+	// of the value v to type t. hence, we need to exercise caution via recover.
 	defer func() {
 		if rv := recover(); rv != nil {
 			value = fromV
