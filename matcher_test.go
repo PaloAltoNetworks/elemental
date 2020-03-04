@@ -17,6 +17,10 @@ import (
 // MatchesFilter for filtering an AttributeSpecifiable using the supplied filter
 func TestEqualComparator(t *testing.T) {
 
+	type aliasToString string
+	type aliasToBool bool
+	type aliasToInt int
+
 	testAttributeName := "someAttribute"
 	tests := map[string]struct {
 		filter        *elemental.Filter
@@ -24,6 +28,97 @@ func TestEqualComparator(t *testing.T) {
 		expectedMatch bool
 		expectedError bool
 	}{
+		"should try to convert the comparator value's type to that of the attribute's type - aliasToString": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+
+				// the comparator value's type is a string which should be possible to convert to the 'aliasToString' type
+
+				Equals("Done").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+
+					// in this case - the Go type of the attribute is 'aliasToString'
+
+					Return(interface{}(aliasToString("Done")))
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should try to convert the comparator value's type to that of the attribute's type - aliasToBool": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+
+				// the comparator value's type is a boolean which should be possible to convert to the 'aliasToBool' type
+
+				Equals(true).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+
+					// in this case - the Go type of the attribute is 'aliasToBool'
+
+					Return(interface{}(aliasToBool(true)))
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should try to convert the comparator value's type to that of the attribute's type - aliasToInt": {
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+
+				// the comparator value's type is an int which should be possible to convert to the 'aliasToInt' type
+
+				Equals(111).
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+
+					// in this case - the Go type of the attribute is 'aliasToInt'
+
+					Return(interface{}(aliasToInt(111)))
+				return mockAS
+			},
+			expectedMatch: true,
+			expectedError: false,
+		},
+		"should not panic if the attempt to convert the comparator value's type to that of the attribute's type is not possible": {
+
+			// in this test, no match is possible because it is not possible to convert a "string" (the comparator's value type)
+			// to a boolean. Therefore, the matcher should return false.
+
+			filter: elemental.NewFilterComposer().
+				WithKey(testAttributeName).
+				Equals("Done").
+				Done(),
+			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
+				t.Helper()
+				mockAS := internal.NewMockAttributeSpecifiable(ctrl)
+				mockAS.
+					EXPECT().
+					ValueForAttribute(testAttributeName).
+					Return(interface{}(true))
+				return mockAS
+			},
+			expectedMatch: false,
+			expectedError: false,
+		},
+
 		// https://docs.mongodb.com/manual/reference/operator/query/eq/#equals-an-array-value
 		// quote: "If the specified <value> is an array, MongoDB matches documents where the <field> matches the array exactly"
 
