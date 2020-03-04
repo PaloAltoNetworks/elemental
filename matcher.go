@@ -301,6 +301,13 @@ func equalsCommon(field, value interface{}) bool {
 	default:
 		// if our field and value are not arrays/slices, then we just do a recursive equality check using Go's `==` operator via
 		// reflect.DeepEqual
+
+		// in the event that the two types are not equal, we try to convert the type of the value provided to the comparator
+		// to that of the attribute's type.
+		if fieldV.Type() != valueV.Type() {
+			value = safeConvert(fieldV.Type(), valueV).Interface()
+		}
+
 		if reflect.DeepEqual(field, value) {
 			return true
 		}
@@ -342,4 +349,17 @@ func isString(v reflect.Value) (string, bool) {
 	}
 
 	return v.String(), true
+}
+
+func safeConvert(to reflect.Type, fromV reflect.Value) (value reflect.Value) {
+
+	// note: the call to the 'Convert' could panic in the event the usual Go conversion rules do not allow conversion
+	// of the value v to type t. hence, we need to exercise caution via recover.
+	defer func() {
+		if rv := recover(); rv != nil {
+			value = fromV
+		}
+	}()
+
+	return fromV.Convert(to)
 }
