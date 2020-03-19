@@ -108,6 +108,11 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		components = append(components[:0], components[2:]...)
 	}
 
+	contentType, acceptType, err := EncodingFromHeaders(req.Header)
+	if err != nil {
+		return nil, err
+	}
+
 	switch len(components) {
 	case 1:
 		identity = manager.IdentityFromCategory(components[0])
@@ -142,27 +147,34 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 
 	case http.MethodPatch:
 		operation = OperationPatch
-		data, err = ioutil.ReadAll(req.Body)
-		if err != nil {
-			return nil, NewError("Bad Request", fmt.Sprintf("Unable to read body of request: %s", err), "elemental", http.StatusBadRequest)
+		fmt.Println("------->", contentType)
+		if _, ok := externalSupportedContentType[string(contentType)]; !ok {
+			data, err = ioutil.ReadAll(req.Body)
+			if err != nil {
+				return nil, NewError("Bad Request", fmt.Sprintf("Unable to read body of request: %s", err), "elemental", http.StatusBadRequest)
+			}
+			defer req.Body.Close() // nolint: errcheck
 		}
-		defer req.Body.Close() // nolint: errcheck
 
 	case http.MethodPost:
 		operation = OperationCreate
-		data, err = ioutil.ReadAll(req.Body)
-		if err != nil {
-			return nil, NewError("Bad Request", fmt.Sprintf("Unable to read body of request: %s", err), "elemental", http.StatusBadRequest)
+		if _, ok := externalSupportedContentType[string(contentType)]; !ok {
+			data, err = ioutil.ReadAll(req.Body)
+			if err != nil {
+				return nil, NewError("Bad Request", fmt.Sprintf("Unable to read body of request: %s", err), "elemental", http.StatusBadRequest)
+			}
+			defer req.Body.Close() // nolint: errcheck
 		}
-		defer req.Body.Close() // nolint: errcheck
 
 	case http.MethodPut:
 		operation = OperationUpdate
-		data, err = ioutil.ReadAll(req.Body)
-		if err != nil {
-			return nil, NewError("Bad Request", fmt.Sprintf("Unable to read body of request: %s", err), "elemental", http.StatusBadRequest)
+		if _, ok := externalSupportedContentType[string(contentType)]; !ok {
+			data, err = ioutil.ReadAll(req.Body)
+			if err != nil {
+				return nil, NewError("Bad Request", fmt.Sprintf("Unable to read body of request: %s", err), "elemental", http.StatusBadRequest)
+			}
+			defer req.Body.Close() // nolint: errcheck
 		}
-		defer req.Body.Close() // nolint: errcheck
 	}
 
 	var page, pageSize, limit int
@@ -269,11 +281,6 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		clientIP = ip
 	} else {
 		clientIP = req.RemoteAddr
-	}
-
-	contentType, acceptType, err := EncodingFromHeaders(req.Header)
-	if err != nil {
-		return nil, err
 	}
 
 	return &Request{
