@@ -220,6 +220,8 @@ func EncodingFromHeaders(header http.Header) (read EncodingType, write EncodingT
 			if !supported {
 				return "", "", NewError("Unsupported Media Type", fmt.Sprintf("Cannot find any acceptable Content-Type media type in provided header: %s", v), "elemental", http.StatusUnsupportedMediaType)
 			}
+
+			read = EncodingType(ct)
 		}
 	}
 
@@ -249,6 +251,7 @@ func EncodingFromHeaders(header http.Header) (read EncodingType, write EncodingT
 				for t := range externalSupportedAcceptType {
 					if at == t {
 						agreed = true
+						write = EncodingType(at)
 						break L
 					}
 				}

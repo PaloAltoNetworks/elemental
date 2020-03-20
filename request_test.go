@@ -214,6 +214,32 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 		})
 	})
 
+	Convey("Given I have a patch http request on /lists using multipart/form-data", t, func() {
+
+		RegisterSupportedContentType("multipart/form-data")
+		defer func() { externalSupportedAcceptType = map[string]struct{}{} }()
+
+		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
+		req, _ := http.NewRequest(http.MethodPatch, "http://server/lists?lup1=A&lup2=true", buffer)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+		req.Header.Add("Content-Type", "multipart/form-data; boundary=x")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then r should be correct", func() {
+				So(r.Operation, ShouldEqual, OperationPatch)
+				So(string(r.Data), ShouldEqual, "") // should not be decoded
+			})
+		})
+	})
+
 	Convey("Given I have a post http request on /lists", t, func() {
 
 		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
@@ -241,6 +267,33 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 				So(r.Username, ShouldEqual, "user")
 				So(r.Password, ShouldEqual, "pass")
 				So(string(r.Data), ShouldEqual, `{"name": "toto"}`)
+			})
+		})
+	})
+
+	Convey("Given I have a post http request on /lists using multipart/form-data", t, func() {
+
+		RegisterSupportedContentType("multipart/form-data")
+		defer func() { externalSupportedAcceptType = map[string]struct{}{} }()
+
+		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
+		req, _ := http.NewRequest(http.MethodPost, "http://server/lists?order=name&order=toto&rlcp1=A&rlcp2=true", buffer)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+		req.Header.Add("Content-Type", "multipart/form-data; boundary=x")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then r should be correct", func() {
+				So(r.Operation, ShouldEqual, OperationCreate)
+
+				So(string(r.Data), ShouldEqual, ``)
 			})
 		})
 	})
@@ -300,6 +353,32 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 				So(r.Username, ShouldEqual, "user")
 				So(r.Password, ShouldEqual, "pass")
 				So(string(r.Data), ShouldEqual, `{"name": "toto"}`)
+			})
+		})
+	})
+
+	Convey("Given I have a put http request on /lists/xx using multipart/form-data", t, func() {
+
+		RegisterSupportedContentType("multipart/form-data")
+		defer func() { externalSupportedAcceptType = map[string]struct{}{} }()
+
+		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
+		req, _ := http.NewRequest(http.MethodPut, "http://server/lists/xx?lup1=A&lup2=true", buffer)
+		req.Header.Add("X-Namespace", "ns")
+		req.Header.Add("Authorization", "user pass")
+		req.Header.Add("Content-Type", "multipart/form-data")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			r, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then r should be correct", func() {
+				So(r.Operation, ShouldEqual, OperationUpdate)
+				So(string(r.Data), ShouldEqual, ``)
 			})
 		})
 	})

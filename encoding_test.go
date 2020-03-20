@@ -410,10 +410,15 @@ func TestEncodingFromHeader(t *testing.T) {
 
 		Convey("When I call EncodingFromHeaders", func() {
 
-			_, _, err := EncodingFromHeaders(h)
+			r, w, err := EncodingFromHeaders(h)
 
 			Convey("Then err should be nil", func() {
 				So(err, ShouldBeNil)
+			})
+
+			Convey("Then r and w should be correct", func() {
+				So(string(r), ShouldEqual, "application/aaaa")
+				So(string(w), ShouldEqual, "application/msgpack")
 			})
 		})
 	})
@@ -427,10 +432,15 @@ func TestEncodingFromHeader(t *testing.T) {
 
 		Convey("When I call EncodingFromHeaders", func() {
 
-			_, _, err := EncodingFromHeaders(h)
+			r, w, err := EncodingFromHeaders(h)
 
 			Convey("Then err should be nil", func() {
 				So(err, ShouldBeNil)
+			})
+
+			Convey("Then r and w should be correct", func() {
+				So(string(r), ShouldEqual, "application/msgpack")
+				So(string(w), ShouldEqual, "application/aaaa")
 			})
 		})
 	})
