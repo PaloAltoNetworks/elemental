@@ -147,7 +147,6 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 
 	case http.MethodPatch:
 		operation = OperationPatch
-		fmt.Println("------->", contentType)
 		if _, ok := externalSupportedContentType[string(contentType)]; !ok {
 			data, err = ioutil.ReadAll(req.Body)
 			if err != nil {
