@@ -24,9 +24,9 @@ func TestRelationship_IsOperationAllowed_Retrieve(t *testing.T) {
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{
 				Retrieve: map[string]*RelationshipInfo{
-					RootIdentity.Name: &RelationshipInfo{
+					RootIdentity.Name: {
 						Parameters: []ParameterDefinition{
-							ParameterDefinition{Name: "toto"},
+							{Name: "toto"},
 						},
 					},
 				},
@@ -47,7 +47,7 @@ func TestRelationship_IsOperationAllowed_Retrieve(t *testing.T) {
 			p := ParametersForOperation(registry, ListIdentity, RootIdentity, OperationRetrieve)
 
 			Convey("Then parameters should be correct", func() {
-				So(p, ShouldResemble, []ParameterDefinition{ParameterDefinition{Name: "toto"}})
+				So(p, ShouldResemble, []ParameterDefinition{{Name: "toto"}})
 			})
 		})
 	})
@@ -108,9 +108,9 @@ func TestRelationship_IsOperationAllowed_Update(t *testing.T) {
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{
 				Update: map[string]*RelationshipInfo{
-					RootIdentity.Name: &RelationshipInfo{
+					RootIdentity.Name: {
 						Parameters: []ParameterDefinition{
-							ParameterDefinition{Name: "toto"},
+							{Name: "toto"},
 						},
 					},
 				},
@@ -131,7 +131,7 @@ func TestRelationship_IsOperationAllowed_Update(t *testing.T) {
 			p := ParametersForOperation(registry, ListIdentity, RootIdentity, OperationUpdate)
 
 			Convey("Then parameters should be correct", func() {
-				So(p, ShouldResemble, []ParameterDefinition{ParameterDefinition{Name: "toto"}})
+				So(p, ShouldResemble, []ParameterDefinition{{Name: "toto"}})
 			})
 		})
 	})
@@ -192,9 +192,9 @@ func TestRelationship_IsOperationAllowed_Delete(t *testing.T) {
 		registry := RelationshipsRegistry{
 			ListIdentity: &Relationship{
 				Delete: map[string]*RelationshipInfo{
-					RootIdentity.Name: &RelationshipInfo{
+					RootIdentity.Name: {
 						Parameters: []ParameterDefinition{
-							ParameterDefinition{Name: "toto"},
+							{Name: "toto"},
 						},
 					},
 				},
@@ -215,7 +215,7 @@ func TestRelationship_IsOperationAllowed_Delete(t *testing.T) {
 			p := ParametersForOperation(registry, ListIdentity, RootIdentity, OperationDelete)
 
 			Convey("Then parameters should be correct", func() {
-				So(p, ShouldResemble, []ParameterDefinition{ParameterDefinition{Name: "toto"}})
+				So(p, ShouldResemble, []ParameterDefinition{{Name: "toto"}})
 			})
 		})
 	})
@@ -277,9 +277,9 @@ func TestRelationship_IsOperationAllowed_RetrieveMany(t *testing.T) {
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
 				RetrieveMany: map[string]*RelationshipInfo{
-					ListIdentity.Name: &RelationshipInfo{
+					ListIdentity.Name: {
 						Parameters: []ParameterDefinition{
-							ParameterDefinition{Name: "toto"},
+							{Name: "toto"},
 						},
 					},
 				},
@@ -300,7 +300,7 @@ func TestRelationship_IsOperationAllowed_RetrieveMany(t *testing.T) {
 			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationRetrieveMany)
 
 			Convey("Then parameters should be correct", func() {
-				So(p, ShouldResemble, []ParameterDefinition{ParameterDefinition{Name: "toto"}})
+				So(p, ShouldResemble, []ParameterDefinition{{Name: "toto"}})
 			})
 		})
 	})
@@ -390,9 +390,9 @@ func TestRelationship_IsOperationAllowed_Info(t *testing.T) {
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
 				Info: map[string]*RelationshipInfo{
-					ListIdentity.Name: &RelationshipInfo{
+					ListIdentity.Name: {
 						Parameters: []ParameterDefinition{
-							ParameterDefinition{Name: "toto"},
+							{Name: "toto"},
 						},
 					},
 				},
@@ -413,7 +413,7 @@ func TestRelationship_IsOperationAllowed_Info(t *testing.T) {
 			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationInfo)
 
 			Convey("Then parameters should be correct", func() {
-				So(p, ShouldResemble, []ParameterDefinition{ParameterDefinition{Name: "toto"}})
+				So(p, ShouldResemble, []ParameterDefinition{{Name: "toto"}})
 			})
 		})
 	})
@@ -503,9 +503,9 @@ func TestRelationship_IsOperationAllowed_Patch(t *testing.T) {
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
 				Patch: map[string]*RelationshipInfo{
-					ListIdentity.Name: &RelationshipInfo{
+					ListIdentity.Name: {
 						Parameters: []ParameterDefinition{
-							ParameterDefinition{Name: "toto"},
+							{Name: "toto"},
 						},
 					},
 				},
@@ -526,7 +526,7 @@ func TestRelationship_IsOperationAllowed_Patch(t *testing.T) {
 			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationPatch)
 
 			Convey("Then parameters should be correct", func() {
-				So(p, ShouldResemble, []ParameterDefinition{ParameterDefinition{Name: "toto"}})
+				So(p, ShouldResemble, []ParameterDefinition{{Name: "toto"}})
 			})
 		})
 	})
@@ -616,9 +616,9 @@ func TestRelationship_IsOperationAllowed_Create(t *testing.T) {
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
 				Create: map[string]*RelationshipInfo{
-					ListIdentity.Name: &RelationshipInfo{
+					ListIdentity.Name: {
 						Parameters: []ParameterDefinition{
-							ParameterDefinition{Name: "toto"},
+							{Name: "toto"},
 						},
 					},
 				},
@@ -639,7 +639,7 @@ func TestRelationship_IsOperationAllowed_Create(t *testing.T) {
 			p := ParametersForOperation(registry, TaskIdentity, ListIdentity, OperationCreate)
 
 			Convey("Then parameters should be correct", func() {
-				So(p, ShouldResemble, []ParameterDefinition{ParameterDefinition{Name: "toto"}})
+				So(p, ShouldResemble, []ParameterDefinition{{Name: "toto"}})
 			})
 		})
 	})
@@ -729,9 +729,9 @@ func TestRelationship_IsOperationAllowed_UnknownOperation(t *testing.T) {
 			ListIdentity: &Relationship{},
 			TaskIdentity: &Relationship{
 				Create: map[string]*RelationshipInfo{
-					ListIdentity.Name: &RelationshipInfo{
+					ListIdentity.Name: {
 						Parameters: []ParameterDefinition{
-							ParameterDefinition{Name: "toto"},
+							{Name: "toto"},
 						},
 					},
 				},

@@ -15,7 +15,7 @@ func init() {
         Create: map[string]*elemental.RelationshipInfo {
             {{- range $parent, $action := $relation.Create }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : &elemental.RelationshipInfo{
+            "{{ $parent }}" :{
                 {{- if $action.Deprecated }}
                 Deprecated: true,
                 {{- end }}
@@ -25,10 +25,10 @@ func init() {
                     [][][]string{
                         {{- range $i, $l1 := $action.ParameterDefinition.Required }}
                         {{- if gt (len $l1) 0 }}
-                        [][]string{
+                        {
                             {{- range $i, $l2 := $l1 }}
                             {{- if gt (len $l2) 0 }}
-                            []string{
+                            {
                                 {{- range $i, $l3 := $l2 }}
                                 "{{ $l3 }}",
                                 {{- end}}
@@ -44,7 +44,7 @@ func init() {
                 {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
                 Parameters: []elemental.ParameterDefinition{
                 {{- range $i, $p := $action.ParameterDefinition.Entries }}
-                     elemental.ParameterDefinition{
+                     {
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
@@ -74,7 +74,7 @@ func init() {
         Update: map[string]*elemental.RelationshipInfo {
             {{- range $parent, $action := $relation.Update }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : &elemental.RelationshipInfo{
+            "{{ $parent }}" : {
                 {{- if $action.Deprecated }}
                 Deprecated: true,
                 {{- end }}
@@ -84,10 +84,10 @@ func init() {
                     [][][]string{
                         {{- range $i, $l1 := $action.ParameterDefinition.Required }}
                         {{- if gt (len $l1) 0 }}
-                        [][]string{
+                        {
                             {{- range $i, $l2 := $l1 }}
                             {{- if gt (len $l2) 0 }}
-                            []string{
+                            {
                                 {{- range $i, $l3 := $l2 }}
                                 "{{ $l3 }}",
                                 {{- end}}
@@ -103,7 +103,7 @@ func init() {
                 {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
                 Parameters: []elemental.ParameterDefinition{
                 {{- range $i, $p := $action.ParameterDefinition.Entries }}
-                    elemental.ParameterDefinition{
+                    {
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
@@ -131,7 +131,7 @@ func init() {
         Patch: map[string]*elemental.RelationshipInfo {
             {{- range $parent, $action := $relation.Update }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : &elemental.RelationshipInfo{
+            "{{ $parent }}" : {
                 {{- if $action.Deprecated }}
                 Deprecated: true,
                 {{- end }}
@@ -141,10 +141,10 @@ func init() {
                     [][][]string{
                         {{- range $i, $l1 := $action.ParameterDefinition.Required }}
                         {{- if gt (len $l1) 0 }}
-                        [][]string{
+                        {
                             {{- range $i, $l2 := $l1 }}
                             {{- if gt (len $l2) 0 }}
-                            []string{
+                            {
                                 {{- range $i, $l3 := $l2 }}
                                 "{{ $l3 }}",
                                 {{- end}}
@@ -160,7 +160,7 @@ func init() {
                 {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
                 Parameters: []elemental.ParameterDefinition{
                 {{- range $i, $p := $action.ParameterDefinition.Entries }}
-                    elemental.ParameterDefinition{
+                    {
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
@@ -190,7 +190,7 @@ func init() {
         Delete: map[string]*elemental.RelationshipInfo {
             {{- range $parent, $action := $relation.Delete }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : &elemental.RelationshipInfo{
+            "{{ $parent }}" : {
                 {{- if $action.Deprecated }}
                 Deprecated: true,
                 {{- end }}
@@ -200,10 +200,10 @@ func init() {
                     [][][]string{
                         {{- range $i, $l1 := $action.ParameterDefinition.Required }}
                         {{- if gt (len $l1) 0 }}
-                        [][]string{
+                        {
                             {{- range $i, $l2 := $l1 }}
                             {{- if gt (len $l2) 0 }}
-                            []string{
+                            {
                                 {{- range $i, $l3 := $l2 }}
                                 "{{ $l3 }}",
                                 {{- end}}
@@ -219,7 +219,7 @@ func init() {
                 {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
                 Parameters: []elemental.ParameterDefinition{
                 {{- range $i, $p := $action.ParameterDefinition.Entries }}
-                    elemental.ParameterDefinition{
+                    {
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
@@ -249,7 +249,7 @@ func init() {
         Retrieve: map[string]*elemental.RelationshipInfo {
             {{- range $parent, $action := $relation.Get }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : &elemental.RelationshipInfo{
+            "{{ $parent }}" : {
                 {{- if $action.Deprecated }}
                 Deprecated: true,
                 {{- end }}
@@ -259,10 +259,10 @@ func init() {
                     [][][]string{
                         {{- range $i, $l1 := $action.ParameterDefinition.Required }}
                         {{- if gt (len $l1) 0 }}
-                        [][]string{
+                        {
                             {{- range $i, $l2 := $l1 }}
                             {{- if gt (len $l2) 0 }}
-                            []string{
+                            {
                                 {{- range $i, $l3 := $l2 }}
                                 "{{ $l3 }}",
                                 {{- end}}
@@ -278,7 +278,7 @@ func init() {
                 {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
                 Parameters: []elemental.ParameterDefinition{
                 {{- range $i, $p := $action.ParameterDefinition.Entries }}
-                    elemental.ParameterDefinition{
+                    {
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
@@ -308,7 +308,7 @@ func init() {
         RetrieveMany: map[string]*elemental.RelationshipInfo {
             {{- range $parent, $action := $relation.GetMany }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : &elemental.RelationshipInfo{
+            "{{ $parent }}" : {
                 {{- if $action.Deprecated }}
                 Deprecated: true,
                 {{- end }}
@@ -318,10 +318,10 @@ func init() {
                     [][][]string{
                         {{- range $i, $l1 := $action.ParameterDefinition.Required }}
                         {{- if gt (len $l1) 0 }}
-                        [][]string{
+                        {
                             {{- range $i, $l2 := $l1 }}
                             {{- if gt (len $l2) 0 }}
-                            []string{
+                            {
                                 {{- range $i, $l3 := $l2 }}
                                 "{{ $l3 }}",
                                 {{- end}}
@@ -337,7 +337,7 @@ func init() {
                 {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
                 Parameters: []elemental.ParameterDefinition{
                 {{- range $i, $p := $action.ParameterDefinition.Entries }}
-                    elemental.ParameterDefinition{
+                    {
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}
@@ -365,7 +365,7 @@ func init() {
         Info: map[string]*elemental.RelationshipInfo {
             {{- range $parent, $action := $relation.GetMany }}
             {{- if shouldRegisterInnerRelationship $.Set $parent $.PublicMode }}
-            "{{ $parent }}" : &elemental.RelationshipInfo{
+            "{{ $parent }}" : {
                 {{- if $action.Deprecated }}
                 Deprecated: true,
                 {{- end }}
@@ -375,10 +375,10 @@ func init() {
                     [][][]string{
                         {{- range $i, $l1 := $action.ParameterDefinition.Required }}
                         {{- if gt (len $l1) 0 }}
-                        [][]string{
+                        {
                             {{- range $i, $l2 := $l1 }}
                             {{- if gt (len $l2) 0 }}
-                            []string{
+                            {
                                 {{- range $i, $l3 := $l2 }}
                                 "{{ $l3 }}",
                                 {{- end}}
@@ -394,7 +394,7 @@ func init() {
                 {{- if gt (len $action.ParameterDefinition.Entries) 0 }}
                 Parameters: []elemental.ParameterDefinition{
                 {{- range $i, $p := $action.ParameterDefinition.Entries }}
-                    elemental.ParameterDefinition{
+                    {
                         Name: "{{ $p.Name }}",
                         Type: "{{ $p.Type }}",
                         {{- if $p.DefaultValue }}

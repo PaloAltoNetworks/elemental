@@ -566,7 +566,7 @@ func TestVerify_ResetMaps(t *testing.T) {
 			A: 1,
 			B: "hello",
 			M: []map[string]interface{}{
-				map[string]interface{}{
+				{
 					"a": 1,
 					"b": 2,
 				},

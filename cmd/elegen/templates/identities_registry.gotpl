@@ -35,9 +35,9 @@ var (
     indexesMap = map[string][][]string {
         {{- range .Set.Specifications }}
         {{- if shouldRegisterSpecification . $.PublicMode }}
-        "{{ .Model.RestName }}": {{ if len .Indexes }}[][]string {
+        "{{ .Model.RestName }}": {{ if len .Indexes }} {
             {{- range $i, $compound := .Indexes }}
-            []string{ {{- range $compound }}"{{ . }}",{{- end }} },
+            { {{- range $compound }}"{{ . }}",{{- end }} },
         {{- end }}
         },{{ else }}nil,{{- end }}
         {{- end }}
