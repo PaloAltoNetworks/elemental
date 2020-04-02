@@ -577,7 +577,7 @@ var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSp
 
     {{- range .Spec.Attributes $latestVersion }}
     {{ if shouldWriteAttributeMap . $.PublicMode -}}
-    "{{ .ConvertedName }}": elemental.AttributeSpecification{
+    "{{ .ConvertedName }}": {
         {{- if .AllowedChars }}
         AllowedChars: `{{ .AllowedChars}}`,
         {{- end }}
@@ -673,7 +673,7 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
 
     {{- range .Spec.Attributes $latestVersion }}
     {{ if shouldWriteAttributeMap . $.PublicMode -}}
-    "{{ lower .Name }}": elemental.AttributeSpecification{
+    "{{ lower .Name }}": {
         {{- if .AllowedChars }}
         AllowedChars: `{{ .AllowedChars}}`,
         {{- end }}

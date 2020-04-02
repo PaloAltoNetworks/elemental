@@ -545,8 +545,8 @@ func TestParameters_Requirements(t *testing.T) {
 	Convey("Given I have a simple parameter requirement", t, func() {
 
 		req := NewParametersRequirement([][][]string{
-			[][]string{
-				[]string{"a"},
+			{
+				{"a"},
 			},
 		})
 
@@ -577,12 +577,14 @@ func TestParameters_Requirements(t *testing.T) {
 
 	Convey("Given I have a single parameter requirement", t, func() {
 
-		req := NewParametersRequirement([][][]string{
-			[][]string{
-				[]string{"a", "b"},
-				[]string{"c", "d"},
+		req := NewParametersRequirement(
+			[][][]string{
+				{
+					{"a", "b"},
+					{"c", "d"},
+				},
 			},
-		})
+		)
 
 		Convey("When I call Validate params a and b and 1", func() {
 
@@ -645,15 +647,16 @@ func TestParameters_Requirements(t *testing.T) {
 
 	Convey("Given I have a multiple parameter requirement", t, func() {
 
-		req := NewParametersRequirement([][][]string{
-			[][]string{
-				[]string{"a", "b"},
-				[]string{"c", "d"},
-			},
-			[][]string{
-				[]string{"1", "2"},
-			},
-		})
+		req := NewParametersRequirement(
+			[][][]string{
+				{
+					{"a", "b"},
+					{"c", "d"},
+				},
+				{
+					{"1", "2"},
+				},
+			})
 
 		Convey("When I call Validate params a and b and 1 and 2", func() {
 
@@ -946,15 +949,17 @@ func TestParameterRequirement_String(t *testing.T) {
 
 	Convey("Given I have some requirements", t, func() {
 
-		req := NewParametersRequirement([][][]string{
-			[][]string{
-				[]string{"a", "b"},
-				[]string{"c", "d"},
+		req := NewParametersRequirement(
+			[][][]string{
+				{
+					{"a", "b"},
+					{"c", "d"},
+				},
+				{
+					{"1", "2"},
+				},
 			},
-			[][]string{
-				[]string{"1", "2"},
-			},
-		})
+		)
 
 		Convey("When I call String", func() {
 
@@ -968,11 +973,13 @@ func TestParameterRequirement_String(t *testing.T) {
 
 	Convey("Given I have some simple requirements", t, func() {
 
-		req := NewParametersRequirement([][][]string{
-			[][]string{
-				[]string{"a"},
+		req := NewParametersRequirement(
+			[][][]string{
+				{
+					{"a"},
+				},
 			},
-		})
+		)
 
 		Convey("When I call String", func() {
 
