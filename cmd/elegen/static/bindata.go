@@ -86,7 +86,7 @@ func templatesReadmeMd() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/README.md", size: 77, mode: os.FileMode(420), modTime: time.Unix(1563338401, 0)}
+	info := bindataFileInfo{name: "templates/README.md", size: 77, mode: os.FileMode(420), modTime: time.Unix(1578956520, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -106,7 +106,7 @@ func templatesIdentities_registryGotpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/identities_registry.gotpl", size: 5305, mode: os.FileMode(420), modTime: time.Unix(1585855989, 0)}
+	info := bindataFileInfo{name: "templates/identities_registry.gotpl", size: 5305, mode: os.FileMode(420), modTime: time.Unix(1585857731, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -126,7 +126,7 @@ func templatesModelGotpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/model.gotpl", size: 32529, mode: os.FileMode(420), modTime: time.Unix(1585855989, 0)}
+	info := bindataFileInfo{name: "templates/model.gotpl", size: 32529, mode: os.FileMode(420), modTime: time.Unix(1585857731, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -146,7 +146,7 @@ func templatesRelationships_registryGotpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/relationships_registry.gotpl", size: 17509, mode: os.FileMode(420), modTime: time.Unix(1585855989, 0)}
+	info := bindataFileInfo{name: "templates/relationships_registry.gotpl", size: 17509, mode: os.FileMode(420), modTime: time.Unix(1585857731, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -249,11 +249,11 @@ type bintree struct {
 	Children map[string]*bintree
 }
 var _bintree = &bintree{nil, map[string]*bintree{
-	"templates": {nil, map[string]*bintree{
-		"README.md": {templatesReadmeMd, map[string]*bintree{}},
-		"identities_registry.gotpl": {templatesIdentities_registryGotpl, map[string]*bintree{}},
-		"model.gotpl": {templatesModelGotpl, map[string]*bintree{}},
-		"relationships_registry.gotpl": {templatesRelationships_registryGotpl, map[string]*bintree{}},
+	"templates": &bintree{nil, map[string]*bintree{
+		"README.md": &bintree{templatesReadmeMd, map[string]*bintree{}},
+		"identities_registry.gotpl": &bintree{templatesIdentities_registryGotpl, map[string]*bintree{}},
+		"model.gotpl": &bintree{templatesModelGotpl, map[string]*bintree{}},
+		"relationships_registry.gotpl": &bintree{templatesRelationships_registryGotpl, map[string]*bintree{}},
 	}},
 }}
 
