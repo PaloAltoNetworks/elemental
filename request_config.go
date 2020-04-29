@@ -2,6 +2,8 @@ package elemental
 
 import "net/http"
 
+// Namespacer is the interface that any namespace extraction/injection
+// implementation should support.
 type Namespacer interface {
 	Extract(r *http.Request) (string, error)
 	Inject(r *http.Request, namespace string) error
