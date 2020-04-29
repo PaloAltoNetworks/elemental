@@ -282,9 +282,14 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		clientIP = req.RemoteAddr
 	}
 
+	var namespace string
+	if namespace, err = ExtractNamespace(req); err != nil {
+		return nil, err
+	}
+
 	return &Request{
 		RequestID:            uuid.Must(uuid.NewV4()).String(),
-		Namespace:            req.Header.Get("X-Namespace"),
+		Namespace:            namespace,
 		Recursive:            recursive,
 		Page:                 page,
 		PageSize:             pageSize,
