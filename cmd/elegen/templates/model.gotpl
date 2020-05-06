@@ -651,6 +651,9 @@ var {{ .Spec.Model.EntityName }}AttributesMap = map[string]elemental.AttributeSp
         {{- if .Setter }}
         Setter: {{ .Setter }},
         {{- end }}
+        {{- if .Signed }}
+        Signed: {{ .Signed }},
+        {{- end }}
         {{- if .Stored }}
         Stored: {{ .Stored }},
         {{- end }}
@@ -746,6 +749,9 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
         {{- end }}
         {{- if .Setter }}
         Setter: {{ .Setter }},
+        {{- end }}
+        {{- if .Signed }}
+        Signed: {{ .Signed }},
         {{- end }}
         {{- if .Stored }}
         Stored: {{ .Stored }},
