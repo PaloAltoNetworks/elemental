@@ -305,6 +305,25 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 		SetNamespacer(&defaultNamespacer{})
 	})
 
+	Convey("Given I have a post http request on /lists and the namespacer is nil", t, func() {
+
+		SetNamespacer(nil)
+
+		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
+		req, _ := http.NewRequest(http.MethodPost, "http://server/lists?order=name&order=toto&rlcp1=A&rlcp2=true", buffer)
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			_, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+
+		SetNamespacer(&defaultNamespacer{})
+	})
+
 	Convey("Given I have a post http request on /lists using multipart/form-data", t, func() {
 
 		RegisterSupportedContentType("multipart/form-data")
