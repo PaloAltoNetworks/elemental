@@ -22,6 +22,19 @@ import (
 
 type brokenReader struct{}
 
+// erroredNamespacer is a namespacer that returns for testing.
+type erroredNamespacer struct{}
+
+// Extract implements the corresponding method of the interface.
+func (d *erroredNamespacer) Extract(r *http.Request) (string, error) {
+	return "", fmt.Errorf("Test Error")
+}
+
+// Inject implements the corresponding method of the interface.
+func (d *erroredNamespacer) Inject(r *http.Request, namespace string) error {
+	return fmt.Errorf("Test Error Inject")
+}
+
 func (brokenReader) Read(p []byte) (n int, err error) {
 	return 0, fmt.Errorf("nope")
 }
@@ -269,6 +282,46 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 				So(string(r.Data), ShouldEqual, `{"name": "toto"}`)
 			})
 		})
+	})
+
+	Convey("Given I have a post http request on /lists and the namespacer returns an error", t, func() {
+
+		SetNamespacer(&erroredNamespacer{})
+
+		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
+		req, _ := http.NewRequest(http.MethodPost, "http://server/lists?order=name&order=toto&rlcp1=A&rlcp2=true", buffer)
+		req.Header.Add("Authorization", "user pass")
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			_, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should not be nil", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Error(), ShouldResemble, "Test Error")
+			})
+		})
+
+		SetNamespacer(&defaultNamespacer{})
+	})
+
+	Convey("Given I have a post http request on /lists and the namespacer is nil", t, func() {
+
+		SetNamespacer(nil)
+
+		buffer := bytes.NewBuffer([]byte(`{"name": "toto"}`))
+		req, _ := http.NewRequest(http.MethodPost, "http://server/lists?order=name&order=toto&rlcp1=A&rlcp2=true", buffer)
+
+		Convey("When I create a new elemental Request from it", func() {
+
+			_, err := NewRequestFromHTTPRequest(req, Manager())
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+
+		SetNamespacer(&defaultNamespacer{})
 	})
 
 	Convey("Given I have a post http request on /lists using multipart/form-data", t, func() {
