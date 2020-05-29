@@ -35,12 +35,7 @@ func SetNamespacer(custom Namespacer) {
 	namespacer = custom
 }
 
-// ExtractNamespace extracts the namespace value from an http.Request.
-func ExtractNamespace(r *http.Request) (string, error) {
-	return namespacer.Extract(r)
-}
-
-// InjectNamespace will configure the http request with the right namespace value.
-func InjectNamespace(r *http.Request, namespace string) error {
-	return namespacer.Inject(r, namespace)
+// GetNamespacer retrieves the configured namespacer.
+func GetNamespacer() Namespacer {
+	return namespacer
 }

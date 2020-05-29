@@ -283,7 +283,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	}
 
 	var namespace string
-	if namespace, err = ExtractNamespace(req); err != nil {
+	if namespace, err = GetNamespacer().Extract(req); err != nil {
 		return nil, err
 	}
 
