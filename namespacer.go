@@ -25,7 +25,7 @@ func (d *defaultNamespacer) Inject(r *http.Request, namespace string) error {
 	if r.Header == nil {
 		r.Header = http.Header{}
 	}
-	r.Header.Add("X-Namespace", namespace)
+	r.Header.Set("X-Namespace", namespace)
 	return nil
 }
 
