@@ -147,11 +147,13 @@ func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) s
 		exposedName = attr.ExposedName
 	}
 
-	_, extBSONOmitEmpty := attr.Extensions["bson_omit_empty"]
-
 	json := exposedName
 	msgpack := exposedName
 	bson := strings.ToLower(attr.Name)
+
+	if extname, ok := attr.Extensions["bson_name"].(string); ok {
+		bson = extname
+	}
 
 	if !attr.Exposed {
 		json = "-"
@@ -167,7 +169,7 @@ func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) s
 		bson = "-"
 	} else if attr.Identifier {
 		bson = "-"
-	} else if shadow || extBSONOmitEmpty {
+	} else if shadow || attr.OmitEmpty {
 		bson += ",omitempty"
 	}
 
@@ -197,6 +199,10 @@ func attrToMongoField(set spec.SpecificationSet, shadow bool, attr *spec.Attribu
 	}
 
 	bson := strings.ToLower(attr.Name)
+
+	if extname, ok := attr.Extensions["bson_name"].(string); ok {
+		bson = extname
+	}
 
 	if attr.Identifier {
 		bson = "_id,omitempty"
