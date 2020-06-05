@@ -147,6 +147,8 @@ func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) s
 		exposedName = attr.ExposedName
 	}
 
+	_, extBSONOmitEmpty := attr.Extensions["bson_omit_empty"]
+
 	json := exposedName
 	msgpack := exposedName
 	bson := strings.ToLower(attr.Name)
@@ -165,7 +167,7 @@ func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) s
 		bson = "-"
 	} else if attr.Identifier {
 		bson = "-"
-	} else if shadow {
+	} else if shadow || extBSONOmitEmpty {
 		bson += ",omitempty"
 	}
 
