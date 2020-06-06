@@ -72,6 +72,9 @@ type AttributeSpecification struct {
 	// Availability is reserved for later use.
 	Availability string
 
+	// BSONFieldName is the name of the field that will be used when encoding/decoding the field into Binary JSON format.
+	BSONFieldName string
+
 	// ConvertedName contains the name after local conversion.
 	ConvertedName string
 

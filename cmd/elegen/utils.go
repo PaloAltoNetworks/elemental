@@ -226,6 +226,23 @@ func attrToMongoField(set spec.SpecificationSet, shadow bool, attr *spec.Attribu
 	)
 }
 
+func attrBSONFieldName(attr *spec.Attribute) string {
+
+	if !attr.Stored {
+		panic(fmt.Sprintf("cannot use attrBSONFieldName on a non-stored attribute: %s", attr.Name))
+	}
+
+	if attr.Identifier {
+		return "_id"
+	}
+
+	if override, ok := attr.Extensions["bson_name"].(string); ok {
+		return override
+	}
+
+	return strings.ToLower(attr.Name)
+}
+
 func escapeBackticks(str string) string {
 	return strings.Replace(str, "`", "`+\"`\"+`", -1)
 }

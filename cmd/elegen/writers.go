@@ -30,6 +30,7 @@ var functions = template.FuncMap{
 	"capitalize":                      strings.Title,
 	"join":                            strings.Join,
 	"hasPrefix":                       strings.HasPrefix,
+	"attrBSONFieldName":               attrBSONFieldName,
 	"attrToType":                      attrToType,
 	"attrToField":                     attrToField,
 	"attrToMongoField":                attrToMongoField,
