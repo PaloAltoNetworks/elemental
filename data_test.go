@@ -2045,6 +2045,9 @@ type User struct {
 	// The identifier.
 	ID string `json:"ID" msgpack:"ID" bson:"-" mapstructure:"ID,omitempty"`
 
+	// the object is archived and not deleted.
+	Archived bool `json:"archived" msgpack:"archived" bson:"archived" mapstructure:"archived,omitempty"`
+
 	// The first name.
 	FirstName string `json:"firstName" msgpack:"firstName" bson:"firstname" mapstructure:"firstName,omitempty"`
 
@@ -2102,6 +2105,7 @@ func (o *User) GetBSON() (interface{}, error) {
 	if o.ID != "" {
 		s.ID = bson.ObjectIdHex(o.ID)
 	}
+	s.Archived = o.Archived
 	s.FirstName = o.FirstName
 	s.LastName = o.LastName
 	s.ParentID = o.ParentID
@@ -2125,6 +2129,7 @@ func (o *User) SetBSON(raw bson.Raw) error {
 	}
 
 	o.ID = s.ID.Hex()
+	o.Archived = s.Archived
 	o.FirstName = s.FirstName
 	o.LastName = s.LastName
 	o.ParentID = s.ParentID
@@ -2163,6 +2168,18 @@ func (o *User) String() string {
 	return fmt.Sprintf("<%s:%s>", o.Identity().Name, o.Identifier())
 }
 
+// GetArchived returns the Archived of the receiver.
+func (o *User) GetArchived() bool {
+
+	return o.Archived
+}
+
+// SetArchived sets the property Archived of the receiver using the given value.
+func (o *User) SetArchived(archived bool) {
+
+	o.Archived = archived
+}
+
 // ToSparse returns the sparse version of the model.
 // The returned object will only contain the given fields. No field means entire field set.
 func (o *User) ToSparse(fields ...string) SparseIdentifiable {
@@ -2171,6 +2188,7 @@ func (o *User) ToSparse(fields ...string) SparseIdentifiable {
 		// nolint: goimports
 		return &SparseUser{
 			ID:         &o.ID,
+			Archived:   &o.Archived,
 			FirstName:  &o.FirstName,
 			LastName:   &o.LastName,
 			ParentID:   &o.ParentID,
@@ -2184,6 +2202,8 @@ func (o *User) ToSparse(fields ...string) SparseIdentifiable {
 		switch f {
 		case "ID":
 			sp.ID = &(o.ID)
+		case "archived":
+			sp.Archived = &(o.Archived)
 		case "firstName":
 			sp.FirstName = &(o.FirstName)
 		case "lastName":
@@ -2209,6 +2229,9 @@ func (o *User) Patch(sparse SparseIdentifiable) {
 	so := sparse.(*SparseUser)
 	if so.ID != nil {
 		o.ID = *so.ID
+	}
+	if so.Archived != nil {
+		o.Archived = *so.Archived
 	}
 	if so.FirstName != nil {
 		o.FirstName = *so.FirstName
@@ -2307,6 +2330,8 @@ func (o *User) ValueForAttribute(name string) interface{} {
 	switch name {
 	case "ID":
 		return o.ID
+	case "archived":
+		return o.Archived
 	case "firstName":
 		return o.FirstName
 	case "lastName":
@@ -2338,6 +2363,17 @@ var UserAttributesMap = map[string]AttributeSpecification{
 		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
+	},
+	"Archived": {
+		AllowedChoices: []string{},
+		ConvertedName:  "Archived",
+		Description:    `the object is archived and not deleted.`,
+		Exposed:        true,
+		Getter:         true,
+		Name:           "archived",
+		Setter:         true,
+		Stored:         true,
+		Type:           "boolean",
 	},
 	"FirstName": {
 		AllowedChoices: []string{},
@@ -2420,6 +2456,17 @@ var UserLowerCaseAttributesMap = map[string]AttributeSpecification{
 		ReadOnly:       true,
 		Stored:         true,
 		Type:           "string",
+	},
+	"archived": {
+		AllowedChoices: []string{},
+		ConvertedName:  "Archived",
+		Description:    `the object is archived and not deleted.`,
+		Exposed:        true,
+		Getter:         true,
+		Name:           "archived",
+		Setter:         true,
+		Stored:         true,
+		Type:           "boolean",
 	},
 	"firstname": {
 		AllowedChoices: []string{},
@@ -2552,6 +2599,9 @@ type SparseUser struct {
 	// The identifier.
 	ID *string `json:"ID,omitempty" msgpack:"ID,omitempty" bson:"-" mapstructure:"ID,omitempty"`
 
+	// the object is archived and not deleted.
+	Archived *bool `json:"archived,omitempty" msgpack:"archived,omitempty" bson:"archived,omitempty" mapstructure:"archived,omitempty"`
+
 	// The first name.
 	FirstName *string `json:"firstName,omitempty" msgpack:"firstName,omitempty" bson:"firstname,omitempty" mapstructure:"firstName,omitempty"`
 
@@ -2613,6 +2663,9 @@ func (o *SparseUser) GetBSON() (interface{}, error) {
 	if o.ID != nil {
 		s.ID = bson.ObjectIdHex(*o.ID)
 	}
+	if o.Archived != nil {
+		s.Archived = o.Archived
+	}
 	if o.FirstName != nil {
 		s.FirstName = o.FirstName
 	}
@@ -2647,6 +2700,9 @@ func (o *SparseUser) SetBSON(raw bson.Raw) error {
 
 	id := s.ID.Hex()
 	o.ID = &id
+	if s.Archived != nil {
+		o.Archived = s.Archived
+	}
 	if s.FirstName != nil {
 		o.FirstName = s.FirstName
 	}
@@ -2679,6 +2735,9 @@ func (o *SparseUser) ToPlain() PlainIdentifiable {
 	if o.ID != nil {
 		out.ID = *o.ID
 	}
+	if o.Archived != nil {
+		out.Archived = *o.Archived
+	}
 	if o.FirstName != nil {
 		out.FirstName = *o.FirstName
 	}
@@ -2696,6 +2755,22 @@ func (o *SparseUser) ToPlain() PlainIdentifiable {
 	}
 
 	return out
+}
+
+// GetArchived returns the Archived of the receiver.
+func (o *SparseUser) GetArchived() (out bool) {
+
+	if o.Archived == nil {
+		return
+	}
+
+	return *o.Archived
+}
+
+// SetArchived sets the property Archived of the receiver using the address of the given value.
+func (o *SparseUser) SetArchived(archived bool) {
+
+	o.Archived = &archived
 }
 
 // DeepCopy returns a deep copy if the SparseUser.
@@ -2724,6 +2799,7 @@ func (o *SparseUser) DeepCopyInto(out *SparseUser) {
 
 type mongoAttributesUser struct {
 	ID         bson.ObjectId `bson:"_id,omitempty"`
+	Archived   bool          `bson:"archived"`
 	FirstName  string        `bson:"firstname"`
 	LastName   string        `bson:"lastname"`
 	ParentID   string        `bson:"parentid"`
@@ -2732,6 +2808,7 @@ type mongoAttributesUser struct {
 }
 type mongoAttributesSparseUser struct {
 	ID         bson.ObjectId `bson:"_id,omitempty"`
+	Archived   *bool         `bson:"archived,omitempty"`
 	FirstName  *string       `bson:"firstname,omitempty"`
 	LastName   *string       `bson:"lastname,omitempty"`
 	ParentID   *string       `bson:"parentid,omitempty"`
