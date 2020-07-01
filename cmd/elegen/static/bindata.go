@@ -27,7 +27,7 @@ func bindataRead(data []byte, name string) ([]byte, error) {
 	}
 
 	var buf bytes.Buffer
-	_, err = io.Copy(&buf, gz)
+	_, err = io.Copy(&buf, gz) // #nosec
 	clErr := gz.Close()
 
 	if err != nil {
@@ -126,7 +126,7 @@ func templatesModelGotpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/model.gotpl", size: 32778, mode: os.FileMode(420), modTime: time.Unix(1593557617, 0)}
+	info := bindataFileInfo{name: "templates/model.gotpl", size: 32778, mode: os.FileMode(420), modTime: time.Unix(1593566059, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -249,11 +249,11 @@ type bintree struct {
 	Children map[string]*bintree
 }
 var _bintree = &bintree{nil, map[string]*bintree{
-	"templates": &bintree{nil, map[string]*bintree{
-		"README.md": &bintree{templatesReadmeMd, map[string]*bintree{}},
-		"identities_registry.gotpl": &bintree{templatesIdentities_registryGotpl, map[string]*bintree{}},
-		"model.gotpl": &bintree{templatesModelGotpl, map[string]*bintree{}},
-		"relationships_registry.gotpl": &bintree{templatesRelationships_registryGotpl, map[string]*bintree{}},
+	"templates": {nil, map[string]*bintree{
+		"README.md": {templatesReadmeMd, map[string]*bintree{}},
+		"identities_registry.gotpl": {templatesIdentities_registryGotpl, map[string]*bintree{}},
+		"model.gotpl": {templatesModelGotpl, map[string]*bintree{}},
+		"relationships_registry.gotpl": {templatesRelationships_registryGotpl, map[string]*bintree{}},
 	}},
 }}
 
