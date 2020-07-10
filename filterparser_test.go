@@ -837,7 +837,7 @@ func TestParser_Values_Errors(t *testing.T) {
 
 			Convey("Then there should be an error", func() {
 				So(err, ShouldNotEqual, nil)
-				So(err.Error(), ShouldEqual, "missing parenthese to protect value: hello world")
+				So(err.Error(), ShouldEqual, "missing parentheses to protect value: hello world")
 			})
 		})
 	})
