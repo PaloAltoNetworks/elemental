@@ -28,8 +28,8 @@ const (
 	parserTokenEOF
 	parserTokenWHITESPACE
 	parserTokenWORD
-	parserTokenLEFTPARENTHESE
-	parserTokenRIGHTPARENTHESE
+	parserTokenLEFTPARENTHESIS
+	parserTokenRIGHTPARENTHESIS
 	parserTokenAND
 	parserTokenOR
 	parserTokenQUOTE
@@ -44,8 +44,8 @@ const (
 	parserTokenMATCHES
 	parserTokenTRUE
 	parserTokenFALSE
-	parserTokenLEFTSQUAREPARENTHESE
-	parserTokenRIGHTSQUAREPARENTHESE
+	parserTokenLEFTSQUAREBRACKET
+	parserTokenRIGHTSQUAREBRACKET
 	parserTokenCOMMA
 	parserTokenNOTCONTAINS
 	// parserTokenNOTMATCHES not implemented yet in filters.
@@ -79,14 +79,14 @@ const (
 )
 
 const (
-	runeEOF                   = rune(0)
-	runeLEFTPARENTHESE        = '('
-	runeRIGHTPARENTHESE       = ')'
-	runeQUOTE                 = '"'
-	runeSINGLEQUOTE           = '\''
-	runeLEFTSQUAREPARENTHESE  = '['
-	runeRIGHTSQUAREPARENTHESE = ']'
-	runeCOMMA                 = ','
+	runeEOF                = rune(0)
+	runeLEFTPARENTHESIS    = '('
+	runeRIGHTPARENTHESIS   = ')'
+	runeQUOTE              = '"'
+	runeSINGLEQUOTE        = '\''
+	runeLEFTSQUAREBRACKET  = '['
+	runeRIGHTSQUAREBRACKET = ']'
+	runeCOMMA              = ','
 )
 
 var specialLetters = map[rune]interface{}{
@@ -135,14 +135,14 @@ var (
 	}
 
 	runeToToken = map[rune]parserToken{
-		runeEOF:                   parserTokenEOF,
-		runeLEFTPARENTHESE:        parserTokenLEFTPARENTHESE,
-		runeRIGHTPARENTHESE:       parserTokenRIGHTPARENTHESE,
-		runeQUOTE:                 parserTokenQUOTE,
-		runeSINGLEQUOTE:           parserTokenSINGLEQUOTE,
-		runeLEFTSQUAREPARENTHESE:  parserTokenLEFTSQUAREPARENTHESE,
-		runeRIGHTSQUAREPARENTHESE: parserTokenRIGHTSQUAREPARENTHESE,
-		runeCOMMA:                 parserTokenCOMMA,
+		runeEOF:                parserTokenEOF,
+		runeLEFTPARENTHESIS:    parserTokenLEFTPARENTHESIS,
+		runeRIGHTPARENTHESIS:   parserTokenRIGHTPARENTHESIS,
+		runeQUOTE:              parserTokenQUOTE,
+		runeSINGLEQUOTE:        parserTokenSINGLEQUOTE,
+		runeLEFTSQUAREBRACKET:  parserTokenLEFTSQUAREBRACKET,
+		runeRIGHTSQUAREBRACKET: parserTokenRIGHTSQUAREBRACKET,
+		runeCOMMA:              parserTokenCOMMA,
 	}
 )
 
@@ -182,11 +182,11 @@ func (p *FilterParser) Parse() (*Filter, error) {
 
 	token, literal := p.peekIgnoreWhitespace()
 
-	// The input needs to start with a word, a quote or a left parenthese.
+	// The input needs to start with a word, a quote or a left parenthesis.
 	if token != parserTokenWORD &&
 		token != parserTokenQUOTE &&
 		token != parserTokenSINGLEQUOTE &&
-		token != parserTokenLEFTPARENTHESE {
+		token != parserTokenLEFTPARENTHESIS {
 		return nil, fmt.Errorf("invalid start of expression. found %s", literal)
 	}
 
@@ -199,7 +199,7 @@ func (p *FilterParser) Parse() (*Filter, error) {
 	for {
 		token, literal := p.scanIgnoreWhitespace()
 
-		if token == parserTokenEOF || token == parserTokenRIGHTPARENTHESE {
+		if token == parserTokenEOF || token == parserTokenRIGHTPARENTHESIS {
 			// In case of EOF or ")", we need to finalize the filter.
 
 			switch len(stack) {
@@ -277,7 +277,7 @@ func (p *FilterParser) Parse() (*Filter, error) {
 			continue
 		}
 
-		if token == parserTokenLEFTPARENTHESE {
+		if token == parserTokenLEFTPARENTHESIS {
 			// In case of "(", a subfilter needs to be computed
 			// and stacked to the previously found filters.
 
@@ -431,7 +431,7 @@ func (p *FilterParser) makeFilter(key string, operator parserToken, value interf
 	token, literal := p.peekIgnoreWhitespace()
 	if token != parserTokenAND &&
 		token != parserTokenOR &&
-		token != parserTokenRIGHTPARENTHESE &&
+		token != parserTokenRIGHTPARENTHESIS &&
 		token != parserTokenEOF {
 
 		if token == parserTokenEOF {
@@ -485,7 +485,7 @@ func (p *FilterParser) parseValue() (interface{}, error) {
 		return p.parseStringValue()
 	}
 
-	if token == parserTokenLEFTSQUAREPARENTHESE {
+	if token == parserTokenLEFTSQUAREBRACKET {
 		return p.parseArrayValue()
 	}
 
@@ -542,7 +542,7 @@ func (p *FilterParser) parseExpression(prefix string, regex *regexp.Regexp) (str
 
 	expression := literal
 	token, literal := p.scanIgnoreWhitespace()
-	if token != parserTokenLEFTPARENTHESE {
+	if token != parserTokenLEFTPARENTHESIS {
 		p.unscan()
 		return "", errorInvalidExpression
 	}
@@ -552,12 +552,12 @@ func (p *FilterParser) parseExpression(prefix string, regex *regexp.Regexp) (str
 		token, literal = p.scan()
 		expression += literal
 
-		if token == parserTokenLEFTPARENTHESE ||
+		if token == parserTokenLEFTPARENTHESIS ||
 			token == parserTokenEOF {
 			return "", errorInvalidExpression
 		}
 
-		if token == parserTokenRIGHTPARENTHESE {
+		if token == parserTokenRIGHTPARENTHESIS {
 			break
 		}
 	}
@@ -656,7 +656,7 @@ func (p *FilterParser) parseStringValue() (string, error) {
 	case parserTokenQUOTE, parserTokenSINGLEQUOTE:
 		return "", fmt.Errorf("missing quote before the value: %s", literal)
 	case parserTokenWORD:
-		return "", fmt.Errorf("missing parenthese to protect value: %s %s", literal, next)
+		return "", fmt.Errorf("missing parentheses to protect value: %s %s", literal, next)
 	}
 
 	return literal, nil
@@ -667,7 +667,7 @@ func (p *FilterParser) parseArrayValue() ([]interface{}, error) {
 	p.unscan()
 
 	token, literal := p.scanIgnoreWhitespace()
-	if token != parserTokenLEFTSQUAREPARENTHESE {
+	if token != parserTokenLEFTSQUAREBRACKET {
 		return nil, fmt.Errorf("invalid start of list. found %s", literal)
 	}
 
@@ -678,12 +678,12 @@ func (p *FilterParser) parseArrayValue() ([]interface{}, error) {
 		token, literal := p.scanIgnoreWhitespace()
 
 		if token == parserTokenEOF ||
-			token == parserTokenLEFTPARENTHESE ||
-			token == parserTokenRIGHTPARENTHESE {
+			token == parserTokenLEFTPARENTHESIS ||
+			token == parserTokenRIGHTPARENTHESIS {
 			return nil, fmt.Errorf("invalid end of array. found %s", literal)
 		}
 
-		if token == parserTokenRIGHTSQUAREPARENTHESE {
+		if token == parserTokenRIGHTSQUAREBRACKET {
 			break
 		}
 
