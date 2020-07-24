@@ -126,8 +126,12 @@ func TestMakeStreamEncoderDecoder(t *testing.T) {
 		encoder, eclose := MakeStreamEncoder(EncodingTypeJSON, data)
 		defer eclose()
 
-		encoder(&List{Name: "1"})
-		encoder(&List{Name: "2"})
+		if err := encoder(&List{Name: "1"}); err != nil {
+			panic(err)
+		}
+		if err := encoder(&List{Name: "2"}); err != nil {
+			panic(err)
+		}
 
 		decoder, close := MakeStreamDecoder(EncodingTypeJSON, data)
 		defer close()
@@ -172,8 +176,12 @@ func TestMakeStreamEncoderDecoder(t *testing.T) {
 		encoder, eclose := MakeStreamEncoder(EncodingTypeMSGPACK, data)
 		defer eclose()
 
-		encoder(&List{Name: "1"})
-		encoder(&List{Name: "2"})
+		if err := encoder(&List{Name: "1"}); err != nil {
+			panic(err)
+		}
+		if err := encoder(&List{Name: "2"}); err != nil {
+			panic(err)
+		}
 
 		decoder, close := MakeStreamDecoder(EncodingTypeMSGPACK, data)
 		defer close()
