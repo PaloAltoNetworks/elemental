@@ -14,6 +14,7 @@ package elemental
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"mime"
 	"net/http"
 	"reflect"
@@ -99,36 +100,30 @@ func init() {
 	// If you need to understand all of this, go there http://ugorji.net/blog/go-codec-primer
 	// But you should not need to touch that.
 	jsonHandle.Canonical = true
-	msgpackHandle.Canonical = true
-	jsonHandle.MapType = reflect.ValueOf(map[string]interface{}{}).Type()
-	// jsonHandle.MapValueReset = true
-	// jsonHandle.SliceElementReset = true
-	// jsonHandle.InterfaceReset = true
+	jsonHandle.MapType = reflect.TypeOf(map[string]interface{}(nil))
 
-	msgpackHandle.WriteExt = true
 	msgpackHandle.Canonical = true
-	msgpackHandle.MapType = reflect.ValueOf(map[string]interface{}{}).Type()
+	msgpackHandle.WriteExt = true
+	msgpackHandle.MapType = reflect.TypeOf(map[string]interface{}(nil))
 	msgpackHandle.TypeInfos = codec.NewTypeInfos([]string{"msgpack"})
-	// msgpackHandle.MapValueReset = true
-	// msgpackHandle.SliceElementReset = true
-	// msgpackHandle.InterfaceReset = true
 }
 
 // Decode decodes the given data using an appropriate decoder chosen
-// from the given contentType.
+// from the given encoding.
 func Decode(encoding EncodingType, data []byte, dest interface{}) error {
 
-	var dec *codec.Decoder
+	var pool *sync.Pool
 
 	switch encoding {
 	case EncodingTypeMSGPACK:
-		dec = msgpackDecodersPool.Get().(*codec.Decoder)
-		defer msgpackDecodersPool.Put(dec)
+		pool = &msgpackDecodersPool
 	default:
-		dec = jsonDecodersPool.Get().(*codec.Decoder)
-		defer jsonDecodersPool.Put(dec)
+		pool = &jsonDecodersPool
 		encoding = EncodingTypeJSON
 	}
+
+	dec := pool.Get().(*codec.Decoder)
+	defer pool.Put(dec)
 
 	dec.Reset(bytes.NewBuffer(data))
 
@@ -137,6 +132,54 @@ func Decode(encoding EncodingType, data []byte, dest interface{}) error {
 	}
 
 	return nil
+}
+
+// MakeStreamDecoder returns a function that can be used to decode a stream from the
+// given reader using the given encoding.
+//
+// This function returns the decoder function that can be called until it returns an
+// io.EOF error, indicating the stream is over, and a dispose function that will
+// put back the decoder in the memory pool.
+// The dispose function will be called automatically when the decoding is over,
+// but not on a single decoding error.
+// In any case, the dispose function should be always called, in a defer for example.
+func MakeStreamDecoder(encoding EncodingType, reader io.Reader) (func(dest interface{}) error, func()) {
+
+	var pool *sync.Pool
+
+	switch encoding {
+	case EncodingTypeMSGPACK:
+		pool = &msgpackDecodersPool
+	default:
+		pool = &jsonDecodersPool
+	}
+
+	dec := pool.Get().(*codec.Decoder)
+	dec.Reset(reader)
+
+	clean := func() {
+		if pool != nil {
+			pool.Put(dec)
+			pool = nil
+		}
+	}
+
+	return func(dest interface{}) error {
+
+			if err := dec.Decode(dest); err != nil {
+
+				if err == io.EOF {
+					clean()
+					return err
+				}
+
+				return fmt.Errorf("unable to decode %s: %s", encoding, err.Error())
+			}
+
+			return nil
+		}, func() {
+			clean()
+		}
 }
 
 // Encode encodes the given object using an appropriate encoder chosen
