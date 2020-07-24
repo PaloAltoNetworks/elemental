@@ -12,7 +12,9 @@
 package elemental
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"net/http"
 	"testing"
 
@@ -114,6 +116,104 @@ func TestEncodeDecode(t *testing.T) {
 
 	test(EncodingTypeJSON)
 	test(EncodingTypeMSGPACK)
+}
+
+func TestMakeStreamEncoderDecoder(t *testing.T) {
+
+	Convey("Given I have a bunch of json lines and a stream decoder", t, func() {
+
+		data := bytes.NewBuffer(nil)
+		encoder, eclose := MakeStreamEncoder(EncodingTypeJSON, data)
+		defer eclose()
+
+		if err := encoder(&List{Name: "1"}); err != nil {
+			panic(err)
+		}
+		if err := encoder(&List{Name: "2"}); err != nil {
+			panic(err)
+		}
+
+		decoder, close := MakeStreamDecoder(EncodingTypeJSON, data)
+		defer close()
+
+		Convey("Decoding once should work", func() {
+
+			l := NewList()
+			err := decoder(l)
+
+			So(err, ShouldBeNil)
+			So(l.Name, ShouldEqual, "1")
+
+			Convey("Decoding a second time should work", func() {
+
+				l := NewList()
+				err := decoder(l)
+
+				So(err, ShouldBeNil)
+				So(l.Name, ShouldEqual, "2")
+
+				Convey("Decoding a third time should return a io.EOF", func() {
+
+					l := NewList()
+					err := decoder(l)
+
+					So(err, ShouldNotBeNil)
+
+					// There seems to be a bug in the the codec library
+					// where json handle fails to return the EOF
+					// See: https://github.com/ugorji/go/issues/334
+
+					// So(err, ShouldEqual, io.EOF)
+					So(l.Name, ShouldEqual, "")
+				})
+			})
+		})
+	})
+
+	Convey("Given I have a bunch of msgpack lines and a stream decoder", t, func() {
+
+		data := bytes.NewBuffer(nil)
+		encoder, eclose := MakeStreamEncoder(EncodingTypeMSGPACK, data)
+		defer eclose()
+
+		if err := encoder(&List{Name: "1"}); err != nil {
+			panic(err)
+		}
+		if err := encoder(&List{Name: "2"}); err != nil {
+			panic(err)
+		}
+
+		decoder, close := MakeStreamDecoder(EncodingTypeMSGPACK, data)
+		defer close()
+
+		Convey("Decoding once should work", func() {
+
+			l := NewList()
+			err := decoder(l)
+
+			So(err, ShouldBeNil)
+			So(l.Name, ShouldEqual, "1")
+
+			Convey("Decoding a second time should work", func() {
+
+				l := NewList()
+				err := decoder(l)
+
+				So(err, ShouldBeNil)
+				So(l.Name, ShouldEqual, "2")
+
+				Convey("Decoding a third time should return a io.EOF", func() {
+
+					l := NewList()
+					err := decoder(l)
+
+					So(err, ShouldNotBeNil)
+					So(err, ShouldEqual, io.EOF)
+					So(l.Name, ShouldEqual, "")
+				})
+			})
+		})
+	})
 }
 
 func TestConvert(t *testing.T) {
