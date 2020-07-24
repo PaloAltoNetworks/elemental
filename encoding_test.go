@@ -118,17 +118,18 @@ func TestEncodeDecode(t *testing.T) {
 	test(EncodingTypeMSGPACK)
 }
 
-func TestMakeStreamDecoder(t *testing.T) {
+func TestMakeStreamEncoderDecoder(t *testing.T) {
 
 	Convey("Given I have a bunch of json lines and a stream decoder", t, func() {
 
-		o1 := &List{Name: "1"}
-		lst1, _ := Encode(EncodingTypeJSON, o1)
-		o2 := &List{Name: "2"}
-		lst2, _ := Encode(EncodingTypeJSON, o2)
-		data := append(lst1, lst2...)
+		data := bytes.NewBuffer(nil)
+		encoder, eclose := MakeStreamEncoder(EncodingTypeJSON, data)
+		defer eclose()
 
-		decoder, close := MakeStreamDecoder(EncodingTypeJSON, bytes.NewBuffer(data))
+		encoder(&List{Name: "1"})
+		encoder(&List{Name: "2"})
+
+		decoder, close := MakeStreamDecoder(EncodingTypeJSON, data)
 		defer close()
 
 		Convey("Decoding once should work", func() {
@@ -167,13 +168,14 @@ func TestMakeStreamDecoder(t *testing.T) {
 
 	Convey("Given I have a bunch of msgpack lines and a stream decoder", t, func() {
 
-		o1 := &List{Name: "1"}
-		lst1, _ := Encode(EncodingTypeMSGPACK, o1)
-		o2 := &List{Name: "2"}
-		lst2, _ := Encode(EncodingTypeMSGPACK, o2)
-		data := append(lst1, lst2...)
+		data := bytes.NewBuffer(nil)
+		encoder, eclose := MakeStreamEncoder(EncodingTypeMSGPACK, data)
+		defer eclose()
 
-		decoder, close := MakeStreamDecoder(EncodingTypeMSGPACK, bytes.NewBuffer(data))
+		encoder(&List{Name: "1"})
+		encoder(&List{Name: "2"})
+
+		decoder, close := MakeStreamDecoder(EncodingTypeMSGPACK, data)
 		defer close()
 
 		Convey("Decoding once should work", func() {

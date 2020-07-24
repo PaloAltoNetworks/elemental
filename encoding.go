@@ -134,6 +134,37 @@ func Decode(encoding EncodingType, data []byte, dest interface{}) error {
 	return nil
 }
 
+// Encode encodes the given object using an appropriate encoder chosen
+// from the given acceptType.
+func Encode(encoding EncodingType, obj interface{}) ([]byte, error) {
+
+	if obj == nil {
+		return nil, fmt.Errorf("encode received a nil object")
+	}
+
+	var pool *sync.Pool
+
+	switch encoding {
+	case EncodingTypeMSGPACK:
+		pool = &msgpackEncodersPool
+	default:
+		pool = &jsonEncodersPool
+		encoding = EncodingTypeJSON
+	}
+
+	enc := pool.Get().(*codec.Encoder)
+	defer pool.Put(enc)
+
+	buf := bytes.NewBuffer(nil)
+	enc.Reset(buf)
+
+	if err := enc.Encode(obj); err != nil {
+		return nil, fmt.Errorf("unable to encode %s: %s", encoding, err.Error())
+	}
+
+	return buf.Bytes(), nil
+}
+
 // MakeStreamDecoder returns a function that can be used to decode a stream from the
 // given reader using the given encoding.
 //
@@ -182,34 +213,43 @@ func MakeStreamDecoder(encoding EncodingType, reader io.Reader) (func(dest inter
 		}
 }
 
-// Encode encodes the given object using an appropriate encoder chosen
-// from the given acceptType.
-func Encode(encoding EncodingType, obj interface{}) ([]byte, error) {
+// MakeStreamEncoder returns a function that can be user en encode given data
+// into the given io.Writer using the given encoding.
+//
+// It also returns a function must be called once the encoding procedure
+// is complete, so the internal encoders can be put back into the shared
+// memory pools.
+func MakeStreamEncoder(encoding EncodingType, writer io.Writer) (func(obj interface{}) error, func()) {
 
-	if obj == nil {
-		return nil, fmt.Errorf("encode received a nil object")
-	}
-
-	var enc *codec.Encoder
+	var pool *sync.Pool
 
 	switch encoding {
 	case EncodingTypeMSGPACK:
-		enc = msgpackEncodersPool.Get().(*codec.Encoder)
-		defer msgpackEncodersPool.Put(enc)
+		pool = &msgpackEncodersPool
 	default:
-		enc = jsonEncodersPool.Get().(*codec.Encoder)
-		defer jsonEncodersPool.Put(enc)
-		encoding = EncodingTypeJSON
+		pool = &jsonEncodersPool
 	}
 
-	buf := bytes.NewBuffer(nil)
-	enc.Reset(buf)
+	enc := pool.Get().(*codec.Encoder)
+	enc.Reset(writer)
 
-	if err := enc.Encode(obj); err != nil {
-		return nil, fmt.Errorf("unable to encode %s: %s", encoding, err.Error())
+	clean := func() {
+		if pool != nil {
+			pool.Put(enc)
+			pool = nil
+		}
 	}
 
-	return buf.Bytes(), nil
+	return func(dest interface{}) error {
+
+			if err := enc.Encode(dest); err != nil {
+				return fmt.Errorf("unable to encode %s: %s", encoding, err.Error())
+			}
+
+			return nil
+		}, func() {
+			clean()
+		}
 }
 
 // Convert converts from one EncodingType to another
