@@ -151,6 +151,10 @@ func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) s
 	msgpack := exposedName
 	bson := strings.ToLower(attr.Name)
 
+	if extname, ok := attr.Extensions["bson_name"].(string); ok {
+		bson = extname
+	}
+
 	if !attr.Exposed {
 		json = "-"
 		msgpack = "-"
@@ -165,7 +169,7 @@ func attrToField(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) s
 		bson = "-"
 	} else if attr.Identifier {
 		bson = "-"
-	} else if shadow {
+	} else if shadow || attr.OmitEmpty {
 		bson += ",omitempty"
 	}
 
@@ -196,6 +200,10 @@ func attrToMongoField(set spec.SpecificationSet, shadow bool, attr *spec.Attribu
 
 	bson := strings.ToLower(attr.Name)
 
+	if extname, ok := attr.Extensions["bson_name"].(string); ok {
+		bson = extname
+	}
+
 	if attr.Identifier {
 		bson = "_id,omitempty"
 	} else if shadow || attr.OmitEmpty {
@@ -216,6 +224,23 @@ func attrToMongoField(set spec.SpecificationSet, shadow bool, attr *spec.Attribu
 		convertedType,
 		bson,
 	)
+}
+
+func attrBSONFieldName(attr *spec.Attribute) string {
+
+	if !attr.Stored {
+		panic(fmt.Sprintf("cannot use attrBSONFieldName on a non-stored attribute: %s", attr.Name))
+	}
+
+	if attr.Identifier {
+		return "_id"
+	}
+
+	if override, ok := attr.Extensions["bson_name"].(string); ok {
+		return override
+	}
+
+	return strings.ToLower(attr.Name)
 }
 
 func escapeBackticks(str string) string {
