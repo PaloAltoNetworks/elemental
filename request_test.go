@@ -56,7 +56,7 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 		req, err := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
 		req.Header.Set("X-Namespace", "ns")
-		req.Header.Set("X-Forwarded-for", "1.1.1.1")
+		req.Header.Set("X-Forwarded-for", "1.1.1.1, 5.5.5.5, 10.10.10.10")
 		req.Header.Set("X-Real-IP", "2.2.2.2")
 		req.Header.Set("Accept", "application/msgpack")
 		req.Header.Set("Content-Type", "application/json")

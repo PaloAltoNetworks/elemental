@@ -274,8 +274,10 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	}
 
 	var clientIP string
-	if ip := req.Header.Get("X-Forwarded-For"); ip != "" {
-		clientIP = ip
+	// Parse the Forwarded header as they can be in form
+	// X-Forwarded-For: <original_client>, [proxy1], [proxy2>
+	if ip := strings.Split(req.Header.Get("X-Forwarded-For"), ",")[0]; ip != "" {
+		clientIP = strings.TrimSpace(ip)
 	} else if ip := req.Header.Get("X-Real-IP"); ip != "" {
 		clientIP = ip
 	} else {
