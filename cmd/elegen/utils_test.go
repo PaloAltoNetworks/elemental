@@ -158,3 +158,71 @@ func Test_attributeTypeConverter(t *testing.T) {
 		})
 	}
 }
+
+func Test_attrBSONFieldName(t *testing.T) {
+
+	testCases := map[string]struct {
+		attr        *spec.Attribute
+		expected    string
+		shouldPanic bool
+	}{
+		"basic - no override": {
+			attr: &spec.Attribute{
+				Name:       "SomeAttribute",
+				Stored:     true,
+				Identifier: false,
+				Extensions: nil,
+			},
+			expected:    "someattribute",
+			shouldPanic: false,
+		},
+		"basic - with override": {
+			attr: &spec.Attribute{
+				Name:       "SomeAttribute",
+				Stored:     true,
+				Identifier: false,
+				Extensions: map[string]interface{}{
+					"bson_name": "sa",
+				},
+			},
+			expected:    "sa",
+			shouldPanic: false,
+		},
+		"identifier": {
+			attr: &spec.Attribute{
+				Name:       "SomeAttribute",
+				Stored:     true,
+				Identifier: true,
+				Extensions: nil,
+			},
+			expected:    "_id",
+			shouldPanic: false,
+		},
+		"should panic if attribute is not stored": {
+			attr: &spec.Attribute{
+				Name:       "SomeAttribute",
+				Stored:     false,
+				Identifier: true,
+				Extensions: nil,
+			},
+			expected:    "",
+			shouldPanic: true,
+		},
+	}
+
+	for description, tc := range testCases {
+		t.Run(description, func(t *testing.T) {
+			defer func() {
+				if err := recover(); err != nil && !tc.shouldPanic {
+					t.Errorf("did not expect a panic, but one occurred: %s", err)
+				}
+			}()
+			if actual := attrBSONFieldName(tc.attr); actual != tc.expected {
+				t.Errorf("expected: '%s'\n"+
+					"actual: '%s'\n",
+					tc.expected,
+					actual)
+			}
+		})
+	}
+}
