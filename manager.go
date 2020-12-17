@@ -52,4 +52,7 @@ type ModelManager interface {
 
 	// Relationships return the model's elemental.RelationshipsRegistry.
 	Relationships() RelationshipsRegistry
+
+	// AllIdentities return the list of all existing identities.
+	AllIdentities() []Identity
 }
