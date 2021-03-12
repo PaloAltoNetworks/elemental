@@ -99,37 +99,51 @@ func (p Parameters) Validate(r ParametersRequirement) error {
 		return nil
 	}
 
-	var innerMatch int
-	var outerMatch int
+	var andMatch int
+	var orMatch int
+	var match int
 
-	for _, clauses := range r.match {
+	for _, ors := range r.match {
 
-		for _, ands := range clauses {
+		orMatch = 0
+		for _, ands := range ors {
 
-			innerMatch = 0
-
+			andMatch = 0
 			for _, k := range ands {
 
 				if _, ok := p[k]; ok && len(p[k].values) > 0 {
-					innerMatch++
+					andMatch++
 				}
 			}
 
-			if innerMatch == len(ands) {
-				outerMatch++
+			// If we matched all the and clauses, we increment
+			// the or matching counter.
+			if andMatch == len(ands) {
+				orMatch++
 			}
+		}
+
+		// If we matched at least one or clause, we increment
+		// the total matching counter.
+		if orMatch >= 1 {
+			match++
 		}
 	}
 
-	if outerMatch == len(r.match) {
-		return nil
+	// If not all the sub requirements are met, we error.
+	if match != len(r.match) {
+		return NewError("Bad Request", fmt.Sprintf("Missing Required parameters: `%s`", r.String()), "elemental", http.StatusBadRequest)
 	}
 
-	return NewError("Bad Request", fmt.Sprintf("Missing Required parameters: `%s`", r.String()), "elemental", http.StatusBadRequest)
+	return nil
 }
 
-// A ParametersRequirement represents a list of ands of list of ors
+// A ParametersRequirement represents a list of ors of ands
 // that must be passed together.
+//
+// For example:
+//  {{{"a"}, {"b", "c"}}} requires a or (b and c)
+//  {{{"a"}, {"b", "c"}, {{"d"}}} requires (a or (b and c)) and (d))
 type ParametersRequirement struct {
 	match [][][]string
 }
