@@ -736,6 +736,103 @@ func TestParameters_Requirements(t *testing.T) {
 			})
 		})
 	})
+
+	Convey("Given I have a complex multiple parameter requirement", t, func() {
+
+		req := NewParametersRequirement(
+			[][][]string{
+				{
+					{"er"},
+					{"sr"},
+					{"sr", "er"},
+					{"sr", "ea"},
+					{"sa", "er"},
+					{"sa", "ea"},
+				},
+			})
+
+		Convey("When I call Validate params er", func() {
+
+			params := Parameters{
+				"er": NewParameter(ParameterTypeString, "a"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+
+		Convey("When I call Validate params sr", func() {
+
+			params := Parameters{
+				"sr": NewParameter(ParameterTypeString, "a"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+
+		Convey("When I call Validate params sr and er", func() {
+
+			params := Parameters{
+				"sr": NewParameter(ParameterTypeString, "a"),
+				"er": NewParameter(ParameterTypeString, "a"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+
+		Convey("When I call Validate params sr and ea", func() {
+
+			params := Parameters{
+				"sr": NewParameter(ParameterTypeString, "a"),
+				"ea": NewParameter(ParameterTypeString, "a"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+
+		Convey("When I call Validate params sa and er", func() {
+
+			params := Parameters{
+				"sa": NewParameter(ParameterTypeString, "a"),
+				"er": NewParameter(ParameterTypeString, "a"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+
+		Convey("When I call Validate params sa and ea", func() {
+
+			params := Parameters{
+				"sa": NewParameter(ParameterTypeString, "a"),
+				"ea": NewParameter(ParameterTypeString, "a"),
+			}
+
+			err := params.Validate(req)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+		})
+	})
 }
 
 func TestParameter_DefaultValue(t *testing.T) {
