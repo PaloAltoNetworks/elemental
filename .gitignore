@@ -13,3 +13,4 @@ cmd/elegen/build
 artifacts
 profile.out
 dist
+/scripts/codecov
