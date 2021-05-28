@@ -9,7 +9,6 @@ require (
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 	github.com/gofrs/uuid v3.3.0+incompatible
 	github.com/golang/mock v1.4.4
-	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/mitchellh/copystructure v1.2.0
 	github.com/pelletier/go-toml v1.6.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
@@ -23,7 +22,7 @@ require (
 	github.com/xanzy/ssh-agent v0.3.0 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	go.uber.org/zap v1.15.0
+	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
 	golang.org/x/tools v0.0.0-20200731060945-b5fad4ed8dd6
-	gopkg.in/src-d/go-git.v4 v4.13.1 // indirect
 )
