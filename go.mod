@@ -17,7 +17,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.0
-	github.com/ugorji/go/codec v1.1.7
+	github.com/ugorji/go/codec v1.2.6
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	go.uber.org/zap v1.15.0
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c

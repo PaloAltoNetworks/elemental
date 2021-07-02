@@ -54,6 +54,35 @@ func TestEncodeDecode(t *testing.T) {
 			})
 		})
 
+		Convey(fmt.Sprintf("Given I encode an object with special character into the request using encoding %s", encoding), t, func() {
+
+			o := &List{ID: "2", Name: "�"}
+
+			data, err := Encode(encoding, o)
+
+			Convey("Then err should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("Then data should not be nil", func() {
+				So(len(data), ShouldNotBeEmpty)
+			})
+
+			Convey("When I decode it", func() {
+				o1 := &List{}
+
+				err := Decode(encoding, data, o1)
+
+				Convey("Then err should be nil", func() {
+					So(err, ShouldBeNil)
+				})
+
+				Convey("Then o1 should resemble to o", func() {
+					So(o1, ShouldResemble, o)
+				})
+			})
+		})
+
 		Convey(fmt.Sprintf("Given I encode a list of objects into the request using encoding %s", encoding), t, func() {
 
 			o := ListsList{
