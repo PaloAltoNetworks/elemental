@@ -18,8 +18,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.0
-	github.com/ugorji/go/codec v1.1.7
-	github.com/xanzy/ssh-agent v0.3.0 // indirect
+	github.com/ugorji/go/codec v1.2.4
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
