@@ -164,13 +164,33 @@ func Test_ResetSecretAttributesValues(t *testing.T) {
 
 		s := &struct{}{}
 
-		Convey("When I call ResetSecretAttributesValues", func() {
+		Convey("Then it should not panic", func() {
+			So(func() { ResetSecretAttributesValues(s) }, ShouldNotPanic)
+		})
+	})
 
-			ResetSecretAttributesValues(s)
+	Convey("Given I have some nil pointer struct", t, func() {
 
-			Convey("Then it should not panic", func() {
-				So(func() { ResetSecretAttributesValues(s) }, ShouldNotPanic)
-			})
+		var s *struct{}
+
+		Convey("Then it should not panic", func() {
+			So(func() { ResetSecretAttributesValues(s) }, ShouldNotPanic)
+		})
+	})
+
+	Convey("Given I have some nil value", t, func() {
+
+		Convey("Then it should not panic", func() {
+			So(func() { ResetSecretAttributesValues(nil) }, ShouldNotPanic)
+		})
+	})
+
+	Convey("Given I have some nil pointer identifiable", t, func() {
+
+		var s *List
+
+		Convey("Then it should not panic", func() {
+			So(func() { ResetSecretAttributesValues(s) }, ShouldNotPanic)
 		})
 	})
 
