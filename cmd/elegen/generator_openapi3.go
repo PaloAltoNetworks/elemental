@@ -127,7 +127,7 @@ func (sc *openapi3Converter) convertAttribute(attr *spec.Attribute) (*openapi3.S
 	return nil, fmt.Errorf("unhandled attribute type: '%s'", attr.Type)
 }
 
-func generatorSwagger(sets []spec.SpecificationSet, out string) error {
+func generatorOpenapi3(sets []spec.SpecificationSet, out string) error {
 	set := sets[0]
 	converter := newOpenapi3Converter(set)
 	doc, err := converter.do()
@@ -137,4 +137,9 @@ func generatorSwagger(sets []spec.SpecificationSet, out string) error {
 	// TODO: write doc to file
 	fmt.Println(doc)
 	return nil
+}
+
+func _() {
+	// temporary measure to make linter happy before we actually use the function
+	_ = generatorOpenapi3
 }
