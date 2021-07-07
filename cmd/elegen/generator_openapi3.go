@@ -128,6 +128,7 @@ func (sc *openapi3Converter) convertAttribute(attr *spec.Attribute) (*openapi3.S
 }
 
 func generatorOpenapi3(sets []spec.SpecificationSet, out string) error {
+	_ = out // make linter happy for now
 	set := sets[0]
 	converter := newOpenapi3Converter(set)
 	doc, err := converter.do()
