@@ -6,6 +6,7 @@ require go.aporeto.io/regolithe v1.50.1-0.20210426235633-b469f0c145a4
 
 require (
 	github.com/araddon/dateparse v0.0.0-20200409225146-d820a6159ab1
+	github.com/getkin/kin-openapi v0.65.0 // indirect
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 	github.com/gofrs/uuid v3.3.0+incompatible
 	github.com/golang/mock v1.4.4
