@@ -140,7 +140,4 @@ func generatorOpenapi3(sets []spec.SpecificationSet, out string) error {
 	return nil
 }
 
-func _() {
-	// temporary measure to make linter happy before we actually use the function
-	_ = generatorOpenapi3
-}
+var _ = generatorOpenapi3
