@@ -24,7 +24,20 @@ func (sc *openapi3Converter) convertModel(s spec.Specification) (*openapi3.Schem
 	return openapi3.NewSchemaRef("", schema), nil
 }
 
-func (sc *openapi3Converter) convertAttribute(attr *spec.Attribute) (*openapi3.SchemaRef, error) {
+func (sc *openapi3Converter) convertAttribute(attr *spec.Attribute) (schemaRef *openapi3.SchemaRef, err error) {
+
+	defer func() {
+		if schemaRef == nil || schemaRef.Value == nil {
+			return
+		}
+		s := schemaRef.Value
+		s.Description = attr.Description
+		s.Default = attr.DefaultValue
+		s.Example = attr.ExampleValue
+		s.Nullable = !attr.Required
+		s.Deprecated = attr.Deprecated
+		s.ReadOnly = attr.ReadOnly
+	}()
 
 	switch attr.Type {
 
