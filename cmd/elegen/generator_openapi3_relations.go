@@ -22,8 +22,7 @@ func (sc *openapi3Converter) convertRelationsForRootSpec(relations []*spec.Relat
 			Post: sc.convertRelationActionToPost(relation.Create, relation.RestName),
 		}
 
-		relatedResourceName := sc.inSpecSet.Specification(relation.RestName).Model().ResourceName
-		uri := fmt.Sprintf("/%s", relatedResourceName)
+		uri := "/" + sc.inSpecSet.Specification(relation.RestName).Model().ResourceName
 		paths[uri] = pathItem
 	}
 
