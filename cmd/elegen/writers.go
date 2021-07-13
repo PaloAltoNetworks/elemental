@@ -57,6 +57,19 @@ func writeModel(set spec.SpecificationSet, name string, outFolder string, public
 
 	s := set.Specification(name)
 
+	bnames := map[string]struct{}{}
+	for _, attr := range s.Attributes(s.LatestAttributesVersion()) {
+		item, ok := attr.Extensions["bson_name"]
+		if !ok {
+			continue
+		}
+		bname := item.(string)
+		if _, ok = bnames[bname]; ok {
+			return fmt.Errorf("invalid bson name. '%s' reused", bname)
+		}
+		bnames[bname] = struct{}{}
+	}
+
 	if s.Model().Private && publicMode {
 		return nil
 	}
