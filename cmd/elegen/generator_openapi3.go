@@ -47,7 +47,8 @@ func (sc *openapi3Converter) Do() (string, error) {
 func (sc *openapi3Converter) processSpec(s spec.Specification) error {
 
 	if s.Model().IsRoot {
-		for path, item := range sc.convertRelationsForRootSpec(s.Relations()) {
+		pathItems := sc.convertRelationsForRootSpec(s.Relations())
+		for path, item := range pathItems {
 			sc.outRootDoc.Paths[path] = item
 		}
 		// we don't care about root model's relations, so we are done for root spec
