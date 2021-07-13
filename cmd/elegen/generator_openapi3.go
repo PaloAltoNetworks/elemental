@@ -8,6 +8,8 @@ import (
 	"go.aporeto.io/regolithe/spec"
 )
 
+const paramNameID = "id"
+
 type openapi3Converter struct {
 	inSpecSet  spec.SpecificationSet
 	outRootDoc openapi3.T
@@ -27,111 +29,55 @@ func newOpenapi3Converter(inSpecSet spec.SpecificationSet) *openapi3Converter {
 	return sc
 }
 
-func (sc *openapi3Converter) do() (string, error) {
+func (sc *openapi3Converter) Do() (string, error) {
 
 	for _, s := range sc.inSpecSet.Specifications() {
-		model, err := sc.convertModel(s)
-		if err != nil {
-			return "", fmt.Errorf("spec model '%s': %w", s.Model().RestName, err)
+		if err := sc.processSpec(s); err != nil {
+			return "", fmt.Errorf("unable to to process spec: %w", err)
 		}
-		sc.outRootDoc.Components.Schemas[s.Model().RestName] = model
 	}
 
-	bytes, err := json.MarshalIndent(sc.outRootDoc, "", "  ")
+	doc, err := json.MarshalIndent(sc.outRootDoc, "", "  ")
 	if err != nil {
 		return "", fmt.Errorf("marshaling openapi3 document: %w", err)
 	}
-	return string(bytes), nil
+	return string(doc), nil
 }
 
-func (sc *openapi3Converter) convertModel(s spec.Specification) (*openapi3.SchemaRef, error) {
+func (sc *openapi3Converter) processSpec(s spec.Specification) error {
 
-	schema := openapi3.NewObjectSchema()
-	schema.Properties = make(map[string]*openapi3.SchemaRef)
-
-	for _, specAttr := range s.Attributes("") { // TODO: figure out versions
-		attr, err := sc.convertAttribute(specAttr)
-		if err != nil {
-			return nil, fmt.Errorf("attribute '%s': %w", specAttr.Name, err)
+	if s.Model().IsRoot {
+		for path, item := range sc.convertRelationsForRootSpec(s.Relations()) {
+			sc.outRootDoc.Paths[path] = item
 		}
-		schema.Properties[specAttr.Name] = attr
+		// we don't care about root model's relations, so we are done for root spec
+		return nil
 	}
 
-	return openapi3.NewSchemaRef("", schema), nil
-}
+	schema, err := sc.convertModel(s)
+	if err != nil {
+		return fmt.Errorf("model '%s': %w", s.Model().RestName, err)
+	}
+	sc.outRootDoc.Components.Schemas[s.Model().RestName] = schema
 
-func (sc *openapi3Converter) convertAttribute(attr *spec.Attribute) (*openapi3.SchemaRef, error) {
-
-	switch attr.Type {
-
-	case spec.AttributeTypeString:
-		return openapi3.NewStringSchema().NewRef(), nil
-
-	case spec.AttributeTypeInt:
-		return openapi3.NewIntegerSchema().NewRef(), nil
-
-	case spec.AttributeTypeFloat:
-		return openapi3.NewFloat64Schema().NewRef(), nil
-
-	case spec.AttributeTypeBool:
-		return openapi3.NewBoolSchema().NewRef(), nil
-
-	case spec.AttributeTypeTime:
-		return openapi3.NewDateTimeSchema().NewRef(), nil
-
-	case spec.AttributeTypeEnum:
-		enumVals := make([]interface{}, len(attr.AllowedChoices))
-		for i, val := range attr.AllowedChoices {
-			enumVals[i] = val
-		}
-		return openapi3.NewArraySchema().WithEnum(enumVals...).NewRef(), nil
-
-	case spec.AttributeTypeObject:
-		return openapi3.NewObjectSchema().NewRef(), nil
-
-	case spec.AttributeTypeList:
-		attrSchema := openapi3.NewArraySchema()
-		attr, err := sc.convertAttribute(&spec.Attribute{Type: spec.AttributeType(attr.SubType)})
-		attrSchema.Items = attr
-		return attrSchema.NewRef(), err // do not wrap error to avoid recursive wrapping
-
-	case spec.AttributeTypeRef:
-		return openapi3.NewSchemaRef("#/components/schemas/"+attr.SubType, nil), nil
-
-	case spec.AttributeTypeRefList:
-		attrSchema := openapi3.NewArraySchema()
-		attr, err := sc.convertAttribute(&spec.Attribute{Type: spec.AttributeTypeRef, SubType: attr.SubType})
-		attrSchema.Items = attr
-		return attrSchema.NewRef(), err // do not wrap error to avoid recursive wrapping
-
-	case spec.AttributeTypeRefMap:
-		attrSchema := openapi3.NewObjectSchema()
-		attr, err := sc.convertAttribute(&spec.Attribute{Type: spec.AttributeTypeRef, SubType: attr.SubType})
-		attrSchema.AdditionalProperties = attr
-		return attrSchema.NewRef(), err // do not wrap error to avoid recursive wrapping
-
-	case spec.AttributeTypeExt:
-		mapping, err := sc.inSpecSet.TypeMapping().Mapping("openapi3", attr.SubType)
-		if err != nil {
-			return nil, fmt.Errorf("retrieving 'openapi3' type mapping for external attribute subtype '%s': %w", attr.SubType, err)
-		}
-
-		attrSchema := new(openapi3.Schema)
-		if err := json.Unmarshal([]byte(mapping.Type), attrSchema); err != nil {
-			return nil, fmt.Errorf("unmarshaling openapi3 external type mapping '%s': %w", attr.SubType, err)
-		}
-
-		return attrSchema.NewRef(), nil
+	pathItems := sc.convertRelationsForNonRootModel(s.Model())
+	for path, item := range pathItems {
+		sc.outRootDoc.Paths[path] = item
 	}
 
-	return nil, fmt.Errorf("unhandled attribute type: '%s'", attr.Type)
+	pathItems = sc.convertRelationsForNonRootSpec(s.Model().ResourceName, s.Relations())
+	for path, item := range pathItems {
+		sc.outRootDoc.Paths[path] = item
+	}
+
+	return nil
 }
 
 func generatorOpenapi3(sets []spec.SpecificationSet, out string) error {
 	_ = out // make linter happy for now
 	set := sets[0]
 	converter := newOpenapi3Converter(set)
-	doc, err := converter.do()
+	doc, err := converter.Do()
 	if err != nil {
 		return fmt.Errorf("error generating openapi3 document from spec set '%s': %w", set.Configuration().Name, err)
 	}
