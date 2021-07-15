@@ -501,7 +501,7 @@ func (p *FilterParser) parseValue() (interface{}, error) {
 		return i, nil
 	}
 
-	if f, err := strconv.ParseFloat(literal, 0); err == nil {
+	if f, err := strconv.ParseFloat(literal, 64); err == nil {
 		return f, nil
 	}
 
