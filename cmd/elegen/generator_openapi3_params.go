@@ -30,6 +30,7 @@ func (sc *openapi3Converter) convertParam(entry *spec.Parameter, in string) *ope
 
 	param := openapi3.NewQueryParameter(entry.Name)
 	param.Description = entry.Description
+	param.Example = entry.ExampleValue
 	param.In = in
 
 	switch entry.Type {
@@ -49,7 +50,7 @@ func (sc *openapi3Converter) convertParam(entry *spec.Parameter, in string) *ope
 		param.Schema = openapi3.NewDateTimeSchema().NewRef()
 
 	case spec.ParameterTypeDuration:
-		param.Schema = openapi3.NewStringSchema().NewRef() // ??
+		param.Schema = openapi3.NewStringSchema().NewRef() // TODO: this needs to be verified
 
 	case spec.ParameterTypeEnum:
 		enumVals := make([]interface{}, len(entry.AllowedChoices))
@@ -60,6 +61,11 @@ func (sc *openapi3Converter) convertParam(entry *spec.Parameter, in string) *ope
 
 	default:
 		return nil // TODO: better handling? error?
+	}
+
+	if entry.Multiple {
+		// TODO? How should I exactly indicate that we allow multiple query params
+		// of the same key? I think that is the assumption by default!
 	}
 
 	ref := &openapi3.ParameterRef{
