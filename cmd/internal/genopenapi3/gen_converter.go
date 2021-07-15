@@ -17,16 +17,31 @@ type converter struct {
 }
 
 func newConverter(inSpecSet spec.SpecificationSet) *converter {
-
+	specConfig := inSpecSet.Configuration()
 	c := &converter{
 		inSpecSet: inSpecSet,
 		outRootDoc: openapi3.T{
-			Paths:      openapi3.Paths{},
-			Components: openapi3.NewComponents(),
+			OpenAPI: "3.0.3",
+			Info: &openapi3.Info{
+				Title:          specConfig.Name,
+				Version:        specConfig.Version,
+				Description:    specConfig.Description,
+				TermsOfService: specConfig.Copyright + " © (TODO)", // TODO
+				License: &openapi3.License{
+					Name: "TODO",
+				},
+				Contact: &openapi3.Contact{
+					Name:  specConfig.Author,
+					URL:   specConfig.URL,
+					Email: specConfig.Email,
+				},
+			},
+			Paths: openapi3.Paths{},
+			Components: openapi3.Components{
+				Schemas: make(openapi3.Schemas),
+			},
 		},
 	}
-
-	c.outRootDoc.Components.Schemas = make(openapi3.Schemas)
 	return c
 }
 
