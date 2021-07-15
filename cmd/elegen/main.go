@@ -23,6 +23,8 @@ import (
 	"go.aporeto.io/regolithe"
 	"go.aporeto.io/regolithe/spec"
 	"golang.org/x/sync/errgroup"
+
+	"go.aporeto.io/elemental/cmd/internal/genopenapi3"
 )
 
 const (
@@ -36,7 +38,16 @@ func main() {
 	version := fmt.Sprintf("%s - %s", versions.ProjectVersion, versions.ProjectSha)
 	cmd := regolithe.NewCommand(generatorName, generatorDescription, version, attributeNameConverter, attributeTypeConverter, generationName, generator)
 
-	cmd.PersistentFlags().Bool("public", false, "If set to true, only exposed attributes and public objects will be generated")
+	cmd.PersistentFlags().Bool(
+		"public",
+		false,
+		"If set to true, only exposed attributes and public objects will be generated",
+	)
+	cmd.PersistentFlags().String(
+		"gen-type",
+		"elemental",
+		"The desired type of what needs to be generated. Possible choices are: [elemental openapi3]",
+	)
 
 	if err := cmd.Execute(); err != nil {
 		fmt.Fprint(os.Stderr, err) // nolint
@@ -45,6 +56,18 @@ func main() {
 }
 
 func generator(sets []spec.SpecificationSet, out string) error {
+
+	switch genType := viper.GetString("gen-type"); genType {
+	case "openapi3":
+		return genopenapi3.GeneratorFunc(sets, out)
+	case "", "elemental":
+		return genElemental(sets, out)
+	default:
+		return fmt.Errorf("unhandled generation type: '%s'", genType)
+	}
+}
+
+func genElemental(sets []spec.SpecificationSet, out string) error {
 
 	set := sets[0]
 	publicMode := viper.GetBool("public")
