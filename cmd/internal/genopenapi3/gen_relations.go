@@ -1,4 +1,4 @@
-package main
+package genopenapi3
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"go.aporeto.io/regolithe/spec"
 )
 
-func (sc *openapi3Converter) convertRelationsForRootSpec(relations []*spec.Relation) map[string]*openapi3.PathItem {
+func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[string]*openapi3.PathItem {
 
 	paths := make(map[string]*openapi3.PathItem)
 
@@ -18,18 +18,18 @@ func (sc *openapi3Converter) convertRelationsForRootSpec(relations []*spec.Relat
 		}
 
 		pathItem := &openapi3.PathItem{
-			Get:  sc.convertRelationActionToGetAll(relation.Get, relation.RestName),
-			Post: sc.convertRelationActionToPost(relation.Create, relation.RestName),
+			Get:  c.convertRelationActionToGetAll(relation.Get, relation.RestName),
+			Post: c.convertRelationActionToPost(relation.Create, relation.RestName),
 		}
 
-		uri := "/" + sc.inSpecSet.Specification(relation.RestName).Model().ResourceName
+		uri := "/" + c.inSpecSet.Specification(relation.RestName).Model().ResourceName
 		paths[uri] = pathItem
 	}
 
 	return paths
 }
 
-func (sc *openapi3Converter) convertRelationsForNonRootSpec(resourceName string, relations []*spec.Relation) map[string]*openapi3.PathItem {
+func (c *converter) convertRelationsForNonRootSpec(resourceName string, relations []*spec.Relation) map[string]*openapi3.PathItem {
 
 	paths := make(map[string]*openapi3.PathItem)
 
@@ -40,12 +40,12 @@ func (sc *openapi3Converter) convertRelationsForNonRootSpec(resourceName string,
 		}
 
 		pathItem := &openapi3.PathItem{
-			Get:  sc.convertRelationActionToGetAll(relation.Get, relation.RestName),
-			Post: sc.convertRelationActionToPost(relation.Create, relation.RestName),
+			Get:  c.convertRelationActionToGetAll(relation.Get, relation.RestName),
+			Post: c.convertRelationActionToPost(relation.Create, relation.RestName),
 		}
 
-		sc.insertParamID(&pathItem.Parameters)
-		relatedResourceName := sc.inSpecSet.Specification(relation.RestName).Model().ResourceName
+		c.insertParamID(&pathItem.Parameters)
+		relatedResourceName := c.inSpecSet.Specification(relation.RestName).Model().ResourceName
 		uri := fmt.Sprintf("/%s/{%s}/%s", resourceName, paramNameID, relatedResourceName)
 		paths[uri] = pathItem
 	}
@@ -53,25 +53,25 @@ func (sc *openapi3Converter) convertRelationsForNonRootSpec(resourceName string,
 	return paths
 }
 
-func (sc *openapi3Converter) convertRelationsForNonRootModel(model *spec.Model) map[string]*openapi3.PathItem {
+func (c *converter) convertRelationsForNonRootModel(model *spec.Model) map[string]*openapi3.PathItem {
 
 	if model.Get == nil && model.Update == nil && model.Delete == nil {
 		return nil
 	}
 
 	pathItem := &openapi3.PathItem{
-		Get:    sc.convertRelationActionToGetByID(model.Get, model.RestName),
-		Delete: sc.convertRelationActionToDeleteByID(model.Delete, model.RestName),
-		Put:    sc.convertRelationActionToPutByID(model.Update, model.RestName),
+		Get:    c.convertRelationActionToGetByID(model.Get, model.RestName),
+		Delete: c.convertRelationActionToDeleteByID(model.Delete, model.RestName),
+		Put:    c.convertRelationActionToPutByID(model.Update, model.RestName),
 	}
-	sc.insertParamID(&pathItem.Parameters)
+	c.insertParamID(&pathItem.Parameters)
 
 	uri := fmt.Sprintf("/%s/{%s}", model.ResourceName, paramNameID)
 	pathItems := map[string]*openapi3.PathItem{uri: pathItem}
 	return pathItems
 }
 
-func (sc *openapi3Converter) convertRelationActionToGetAll(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
+func (c *converter) convertRelationActionToGetAll(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
 
 	if relationAction == nil {
 		return nil
@@ -94,13 +94,13 @@ func (sc *openapi3Converter) convertRelationActionToGetAll(relationAction *spec.
 			},
 			// TODO: more responses like 422, 500, etc if needed
 		},
-		Parameters: sc.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
+		Parameters: c.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
 	}
 
 	return op
 }
 
-func (sc *openapi3Converter) convertRelationActionToPost(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
+func (c *converter) convertRelationActionToPost(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
 
 	if relationAction == nil {
 		return nil
@@ -131,13 +131,13 @@ func (sc *openapi3Converter) convertRelationActionToPost(relationAction *spec.Re
 			},
 			// TODO: more responses like 422, 500, etc if needed
 		},
-		Parameters: sc.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
+		Parameters: c.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
 	}
 
 	return op
 }
 
-func (sc *openapi3Converter) convertRelationActionToGetByID(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
+func (c *converter) convertRelationActionToGetByID(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
 
 	if relationAction == nil {
 		return nil
@@ -159,13 +159,13 @@ func (sc *openapi3Converter) convertRelationActionToGetByID(relationAction *spec
 			},
 			// TODO: more responses like 422, 500, etc if needed
 		},
-		Parameters: sc.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
+		Parameters: c.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
 	}
 
 	return op
 }
 
-func (sc *openapi3Converter) convertRelationActionToDeleteByID(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
+func (c *converter) convertRelationActionToDeleteByID(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
 
 	if relationAction == nil {
 		return nil
@@ -187,13 +187,13 @@ func (sc *openapi3Converter) convertRelationActionToDeleteByID(relationAction *s
 			},
 			// TODO: more responses like 422, 500, etc if needed
 		},
-		Parameters: sc.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
+		Parameters: c.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
 	}
 
 	return op
 }
 
-func (sc *openapi3Converter) convertRelationActionToPutByID(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
+func (c *converter) convertRelationActionToPutByID(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
 
 	if relationAction == nil {
 		return nil
@@ -224,7 +224,7 @@ func (sc *openapi3Converter) convertRelationActionToPutByID(relationAction *spec
 			},
 			// TODO: more responses like 422, 500, etc if needed
 		},
-		Parameters: sc.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
+		Parameters: c.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
 	}
 
 	return op

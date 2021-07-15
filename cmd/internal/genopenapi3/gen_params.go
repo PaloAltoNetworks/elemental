@@ -1,4 +1,4 @@
-package main
+package genopenapi3
 
 import (
 	"sort"
@@ -7,7 +7,7 @@ import (
 	"go.aporeto.io/regolithe/spec"
 )
 
-func (sc *openapi3Converter) convertParamDefAsQueryParams(paramDef *spec.ParameterDefinition) openapi3.Parameters {
+func (c *converter) convertParamDefAsQueryParams(paramDef *spec.ParameterDefinition) openapi3.Parameters {
 
 	if paramDef == nil {
 		return nil
@@ -15,7 +15,7 @@ func (sc *openapi3Converter) convertParamDefAsQueryParams(paramDef *spec.Paramet
 
 	params := openapi3.NewParameters()
 	for _, e := range paramDef.Entries {
-		p := sc.convertParam(e, openapi3.ParameterInQuery)
+		p := c.convertParam(e, openapi3.ParameterInQuery)
 		params = append(params, p)
 	}
 
@@ -26,7 +26,7 @@ func (sc *openapi3Converter) convertParamDefAsQueryParams(paramDef *spec.Paramet
 	return params
 }
 
-func (sc *openapi3Converter) convertParam(entry *spec.Parameter, in string) *openapi3.ParameterRef {
+func (*converter) convertParam(entry *spec.Parameter, in string) *openapi3.ParameterRef {
 
 	param := openapi3.NewQueryParameter(entry.Name)
 	param.Description = entry.Description
@@ -75,7 +75,7 @@ func (sc *openapi3Converter) convertParam(entry *spec.Parameter, in string) *ope
 	return ref
 }
 
-func (sc *openapi3Converter) insertParamID(params *openapi3.Parameters) {
+func (*converter) insertParamID(params *openapi3.Parameters) {
 	paramID := openapi3.NewPathParameter(paramNameID)
 	paramID.Schema = openapi3.NewStringSchema().NewRef()
 	*params = append(*params, &openapi3.ParameterRef{Value: paramID})

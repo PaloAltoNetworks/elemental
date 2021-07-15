@@ -1,4 +1,4 @@
-package main
+package genopenapi3
 
 import (
 	"encoding/json"
@@ -9,14 +9,14 @@ import (
 	"go.aporeto.io/regolithe/spec"
 )
 
-func (sc *openapi3Converter) convertModel(s spec.Specification) (*openapi3.SchemaRef, error) {
+func (c *converter) convertModel(s spec.Specification) (*openapi3.SchemaRef, error) {
 
 	schema := openapi3.NewObjectSchema()
 	schema.Properties = make(map[string]*openapi3.SchemaRef)
 
 	for _, specAttr := range s.Attributes("") { // TODO: figure out versions
 
-		attr, err := sc.convertAttribute(specAttr)
+		attr, err := c.convertAttribute(specAttr)
 		if err != nil {
 			return nil, fmt.Errorf("attribute '%s': %w", specAttr.Name, err)
 		}
@@ -32,7 +32,7 @@ func (sc *openapi3Converter) convertModel(s spec.Specification) (*openapi3.Schem
 	return openapi3.NewSchemaRef("", schema), nil
 }
 
-func (sc *openapi3Converter) convertAttribute(attr *spec.Attribute) (schemaRef *openapi3.SchemaRef, err error) {
+func (c *converter) convertAttribute(attr *spec.Attribute) (schemaRef *openapi3.SchemaRef, err error) {
 
 	defer func() {
 		if schemaRef == nil || schemaRef.Value == nil {
@@ -75,7 +75,7 @@ func (sc *openapi3Converter) convertAttribute(attr *spec.Attribute) (schemaRef *
 
 	case spec.AttributeTypeList:
 		attrSchema := openapi3.NewArraySchema()
-		attr, err := sc.convertAttribute(&spec.Attribute{Type: spec.AttributeType(attr.SubType)})
+		attr, err := c.convertAttribute(&spec.Attribute{Type: spec.AttributeType(attr.SubType)})
 		attrSchema.Items = attr
 		return attrSchema.NewRef(), err // do not wrap error to avoid recursive wrapping
 
@@ -84,18 +84,18 @@ func (sc *openapi3Converter) convertAttribute(attr *spec.Attribute) (schemaRef *
 
 	case spec.AttributeTypeRefList:
 		attrSchema := openapi3.NewArraySchema()
-		attr, err := sc.convertAttribute(&spec.Attribute{Type: spec.AttributeTypeRef, SubType: attr.SubType})
+		attr, err := c.convertAttribute(&spec.Attribute{Type: spec.AttributeTypeRef, SubType: attr.SubType})
 		attrSchema.Items = attr
 		return attrSchema.NewRef(), err // do not wrap error to avoid recursive wrapping
 
 	case spec.AttributeTypeRefMap:
 		attrSchema := openapi3.NewObjectSchema()
-		attr, err := sc.convertAttribute(&spec.Attribute{Type: spec.AttributeTypeRef, SubType: attr.SubType})
+		attr, err := c.convertAttribute(&spec.Attribute{Type: spec.AttributeTypeRef, SubType: attr.SubType})
 		attrSchema.AdditionalProperties = attr
 		return attrSchema.NewRef(), err // do not wrap error to avoid recursive wrapping
 
 	case spec.AttributeTypeExt:
-		mapping, err := sc.inSpecSet.TypeMapping().Mapping("openapi3", attr.SubType)
+		mapping, err := c.inSpecSet.TypeMapping().Mapping("openapi3", attr.SubType)
 		if err != nil {
 			return nil, fmt.Errorf("retrieving 'openapi3' type mapping for external attribute subtype '%s': %w", attr.SubType, err)
 		}
