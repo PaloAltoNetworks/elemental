@@ -92,6 +92,7 @@ func (sc *openapi3Converter) convertRelationActionToGetAll(relationAction *spec.
 					},
 				},
 			},
+			// TODO: more responses like 422, 500, etc if needed
 		},
 		Parameters: sc.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
 	}
@@ -128,6 +129,7 @@ func (sc *openapi3Converter) convertRelationActionToPost(relationAction *spec.Re
 					},
 				},
 			},
+			// TODO: more responses like 422, 500, etc if needed
 		},
 		Parameters: sc.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
 	}
@@ -155,6 +157,7 @@ func (sc *openapi3Converter) convertRelationActionToGetByID(relationAction *spec
 					},
 				},
 			},
+			// TODO: more responses like 422, 500, etc if needed
 		},
 		Parameters: sc.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
 	}
@@ -182,6 +185,7 @@ func (sc *openapi3Converter) convertRelationActionToDeleteByID(relationAction *s
 					},
 				},
 			},
+			// TODO: more responses like 422, 500, etc if needed
 		},
 		Parameters: sc.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
 	}
@@ -218,6 +222,7 @@ func (sc *openapi3Converter) convertRelationActionToPutByID(relationAction *spec
 					},
 				},
 			},
+			// TODO: more responses like 422, 500, etc if needed
 		},
 		Parameters: sc.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
 	}
