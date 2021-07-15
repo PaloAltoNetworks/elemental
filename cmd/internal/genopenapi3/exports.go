@@ -3,6 +3,7 @@ package genopenapi3
 import (
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 
 	"go.aporeto.io/regolithe/spec"
@@ -11,9 +12,15 @@ import (
 // GeneratorFunc implements the signature defined by regolithe to convert spec to openapi3 doc
 func GeneratorFunc(sets []spec.SpecificationSet, out string) error {
 
-	file, err := os.Create(filepath.Join(out, "openapi3.json"))
+	outFolder := path.Join(out, "openapi3")
+	if err := os.MkdirAll(outFolder, 0750); err != nil && !os.IsExist(err) {
+		return fmt.Errorf("'%s': error creating directory: %w", outFolder, err)
+	}
+
+	filename := filepath.Join(outFolder, "toplevel.json")
+	file, err := os.Create(filename)
 	if err != nil {
-		return fmt.Errorf("error creating 'openapi3.json' file: %w", err)
+		return fmt.Errorf("'%s': error creating file: %w", filename, err)
 	}
 
 	set := sets[0]
