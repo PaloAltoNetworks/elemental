@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"go.aporeto.io/regolithe/spec"
@@ -14,12 +15,19 @@ func (sc *openapi3Converter) convertModel(s spec.Specification) (*openapi3.Schem
 	schema.Properties = make(map[string]*openapi3.SchemaRef)
 
 	for _, specAttr := range s.Attributes("") { // TODO: figure out versions
+
 		attr, err := sc.convertAttribute(specAttr)
 		if err != nil {
 			return nil, fmt.Errorf("attribute '%s': %w", specAttr.Name, err)
 		}
 		schema.Properties[specAttr.Name] = attr
+
+		if specAttr.Required {
+			schema.Required = append(schema.Required, specAttr.Name)
+		}
 	}
+
+	sort.Strings(schema.Required)
 
 	return openapi3.NewSchemaRef("", schema), nil
 }
@@ -34,7 +42,6 @@ func (sc *openapi3Converter) convertAttribute(attr *spec.Attribute) (schemaRef *
 		s.Description = attr.Description
 		s.Default = attr.DefaultValue
 		s.Example = attr.ExampleValue
-		s.Nullable = !attr.Required
 		s.Deprecated = attr.Deprecated
 		s.ReadOnly = attr.ReadOnly
 	}()
