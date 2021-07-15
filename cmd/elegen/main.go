@@ -43,8 +43,9 @@ func main() {
 		false,
 		"If set to true, only exposed attributes and public objects will be generated",
 	)
-	cmd.PersistentFlags().String(
+	cmd.PersistentFlags().StringP(
 		"gen-type",
+		"g",
 		"elemental",
 		"The desired type of what needs to be generated. Possible choices are: [elemental openapi3]",
 	)
