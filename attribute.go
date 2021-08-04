@@ -208,6 +208,15 @@ type AttributeSpecification struct {
 // If you pass anything else, this function does nothing.
 func ResetSecretAttributesValues(obj interface{}) {
 
+	if obj == nil {
+		return
+	}
+
+	v := reflect.ValueOf(obj)
+	if v.Kind() == reflect.Ptr && v.IsNil() {
+		return
+	}
+
 	strip := func(o Identifiable) {
 
 		oo := o
