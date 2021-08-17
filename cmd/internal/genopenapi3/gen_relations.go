@@ -7,6 +7,8 @@ import (
 	"go.aporeto.io/regolithe/spec"
 )
 
+var noDesc = "n/a"
+
 func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[string]*openapi3.PathItem {
 
 	paths := make(map[string]*openapi3.PathItem)
@@ -85,6 +87,7 @@ func (c *converter) convertRelationActionToGetAll(relationAction *spec.RelationA
 		Responses: openapi3.Responses{
 			"200": &openapi3.ResponseRef{
 				Value: &openapi3.Response{
+					Description: &noDesc,
 					Content: openapi3.Content{
 						"application/json": &openapi3.MediaType{
 							Schema: respBodySchema.NewRef(),
@@ -122,6 +125,7 @@ func (c *converter) convertRelationActionToPost(relationAction *spec.RelationAct
 		Responses: openapi3.Responses{
 			"200": &openapi3.ResponseRef{
 				Value: &openapi3.Response{
+					Description: &noDesc,
 					Content: openapi3.Content{
 						"application/json": &openapi3.MediaType{
 							Schema: schemaRef,
@@ -150,6 +154,7 @@ func (c *converter) convertRelationActionToGetByID(relationAction *spec.Relation
 		Responses: openapi3.Responses{
 			"200": &openapi3.ResponseRef{
 				Value: &openapi3.Response{
+					Description: &noDesc,
 					Content: openapi3.Content{
 						"application/json": &openapi3.MediaType{
 							Schema: respBodySchemaRef,
@@ -178,6 +183,7 @@ func (c *converter) convertRelationActionToDeleteByID(relationAction *spec.Relat
 		Responses: openapi3.Responses{
 			"200": &openapi3.ResponseRef{
 				Value: &openapi3.Response{
+					Description: &noDesc,
 					Content: openapi3.Content{
 						"application/json": &openapi3.MediaType{
 							Schema: respBodySchemaRef,
@@ -215,6 +221,7 @@ func (c *converter) convertRelationActionToPutByID(relationAction *spec.Relation
 		Responses: openapi3.Responses{
 			"200": &openapi3.ResponseRef{
 				Value: &openapi3.Response{
+					Description: &noDesc,
 					Content: openapi3.Content{
 						"application/json": &openapi3.MediaType{
 							Schema: schemaRef,

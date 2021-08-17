@@ -13,8 +13,16 @@ func (c *converter) convertParamDefAsQueryParams(paramDef *spec.ParameterDefinit
 		return nil
 	}
 
+	seen := make(map[string]struct{})
+
 	params := openapi3.NewParameters()
 	for _, e := range paramDef.Entries {
+
+		if _, ok := seen[e.Name]; ok {
+			continue
+		}
+		seen[e.Name] = struct{}{}
+
 		p := c.convertParam(e, openapi3.ParameterInQuery)
 		params = append(params, p)
 	}
@@ -57,7 +65,7 @@ func (*converter) convertParam(entry *spec.Parameter, in string) *openapi3.Param
 		for i, val := range entry.AllowedChoices {
 			enumVals[i] = val
 		}
-		param.Schema = openapi3.NewArraySchema().WithEnum(enumVals).NewRef()
+		param.Schema = openapi3.NewSchema().WithEnum(enumVals).NewRef()
 
 	default:
 		return nil // TODO: better handling? error?

@@ -68,7 +68,7 @@ func (c *converter) convertAttribute(attr *spec.Attribute) (schemaRef *openapi3.
 		for i, val := range attr.AllowedChoices {
 			enumVals[i] = val
 		}
-		return openapi3.NewArraySchema().WithEnum(enumVals...).NewRef(), nil
+		return openapi3.NewSchema().WithEnum(enumVals...).NewRef(), nil
 
 	case spec.AttributeTypeObject:
 		return openapi3.NewObjectSchema().NewRef(), nil

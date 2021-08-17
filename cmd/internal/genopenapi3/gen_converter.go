@@ -26,7 +26,7 @@ func newConverter(inSpecSet spec.SpecificationSet) *converter {
 				Title:          specConfig.Name,
 				Version:        specConfig.Version,
 				Description:    specConfig.Description,
-				TermsOfService: specConfig.Copyright + " © (TODO)", // TODO
+				TermsOfService: "https://localhost/TODO", // TODO
 				License: &openapi3.License{
 					Name: "TODO",
 				},
