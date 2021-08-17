@@ -69,7 +69,7 @@ func (c *converter) processSpec(s spec.Specification) error {
 		for path, item := range pathItems {
 			c.outRootDoc.Paths[path] = item
 		}
-		// we don't care about root model's relations, so we are done for root spec
+		// we don't care about root model's relations for now, so we are done for root spec
 		return nil
 	}
 
