@@ -71,12 +71,6 @@ func (*converter) convertParam(entry *spec.Parameter, in string) *openapi3.Param
 		return nil // TODO: better handling? error?
 	}
 
-	if entry.Multiple {
-		_ = "make linter happy"
-		// TODO? How should I exactly indicate that we allow multiple query params
-		// of the same key? I think that is the assumption by default!
-	}
-
 	ref := &openapi3.ParameterRef{
 		Value: param,
 	}
