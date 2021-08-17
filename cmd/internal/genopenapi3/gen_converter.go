@@ -64,7 +64,9 @@ func (c *converter) Do(dest io.Writer) error {
 
 func (c *converter) processSpec(s spec.Specification) error {
 
-	if s.Model().IsRoot {
+	model := s.Model()
+
+	if model.IsRoot {
 		pathItems := c.convertRelationsForRootSpec(s.Relations())
 		for path, item := range pathItems {
 			c.outRootDoc.Paths[path] = item
@@ -75,16 +77,16 @@ func (c *converter) processSpec(s spec.Specification) error {
 
 	schema, err := c.convertModel(s)
 	if err != nil {
-		return fmt.Errorf("model '%s': %w", s.Model().RestName, err)
+		return fmt.Errorf("model '%s': %w", model.RestName, err)
 	}
-	c.outRootDoc.Components.Schemas[s.Model().RestName] = schema
+	c.outRootDoc.Components.Schemas[model.RestName] = schema
 
-	pathItems := c.convertRelationsForNonRootModel(s.Model())
+	pathItems := c.convertRelationsForNonRootModel(model)
 	for path, item := range pathItems {
 		c.outRootDoc.Paths[path] = item
 	}
 
-	pathItems = c.convertRelationsForNonRootSpec(s.Model().ResourceName, s.Relations())
+	pathItems = c.convertRelationsForNonRootSpec(model.ResourceName, s.Relations())
 	for path, item := range pathItems {
 		c.outRootDoc.Paths[path] = item
 	}
