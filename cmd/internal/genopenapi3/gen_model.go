@@ -16,6 +16,10 @@ func (c *converter) convertModel(s spec.Specification) (*openapi3.SchemaRef, err
 
 	for _, specAttr := range s.Attributes("") { // TODO: figure out versions
 
+		if !specAttr.Exposed {
+			continue
+		}
+
 		attr, err := c.convertAttribute(specAttr)
 		if err != nil {
 			return nil, fmt.Errorf("attribute '%s': %w", specAttr.Name, err)

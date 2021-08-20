@@ -10,7 +10,7 @@ import (
 )
 
 // GeneratorFunc implements the signature defined by regolithe to convert spec to openapi3 doc
-func GeneratorFunc(sets []spec.SpecificationSet, out string) error {
+func GeneratorFunc(sets []spec.SpecificationSet, out string, public bool) error {
 
 	outFolder := path.Join(out, "openapi3")
 	if err := os.MkdirAll(outFolder, 0750); err != nil && !os.IsExist(err) {
@@ -24,7 +24,7 @@ func GeneratorFunc(sets []spec.SpecificationSet, out string) error {
 	}
 
 	set := sets[0]
-	converter := newConverter(set)
+	converter := newConverter(set, public)
 	if err = converter.Do(file); err != nil {
 		return fmt.Errorf("error generating openapi3 document from spec set '%s': %w", set.Configuration().Name, err)
 	}

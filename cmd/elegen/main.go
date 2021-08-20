@@ -43,7 +43,7 @@ func main() {
 	generator := func(sets []spec.SpecificationSet, out string) error {
 		switch genType {
 		case "openapi3":
-			return genopenapi3.GeneratorFunc(sets, out)
+			return genopenapi3.GeneratorFunc(sets, out, publicMode)
 		case "", "elemental":
 			return genElemental(sets, out, publicMode)
 		default:

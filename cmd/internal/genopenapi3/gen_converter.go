@@ -12,14 +12,16 @@ import (
 const paramNameID = "id"
 
 type converter struct {
-	inSpecSet  spec.SpecificationSet
-	outRootDoc openapi3.T
+	skipPrivateModels bool
+	inSpecSet         spec.SpecificationSet
+	outRootDoc        openapi3.T
 }
 
-func newConverter(inSpecSet spec.SpecificationSet) *converter {
+func newConverter(inSpecSet spec.SpecificationSet, skipPrivateModels bool) *converter {
 	specConfig := inSpecSet.Configuration()
 	c := &converter{
-		inSpecSet: inSpecSet,
+		skipPrivateModels: skipPrivateModels,
+		inSpecSet:         inSpecSet,
 		outRootDoc: openapi3.T{
 			OpenAPI: "3.0.3",
 			Info: &openapi3.Info{
@@ -65,6 +67,10 @@ func (c *converter) Do(dest io.Writer) error {
 func (c *converter) processSpec(s spec.Specification) error {
 
 	model := s.Model()
+
+	if c.skipPrivateModels && model.Private {
+		return nil
+	}
 
 	if model.IsRoot {
 		pathItems := c.convertRelationsForRootSpec(s.Relations())
