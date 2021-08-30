@@ -2,14 +2,13 @@ package genopenapi3
 
 const regolitheINI = `
 [regolithe]
-product_name = myapi
-copyright = yourcompany
+product_name = dummy
 
 [transformer]
-name = myapi
-url = www.mycompany.net/myapi
-author = you
-email = you@yourcompany.com
+name = gaia
+url = go.aporeto.io/api
+author =  Aporeto Inc.
+email = dev@aporeto.com
 version = 1.0
 `
 
