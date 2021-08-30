@@ -8,6 +8,7 @@ require (
 	github.com/araddon/dateparse v0.0.0-20200409225146-d820a6159ab1
 	github.com/getkin/kin-openapi v0.65.0
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
+	github.com/go-test/deep v1.0.7 // indirect
 	github.com/gofrs/uuid v3.3.0+incompatible
 	github.com/golang/mock v1.6.0
 	github.com/mitchellh/copystructure v1.2.0
@@ -22,4 +23,5 @@ require (
 	go.uber.org/zap v1.19.0
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/tools v0.1.1
+	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
