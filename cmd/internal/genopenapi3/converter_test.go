@@ -497,6 +497,55 @@ func TestConverter_Do(t *testing.T) {
 				}
 			`,
 		},
+
+		//
+		"model-with-required-attributes": {
+			inSpec: `
+				model:
+					rest_name: test
+					resource_name: tests
+					entity_name: Test
+					package: None
+					group: N/A
+					description: dummy.
+				attributes:
+					v1:
+					- name: stringField
+						description: useful description for string.
+						type: string
+						exposed: true
+						required: true
+						default_value: hello-world
+					- name: intField
+						description: useful description for integer.
+						type: integer
+						exposed: true
+			`,
+			outDoc: `
+				{
+					"components": {
+						"schemas": {
+							"test": {
+								"type": "object",
+								"required": ["stringField"],
+								"properties": {
+									"stringField": {
+										"description": "useful description for string.",
+										"default": "hello-world",
+										"type": "string"
+									},
+									"intField": {
+										"description": "useful description for integer.",
+										"type": "integer"
+									}
+								}
+							}
+						}
+					},
+					"paths": {}
+				}
+			`,
+		},
 	}
 
 	rootTmpDir, err := os.MkdirTemp("", t.Name()+"_*")
