@@ -342,6 +342,70 @@ func TestConverter_Do(t *testing.T) {
 								"properties": {
 									"someField": {
 										"$ref": "#/components/schemas/imaginary"
+									}
+								}
+							}
+						}
+					},
+					"paths": {}
+				}
+			`,
+		},
+
+		//
+		// we assume any referenced type is already defined in 'components.schemas'
+		"model-with-refList-attributes": {
+			inSpec: `
+				model:
+					rest_name: test
+					resource_name: tests
+					entity_name: Test
+					package: None
+					group: N/A
+					description: dummy.
+				attributes:
+					v1:
+					- name: someField1
+						description: useful someField1 description.
+						type: refList
+						subtype: imaginary1
+						exposed: true
+					- name: someField2
+						description: useful someField2 description.
+						type: refList
+						subtype: imaginary2
+						exposed: true
+			`,
+			outDoc: `
+				{
+					"components": {
+						"schemas": {
+							"test": {
+								"type": "object",
+								"properties": {
+									"someField1": {
+										"description": "useful someField1 description.",
+										"type": "array",
+										"items": {
+											"$ref": "#/components/schemas/imaginary1"
+										}
+									},
+									"someField2": {
+										"description": "useful someField2 description.",
+										"type": "array",
+										"items": {
+											"$ref": "#/components/schemas/imaginary2"
+										}
+									}
+								}
+							}
+						}
+					},
+					"paths": {}
+				}
+			`,
+		},
+
 										}
 								}
 							}
