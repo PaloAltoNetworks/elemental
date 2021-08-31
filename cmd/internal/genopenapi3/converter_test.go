@@ -76,6 +76,76 @@ func TestConverter_Do(t *testing.T) {
 				}
 			`,
 		},
+
+		//
+		"model-with-primitive-attributes": {
+			inSpec: `
+				model:
+					rest_name: test
+					resource_name: tests
+					entity_name: Test
+					package: None
+					group: N/A
+					description: dummy.
+				attributes:
+					v1:
+					- name: stringField
+						description: useful description for string.
+						type: string
+						exposed: true
+					- name: intField
+						description: useful description for integer.
+						type: integer
+						exposed: true
+					- name: floatField
+						description: useful description for float.
+						type: float
+						exposed: true
+					- name: booleanField
+						description: useful description for boolean.
+						type: boolean
+						exposed: true
+					- name: timeField
+						description: useful description for time.
+						type: time
+						exposed: true
+			`,
+			outDoc: `
+				{
+					"components": {
+						"schemas": {
+							"test": {
+								"type": "object",
+								"properties": {
+									"stringField": {
+										"description": "useful description for string.",
+										"type": "string"
+									},
+									"intField": {
+										"description": "useful description for integer.",
+										"type": "integer"
+									},
+									"floatField": {
+										"description": "useful description for float.",
+										"type": "number"
+									},
+									"booleanField": {
+										"description": "useful description for boolean.",
+										"type": "boolean"
+									},
+									"timeField": {
+										"description": "useful description for time.",
+										"type": "string",
+										"format": "date-time"
+									}
+								}
+							}
+						}
+					},
+					"paths": {}
+				}
+			`,
+		},
 	}
 
 	rootTmpDir, err := os.MkdirTemp("", t.Name()+"_*")
