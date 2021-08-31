@@ -1,334 +1,115 @@
 package genopenapi3
 
-import "strings"
+import (
+	"bytes"
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
 
-const regolitheINI = `
-[regolithe]
-product_name = dummy
+	"github.com/go-test/deep"
+	"go.aporeto.io/regolithe/spec"
+	"gopkg.in/yaml.v2"
+)
 
-[transformer]
-name = gaia
-url = go.aporeto.io/api
-author =  Aporeto Inc.
-email = dev@aporeto.com
-version = 1.0
-`
+type testCase struct {
+	inSpec              string
+	inSkipPrivateModels bool
+	outDoc              string // excluding root keys 'openapi3' and 'info'
+}
 
-const typemapping = `
-'[][]interface{}':
-  openapi3:
-    type: |-
-      {
-        "type": "array",
-        "items": {
-          "type": "array",
-          "items": {
-            "type": "object"
-          }
-        }
-      }
+type testCaseRunner struct {
+	t          *testing.T
+	rootTmpDir string
+}
 
-'[][]string':
-  openapi3:
-    type: |-
-      {
-        "type": "array",
-        "items": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
+// Run will execute the given testcase in parallel with any other test cases
+func (r *testCaseRunner) Run(name string, tc testCase) {
+	r.t.Run(name, func(t *testing.T) {
+		t.Parallel()
 
-'[]byte':
-  openapi3:
-    type: |-
-      {
-        "type": "string"
-      }
+		tc.inSpec = replaceTrailingTabsWithDoubleSpaceForYAML(tc.inSpec)
 
-'[]map[string]interface{}':
-  openapi3:
-    type: |-
-      {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "object"
-          }
-        }
-      }
+		// this is to ensure that each test case is isolated
+		specDir, err := os.MkdirTemp(r.rootTmpDir, name)
+		if err != nil {
+			t.Fatalf("error creating temporary directory for test case: %v", err)
+		}
 
-'[]map[string]string':
-  openapi3:
-    type: |-
-      {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        }
-      }
+		// this is needed because the spec filename has to match the rest_name of the spec model
+		var inSpecDeserialized struct {
+			Model struct {
+				RESTName string `yaml:"rest_name"`
+			}
+		}
+		if err := yaml.Unmarshal([]byte(tc.inSpec), &inSpecDeserialized); err != nil {
+			t.Fatalf("error unmarshaling test spec data to read key 'rest_name': %v", err)
+		}
 
-'[]time.Time':
-  openapi3:
-    type: |-
-      {
-        "type": "array",
-        "items": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
+		for filename, content := range map[string]string{
+			// these files are needed by regolithe to parse the raw model from the test case
+			"regolithe.ini": regolitheINI,
+			"_type.mapping": typemapping,
+			// this is what will be parsed by regolithe
+			inSpecDeserialized.Model.RESTName + ".spec": tc.inSpec,
+		} {
+			filename = filepath.Join(specDir, filename)
+			if err := os.WriteFile(filename, []byte(content), os.ModePerm); err != nil {
+				t.Fatalf("error writing temporary file '%s': %v", filename, err)
+			}
+		}
 
-_arch_list:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
+		spec, err := spec.LoadSpecificationSet(specDir, nil, nil, "openapi3")
+		if err != nil {
+			t.Fatalf("error parsing spec set from test data: %v", err)
+		}
 
-_audit_profile_rule_list:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
+		converter := newConverter(spec, tc.inSkipPrivateModels)
+		output := new(bytes.Buffer)
+		if err := converter.Do(output); err != nil {
+			t.Fatalf("error converting spec to openapi3: %v", err)
+		}
 
-_automation_entitlements:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
+		actual := make(map[string]interface{})
+		if err := json.Unmarshal(output.Bytes(), &actual); err != nil {
+			t.Fatalf("invalid actual output data: malformed json content: %v", err)
+		}
 
-_automation_events:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
+		expected := make(map[string]interface{})
+		if err := json.Unmarshal([]byte(tc.outDoc), &expected); err != nil {
+			t.Fatalf("invalid expected output data in test case: malformed json content: %v", err)
+		}
+		// root keys 'openapi3' and 'info' must be identical for all test cases;
+		// therefore, we inject them here or fail the test if they are defined
+		// to make test cases more readable and to prevent repeating them in all
+		// test cases, which is going to be boring
+		if _, ok := expected["openapi"]; ok {
+			t.Fatal("key 'openapi' must not be defined in the expected outDoc as it is set by the test")
+		}
+		if _, ok := expected["info"]; ok {
+			t.Fatal("key 'info' must not be defined in the expected outDoc as it is set by the test")
+		}
+		expected["openapi"] = "3.0.3"
+		expected["info"] = map[string]interface{}{
+			"contact": map[string]interface{}{
+				"email": "dev@aporeto.com",
+				"name":  "Aporeto Inc.",
+				"url":   "go.aporeto.io/api",
+			},
+			"license": map[string]interface{}{
+				"name": "TODO",
+			},
+			"termsOfService": "https://localhost/TODO",
+			"title":          "gaia",
+			"version":        "1.0",
+		}
 
-_cap_map:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
-
-_claims:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
-
-_elemental_identifiable:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
-
-_portlist:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
-
-_rendered_policy:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
-
-_syscall_action:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
-
-_syscall_rules:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
-
-_vulnerability_level:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
-
-elemental.Operation:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
-
-json.RawMessage:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
-
-map[string][]map[string]interface{}:
-  openapi3:
-    type: |-
-      {
-        "type": "object",
-        "additionalProperties": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "object"
-            }
-          }
-        }
-      }
-
-map[string][]string:
-  openapi3:
-    type: |-
-      {
-        "type": "object",
-        "additionalProperties": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-
-map[string]bool:
-  openapi3:
-    type: |-
-      {
-        "type": "object",
-        "additionalProperties": {
-          "type": "boolean"
-        }
-      }
-
-map[string]int:
-  openapi3:
-    type: |-
-      {
-        "type": "object",
-        "additionalProperties": {
-          "type": "integer"
-        }
-      }
-
-map[string]interface{}:
-  openapi3:
-    type: |-
-      {
-        "type": "object",
-        "additionalProperties": {
-          "type": "object"
-        }
-      }
-
-map[string]map[string][]string:
-  openapi3:
-    type: |-
-      {
-        "type": "object",
-        "additionalProperties": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      }
-
-map[string]map[string]bool:
-  openapi3:
-    type: |-
-      {
-        "type": "object",
-        "additionalProperties": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "boolean"
-          }
-        }
-      }
-
-map[string]map[string]cloudnetworkquerydestination:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
-
-map[string]map[string]interface{}:
-  openapi3:
-    type: |-
-      {
-        "type": "object",
-        "additionalProperties": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "object"
-          }
-        }
-      }
-
-map[string]string:
-  openapi3:
-    type: |-
-      {
-        "type": "object",
-        "additionalProperties": {
-          "type": "string"
-        }
-      }
-
-network:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
-
-networklist:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
-
-pctimevalue:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
-
-uiparametersexpression:
-  openapi3:
-    type: |-
-      {
-        "type": "object"
-      }
-`
+		if diff := deep.Equal(actual, expected); diff != nil {
+			t.Fatal("actual != expected output\n", strings.Join(diff, "\n"))
+		}
+	})
+}
 
 func replaceTrailingTabsWithDoubleSpaceForYAML(s string) string {
 
