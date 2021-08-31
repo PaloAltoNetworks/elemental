@@ -22,14 +22,14 @@ func TestConverter_Do(t *testing.T) {
 	}{
 		"model-with-no-attributes": {
 			inSpec: `
-        model:
-          rest_name: void
-          resource_name: voids
-          entity_name: Void
-          package: None
-          group: N/A
-          description: empty model.
-      `,
+				model:
+					rest_name: void
+					resource_name: voids
+					entity_name: Void
+					package: None
+					group: N/A
+					description: empty model.
+			`,
 			outDoc: `
 				{
 					"components": {
@@ -53,6 +53,7 @@ func TestConverter_Do(t *testing.T) {
 
 	for name, c := range cases {
 		t.Run(name, func(t *testing.T) {
+			c.inSpec = replaceTrailingTabsWithDoubleSpaceForYAML(c.inSpec)
 
 			// this is to ensure that each test case is isolated
 			specDir, err := os.MkdirTemp(rootTmpDir, name)

@@ -1,5 +1,7 @@
 package genopenapi3
 
+import "strings"
+
 const regolitheINI = `
 [regolithe]
 product_name = dummy
@@ -327,3 +329,28 @@ uiparametersexpression:
         "type": "object"
       }
 `
+
+func replaceTrailingTabsWithDoubleSpaceForYAML(s string) string {
+
+	sb := new(strings.Builder)
+
+	replaceNextTab := true
+	for _, r := range s {
+
+		if r == '\n' {
+			sb.WriteRune(r)
+			replaceNextTab = true
+			continue
+		}
+
+		if replaceNextTab && r == '\t' {
+			sb.WriteString("  ")
+			continue
+		}
+
+		sb.WriteRune(r)
+		replaceNextTab = false
+	}
+
+	return sb.String()
+}
