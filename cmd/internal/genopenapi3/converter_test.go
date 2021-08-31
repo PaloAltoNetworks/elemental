@@ -187,6 +187,42 @@ func TestConverter_Do(t *testing.T) {
 			`,
 		},
 
+		//
+		"model-with-object-attribute": {
+			inSpec: `
+				model:
+					rest_name: test
+					resource_name: tests
+					entity_name: Test
+					package: None
+					group: N/A
+					description: dummy.
+				attributes:
+					v1:
+					- name: someField
+						description: useful description.
+						type: object
+						exposed: true
+			`,
+			outDoc: `
+				{
+					"components": {
+						"schemas": {
+							"test": {
+								"type": "object",
+								"properties": {
+									"someField": {
+										"description": "useful description.",
+										"type": "object"
+									}
+								}
+							}
+						}
+					},
+					"paths": {}
+				}
+			`,
+		},
 	}
 
 	rootTmpDir, err := os.MkdirTemp("", t.Name()+"_*")
