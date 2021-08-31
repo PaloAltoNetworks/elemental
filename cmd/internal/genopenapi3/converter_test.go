@@ -20,6 +20,8 @@ func TestConverter_Do(t *testing.T) {
 		inSkipPrivateModels bool
 		outDoc              string // excluding root keys 'openapi3' and 'info'
 	}{
+
+		//
 		"model-with-no-attributes": {
 			inSpec: `
 				model:
@@ -35,6 +37,37 @@ func TestConverter_Do(t *testing.T) {
 					"components": {
 						"schemas": {
 							"void": {
+								"type": "object"
+							}
+						}
+					},
+					"paths": {}
+				}
+			`,
+		},
+
+		//
+		"model-with-unexposed-attribute": {
+			inSpec: `
+				model:
+					rest_name: test
+					resource_name: tests
+					entity_name: Test
+					package: None
+					group: N/A
+					description: dummy.
+				attributes:
+					v1:
+					- name: somefield
+						description: useful description.
+						type: integer
+						exposed: false
+			`,
+			outDoc: `
+				{
+					"components": {
+						"schemas": {
+							"test": {
 								"type": "object"
 							}
 						}
