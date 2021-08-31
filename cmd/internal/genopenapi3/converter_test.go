@@ -66,6 +66,33 @@ func TestConverter_Do__schemas_and_attributes(t *testing.T) {
 		},
 
 		//
+		"model-is-ignored-if-private-and-skip-flag-is-set": {
+			inSkipPrivateModels: true,
+			inSpec: `
+				model:
+					rest_name: test
+					resource_name: tests
+					entity_name: Test
+					package: None
+					group: N/A
+					description: dummy.
+					private: true
+				attributes:
+					v1:
+					- name: somefield
+						description: useful description.
+						type: integer
+						exposed: true
+			`,
+			outDoc: `
+				{
+					"components": {},
+					"paths": {}
+				}
+			`,
+		},
+
+		//
 		"model-with-primitive-attributes": {
 			inSpec: `
 				model:
