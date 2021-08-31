@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestConverter_Do__model_and_attributes(t *testing.T) {
+func TestConverter_Do__schemas_and_attributes(t *testing.T) {
 
 	cases := map[string]testCase{
 
@@ -35,7 +35,7 @@ func TestConverter_Do__model_and_attributes(t *testing.T) {
 		},
 
 		//
-		"model-with-unexposed-attribute": {
+		"model-with-unexposed-attribute--attr-ignored": {
 			inSpec: `
 				model:
 					rest_name: test
