@@ -460,6 +460,35 @@ func TestConverter_Do(t *testing.T) {
 			`,
 		},
 
+		//
+		"model-with-externalType-attributes--[]byte-turns-into-string": {
+			inSpec: `
+				model:
+					rest_name: test
+					resource_name: tests
+					entity_name: Test
+					package: None
+					group: N/A
+					description: dummy.
+				attributes:
+					v1:
+					- name: someField
+						description: useful description.
+						type: external
+						subtype: '[]byte'
+						exposed: true
+			`,
+			outDoc: `
+				{
+					"components": {
+						"schemas": {
+							"test": {
+								"type": "object",
+								"properties": {
+									"someField": {
+										"description": "useful description.",
+										"type": "string"
+									}
 								}
 							}
 						}
