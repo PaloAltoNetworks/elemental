@@ -223,6 +223,96 @@ func TestConverter_Do(t *testing.T) {
 				}
 			`,
 		},
+
+		//
+		"model-with-list-of-primitive-attributes": {
+			inSpec: `
+					model:
+						rest_name: test
+						resource_name: tests
+						entity_name: Test
+						package: None
+						group: N/A
+						description: dummy.
+					attributes:
+						v1:
+						- name: stringListField
+							description: useful stringListField description.
+							type: list
+							subtype: string
+							exposed: true
+						- name: integerListField
+							description: useful integerListField description.
+							type: list
+							subtype: integer
+							exposed: true
+						- name: floatListField
+							description: useful floatListField description.
+							type: list
+							subtype: float
+							exposed: true
+						- name: booleanListField
+							description: useful booleanListField description.
+							type: list
+							subtype: boolean
+							exposed: true
+						- name: timeListField
+							description: useful timeListField description.
+							type: list
+							subtype: time
+							exposed: true
+				`,
+			outDoc: `
+					{
+						"components": {
+							"schemas": {
+								"test": {
+									"type": "object",
+									"properties": {
+										"stringListField": {
+											"description": "useful stringListField description.",
+											"type": "array",
+											"items": {
+												"type": "string"
+											}
+										},
+										"integerListField": {
+											"description": "useful integerListField description.",
+											"type": "array",
+											"items": {
+												"type": "integer"
+											}
+										},
+										"floatListField": {
+											"description": "useful floatListField description.",
+											"type": "array",
+											"items": {
+												"type": "number"
+											}
+										},
+										"booleanListField": {
+											"description": "useful booleanListField description.",
+											"type": "array",
+											"items": {
+												"type": "boolean"
+											}
+										},
+										"timeListField": {
+											"description": "useful timeListField description.",
+											"type": "array",
+											"items": {
+												"type": "string",
+												"format": "date-time"
+											}
+										}
+									}
+								}
+							}
+						},
+						"paths": {}
+					}
+			`,
+		},
 	}
 
 	rootTmpDir, err := os.MkdirTemp("", t.Name()+"_*")
