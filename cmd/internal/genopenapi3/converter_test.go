@@ -146,6 +146,47 @@ func TestConverter_Do(t *testing.T) {
 				}
 			`,
 		},
+
+		//
+		"model-with-enum-attribute": {
+			inSpec: `
+				model:
+					rest_name: test
+					resource_name: tests
+					entity_name: Test
+					package: None
+					group: N/A
+					description: dummy.
+				attributes:
+					v1:
+					- name: someField
+						description: useful description.
+						type: enum
+						allowed_choices:
+							- Choice1
+							- Choice2
+						exposed: true
+			`,
+			outDoc: `
+				{
+					"components": {
+						"schemas": {
+							"test": {
+								"type": "object",
+								"properties": {
+									"someField": {
+										"description": "useful description.",
+										"enum": ["Choice1", "Choice2"]
+									}
+								}
+							}
+						}
+					},
+					"paths": {}
+				}
+			`,
+		},
+
 	}
 
 	rootTmpDir, err := os.MkdirTemp("", t.Name()+"_*")
