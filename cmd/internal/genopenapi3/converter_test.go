@@ -328,7 +328,7 @@ func TestConverter_Do(t *testing.T) {
 				attributes:
 					v1:
 					- name: someField
-						description: useful description.
+						description: this should be ignored per openapi3 specs.
 						type: ref
 						subtype: imaginary
 						exposed: true
