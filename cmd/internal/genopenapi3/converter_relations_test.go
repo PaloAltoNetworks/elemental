@@ -95,6 +95,67 @@ func TestConverter_Do__relations_root(t *testing.T) {
 					description: Represents a resource.
 			`},
 		},
+
+		//
+		"root-model-relation-get": {
+			inSpec: `
+				model:
+					root: true
+					rest_name: root
+					resource_name: root
+					entity_name: Root
+					package: root
+					group: core
+					description: root object.
+
+				relations:
+				- rest_name: resource
+					get:
+						description: Retrieve all resources.
+			`,
+			outDoc: `
+				{
+					"components": {
+						"schemas": {
+							"resource": {
+								"type": "object"
+							}
+						}
+					},
+					"paths": {
+						"/resources": {
+							"get": {
+								"description": "Retrieve all resources.",
+								"responses": {
+									"200": {
+										"description": "n/a",
+										"content": {
+											"application/json": {
+												"schema": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/resource"
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			`,
+			supportingSpecs: []string{`
+				model:
+					rest_name: resource
+					resource_name: resources
+					entity_name: Recource
+					package: none
+					group: N/A
+					description: Represents a resource.
+			`},
+		},
 	}
 
 	rootTmpDir, err := os.MkdirTemp("", t.Name()+"_*")
