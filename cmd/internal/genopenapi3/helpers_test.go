@@ -25,8 +25,25 @@ type testCaseRunner struct {
 	rootTmpDir string
 }
 
+func runAllTestCases(t *testing.T, cases map[string]testCase) {
+
+	rootTmpDir, err := os.MkdirTemp("", t.Name()+"_*")
+	if err != nil {
+		t.Fatalf("error creating temporary directory for test function: %v", err)
+	}
+	t.Cleanup(func() { os.RemoveAll(rootTmpDir) })
+
+	tcRunner := &testCaseRunner{
+		t:          t,
+		rootTmpDir: rootTmpDir,
+	}
+	for name, testCase := range cases {
+		tcRunner.run(name, testCase)
+	}
+}
+
 // Run will execute the given testcase in parallel with any other test cases
-func (r *testCaseRunner) Run(name string, tc testCase) {
+func (r *testCaseRunner) run(name string, tc testCase) {
 	r.t.Run(name, func(t *testing.T) {
 		t.Parallel()
 

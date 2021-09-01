@@ -1,12 +1,10 @@
 package genopenapi3
 
 import (
-	"os"
 	"testing"
 )
 
 func TestConverter_Do__relations_root_spec(t *testing.T) {
-
 	cases := map[string]testCase{
 
 		//
@@ -157,19 +155,5 @@ func TestConverter_Do__relations_root_spec(t *testing.T) {
 			`},
 		},
 	}
-
-	rootTmpDir, err := os.MkdirTemp("", t.Name()+"_*")
-	if err != nil {
-		t.Fatalf("error creating temporary directory for test function: %v", err)
-	}
-	t.Cleanup(func() { os.RemoveAll(rootTmpDir) })
-
-	tcRunner := &testCaseRunner{
-		t:          t,
-		rootTmpDir: rootTmpDir,
-	}
-	for name, testCase := range cases {
-		tcRunner.Run(name, testCase)
-	}
-
+	runAllTestCases(t, cases)
 }
