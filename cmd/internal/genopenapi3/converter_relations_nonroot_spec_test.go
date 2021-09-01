@@ -115,6 +115,69 @@ func TestConverter_Do__relations_nonroot_spec(t *testing.T) {
 			`,
 		},
 
+		//
+		"model-put-by-ID": {
+			inSpec: `
+				model:
+					rest_name: resource
+					resource_name: resources
+					entity_name: Resource
+					package: None
+					group: N/A
+					description: useful description.
+					update:
+						description: Updates the resource with the given ID.
+			`,
+			outDoc: `
+				{
+					"components": {
+						"schemas": {
+							"resource": {
+								"type": "object"
+							}
+						}
+					},
+					"paths": {
+						"/resources/{id}": {
+							"parameters": [
+								{
+									"in": "path",
+									"name": "id",
+									"required": true,
+									"schema": {
+										"type": "string"
+									}
+								}
+							],
+							"put": {
+								"description": "Updates the resource with the given ID.",
+								"requestBody": {
+									"content": {
+										"application/json": {
+											"schema": {
+												"$ref": "#/components/schemas/resource"
+											}
+										}
+									}
+								},
+								"responses": {
+									"200": {
+										"description": "n/a",
+										"content": {
+											"application/json": {
+												"schema": {
+													"$ref": "#/components/schemas/resource"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			`,
+		},
 	}
 	runAllTestCases(t, cases)
 }
