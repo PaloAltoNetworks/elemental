@@ -16,7 +16,8 @@ import (
 type testCase struct {
 	inSpec              string
 	inSkipPrivateModels bool
-	outDoc              string // excluding root keys 'openapi3' and 'info'
+	outDoc              string   // excluding root keys 'openapi3' and 'info'
+	supportingSpecs     []string // other dependency specs needed for test case(s)
 }
 
 type testCaseRunner struct {
@@ -29,31 +30,34 @@ func (r *testCaseRunner) Run(name string, tc testCase) {
 	r.t.Run(name, func(t *testing.T) {
 		t.Parallel()
 
-		tc.inSpec = replaceTrailingTabsWithDoubleSpaceForYAML(tc.inSpec)
+		testDataFiles := map[string]string{
+			// these files are needed by regolithe to parse the raw model from the test case
+			"regolithe.ini": regolitheINI,
+			"_type.mapping": typemapping,
+		}
 
-		// this is to ensure that each test case is isolated
+		for i, rawSpec := range append([]string{tc.inSpec}, tc.supportingSpecs...) {
+			rawSpec = replaceTrailingTabsWithDoubleSpaceForYAML(rawSpec)
+
+			// this is needed because the spec filename has to match the rest_name of the spec model
+			var spec struct {
+				Model struct {
+					RESTName string `yaml:"rest_name"`
+				}
+			}
+			if err := yaml.Unmarshal([]byte(rawSpec), &spec); err != nil {
+				t.Fatalf("error unmarshaling test spec data [%d] to read key 'rest_name': %v", i, err)
+			}
+			testDataFiles[spec.Model.RESTName+".spec"] = rawSpec
+		}
+
+		// this is to ensure that each test case executed within this runner is isolated
 		specDir, err := os.MkdirTemp(r.rootTmpDir, name)
 		if err != nil {
 			t.Fatalf("error creating temporary directory for test case: %v", err)
 		}
 
-		// this is needed because the spec filename has to match the rest_name of the spec model
-		var inSpecDeserialized struct {
-			Model struct {
-				RESTName string `yaml:"rest_name"`
-			}
-		}
-		if err := yaml.Unmarshal([]byte(tc.inSpec), &inSpecDeserialized); err != nil {
-			t.Fatalf("error unmarshaling test spec data to read key 'rest_name': %v", err)
-		}
-
-		for filename, content := range map[string]string{
-			// these files are needed by regolithe to parse the raw model from the test case
-			"regolithe.ini": regolitheINI,
-			"_type.mapping": typemapping,
-			// this is what will be parsed by regolithe
-			inSpecDeserialized.Model.RESTName + ".spec": tc.inSpec,
-		} {
+		for filename, content := range testDataFiles {
 			filename = filepath.Join(specDir, filename)
 			if err := os.WriteFile(filename, []byte(content), os.ModePerm); err != nil {
 				t.Fatalf("error writing temporary file '%s': %v", filename, err)
