@@ -24,6 +24,10 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 								description: This is a fancy parameter.
 								type: string
 								default_value: "this is a value"
+							- name: aParam
+								description: should appear at the beginning.
+								type: string
+								default_value: "this is a value 2"
 			`,
 			outDoc: `
 				{
@@ -52,6 +56,15 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 							"get": {
 								"description": "Retrieve all mine sites.",
 								"parameters": [
+									{
+										"description": "should appear at the beginning.",
+										"in": "query",
+										"name": "aParam",
+										"schema": {
+											"type": "string"
+										},
+										"example": "this is a value 2"
+									},
 									{
 										"description": "This is a fancy parameter.",
 										"in": "query",

@@ -18,8 +18,11 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 						description: Retrieves the resource with the given ID.
 						parameters:
 							entries:
-							- name: fancyParam
-								description: This is a fancy parameter.
+							- name: duplicateParam
+								description: This is a fancy parameter that should appear only once.
+								type: time
+							- name: duplicateParam
+								description: This is a fancy parameter that should appear only once.
 								type: time
 			`,
 			outDoc: `
@@ -47,9 +50,9 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 								"description": "Retrieves the resource with the given ID.",
 								"parameters": [
 									{
-										"description": "This is a fancy parameter.",
+										"description": "This is a fancy parameter that should appear only once.",
 										"in": "query",
-										"name": "fancyParam",
+										"name": "duplicateParam",
 										"schema": {
 											"type": "string",
 											"format": "date-time"
