@@ -38,8 +38,11 @@ func (*converter) convertParam(entry *spec.Parameter, in string) *openapi3.Param
 
 	param := openapi3.NewQueryParameter(entry.Name)
 	param.Description = entry.Description
-	param.Example = entry.ExampleValue
 	param.In = in
+	param.Example = entry.ExampleValue
+	if param.Example == nil {
+		param.Example = entry.DefaultValue
+	}
 
 	switch entry.Type {
 	case spec.ParameterTypeInt:
@@ -65,7 +68,7 @@ func (*converter) convertParam(entry *spec.Parameter, in string) *openapi3.Param
 		for i, val := range entry.AllowedChoices {
 			enumVals[i] = val
 		}
-		param.Schema = openapi3.NewSchema().WithEnum(enumVals).NewRef()
+		param.Schema = openapi3.NewSchema().WithEnum(enumVals...).NewRef()
 
 	default:
 		return nil // TODO: better handling? error?
