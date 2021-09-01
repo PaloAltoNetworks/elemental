@@ -5,8 +5,7 @@ import "testing"
 func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 	cases := map[string]testCase{
 
-		//
-		"model-get-by-ID": {
+		"get-by-ID": {
 			inSpec: `
 				model:
 					rest_name: resource
@@ -60,8 +59,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 			`,
 		},
 
-		//
-		"model-delete-by-ID": {
+		"delete-by-ID": {
 			inSpec: `
 				model:
 					rest_name: resource
@@ -115,8 +113,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 			`,
 		},
 
-		//
-		"model-put-by-ID": {
+		"put-by-ID": {
 			inSpec: `
 				model:
 					rest_name: resource

@@ -7,8 +7,7 @@ import (
 func TestConverter_Do__model_root(t *testing.T) {
 	cases := map[string]testCase{
 
-		//
-		"root-model-should-be-ignored": {
+		"should-be-ignored": {
 			inSpec: `
 				model:
 					root: true

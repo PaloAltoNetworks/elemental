@@ -7,8 +7,7 @@ import (
 func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 	cases := map[string]testCase{
 
-		//
-		"model-with-no-attributes": {
+		"no-attributes": {
 			inSpec: `
 				model:
 					rest_name: void
@@ -32,8 +31,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			`,
 		},
 
-		//
-		"model-with-unexposed-attribute--attr-ignored": {
+		"attribute-ignored-if-unexposed": {
 			inSpec: `
 				model:
 					rest_name: test
@@ -63,7 +61,6 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			`,
 		},
 
-		//
 		"model-is-ignored-if-private-and-skip-flag-is-set": {
 			inSkipPrivateModels: true,
 			inSpec: `
@@ -90,8 +87,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			`,
 		},
 
-		//
-		"model-with-primitive-attributes": {
+		"primitive-attributes": {
 			inSpec: `
 				model:
 					rest_name: test
@@ -160,8 +156,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			`,
 		},
 
-		//
-		"model-with-enum-attribute": {
+		"enum-attribute": {
 			inSpec: `
 				model:
 					rest_name: test
@@ -200,8 +195,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			`,
 		},
 
-		//
-		"model-with-object-attribute": {
+		"object-attribute": {
 			inSpec: `
 				model:
 					rest_name: test
@@ -237,8 +231,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			`,
 		},
 
-		//
-		"model-with-list-of-primitive-attributes": {
+		"list-of-primitive-attributes": {
 			inSpec: `
 				model:
 					rest_name: test
@@ -327,9 +320,8 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			`,
 		},
 
-		//
 		// we assume any referenced type is already defined in 'components.schemas'
-		"model-with-ref-attribute": {
+		"attribute-with-ref-type": {
 			inSpec: `
 				model:
 					rest_name: test
@@ -365,9 +357,8 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			`,
 		},
 
-		//
 		// we assume any referenced type is already defined in 'components.schemas'
-		"model-with-refList-attributes": {
+		"attributes-with-refList-type": {
 			inSpec: `
 				model:
 					rest_name: test
@@ -419,9 +410,8 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			`,
 		},
 
-		//
 		// we assume any referenced type is already defined in 'components.schemas'
-		"model-with-refMap-attributes": {
+		"attributes-with-refMap-type": {
 			inSpec: `
 				model:
 					rest_name: test
@@ -473,8 +463,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			`,
 		},
 
-		//
-		"model-with-externalType-attributes--[]byte-turns-into-string": {
+		"attributes-with-external-type--[]byte-turns-into-string": {
 			inSpec: `
 				model:
 					rest_name: test
@@ -511,8 +500,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			`,
 		},
 
-		//
-		"model-with-required-attributes": {
+		"required-attributes": {
 			inSpec: `
 				model:
 					rest_name: test

@@ -7,8 +7,7 @@ import (
 func TestConverter_Do__specRelations_root(t *testing.T) {
 	cases := map[string]testCase{
 
-		//
-		"root-model-relation-create": {
+		"relation-action-create": {
 			inSpec: `
 				model:
 					root: true
@@ -74,8 +73,7 @@ func TestConverter_Do__specRelations_root(t *testing.T) {
 			`},
 		},
 
-		//
-		"root-model-relation-get": {
+		"relation-action-get": {
 			inSpec: `
 				model:
 					root: true
