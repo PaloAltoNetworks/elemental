@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestConverter_Do__relations_root(t *testing.T) {
+func TestConverter_Do__relations_root_spec(t *testing.T) {
 
 	cases := map[string]testCase{
 
