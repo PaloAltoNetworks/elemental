@@ -106,7 +106,7 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 			`},
 		},
 
-		"relation-post": {
+		"relation-create": {
 			inSpec: `
 				model:
 					rest_name: resource
@@ -188,6 +188,45 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 							}
 						}
 					}
+				}
+			`,
+			supportingSpecs: []string{`
+				model:
+					rest_name: minesite
+					resource_name: minesites
+					entity_name: MineSites
+					package: none
+					group: N/A
+					description: Represents a resource mine site.
+			`},
+		},
+
+		"relation-without-get-or-create": {
+			inSpec: `
+				model:
+					rest_name: resource
+					resource_name: resources
+					entity_name: Resource
+					package: resource
+					group: N/A
+					description: useful description.
+
+				relations:
+				- rest_name: minesite
+			`,
+			outDoc: `
+				{
+					"components": {
+						"schemas": {
+							"minesite": {
+								"type": "object"
+							},
+							"resource": {
+								"type": "object"
+							}
+						}
+					},
+					"paths": {}
 				}
 			`,
 			supportingSpecs: []string{`

@@ -162,6 +162,43 @@ func TestConverter_Do__specRelations_root(t *testing.T) {
 					description: Represents a resource.
 			`},
 		},
+
+		"relation-without-get-or-create": {
+			inSpec: `
+				model:
+					root: true
+					rest_name: root
+					resource_name: root
+					entity_name: Root
+					package: root
+					group: core
+					description: root object.
+
+				relations:
+				- rest_name: resource
+			`,
+			outDoc: `
+				{
+					"components": {
+						"schemas": {
+							"resource": {
+								"type": "object"
+							}
+						}
+					},
+					"paths": {}
+				}
+			`,
+			supportingSpecs: []string{`
+				model:
+					rest_name: resource
+					resource_name: resources
+					entity_name: Recource
+					package: none
+					group: N/A
+					description: Represents a resource.
+			`},
+		},
 	}
 	runAllTestCases(t, cases)
 }
