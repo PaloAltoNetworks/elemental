@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestConverter_Do__models_and_attributes(t *testing.T) {
+func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 	cases := map[string]testCase{
 
 		//
