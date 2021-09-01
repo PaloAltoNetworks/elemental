@@ -16,6 +16,11 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 					description: useful description.
 					get:
 						description: Retrieves the resource with the given ID.
+						parameters:
+							entries:
+							- name: fancyParam
+								description: This is a fancy parameter.
+								type: time
 			`,
 			outDoc: `
 				{
@@ -40,6 +45,17 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 							],
 							"get": {
 								"description": "Retrieves the resource with the given ID.",
+								"parameters": [
+									{
+										"description": "This is a fancy parameter.",
+										"in": "query",
+										"name": "fancyParam",
+										"schema": {
+											"type": "string",
+											"format": "date-time"
+										}
+									}
+								],
 								"responses": {
 									"200": {
 										"description": "n/a",
@@ -70,6 +86,11 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 					description: useful description.
 					delete:
 						description: Deletes the resource with the given ID.
+						parameters:
+							entries:
+							- name: fancyParam
+								description: This is a fancy parameter.
+								type: duration
 			`,
 			outDoc: `
 				{
@@ -94,6 +115,16 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 							],
 							"delete": {
 								"description": "Deletes the resource with the given ID.",
+								"parameters": [
+									{
+										"description": "This is a fancy parameter.",
+										"in": "query",
+										"name": "fancyParam",
+										"schema": {
+											"type": "string"
+										}
+									}
+								],
 								"responses": {
 									"200": {
 										"description": "n/a",
@@ -124,6 +155,14 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 					description: useful description.
 					update:
 						description: Updates the resource with the given ID.
+						parameters:
+							entries:
+							- name: fancyParam
+								description: This is a fancy parameter.
+								type: enum
+								allowed_choices:
+								- Choice1
+								- Choice2
 			`,
 			outDoc: `
 				{
@@ -148,6 +187,16 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 							],
 							"put": {
 								"description": "Updates the resource with the given ID.",
+								"parameters": [
+									{
+										"description": "This is a fancy parameter.",
+										"in": "query",
+										"name": "fancyParam",
+										"schema": {
+											"enum": ["Choice1", "Choice2"]
+										}
+									}
+								],
 								"requestBody": {
 									"content": {
 										"application/json": {

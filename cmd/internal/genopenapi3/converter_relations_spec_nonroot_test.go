@@ -18,6 +18,12 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 				- rest_name: minesite
 					get:
 						description: Retrieve all mine sites.
+						parameters:
+							entries:
+							- name: fancyParam
+								description: This is a fancy parameter.
+								type: string
+								default_value: "this is a value"
 			`,
 			outDoc: `
 				{
@@ -45,6 +51,17 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 							],
 							"get": {
 								"description": "Retrieve all mine sites.",
+								"parameters": [
+									{
+										"description": "This is a fancy parameter.",
+										"in": "query",
+										"name": "fancyParam",
+										"schema": {
+											"type": "string"
+										},
+										"example": "this is a value"
+									}
+								],
 								"responses": {
 									"200": {
 										"description": "n/a",
@@ -90,6 +107,13 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 				- rest_name: minesite
 					create:
 						description: Creates a mine site.
+						parameters:
+							entries:
+							- name: fancyParam
+								description: This is a fancy parameter.
+								type: float
+
+
 			`,
 			outDoc: `
 				{
@@ -117,6 +141,16 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 							],
 							"post": {
 								"description": "Creates a mine site.",
+								"parameters": [
+									{
+										"description": "This is a fancy parameter.",
+										"in": "query",
+										"name": "fancyParam",
+										"schema": {
+											"type": "number"
+										}
+									}
+								],
 								"requestBody": {
 									"content": {
 										"application/json": {
