@@ -5,6 +5,8 @@ import (
 )
 
 func TestConverter_Do__specRelations_root(t *testing.T) {
+	t.Parallel()
+
 	cases := map[string]testCase{
 
 		"relation-create": {

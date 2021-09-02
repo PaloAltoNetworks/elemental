@@ -10,6 +10,7 @@ import (
 )
 
 func TestConverter_Do__error_no_externalType_mapping(t *testing.T) {
+	t.Parallel()
 
 	specDir, err := os.MkdirTemp("", t.Name()+"_*")
 	if err != nil {

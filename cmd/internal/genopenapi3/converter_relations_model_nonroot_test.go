@@ -3,6 +3,8 @@ package genopenapi3
 import "testing"
 
 func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
+	t.Parallel()
+
 	cases := map[string]testCase{
 
 		"get-by-ID": {

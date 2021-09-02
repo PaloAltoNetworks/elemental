@@ -3,6 +3,8 @@ package genopenapi3
 import "testing"
 
 func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
+	t.Parallel()
+
 	cases := map[string]testCase{
 		"relation-get": {
 			inSpec: `

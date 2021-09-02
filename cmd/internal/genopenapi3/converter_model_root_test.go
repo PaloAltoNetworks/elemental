@@ -5,6 +5,8 @@ import (
 )
 
 func TestConverter_Do__model_root(t *testing.T) {
+	t.Parallel()
+
 	cases := map[string]testCase{
 
 		"should-be-ignored": {

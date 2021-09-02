@@ -5,6 +5,8 @@ import (
 )
 
 func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
+	t.Parallel()
+
 	cases := map[string]testCase{
 
 		"no-attributes": {
