@@ -2,11 +2,16 @@ package genopenapi3
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"go.aporeto.io/regolithe/spec"
+)
+
+var (
+	errUnmarshalingExternalType = errors.New("unmarshaling openapi3 external type mapping")
 )
 
 func (c *converter) convertModel(s spec.Specification) (*openapi3.SchemaRef, error) {
@@ -106,7 +111,7 @@ func (c *converter) convertAttribute(attr *spec.Attribute) (schemaRef *openapi3.
 
 		attrSchema := new(openapi3.Schema)
 		if err := json.Unmarshal([]byte(mapping.Type), attrSchema); err != nil {
-			return nil, fmt.Errorf("unmarshaling openapi3 external type mapping '%s': %w", attr.SubType, err)
+			return nil, fmt.Errorf("%w: '%s': %s", errUnmarshalingExternalType, attr.SubType, err)
 		}
 
 		return attrSchema.NewRef(), nil
