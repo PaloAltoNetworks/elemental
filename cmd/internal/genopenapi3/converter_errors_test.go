@@ -2,6 +2,7 @@ package genopenapi3
 
 import (
 	"errors"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -12,7 +13,7 @@ import (
 func TestConverter_Do__error_no_externalType_mapping(t *testing.T) {
 	t.Parallel()
 
-	specDir, err := os.MkdirTemp("", t.Name()+"_*")
+	specDir, err := ioutil.TempDir("", t.Name()+"_*")
 	if err != nil {
 		t.Fatalf("error creating temporary directory for test function: %v", err)
 	}
@@ -47,7 +48,7 @@ func TestConverter_Do__error_no_externalType_mapping(t *testing.T) {
 		"test.spec":     rawSpec,
 	} {
 		filename = filepath.Join(specDir, filename)
-		if err := os.WriteFile(filename, []byte(content), os.ModePerm); err != nil {
+		if err := ioutil.WriteFile(filename, []byte(content), os.ModePerm); err != nil {
 			t.Fatalf("error writing temporary file '%s': %v", filename, err)
 		}
 	}
@@ -65,7 +66,7 @@ func TestConverter_Do__error_no_externalType_mapping(t *testing.T) {
 
 func TestConverter_Do__error_bad_write_destination(t *testing.T) {
 
-	specDir, err := os.MkdirTemp("", t.Name()+"_*")
+	specDir, err := ioutil.TempDir("", t.Name()+"_*")
 	if err != nil {
 		t.Fatalf("error creating temporary directory for test function: %v", err)
 	}
@@ -87,7 +88,7 @@ func TestConverter_Do__error_bad_write_destination(t *testing.T) {
 		"test.spec":     rawSpec,
 	} {
 		filename = filepath.Join(specDir, filename)
-		if err := os.WriteFile(filename, []byte(content), os.ModePerm); err != nil {
+		if err := ioutil.WriteFile(filename, []byte(content), os.ModePerm); err != nil {
 			t.Fatalf("error writing temporary file '%s': %v", filename, err)
 		}
 	}
