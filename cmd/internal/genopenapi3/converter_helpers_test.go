@@ -156,3 +156,11 @@ func replaceTrailingTabsWithDoubleSpaceForYAML(s string) string {
 
 	return sb.String()
 }
+
+type fakeWriter struct {
+	err error
+}
+
+func (fw *fakeWriter) Write([]byte) (int, error) {
+	return 0, fw.err
+}
