@@ -12,7 +12,7 @@ email = dev@aporeto.com
 version = 1.0
 `
 
-const typemapping = `
+const typeMapping = `
 '[][]interface{}':
   openapi3:
     type: |-

@@ -50,7 +50,7 @@ func (r *testCaseRunner) run(name string, tc testCase) {
 		testDataFiles := map[string]string{
 			// these files are needed by regolithe to parse the raw model from the test case
 			"regolithe.ini": regolitheINI,
-			"_type.mapping": typemapping,
+			"_type.mapping": typeMapping,
 		}
 
 		for i, rawSpec := range append([]string{tc.inSpec}, tc.supportingSpecs...) {
