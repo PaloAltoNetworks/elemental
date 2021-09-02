@@ -18,11 +18,12 @@ import (
 	"os"
 	"path"
 
-	"github.com/spf13/viper"
 	"go.aporeto.io/elemental/cmd/elegen/versions"
 	"go.aporeto.io/regolithe"
 	"go.aporeto.io/regolithe/spec"
 	"golang.org/x/sync/errgroup"
+
+	"go.aporeto.io/elemental/cmd/internal/genopenapi3"
 )
 
 const (
@@ -33,10 +34,47 @@ const (
 
 func main() {
 
-	version := fmt.Sprintf("%s - %s", versions.ProjectVersion, versions.ProjectSha)
-	cmd := regolithe.NewCommand(generatorName, generatorDescription, version, attributeNameConverter, attributeTypeConverter, generationName, generator)
+	// will be initialized later
+	var (
+		genType    string
+		publicMode bool
+	)
 
-	cmd.PersistentFlags().Bool("public", false, "If set to true, only exposed attributes and public objects will be generated")
+	generator := func(sets []spec.SpecificationSet, out string) error {
+		switch genType {
+		case "openapi3":
+			return genopenapi3.GeneratorFunc(sets, out, publicMode)
+		case "", "elemental":
+			return genElemental(sets, out, publicMode)
+		default:
+			return fmt.Errorf("unhandled generation type: '%s'", genType)
+		}
+	}
+
+	version := fmt.Sprintf("%s - %s", versions.ProjectVersion, versions.ProjectSha)
+	cmd := regolithe.NewCommand(
+		generatorName,
+		generatorDescription,
+		version,
+		attributeNameConverter,
+		attributeTypeConverter,
+		generationName,
+		generator,
+	)
+
+	cmd.PersistentFlags().BoolVar(
+		&publicMode,
+		"public",
+		false,
+		"If set to true, only exposed attributes and public objects will be generated",
+	)
+	cmd.PersistentFlags().StringVarP(
+		&genType,
+		"gen-type",
+		"g",
+		"elemental",
+		"The desired type of what needs to be generated. Possible choices are: [elemental openapi3]",
+	)
 
 	if err := cmd.Execute(); err != nil {
 		fmt.Fprint(os.Stderr, err) // nolint
@@ -44,10 +82,9 @@ func main() {
 	}
 }
 
-func generator(sets []spec.SpecificationSet, out string) error {
+func genElemental(sets []spec.SpecificationSet, out string, publicMode bool) error {
 
 	set := sets[0]
-	publicMode := viper.GetBool("public")
 	outFolder := path.Join(out, "elemental")
 	if err := os.MkdirAll(outFolder, 0750); err != nil && !os.IsExist(err) {
 		return err
