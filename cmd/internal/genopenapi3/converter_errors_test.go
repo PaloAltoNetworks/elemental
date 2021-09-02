@@ -10,7 +10,7 @@ import (
 	"go.aporeto.io/regolithe/spec"
 )
 
-func TestConverter_Do__error_no_externalType_mapping(t *testing.T) {
+func TestConverter_Do__error_bad_externalType_mapping(t *testing.T) {
 	t.Parallel()
 
 	specDir, err := ioutil.TempDir("", t.Name()+"_*")
