@@ -12,6 +12,7 @@
 package main
 
 import (
+	"reflect"
 	"testing"
 
 	"go.aporeto.io/regolithe/spec"
@@ -222,6 +223,94 @@ func Test_attrBSONFieldName(t *testing.T) {
 					"actual: '%s'\n",
 					tc.expected,
 					actual)
+			}
+		})
+	}
+}
+
+func Test_modelCommentFlags(t *testing.T) {
+	type args struct {
+		exts map[string]interface{}
+	}
+	tests := []struct {
+		name string
+		args func(t *testing.T) args
+
+		want1 []string
+	}{
+		{
+			"nil",
+			func(t *testing.T) args {
+				return args{
+					nil,
+				}
+			},
+			nil,
+		},
+		{
+			"no key",
+			func(t *testing.T) args {
+				return args{
+					map[string]interface{}{"nope": nil},
+				}
+			},
+			nil,
+		},
+		{
+			"nil key",
+			func(t *testing.T) args {
+				return args{
+					map[string]interface{}{"commentFlags": nil},
+				}
+			},
+			nil,
+		},
+		{
+			"empty key",
+			func(t *testing.T) args {
+				return args{
+					map[string]interface{}{"commentFlags": []interface{}{}},
+				}
+			},
+			nil,
+		},
+		{
+			"key with //",
+			func(t *testing.T) args {
+				return args{
+					map[string]interface{}{"commentFlags": []interface{}{"// hello world"}},
+				}
+			},
+			[]string{"hello world"},
+		},
+		{
+			"key without //",
+			func(t *testing.T) args {
+				return args{
+					map[string]interface{}{"commentFlags": []interface{}{" hello world"}},
+				}
+			},
+			[]string{"hello world"},
+		},
+		{
+			"key with weird spacing",
+			func(t *testing.T) args {
+				return args{
+					map[string]interface{}{"commentFlags": []interface{}{" //	 hello world"}},
+				}
+			},
+			[]string{"hello world"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tArgs := tt.args(t)
+
+			got1 := modelCommentFlags(tArgs.exts)
+
+			if !reflect.DeepEqual(got1, tt.want1) {
+				t.Errorf("modelCommentFlags got1 = %v, want1: %v", got1, tt.want1)
 			}
 		})
 	}

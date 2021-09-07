@@ -477,3 +477,34 @@ func sortAttributes(attrs []*spec.Attribute) []*spec.Attribute {
 
 	return out
 }
+
+func modelCommentFlags(exts map[string]interface{}) []string {
+
+	if exts == nil || exts["commentFlags"] == nil {
+		return nil
+	}
+
+	flags, ok := exts["commentFlags"].([]interface{})
+	if !ok {
+		panic(fmt.Sprintf("commentFlags must be a []interface{}, but got %T", exts["commentFlags"]))
+	}
+
+	if len(flags) == 0 {
+		return nil
+	}
+
+	out := make([]string, len(flags))
+	for i, item := range flags {
+		str, ok := item.(string)
+		if !ok {
+			panic(fmt.Sprintf("content of commentFlags must be strings. got %T", str))
+		}
+		str = strings.TrimSpace(str)
+		str = strings.TrimPrefix(str, "//")
+		str = strings.TrimSpace(str)
+
+		out[i] = str
+	}
+
+	return out
+}
