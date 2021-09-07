@@ -783,9 +783,6 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
 {{- if and (not .Spec.Model.Detached) (not .Spec.Model.IsRoot) }}
 
 // Sparse{{ .Spec.Model.EntityNamePlural }}List represents a list of Sparse{{ .Spec.Model.EntityNamePlural }}
-{{- range modelCommentFlags .Spec.Model.Extensions }}
-// {{ . }}
-{{- end }}
 type Sparse{{ .Spec.Model.EntityNamePlural }}List []*Sparse{{ .Spec.Model.EntityName}}
 
 // Identity returns the identity of the objects in the list.
@@ -851,6 +848,9 @@ func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) Version() int {
 }
 
 // Sparse{{ .Spec.Model.EntityName }} represents the sparse version of a {{ .Spec.Model.RestName }}.
+{{- range modelCommentFlags .Spec.Model.Extensions }}
+// {{ . }}
+{{- end }}
 type Sparse{{ .Spec.Model.EntityName }} struct {
     {{ range .Spec.Attributes $latestVersion -}}
     {{ attrToField $.Set true . }}
