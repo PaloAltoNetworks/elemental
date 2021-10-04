@@ -9,6 +9,11 @@ import (
 
 var noDesc = "n/a"
 
+type operationConfig struct {
+	id       string
+	restName string
+}
+
 func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[string]*openapi3.PathItem {
 
 	paths := make(map[string]*openapi3.PathItem)
@@ -19,12 +24,26 @@ func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[
 			continue
 		}
 
+		resourceName := c.inSpecSet.Specification(relation.RestName).Model().ResourceName
+
 		pathItem := &openapi3.PathItem{
-			Get:  c.convertRelationActionToGetAll(relation.Get, relation.RestName),
-			Post: c.convertRelationActionToPost(relation.Create, relation.RestName),
+			Get: c.convertRelationActionToGetAll(
+				relation.Get,
+				operationConfig{
+					id:       "get-all-" + resourceName,
+					restName: relation.RestName,
+				},
+			),
+			Post: c.convertRelationActionToPost(
+				relation.Create,
+				operationConfig{
+					id:       "create-a-new-" + relation.RestName,
+					restName: relation.RestName,
+				},
+			),
 		}
 
-		uri := "/" + c.inSpecSet.Specification(relation.RestName).Model().ResourceName
+		uri := "/" + resourceName
 		paths[uri] = pathItem
 	}
 
@@ -34,6 +53,7 @@ func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[
 func (c *converter) convertRelationsForNonRootSpec(resourceName string, relations []*spec.Relation) map[string]*openapi3.PathItem {
 
 	paths := make(map[string]*openapi3.PathItem)
+	parentRestName := c.resourceToRest[resourceName]
 
 	for _, relation := range relations {
 
@@ -41,14 +61,29 @@ func (c *converter) convertRelationsForNonRootSpec(resourceName string, relation
 			continue
 		}
 
+		childRestName := relation.RestName
+		childResourceName := c.inSpecSet.Specification(childRestName).Model().ResourceName
+
 		pathItem := &openapi3.PathItem{
-			Get:  c.convertRelationActionToGetAll(relation.Get, relation.RestName),
-			Post: c.convertRelationActionToPost(relation.Create, relation.RestName),
+			Get: c.convertRelationActionToGetAll(
+				relation.Get,
+				operationConfig{
+					id:       "get-all-" + childResourceName + "-for-a-given-" + parentRestName,
+					restName: childRestName,
+				},
+			),
+			Post: c.convertRelationActionToPost(
+				relation.Create,
+				operationConfig{
+					id:       "create-a-new-" + childRestName + "-for-a-given-" + parentRestName,
+					restName: childRestName,
+				},
+			),
 		}
 
 		c.insertParamID(&pathItem.Parameters)
-		relatedResourceName := c.inSpecSet.Specification(relation.RestName).Model().ResourceName
-		uri := fmt.Sprintf("/%s/{%s}/%s", resourceName, paramNameID, relatedResourceName)
+
+		uri := fmt.Sprintf("/%s/{%s}/%s", resourceName, paramNameID, childResourceName)
 		paths[uri] = pathItem
 	}
 
@@ -62,9 +97,27 @@ func (c *converter) convertRelationsForNonRootModel(model *spec.Model) map[strin
 	}
 
 	pathItem := &openapi3.PathItem{
-		Get:    c.convertRelationActionToGetByID(model.Get, model.RestName),
-		Delete: c.convertRelationActionToDeleteByID(model.Delete, model.RestName),
-		Put:    c.convertRelationActionToPutByID(model.Update, model.RestName),
+		Get: c.convertRelationActionToGetByID(
+			model.Get,
+			operationConfig{
+				id:       fmt.Sprintf("get-%s-by-ID", model.RestName),
+				restName: model.RestName,
+			},
+		),
+		Delete: c.convertRelationActionToDeleteByID(
+			model.Delete,
+			operationConfig{
+				id:       fmt.Sprintf("delete-%s-by-ID", model.RestName),
+				restName: model.RestName,
+			},
+		),
+		Put: c.convertRelationActionToPutByID(
+			model.Update,
+			operationConfig{
+				id:       fmt.Sprintf("update-%s-by-ID", model.RestName),
+				restName: model.RestName,
+			},
+		),
 	}
 	c.insertParamID(&pathItem.Parameters)
 
@@ -73,16 +126,17 @@ func (c *converter) convertRelationsForNonRootModel(model *spec.Model) map[strin
 	return pathItems
 }
 
-func (c *converter) convertRelationActionToGetAll(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
+func (c *converter) convertRelationActionToGetAll(relationAction *spec.RelationAction, cfg operationConfig) *openapi3.Operation {
 
 	if relationAction == nil {
 		return nil
 	}
 
 	respBodySchema := openapi3.NewArraySchema()
-	respBodySchema.Items = openapi3.NewSchemaRef("#/components/schemas/"+restName, nil)
+	respBodySchema.Items = openapi3.NewSchemaRef("#/components/schemas/"+cfg.restName, nil)
 
 	op := &openapi3.Operation{
+		OperationID: cfg.id,
 		Description: relationAction.Description,
 		Responses: openapi3.Responses{
 			"200": &openapi3.ResponseRef{
@@ -103,15 +157,16 @@ func (c *converter) convertRelationActionToGetAll(relationAction *spec.RelationA
 	return op
 }
 
-func (c *converter) convertRelationActionToPost(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
+func (c *converter) convertRelationActionToPost(relationAction *spec.RelationAction, cfg operationConfig) *openapi3.Operation {
 
 	if relationAction == nil {
 		return nil
 	}
 
-	schemaRef := openapi3.NewSchemaRef("#/components/schemas/"+restName, nil)
+	schemaRef := openapi3.NewSchemaRef("#/components/schemas/"+cfg.restName, nil)
 
 	op := &openapi3.Operation{
+		OperationID: cfg.id,
 		Description: relationAction.Description,
 		RequestBody: &openapi3.RequestBodyRef{
 			Value: &openapi3.RequestBody{
@@ -141,15 +196,16 @@ func (c *converter) convertRelationActionToPost(relationAction *spec.RelationAct
 	return op
 }
 
-func (c *converter) convertRelationActionToGetByID(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
+func (c *converter) convertRelationActionToGetByID(relationAction *spec.RelationAction, cfg operationConfig) *openapi3.Operation {
 
 	if relationAction == nil {
 		return nil
 	}
 
-	respBodySchemaRef := openapi3.NewSchemaRef("#/components/schemas/"+restName, nil)
+	respBodySchemaRef := openapi3.NewSchemaRef("#/components/schemas/"+cfg.restName, nil)
 
 	op := &openapi3.Operation{
+		OperationID: cfg.id,
 		Description: relationAction.Description,
 		Responses: openapi3.Responses{
 			"200": &openapi3.ResponseRef{
@@ -170,15 +226,16 @@ func (c *converter) convertRelationActionToGetByID(relationAction *spec.Relation
 	return op
 }
 
-func (c *converter) convertRelationActionToDeleteByID(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
+func (c *converter) convertRelationActionToDeleteByID(relationAction *spec.RelationAction, cfg operationConfig) *openapi3.Operation {
 
 	if relationAction == nil {
 		return nil
 	}
 
-	respBodySchemaRef := openapi3.NewSchemaRef("#/components/schemas/"+restName, nil)
+	respBodySchemaRef := openapi3.NewSchemaRef("#/components/schemas/"+cfg.restName, nil)
 
 	op := &openapi3.Operation{
+		OperationID: cfg.id,
 		Description: relationAction.Description,
 		Responses: openapi3.Responses{
 			"200": &openapi3.ResponseRef{
@@ -199,15 +256,16 @@ func (c *converter) convertRelationActionToDeleteByID(relationAction *spec.Relat
 	return op
 }
 
-func (c *converter) convertRelationActionToPutByID(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
+func (c *converter) convertRelationActionToPutByID(relationAction *spec.RelationAction, cfg operationConfig) *openapi3.Operation {
 
 	if relationAction == nil {
 		return nil
 	}
 
-	schemaRef := openapi3.NewSchemaRef("#/components/schemas/"+restName, nil)
+	schemaRef := openapi3.NewSchemaRef("#/components/schemas/"+cfg.restName, nil)
 
 	op := &openapi3.Operation{
+		OperationID: cfg.id,
 		Description: relationAction.Description,
 		RequestBody: &openapi3.RequestBodyRef{
 			Value: &openapi3.RequestBody{

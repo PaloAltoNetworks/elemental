@@ -42,6 +42,7 @@ func TestConverter_Do__specRelations_root(t *testing.T) {
 					"paths": {
 						"/resources": {
 							"post": {
+								"operationId": "create-a-new-resource",
 								"parameters": [
 									{
 										"description": "This is a fancy parameter.",
@@ -123,6 +124,7 @@ func TestConverter_Do__specRelations_root(t *testing.T) {
 					"paths": {
 						"/resources": {
 							"get": {
+								"operationId": "get-all-resources",
 								"description": "Retrieve all resources.",
 								"parameters": [
 								  {

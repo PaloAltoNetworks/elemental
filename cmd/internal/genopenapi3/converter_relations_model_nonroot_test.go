@@ -49,6 +49,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 								}
 							],
 							"get": {
+								"operationId": "get-resource-by-ID",
 								"description": "Retrieves the resource with the given ID.",
 								"parameters": [
 									{
@@ -119,6 +120,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 								}
 							],
 							"delete": {
+								"operationId": "delete-resource-by-ID",
 								"description": "Deletes the resource with the given ID.",
 								"parameters": [
 									{
@@ -191,6 +193,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 								}
 							],
 							"put": {
+								"operationId": "update-resource-by-ID",
 								"description": "Updates the resource with the given ID.",
 								"parameters": [
 									{
@@ -268,6 +271,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 								}
 							],
 							"get": {
+								"operationId": "get-resource-by-ID",
 								"description": "Retrieves the resource with the given ID.",
 								"responses": {
 									"200": {
@@ -283,6 +287,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 								}
 							},
 							"delete": {
+								"operationId": "delete-resource-by-ID",
 								"description": "Deletes the resource with the given ID.",
 								"responses": {
 									"200": {
@@ -298,6 +303,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 								}
 							},
 							"put": {
+								"operationId": "update-resource-by-ID",
 								"description": "Updates the resource with the given ID.",
 								"requestBody": {
 									"content": {
