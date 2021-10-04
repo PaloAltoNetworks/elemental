@@ -10,9 +10,9 @@ import (
 var noDesc = "n/a"
 
 type operationConfig struct {
-	id       string
-	restName string
-	tags     []string
+	id     string
+	schema string
+	tags   []string
 }
 
 func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[string]*openapi3.PathItem {
@@ -32,17 +32,17 @@ func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[
 			Get: c.convertRelationActionToGetAll(
 				relation.Get,
 				operationConfig{
-					id:       "get-all-" + model.ResourceName,
-					restName: relation.RestName,
-					tags:     tags,
+					id:     "get-all-" + model.ResourceName,
+					schema: relation.RestName,
+					tags:   tags,
 				},
 			),
 			Post: c.convertRelationActionToPost(
 				relation.Create,
 				operationConfig{
-					id:       "create-a-new-" + relation.RestName,
-					restName: relation.RestName,
-					tags:     tags,
+					id:     "create-a-new-" + relation.RestName,
+					schema: relation.RestName,
+					tags:   tags,
 				},
 			),
 		}
@@ -74,17 +74,17 @@ func (c *converter) convertRelationsForNonRootSpec(resourceName string, relation
 			Get: c.convertRelationActionToGetAll(
 				relation.Get,
 				operationConfig{
-					id:       "get-all-" + childResourceName + "-for-a-given-" + parentRestName,
-					tags:     tags,
-					restName: childRestName,
+					id:     "get-all-" + childResourceName + "-for-a-given-" + parentRestName,
+					tags:   tags,
+					schema: childRestName,
 				},
 			),
 			Post: c.convertRelationActionToPost(
 				relation.Create,
 				operationConfig{
-					id:       "create-a-new-" + childRestName + "-for-a-given-" + parentRestName,
-					tags:     tags,
-					restName: childRestName,
+					id:     "create-a-new-" + childRestName + "-for-a-given-" + parentRestName,
+					tags:   tags,
+					schema: childRestName,
 				},
 			),
 		}
@@ -110,25 +110,25 @@ func (c *converter) convertRelationsForNonRootModel(model *spec.Model) map[strin
 		Get: c.convertRelationActionToGetByID(
 			model.Get,
 			operationConfig{
-				id:       fmt.Sprintf("get-%s-by-ID", model.RestName),
-				tags:     tags,
-				restName: model.RestName,
+				id:     fmt.Sprintf("get-%s-by-ID", model.RestName),
+				tags:   tags,
+				schema: model.RestName,
 			},
 		),
 		Delete: c.convertRelationActionToDeleteByID(
 			model.Delete,
 			operationConfig{
-				id:       fmt.Sprintf("delete-%s-by-ID", model.RestName),
-				tags:     tags,
-				restName: model.RestName,
+				id:     fmt.Sprintf("delete-%s-by-ID", model.RestName),
+				tags:   tags,
+				schema: model.RestName,
 			},
 		),
 		Put: c.convertRelationActionToPutByID(
 			model.Update,
 			operationConfig{
-				id:       fmt.Sprintf("update-%s-by-ID", model.RestName),
-				tags:     tags,
-				restName: model.RestName,
+				id:     fmt.Sprintf("update-%s-by-ID", model.RestName),
+				tags:   tags,
+				schema: model.RestName,
 			},
 		),
 	}
@@ -146,7 +146,7 @@ func (c *converter) convertRelationActionToGetAll(relationAction *spec.RelationA
 	}
 
 	respBodySchema := openapi3.NewArraySchema()
-	respBodySchema.Items = openapi3.NewSchemaRef("#/components/schemas/"+cfg.restName, nil)
+	respBodySchema.Items = openapi3.NewSchemaRef("#/components/schemas/"+cfg.schema, nil)
 
 	op := &openapi3.Operation{
 		OperationID: cfg.id,
@@ -177,7 +177,7 @@ func (c *converter) convertRelationActionToPost(relationAction *spec.RelationAct
 		return nil
 	}
 
-	schemaRef := openapi3.NewSchemaRef("#/components/schemas/"+cfg.restName, nil)
+	schemaRef := openapi3.NewSchemaRef("#/components/schemas/"+cfg.schema, nil)
 
 	op := &openapi3.Operation{
 		OperationID: cfg.id,
@@ -217,7 +217,7 @@ func (c *converter) convertRelationActionToGetByID(relationAction *spec.Relation
 		return nil
 	}
 
-	respBodySchemaRef := openapi3.NewSchemaRef("#/components/schemas/"+cfg.restName, nil)
+	respBodySchemaRef := openapi3.NewSchemaRef("#/components/schemas/"+cfg.schema, nil)
 
 	op := &openapi3.Operation{
 		OperationID: cfg.id,
@@ -248,7 +248,7 @@ func (c *converter) convertRelationActionToDeleteByID(relationAction *spec.Relat
 		return nil
 	}
 
-	respBodySchemaRef := openapi3.NewSchemaRef("#/components/schemas/"+cfg.restName, nil)
+	respBodySchemaRef := openapi3.NewSchemaRef("#/components/schemas/"+cfg.schema, nil)
 
 	op := &openapi3.Operation{
 		OperationID: cfg.id,
@@ -279,7 +279,7 @@ func (c *converter) convertRelationActionToPutByID(relationAction *spec.Relation
 		return nil
 	}
 
-	schemaRef := openapi3.NewSchemaRef("#/components/schemas/"+cfg.restName, nil)
+	schemaRef := openapi3.NewSchemaRef("#/components/schemas/"+cfg.schema, nil)
 
 	op := &openapi3.Operation{
 		OperationID: cfg.id,
