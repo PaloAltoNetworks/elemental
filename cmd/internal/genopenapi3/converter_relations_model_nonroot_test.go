@@ -13,8 +13,8 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 					rest_name: resource
 					resource_name: resources
 					entity_name: Resource
-					package: None
-					group: N/A
+					package: usefulPackageName
+					group: useful/thing
 					description: useful description.
 					get:
 						description: Retrieves the resource with the given ID.
@@ -50,6 +50,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 							],
 							"get": {
 								"operationId": "get-resource-by-ID",
+								"tags": ["useful/thing", "usefulPackageName"],
 								"description": "Retrieves the resource with the given ID.",
 								"parameters": [
 									{
@@ -87,8 +88,8 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 					rest_name: resource
 					resource_name: resources
 					entity_name: Resource
-					package: None
-					group: N/A
+					package: usefulPackageName
+					group: useful/thing
 					description: useful description.
 					delete:
 						description: Deletes the resource with the given ID.
@@ -121,6 +122,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 							],
 							"delete": {
 								"operationId": "delete-resource-by-ID",
+								"tags": ["useful/thing", "usefulPackageName"],
 								"description": "Deletes the resource with the given ID.",
 								"parameters": [
 									{
@@ -157,8 +159,8 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 					rest_name: resource
 					resource_name: resources
 					entity_name: Resource
-					package: None
-					group: N/A
+					package: usefulPackageName
+					group: useful/thing
 					description: useful description.
 					update:
 						description: Updates the resource with the given ID.
@@ -194,6 +196,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 							],
 							"put": {
 								"operationId": "update-resource-by-ID",
+								"tags": ["useful/thing", "usefulPackageName"],
 								"description": "Updates the resource with the given ID.",
 								"parameters": [
 									{
@@ -239,8 +242,8 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 					rest_name: resource
 					resource_name: resources
 					entity_name: Resource
-					package: None
-					group: N/A
+					package: usefulPackageName
+					group: useful/thing
 					description: useful description.
 					get:
 						description: Retrieves the resource with the given ID.
@@ -272,6 +275,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 							],
 							"get": {
 								"operationId": "get-resource-by-ID",
+								"tags": ["useful/thing", "usefulPackageName"],
 								"description": "Retrieves the resource with the given ID.",
 								"responses": {
 									"200": {
@@ -288,6 +292,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 							},
 							"delete": {
 								"operationId": "delete-resource-by-ID",
+								"tags": ["useful/thing", "usefulPackageName"],
 								"description": "Deletes the resource with the given ID.",
 								"responses": {
 									"200": {
@@ -304,6 +309,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 							},
 							"put": {
 								"operationId": "update-resource-by-ID",
+								"tags": ["useful/thing", "usefulPackageName"],
 								"description": "Updates the resource with the given ID.",
 								"requestBody": {
 									"content": {

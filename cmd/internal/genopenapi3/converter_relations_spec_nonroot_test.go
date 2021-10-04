@@ -57,6 +57,7 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 							],
 							"get": {
 								"operationId": "get-all-minesites-for-a-given-resource",
+								"tags": ["useful/thing", "usefulPackageName"],
 								"description": "Retrieve all mine sites.",
 								"parameters": [
 									{
@@ -103,8 +104,8 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 					rest_name: minesite
 					resource_name: minesites
 					entity_name: MineSites
-					package: none
-					group: N/A
+					package: usefulPackageName
+					group: useful/thing
 					description: Represents a resource mine site.
 			`},
 		},
@@ -157,6 +158,7 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 							],
 							"post": {
 								"operationId": "create-a-new-minesite-for-a-given-resource",
+								"tags": ["useful/thing", "usefulPackageName"],
 								"description": "Creates a mine site.",
 								"parameters": [
 									{
@@ -199,8 +201,8 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 					rest_name: minesite
 					resource_name: minesites
 					entity_name: MineSites
-					package: none
-					group: N/A
+					package: usefulPackageName
+					group: useful/thing
 					description: Represents a resource mine site.
 			`},
 		},
@@ -287,6 +289,7 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 							],
 							"post": {
 								"operationId": "create-a-new-minesite-for-a-given-resource",
+								"tags": ["useful/thing", "usefulPackageName"],
 								"description": "Creates a mine site.",
 								"requestBody": {
 									"content": {
@@ -312,6 +315,7 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 							},
 							"get": {
 								"operationId": "get-all-minesites-for-a-given-resource",
+								"tags": ["useful/thing", "usefulPackageName"],
 								"description": "Retrieve all mine sites.",
 								"responses": {
 									"200": {
@@ -338,8 +342,8 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 					rest_name: minesite
 					resource_name: minesites
 					entity_name: MineSites
-					package: none
-					group: N/A
+					package: usefulPackageName
+					group: useful/thing
 					description: Represents a resource mine site.
 			`},
 		},

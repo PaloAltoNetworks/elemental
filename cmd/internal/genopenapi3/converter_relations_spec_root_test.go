@@ -43,6 +43,7 @@ func TestConverter_Do__specRelations_root(t *testing.T) {
 						"/resources": {
 							"post": {
 								"operationId": "create-a-new-resource",
+								"tags": ["useful/thing", "usefulPackageName"],
 								"parameters": [
 									{
 										"description": "This is a fancy parameter.",
@@ -85,8 +86,8 @@ func TestConverter_Do__specRelations_root(t *testing.T) {
 					rest_name: resource
 					resource_name: resources
 					entity_name: Recource
-					package: none
-					group: N/A
+					package: usefulPackageName
+					group: useful/thing
 					description: Represents a resource.
 			`},
 		},
@@ -125,6 +126,7 @@ func TestConverter_Do__specRelations_root(t *testing.T) {
 						"/resources": {
 							"get": {
 								"operationId": "get-all-resources",
+								"tags": ["useful/thing", "usefulPackageName"],
 								"description": "Retrieve all resources.",
 								"parameters": [
 								  {
@@ -161,8 +163,8 @@ func TestConverter_Do__specRelations_root(t *testing.T) {
 					rest_name: resource
 					resource_name: resources
 					entity_name: Recource
-					package: none
-					group: N/A
+					package: usefulPackageName
+					group: useful/thing
 					description: Represents a resource.
 			`},
 		},
@@ -198,8 +200,8 @@ func TestConverter_Do__specRelations_root(t *testing.T) {
 					rest_name: resource
 					resource_name: resources
 					entity_name: Recource
-					package: none
-					group: N/A
+					package: usefulPackageName
+					group: useful/thing
 					description: Represents a resource.
 			`},
 		},

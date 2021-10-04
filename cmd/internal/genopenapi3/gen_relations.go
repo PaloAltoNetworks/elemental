@@ -12,6 +12,7 @@ var noDesc = "n/a"
 type operationConfig struct {
 	id       string
 	restName string
+	tags     []string
 }
 
 func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[string]*openapi3.PathItem {
@@ -24,14 +25,16 @@ func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[
 			continue
 		}
 
-		resourceName := c.inSpecSet.Specification(relation.RestName).Model().ResourceName
+		model := relation.Specification().Model()
+		tags := []string{model.Group, model.Package}
 
 		pathItem := &openapi3.PathItem{
 			Get: c.convertRelationActionToGetAll(
 				relation.Get,
 				operationConfig{
-					id:       "get-all-" + resourceName,
+					id:       "get-all-" + model.ResourceName,
 					restName: relation.RestName,
+					tags:     tags,
 				},
 			),
 			Post: c.convertRelationActionToPost(
@@ -39,11 +42,12 @@ func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[
 				operationConfig{
 					id:       "create-a-new-" + relation.RestName,
 					restName: relation.RestName,
+					tags:     tags,
 				},
 			),
 		}
 
-		uri := "/" + resourceName
+		uri := "/" + model.ResourceName
 		paths[uri] = pathItem
 	}
 
@@ -62,13 +66,16 @@ func (c *converter) convertRelationsForNonRootSpec(resourceName string, relation
 		}
 
 		childRestName := relation.RestName
-		childResourceName := c.inSpecSet.Specification(childRestName).Model().ResourceName
+		childModel := c.inSpecSet.Specification(childRestName).Model()
+		childResourceName := childModel.ResourceName
+		tags := []string{childModel.Group, childModel.Package}
 
 		pathItem := &openapi3.PathItem{
 			Get: c.convertRelationActionToGetAll(
 				relation.Get,
 				operationConfig{
 					id:       "get-all-" + childResourceName + "-for-a-given-" + parentRestName,
+					tags:     tags,
 					restName: childRestName,
 				},
 			),
@@ -76,6 +83,7 @@ func (c *converter) convertRelationsForNonRootSpec(resourceName string, relation
 				relation.Create,
 				operationConfig{
 					id:       "create-a-new-" + childRestName + "-for-a-given-" + parentRestName,
+					tags:     tags,
 					restName: childRestName,
 				},
 			),
@@ -96,11 +104,14 @@ func (c *converter) convertRelationsForNonRootModel(model *spec.Model) map[strin
 		return nil
 	}
 
+	tags := []string{model.Group, model.Package}
+
 	pathItem := &openapi3.PathItem{
 		Get: c.convertRelationActionToGetByID(
 			model.Get,
 			operationConfig{
 				id:       fmt.Sprintf("get-%s-by-ID", model.RestName),
+				tags:     tags,
 				restName: model.RestName,
 			},
 		),
@@ -108,6 +119,7 @@ func (c *converter) convertRelationsForNonRootModel(model *spec.Model) map[strin
 			model.Delete,
 			operationConfig{
 				id:       fmt.Sprintf("delete-%s-by-ID", model.RestName),
+				tags:     tags,
 				restName: model.RestName,
 			},
 		),
@@ -115,6 +127,7 @@ func (c *converter) convertRelationsForNonRootModel(model *spec.Model) map[strin
 			model.Update,
 			operationConfig{
 				id:       fmt.Sprintf("update-%s-by-ID", model.RestName),
+				tags:     tags,
 				restName: model.RestName,
 			},
 		),
@@ -137,6 +150,7 @@ func (c *converter) convertRelationActionToGetAll(relationAction *spec.RelationA
 
 	op := &openapi3.Operation{
 		OperationID: cfg.id,
+		Tags:        cfg.tags,
 		Description: relationAction.Description,
 		Responses: openapi3.Responses{
 			"200": &openapi3.ResponseRef{
@@ -167,6 +181,7 @@ func (c *converter) convertRelationActionToPost(relationAction *spec.RelationAct
 
 	op := &openapi3.Operation{
 		OperationID: cfg.id,
+		Tags:        cfg.tags,
 		Description: relationAction.Description,
 		RequestBody: &openapi3.RequestBodyRef{
 			Value: &openapi3.RequestBody{
@@ -206,6 +221,7 @@ func (c *converter) convertRelationActionToGetByID(relationAction *spec.Relation
 
 	op := &openapi3.Operation{
 		OperationID: cfg.id,
+		Tags:        cfg.tags,
 		Description: relationAction.Description,
 		Responses: openapi3.Responses{
 			"200": &openapi3.ResponseRef{
@@ -236,6 +252,7 @@ func (c *converter) convertRelationActionToDeleteByID(relationAction *spec.Relat
 
 	op := &openapi3.Operation{
 		OperationID: cfg.id,
+		Tags:        cfg.tags,
 		Description: relationAction.Description,
 		Responses: openapi3.Responses{
 			"200": &openapi3.ResponseRef{
@@ -266,6 +283,7 @@ func (c *converter) convertRelationActionToPutByID(relationAction *spec.Relation
 
 	op := &openapi3.Operation{
 		OperationID: cfg.id,
+		Tags:        cfg.tags,
 		Description: relationAction.Description,
 		RequestBody: &openapi3.RequestBodyRef{
 			Value: &openapi3.RequestBody{
