@@ -32,10 +32,10 @@ func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[
 	return paths
 }
 
-func (c *converter) convertRelationsForNonRootSpec(parentResourceName string, relations []*spec.Relation) map[string]*openapi3.PathItem {
+func (c *converter) convertRelationsForNonRootSpec(resourceName string, relations []*spec.Relation) map[string]*openapi3.PathItem {
 
 	paths := make(map[string]*openapi3.PathItem)
-	parentRestName := c.resourceToRest[parentResourceName]
+	parentRestName := c.resourceToRest[resourceName]
 
 	for _, relation := range relations {
 
@@ -51,7 +51,7 @@ func (c *converter) convertRelationsForNonRootSpec(parentResourceName string, re
 		c.insertParamID(&pathItem.Parameters)
 
 		childModel := c.inSpecSet.Specification(relation.RestName).Model()
-		uri := fmt.Sprintf("/%s/{%s}/%s", parentResourceName, paramNameID, childModel.ResourceName)
+		uri := fmt.Sprintf("/%s/{%s}/%s", resourceName, paramNameID, childModel.ResourceName)
 		paths[uri] = pathItem
 	}
 
