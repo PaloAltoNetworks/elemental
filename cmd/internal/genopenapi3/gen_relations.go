@@ -20,11 +20,12 @@ func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[
 		}
 
 		pathItem := &openapi3.PathItem{
-			Get:  c.convertRelationActionToGetAll(relation.Get, relation.RestName),
-			Post: c.convertRelationActionToPost(relation.Create, relation.RestName),
+			Get:  c.extractOperationGetAll("", relation),
+			Post: c.extractOperationPost("", relation),
 		}
 
-		uri := "/" + c.inSpecSet.Specification(relation.RestName).Model().ResourceName
+		model := relation.Specification().Model()
+		uri := "/" + model.ResourceName
 		paths[uri] = pathItem
 	}
 
@@ -34,6 +35,7 @@ func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[
 func (c *converter) convertRelationsForNonRootSpec(resourceName string, relations []*spec.Relation) map[string]*openapi3.PathItem {
 
 	paths := make(map[string]*openapi3.PathItem)
+	parentRestName := c.resourceToRest[resourceName]
 
 	for _, relation := range relations {
 
@@ -42,13 +44,14 @@ func (c *converter) convertRelationsForNonRootSpec(resourceName string, relation
 		}
 
 		pathItem := &openapi3.PathItem{
-			Get:  c.convertRelationActionToGetAll(relation.Get, relation.RestName),
-			Post: c.convertRelationActionToPost(relation.Create, relation.RestName),
+			Get:  c.extractOperationGetAll(parentRestName, relation),
+			Post: c.extractOperationPost(parentRestName, relation),
 		}
 
 		c.insertParamID(&pathItem.Parameters)
-		relatedResourceName := c.inSpecSet.Specification(relation.RestName).Model().ResourceName
-		uri := fmt.Sprintf("/%s/{%s}/%s", resourceName, paramNameID, relatedResourceName)
+
+		childModel := c.inSpecSet.Specification(relation.RestName).Model()
+		uri := fmt.Sprintf("/%s/{%s}/%s", resourceName, paramNameID, childModel.ResourceName)
 		paths[uri] = pathItem
 	}
 
@@ -62,9 +65,9 @@ func (c *converter) convertRelationsForNonRootModel(model *spec.Model) map[strin
 	}
 
 	pathItem := &openapi3.PathItem{
-		Get:    c.convertRelationActionToGetByID(model.Get, model.RestName),
-		Delete: c.convertRelationActionToDeleteByID(model.Delete, model.RestName),
-		Put:    c.convertRelationActionToPutByID(model.Update, model.RestName),
+		Get:    c.extractOperationGetByID(model),
+		Delete: c.extractOperationDeleteByID(model),
+		Put:    c.extractOperationPutByID(model),
 	}
 	c.insertParamID(&pathItem.Parameters)
 
@@ -73,16 +76,21 @@ func (c *converter) convertRelationsForNonRootModel(model *spec.Model) map[strin
 	return pathItems
 }
 
-func (c *converter) convertRelationActionToGetAll(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
+func (c *converter) extractOperationGetAll(parentRestName string, relation *spec.Relation) *openapi3.Operation {
 
-	if relationAction == nil {
+	if relation == nil || relation.Get == nil {
 		return nil
 	}
+	relationAction := relation.Get
+
+	model := relation.Specification().Model()
 
 	respBodySchema := openapi3.NewArraySchema()
-	respBodySchema.Items = openapi3.NewSchemaRef("#/components/schemas/"+restName, nil)
+	respBodySchema.Items = openapi3.NewSchemaRef("#/components/schemas/"+model.RestName, nil)
 
 	op := &openapi3.Operation{
+		OperationID: "get-all-" + model.ResourceName,
+		Tags:        []string{model.Group, model.Package},
 		Description: relationAction.Description,
 		Responses: openapi3.Responses{
 			"200": &openapi3.ResponseRef{
@@ -100,18 +108,26 @@ func (c *converter) convertRelationActionToGetAll(relationAction *spec.RelationA
 		Parameters: c.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
 	}
 
+	if parentRestName != "" {
+		op.OperationID = "get-all-" + model.ResourceName + "-for-a-given-" + parentRestName
+	}
 	return op
 }
 
-func (c *converter) convertRelationActionToPost(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
+func (c *converter) extractOperationPost(parentRestName string, relation *spec.Relation) *openapi3.Operation {
 
-	if relationAction == nil {
+	if relation == nil || relation.Create == nil {
 		return nil
 	}
+	relationAction := relation.Create
 
-	schemaRef := openapi3.NewSchemaRef("#/components/schemas/"+restName, nil)
+	model := relation.Specification().Model()
+
+	schemaRef := openapi3.NewSchemaRef("#/components/schemas/"+relation.RestName, nil)
 
 	op := &openapi3.Operation{
+		OperationID: "create-a-new-" + relation.RestName,
+		Tags:        []string{model.Group, model.Package},
 		Description: relationAction.Description,
 		RequestBody: &openapi3.RequestBodyRef{
 			Value: &openapi3.RequestBody{
@@ -138,18 +154,24 @@ func (c *converter) convertRelationActionToPost(relationAction *spec.RelationAct
 		Parameters: c.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
 	}
 
+	if parentRestName != "" {
+		op.OperationID = "create-a-new-" + model.RestName + "-for-a-given-" + parentRestName
+	}
 	return op
 }
 
-func (c *converter) convertRelationActionToGetByID(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
+func (c *converter) extractOperationGetByID(model *spec.Model) *openapi3.Operation {
 
-	if relationAction == nil {
+	if model == nil || model.Get == nil {
 		return nil
 	}
+	relationAction := model.Get
 
-	respBodySchemaRef := openapi3.NewSchemaRef("#/components/schemas/"+restName, nil)
+	respBodySchemaRef := openapi3.NewSchemaRef("#/components/schemas/"+model.RestName, nil)
 
 	op := &openapi3.Operation{
+		OperationID: fmt.Sprintf("get-%s-by-ID", model.RestName),
+		Tags:        []string{model.Group, model.Package},
 		Description: relationAction.Description,
 		Responses: openapi3.Responses{
 			"200": &openapi3.ResponseRef{
@@ -170,15 +192,18 @@ func (c *converter) convertRelationActionToGetByID(relationAction *spec.Relation
 	return op
 }
 
-func (c *converter) convertRelationActionToDeleteByID(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
+func (c *converter) extractOperationDeleteByID(model *spec.Model) *openapi3.Operation {
 
-	if relationAction == nil {
+	if model == nil || model.Delete == nil {
 		return nil
 	}
+	relationAction := model.Delete
 
-	respBodySchemaRef := openapi3.NewSchemaRef("#/components/schemas/"+restName, nil)
+	respBodySchemaRef := openapi3.NewSchemaRef("#/components/schemas/"+model.RestName, nil)
 
 	op := &openapi3.Operation{
+		OperationID: fmt.Sprintf("delete-%s-by-ID", model.RestName),
+		Tags:        []string{model.Group, model.Package},
 		Description: relationAction.Description,
 		Responses: openapi3.Responses{
 			"200": &openapi3.ResponseRef{
@@ -199,15 +224,18 @@ func (c *converter) convertRelationActionToDeleteByID(relationAction *spec.Relat
 	return op
 }
 
-func (c *converter) convertRelationActionToPutByID(relationAction *spec.RelationAction, restName string) *openapi3.Operation {
+func (c *converter) extractOperationPutByID(model *spec.Model) *openapi3.Operation {
 
-	if relationAction == nil {
+	if model == nil || model.Update == nil {
 		return nil
 	}
+	relationAction := model.Update
 
-	schemaRef := openapi3.NewSchemaRef("#/components/schemas/"+restName, nil)
+	schemaRef := openapi3.NewSchemaRef("#/components/schemas/"+model.RestName, nil)
 
 	op := &openapi3.Operation{
+		OperationID: fmt.Sprintf("update-%s-by-ID", model.RestName),
+		Tags:        []string{model.Group, model.Package},
 		Description: relationAction.Description,
 		RequestBody: &openapi3.RequestBodyRef{
 			Value: &openapi3.RequestBody{

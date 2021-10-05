@@ -14,6 +14,7 @@ const paramNameID = "id"
 type converter struct {
 	skipPrivateModels bool
 	inSpecSet         spec.SpecificationSet
+	resourceToRest    map[string]string
 	outRootDoc        openapi3.T
 }
 
@@ -22,6 +23,7 @@ func newConverter(inSpecSet spec.SpecificationSet, skipPrivateModels bool) *conv
 	c := &converter{
 		skipPrivateModels: skipPrivateModels,
 		inSpecSet:         inSpecSet,
+		resourceToRest:    make(map[string]string),
 		outRootDoc: openapi3.T{
 			OpenAPI: "3.0.3",
 			Info: &openapi3.Info{
@@ -44,6 +46,12 @@ func newConverter(inSpecSet spec.SpecificationSet, skipPrivateModels bool) *conv
 			},
 		},
 	}
+
+	for _, spec := range inSpecSet.Specifications() {
+		model := spec.Model()
+		c.resourceToRest[model.ResourceName] = model.RestName
+	}
+
 	return c
 }
 
