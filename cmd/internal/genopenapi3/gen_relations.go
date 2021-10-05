@@ -20,8 +20,8 @@ func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[
 		}
 
 		pathItem := &openapi3.PathItem{
-			Get:  c.extractOperationGetAll(relation, ""),
-			Post: c.extractOperationPost(relation, ""),
+			Get:  c.extractOperationGetAll("", relation),
+			Post: c.extractOperationPost("", relation),
 		}
 
 		model := relation.Specification().Model()
@@ -44,8 +44,8 @@ func (c *converter) convertRelationsForNonRootSpec(parentResourceName string, re
 		}
 
 		pathItem := &openapi3.PathItem{
-			Get:  c.extractOperationGetAll(relation, parentRestName),
-			Post: c.extractOperationPost(relation, parentRestName),
+			Get:  c.extractOperationGetAll(parentRestName, relation),
+			Post: c.extractOperationPost(parentRestName, relation),
 		}
 
 		c.insertParamID(&pathItem.Parameters)
@@ -76,7 +76,7 @@ func (c *converter) convertRelationsForNonRootModel(model *spec.Model) map[strin
 	return pathItems
 }
 
-func (c *converter) extractOperationGetAll(relation *spec.Relation, parentRestName string) *openapi3.Operation {
+func (c *converter) extractOperationGetAll(parentRestName string, relation *spec.Relation) *openapi3.Operation {
 
 	if relation == nil || relation.Get == nil {
 		return nil
@@ -114,7 +114,7 @@ func (c *converter) extractOperationGetAll(relation *spec.Relation, parentRestNa
 	return op
 }
 
-func (c *converter) extractOperationPost(relation *spec.Relation, parentRestName string) *openapi3.Operation {
+func (c *converter) extractOperationPost(parentRestName string, relation *spec.Relation) *openapi3.Operation {
 
 	if relation == nil || relation.Create == nil {
 		return nil
