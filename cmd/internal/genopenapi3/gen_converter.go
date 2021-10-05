@@ -48,7 +48,8 @@ func newConverter(inSpecSet spec.SpecificationSet, skipPrivateModels bool) *conv
 	}
 
 	for _, spec := range inSpecSet.Specifications() {
-		c.resourceToRest[spec.Model().ResourceName] = spec.Model().RestName
+		model := spec.Model()
+		c.resourceToRest[model.ResourceName] = model.RestName
 	}
 
 	return c
