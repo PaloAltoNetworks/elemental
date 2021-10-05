@@ -9,12 +9,6 @@ import (
 
 var noDesc = "n/a"
 
-type operationConfig struct {
-	id     string
-	schema string
-	tags   []string
-}
-
 func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[string]*openapi3.PathItem {
 
 	paths := make(map[string]*openapi3.PathItem)
@@ -25,28 +19,12 @@ func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[
 			continue
 		}
 
-		model := relation.Specification().Model()
-		tags := []string{model.Group, model.Package}
-
 		pathItem := &openapi3.PathItem{
-			Get: c.convertRelationActionToGetAll(
-				relation.Get,
-				operationConfig{
-					id:     "get-all-" + model.ResourceName,
-					schema: relation.RestName,
-					tags:   tags,
-				},
-			),
-			Post: c.convertRelationActionToPost(
-				relation.Create,
-				operationConfig{
-					id:     "create-a-new-" + relation.RestName,
-					schema: relation.RestName,
-					tags:   tags,
-				},
-			),
+			Get:  c.extractOperationGetAll(relation, ""),
+			Post: c.extractOperationPost(relation, ""),
 		}
 
+		model := relation.Specification().Model()
 		uri := "/" + model.ResourceName
 		paths[uri] = pathItem
 	}
@@ -54,10 +32,10 @@ func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[
 	return paths
 }
 
-func (c *converter) convertRelationsForNonRootSpec(resourceName string, relations []*spec.Relation) map[string]*openapi3.PathItem {
+func (c *converter) convertRelationsForNonRootSpec(parentResourceName string, relations []*spec.Relation) map[string]*openapi3.PathItem {
 
 	paths := make(map[string]*openapi3.PathItem)
-	parentRestName := c.resourceToRest[resourceName]
+	parentRestName := c.resourceToRest[parentResourceName]
 
 	for _, relation := range relations {
 
@@ -65,33 +43,15 @@ func (c *converter) convertRelationsForNonRootSpec(resourceName string, relation
 			continue
 		}
 
-		childRestName := relation.RestName
-		childModel := c.inSpecSet.Specification(childRestName).Model()
-		childResourceName := childModel.ResourceName
-		tags := []string{childModel.Group, childModel.Package}
-
 		pathItem := &openapi3.PathItem{
-			Get: c.convertRelationActionToGetAll(
-				relation.Get,
-				operationConfig{
-					id:     "get-all-" + childResourceName + "-for-a-given-" + parentRestName,
-					tags:   tags,
-					schema: childRestName,
-				},
-			),
-			Post: c.convertRelationActionToPost(
-				relation.Create,
-				operationConfig{
-					id:     "create-a-new-" + childRestName + "-for-a-given-" + parentRestName,
-					tags:   tags,
-					schema: childRestName,
-				},
-			),
+			Get:  c.extractOperationGetAll(relation, parentRestName),
+			Post: c.extractOperationPost(relation, parentRestName),
 		}
 
 		c.insertParamID(&pathItem.Parameters)
 
-		uri := fmt.Sprintf("/%s/{%s}/%s", resourceName, paramNameID, childResourceName)
+		childModel := c.inSpecSet.Specification(relation.RestName).Model()
+		uri := fmt.Sprintf("/%s/{%s}/%s", parentResourceName, paramNameID, childModel.ResourceName)
 		paths[uri] = pathItem
 	}
 
@@ -116,18 +76,21 @@ func (c *converter) convertRelationsForNonRootModel(model *spec.Model) map[strin
 	return pathItems
 }
 
-func (c *converter) convertRelationActionToGetAll(relationAction *spec.RelationAction, cfg operationConfig) *openapi3.Operation {
+func (c *converter) extractOperationGetAll(relation *spec.Relation, parentRestName string) *openapi3.Operation {
 
-	if relationAction == nil {
+	if relation == nil || relation.Get == nil {
 		return nil
 	}
+	relationAction := relation.Get
+
+	model := relation.Specification().Model()
 
 	respBodySchema := openapi3.NewArraySchema()
-	respBodySchema.Items = openapi3.NewSchemaRef("#/components/schemas/"+cfg.schema, nil)
+	respBodySchema.Items = openapi3.NewSchemaRef("#/components/schemas/"+model.RestName, nil)
 
 	op := &openapi3.Operation{
-		OperationID: cfg.id,
-		Tags:        cfg.tags,
+		OperationID: "get-all-" + model.ResourceName,
+		Tags:        []string{model.Group, model.Package},
 		Description: relationAction.Description,
 		Responses: openapi3.Responses{
 			"200": &openapi3.ResponseRef{
@@ -145,20 +108,26 @@ func (c *converter) convertRelationActionToGetAll(relationAction *spec.RelationA
 		Parameters: c.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
 	}
 
+	if parentRestName != "" {
+		op.OperationID = "get-all-" + model.ResourceName + "-for-a-given-" + parentRestName
+	}
 	return op
 }
 
-func (c *converter) convertRelationActionToPost(relationAction *spec.RelationAction, cfg operationConfig) *openapi3.Operation {
+func (c *converter) extractOperationPost(relation *spec.Relation, parentRestName string) *openapi3.Operation {
 
-	if relationAction == nil {
+	if relation == nil || relation.Create == nil {
 		return nil
 	}
+	relationAction := relation.Create
 
-	schemaRef := openapi3.NewSchemaRef("#/components/schemas/"+cfg.schema, nil)
+	model := relation.Specification().Model()
+
+	schemaRef := openapi3.NewSchemaRef("#/components/schemas/"+relation.RestName, nil)
 
 	op := &openapi3.Operation{
-		OperationID: cfg.id,
-		Tags:        cfg.tags,
+		OperationID: "create-a-new-" + relation.RestName,
+		Tags:        []string{model.Group, model.Package},
 		Description: relationAction.Description,
 		RequestBody: &openapi3.RequestBodyRef{
 			Value: &openapi3.RequestBody{
@@ -185,6 +154,9 @@ func (c *converter) convertRelationActionToPost(relationAction *spec.RelationAct
 		Parameters: c.convertParamDefAsQueryParams(relationAction.ParameterDefinition),
 	}
 
+	if parentRestName != "" {
+		op.OperationID = "create-a-new-" + model.RestName + "-for-a-given-" + parentRestName
+	}
 	return op
 }
 
