@@ -67,20 +67,21 @@ func (c *converter) convertedDocs() map[string]openapi3.T {
 		return map[string]openapi3.T{"toplevel": c.outRootDoc}
 	}
 
-	out := make(map[string]openapi3.T)
+	docs := make(map[string]openapi3.T)
 	specConfig := c.inSpecSet.Configuration()
 	for name, schema := range c.outRootDoc.Components.Schemas {
 		template := newOpenAPI3Template(specConfig)
 		template.Components.Schemas[name] = schema
-		out[name] = template
+		docs[name] = template
 	}
 
 	for path, item := range c.outRootDoc.Paths {
-		home := strings.Split(strings.Trim(path, "/"), "/")[0]
-		home = c.resourceToRest[home]
-		out[home].Paths[path] = item
+		pathRoot := strings.SplitN(strings.Trim(path, "/"), "/", 2)[0]
+		docName := c.resourceToRest[pathRoot]
+		docs[docName].Paths[path] = item
 	}
-	return out
+
+	return docs
 }
 
 func (c *converter) processSpec(s spec.Specification) error {
