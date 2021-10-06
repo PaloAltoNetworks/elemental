@@ -63,7 +63,7 @@ func (c *converter) Do(newWriter func(name string) (io.WriteCloser, error)) erro
 
 func (c *converter) convertedDocs() map[string]openapi3.T {
 
-	if !c.splitOutput {
+	if !c.splitOutput || len(c.outRootDoc.Components.Schemas) == 0 {
 		return map[string]openapi3.T{"toplevel": c.outRootDoc}
 	}
 
