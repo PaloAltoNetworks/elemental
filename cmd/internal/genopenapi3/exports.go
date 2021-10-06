@@ -17,15 +17,18 @@ func GeneratorFunc(sets []spec.SpecificationSet, out string, public bool) error 
 		return fmt.Errorf("'%s': error creating directory: %w", outFolder, err)
 	}
 
-	filename := filepath.Join(outFolder, "toplevel.json")
-	file, err := os.Create(filename)
-	if err != nil {
-		return fmt.Errorf("'%s': error creating file: %w", filename, err)
+	fileFactory := func(name string) (io.WriteCloser, error) {
+		filename := filepath.Join(outFolder, name)
+		file, err := os.Create(filename)
+		if err != nil {
+			return nil, fmt.Errorf("'%s': error creating file: %w", filename, err)
+		}
+		return file, nil
 	}
 
 	set := sets[0]
 	converter := newConverter(set, public)
-	if err = converter.Do(file); err != nil {
+	if err := converter.Do(fileFactory); err != nil {
 		return fmt.Errorf("error generating openapi3 document from spec set '%s': %w", set.Configuration().Name, err)
 	}
 

@@ -36,7 +36,7 @@ func newConverter(inSpecSet spec.SpecificationSet, skipPrivateModels bool) *conv
 	return c
 }
 
-func (c *converter) Do(dest io.Writer) error {
+func (c *converter) Do(newWriter func(name string) (io.WriteCloser, error)) error {
 
 	for _, s := range c.inSpecSet.Specifications() {
 		if err := c.processSpec(s); err != nil {
@@ -44,10 +44,17 @@ func (c *converter) Do(dest io.Writer) error {
 		}
 	}
 
-	enc := json.NewEncoder(dest)
-	enc.SetIndent("", "  ")
-	if err := enc.Encode(c.outRootDoc); err != nil {
-		return fmt.Errorf("marshaling openapi3 document: %w", err)
+	for name, doc := range c.convertedDocs() {
+		dest, err := newWriter(name)
+		if err != nil {
+			return fmt.Errorf("'%s': unable to create write destination: %w", name, err)
+		}
+
+		enc := json.NewEncoder(dest)
+		enc.SetIndent("", "  ")
+		if err := enc.Encode(doc); err != nil {
+			return fmt.Errorf("'%s': marshaling openapi3 document: %w", name, err)
+		}
 	}
 
 	return nil
