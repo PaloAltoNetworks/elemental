@@ -53,6 +53,28 @@ func (c *converter) Do(dest io.Writer) error {
 	return nil
 }
 
+func (c *converter) convertedDocs() map[string]openapi3.T {
+
+	if !c.splitOutput {
+		return map[string]openapi3.T{"toplevel": c.outRootDoc}
+	}
+
+	out := make(map[string]openapi3.T)
+	specConfig := c.inSpecSet.Configuration()
+	for name, schema := range c.outRootDoc.Components.Schemas {
+		template := newOpenAPI3Template(specConfig)
+		template.Components.Schemas[name] = schema
+		out[name] = template
+	}
+
+	for path, item := range c.outRootDoc.Paths {
+		home := strings.Split(strings.Trim(path, "/"), "/")[0]
+		home = c.resourceToRest[home]
+		out[home].Paths[path] = item
+	}
+	return out
+}
+
 func (c *converter) processSpec(s spec.Specification) error {
 
 	model := s.Model()
