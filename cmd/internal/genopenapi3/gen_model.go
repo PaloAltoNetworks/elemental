@@ -89,6 +89,9 @@ func (c *converter) convertAttribute(attr *spec.Attribute) (schemaRef *openapi3.
 		return attrSchema.NewRef(), err // do not wrap error to avoid recursive wrapping
 
 	case spec.AttributeTypeRef:
+		if c.splitOutput {
+			return openapi3.NewSchemaRef("./"+attr.SubType+"#/components/schemas/"+attr.SubType, nil), nil
+		}
 		return openapi3.NewSchemaRef("#/components/schemas/"+attr.SubType, nil), nil
 
 	case spec.AttributeTypeRefList:

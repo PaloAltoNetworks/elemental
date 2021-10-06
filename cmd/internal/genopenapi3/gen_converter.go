@@ -13,6 +13,7 @@ const paramNameID = "id"
 
 type converter struct {
 	skipPrivateModels bool
+	splitOutput       bool
 	inSpecSet         spec.SpecificationSet
 	resourceToRest    map[string]string
 	outRootDoc        openapi3.T
