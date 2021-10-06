@@ -64,30 +64,6 @@ func (c *converter) Do(newWriter func(name string) (io.WriteCloser, error)) erro
 	return nil
 }
 
-func (c *converter) convertedDocs() map[string]openapi3.T {
-
-	if !c.splitOutput || len(c.outRootDoc.Components.Schemas) == 0 {
-		return map[string]openapi3.T{defaultDocName: c.outRootDoc}
-	}
-
-	docs := make(map[string]openapi3.T)
-	specConfig := c.inSpecSet.Configuration()
-	for name, schema := range c.outRootDoc.Components.Schemas {
-		template := newOpenAPI3Template(specConfig)
-		template.Components.Schemas[name] = schema
-		template.Info.Title = name
-		docs[name] = template
-	}
-
-	for path, item := range c.outRootDoc.Paths {
-		pathRoot := strings.SplitN(strings.Trim(path, "/"), "/", 2)[0]
-		docName := c.resourceToRest[pathRoot]
-		docs[docName].Paths[path] = item
-	}
-
-	return docs
-}
-
 func (c *converter) processSpec(s spec.Specification) error {
 
 	model := s.Model()
@@ -122,6 +98,30 @@ func (c *converter) processSpec(s spec.Specification) error {
 	}
 
 	return nil
+}
+
+func (c *converter) convertedDocs() map[string]openapi3.T {
+
+	if !c.splitOutput || len(c.outRootDoc.Components.Schemas) == 0 {
+		return map[string]openapi3.T{defaultDocName: c.outRootDoc}
+	}
+
+	docs := make(map[string]openapi3.T)
+	specConfig := c.inSpecSet.Configuration()
+	for name, schema := range c.outRootDoc.Components.Schemas {
+		template := newOpenAPI3Template(specConfig)
+		template.Components.Schemas[name] = schema
+		template.Info.Title = name
+		docs[name] = template
+	}
+
+	for path, item := range c.outRootDoc.Paths {
+		pathRoot := strings.SplitN(strings.Trim(path, "/"), "/", 2)[0]
+		docName := c.resourceToRest[pathRoot]
+		docs[docName].Paths[path] = item
+	}
+
+	return docs
 }
 
 func newOpenAPI3Template(specConfig *spec.Config) openapi3.T {
