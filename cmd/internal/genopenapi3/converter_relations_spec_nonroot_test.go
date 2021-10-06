@@ -31,63 +31,65 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 								type: string
 								default_value: "this is a value 2"
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"minesite": {
-								"type": "object"
-							},
-							"resource": {
-								"type": "object"
-							}
-						}
-					},
-					"paths": {
-						"/resources/{id}/minesites": {
-							"parameters": [
-								{
-									"in": "path",
-									"name": "id",
-									"required": true,
-									"schema": {
-										"type": "string"
-									}
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"minesite": {
+									"type": "object"
+								},
+								"resource": {
+									"type": "object"
 								}
-							],
-							"get": {
-								"operationId": "get-all-minesites-for-a-given-resource",
-								"tags": ["useful/thing", "usefulPackageName"],
-								"description": "Retrieve all mine sites.",
+							}
+						},
+						"paths": {
+							"/resources/{id}/minesites": {
 								"parameters": [
 									{
-										"description": "should appear at the beginning.",
-										"in": "query",
-										"name": "aParam",
+										"in": "path",
+										"name": "id",
+										"required": true,
 										"schema": {
 											"type": "string"
-										},
-										"example": "this is a value 2"
-									},
-									{
-										"description": "This is a fancy parameter.",
-										"in": "query",
-										"name": "fancyParam",
-										"schema": {
-											"type": "string"
-										},
-										"example": "this is a value"
+										}
 									}
 								],
-								"responses": {
-									"200": {
-										"description": "n/a",
-										"content": {
-											"application/json": {
-												"schema": {
-													"type": "array",
-													"items": {
-														"$ref": "#/components/schemas/minesite"
+								"get": {
+									"operationId": "get-all-minesites-for-a-given-resource",
+									"tags": ["useful/thing", "usefulPackageName"],
+									"description": "Retrieve all mine sites.",
+									"parameters": [
+										{
+											"description": "should appear at the beginning.",
+											"in": "query",
+											"name": "aParam",
+											"schema": {
+												"type": "string"
+											},
+											"example": "this is a value 2"
+										},
+										{
+											"description": "This is a fancy parameter.",
+											"in": "query",
+											"name": "fancyParam",
+											"schema": {
+												"type": "string"
+											},
+											"example": "this is a value"
+										}
+									],
+									"responses": {
+										"200": {
+											"description": "n/a",
+											"content": {
+												"application/json": {
+													"schema": {
+														"type": "array",
+														"items": {
+															"$ref": "#/components/schemas/minesite"
+														}
 													}
 												}
 											}
@@ -97,8 +99,8 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 							}
 						}
 					}
-				}
-			`,
+				`,
+			},
 			supportingSpecs: []string{`
 				model:
 					rest_name: minesite
@@ -132,60 +134,62 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 
 
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"minesite": {
-								"type": "object"
-							},
-							"resource": {
-								"type": "object"
-							}
-						}
-					},
-					"paths": {
-						"/resources/{id}/minesites": {
-							"parameters": [
-								{
-									"in": "path",
-									"name": "id",
-									"required": true,
-									"schema": {
-										"type": "string"
-									}
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"minesite": {
+									"type": "object"
+								},
+								"resource": {
+									"type": "object"
 								}
-							],
-							"post": {
-								"operationId": "create-a-new-minesite-for-a-given-resource",
-								"tags": ["useful/thing", "usefulPackageName"],
-								"description": "Creates a mine site.",
+							}
+						},
+						"paths": {
+							"/resources/{id}/minesites": {
 								"parameters": [
 									{
-										"description": "This is a fancy parameter.",
-										"in": "query",
-										"name": "fancyParam",
+										"in": "path",
+										"name": "id",
+										"required": true,
 										"schema": {
-											"type": "number"
+											"type": "string"
 										}
 									}
 								],
-								"requestBody": {
-									"content": {
-										"application/json": {
+								"post": {
+									"operationId": "create-a-new-minesite-for-a-given-resource",
+									"tags": ["useful/thing", "usefulPackageName"],
+									"description": "Creates a mine site.",
+									"parameters": [
+										{
+											"description": "This is a fancy parameter.",
+											"in": "query",
+											"name": "fancyParam",
 											"schema": {
-												"$ref": "#/components/schemas/minesite"
+												"type": "number"
 											}
 										}
-									}
-								},
-								"responses": {
-									"200": {
-										"description": "n/a",
+									],
+									"requestBody": {
 										"content": {
 											"application/json": {
 												"schema": {
 													"$ref": "#/components/schemas/minesite"
+												}
+											}
+										}
+									},
+									"responses": {
+										"200": {
+											"description": "n/a",
+											"content": {
+												"application/json": {
+													"schema": {
+														"$ref": "#/components/schemas/minesite"
+													}
 												}
 											}
 										}
@@ -194,8 +198,8 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 							}
 						}
 					}
-				}
-			`,
+				`,
+			},
 			supportingSpecs: []string{`
 				model:
 					rest_name: minesite
@@ -220,21 +224,23 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 				relations:
 				- rest_name: minesite
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"minesite": {
-								"type": "object"
-							},
-							"resource": {
-								"type": "object"
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"minesite": {
+									"type": "object"
+								},
+								"resource": {
+									"type": "object"
+								}
 							}
-						}
-					},
-					"paths": {}
-				}
-			`,
+						},
+						"paths": {}
+					}
+				`,
+			},
 			supportingSpecs: []string{`
 				model:
 					rest_name: minesite
@@ -263,46 +269,36 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 					create:
 						description: Creates a mine site.
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"minesite": {
-								"type": "object"
-							},
-							"resource": {
-								"type": "object"
-							}
-						}
-					},
-					"paths": {
-						"/resources/{id}/minesites": {
-							"parameters": [
-								{
-									"in": "path",
-									"name": "id",
-									"required": true,
-									"schema": {
-										"type": "string"
-									}
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"minesite": {
+									"type": "object"
+								},
+								"resource": {
+									"type": "object"
 								}
-							],
-							"post": {
-								"operationId": "create-a-new-minesite-for-a-given-resource",
-								"tags": ["useful/thing", "usefulPackageName"],
-								"description": "Creates a mine site.",
-								"requestBody": {
-									"content": {
-										"application/json": {
-											"schema": {
-												"$ref": "#/components/schemas/minesite"
-											}
+							}
+						},
+						"paths": {
+							"/resources/{id}/minesites": {
+								"parameters": [
+									{
+										"in": "path",
+										"name": "id",
+										"required": true,
+										"schema": {
+											"type": "string"
 										}
 									}
-								},
-								"responses": {
-									"200": {
-										"description": "n/a",
+								],
+								"post": {
+									"operationId": "create-a-new-minesite-for-a-given-resource",
+									"tags": ["useful/thing", "usefulPackageName"],
+									"description": "Creates a mine site.",
+									"requestBody": {
 										"content": {
 											"application/json": {
 												"schema": {
@@ -310,22 +306,34 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 												}
 											}
 										}
-									}
-								}
-							},
-							"get": {
-								"operationId": "get-all-minesites-for-a-given-resource",
-								"tags": ["useful/thing", "usefulPackageName"],
-								"description": "Retrieve all mine sites.",
-								"responses": {
-									"200": {
-										"description": "n/a",
-										"content": {
-											"application/json": {
-												"schema": {
-													"type": "array",
-													"items": {
+									},
+									"responses": {
+										"200": {
+											"description": "n/a",
+											"content": {
+												"application/json": {
+													"schema": {
 														"$ref": "#/components/schemas/minesite"
+													}
+												}
+											}
+										}
+									}
+								},
+								"get": {
+									"operationId": "get-all-minesites-for-a-given-resource",
+									"tags": ["useful/thing", "usefulPackageName"],
+									"description": "Retrieve all mine sites.",
+									"responses": {
+										"200": {
+											"description": "n/a",
+											"content": {
+												"application/json": {
+													"schema": {
+														"type": "array",
+														"items": {
+															"$ref": "#/components/schemas/minesite"
+														}
 													}
 												}
 											}
@@ -335,8 +343,8 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 							}
 						}
 					}
-				}
-			`,
+				`,
+			},
 			supportingSpecs: []string{`
 				model:
 					rest_name: minesite

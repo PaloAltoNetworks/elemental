@@ -2,6 +2,7 @@ package genopenapi3
 
 import (
 	"errors"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -64,7 +65,7 @@ func TestConverter_Do__error_bad_externalType_mapping(t *testing.T) {
 		t.Fatalf("error parsing spec set from test data: %v", err)
 	}
 
-	converter := newConverter(spec, false)
+	converter := newConverter(spec, Config{})
 	if err := converter.Do(nil); !errors.Is(err, errUnmarshalingExternalType) {
 		t.Fatalf("unexpected error\nwant: %v\n got: %v", errUnmarshalingExternalType, err)
 	}
