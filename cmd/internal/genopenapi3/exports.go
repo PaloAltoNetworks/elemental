@@ -16,6 +16,7 @@ type Config struct {
 	OutputDir   string
 }
 
+// GeneratorFunc will convert the given spec set into an openapi3 document
 func GeneratorFunc(sets []spec.SpecificationSet, cfg Config) error {
 
 	outFolder := path.Join(cfg.OutputDir, "openapi3")
