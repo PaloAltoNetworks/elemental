@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"go.aporeto.io/regolithe/spec"
@@ -19,10 +20,10 @@ type converter struct {
 	outRootDoc        openapi3.T
 }
 
-func newConverter(inSpecSet spec.SpecificationSet, skipPrivateModels bool) *converter {
-	specConfig := inSpecSet.Configuration()
+func newConverter(inSpecSet spec.SpecificationSet, cfg Config) *converter {
 	c := &converter{
-		skipPrivateModels: skipPrivateModels,
+		skipPrivateModels: cfg.Public,
+		splitOutput:       cfg.SplitOutput,
 		inSpecSet:         inSpecSet,
 		resourceToRest:    make(map[string]string),
 		outRootDoc:        newOpenAPI3Template(inSpecSet.Configuration()),
