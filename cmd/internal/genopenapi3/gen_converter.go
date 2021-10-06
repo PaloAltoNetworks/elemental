@@ -25,27 +25,7 @@ func newConverter(inSpecSet spec.SpecificationSet, skipPrivateModels bool) *conv
 		skipPrivateModels: skipPrivateModels,
 		inSpecSet:         inSpecSet,
 		resourceToRest:    make(map[string]string),
-		outRootDoc: openapi3.T{
-			OpenAPI: "3.0.3",
-			Info: &openapi3.Info{
-				Title:          specConfig.Name,
-				Version:        specConfig.Version,
-				Description:    specConfig.Description,
-				TermsOfService: "https://localhost/TODO", // TODO
-				License: &openapi3.License{
-					Name: "TODO",
-				},
-				Contact: &openapi3.Contact{
-					Name:  specConfig.Author,
-					URL:   specConfig.URL,
-					Email: specConfig.Email,
-				},
-			},
-			Paths: openapi3.Paths{},
-			Components: openapi3.Components{
-				Schemas: make(openapi3.Schemas),
-			},
-		},
+		outRootDoc:        newOpenAPI3Template(inSpecSet.Configuration()),
 	}
 
 	for _, spec := range inSpecSet.Specifications() {
@@ -107,4 +87,28 @@ func (c *converter) processSpec(s spec.Specification) error {
 	}
 
 	return nil
+}
+
+func newOpenAPI3Template(specConfig *spec.Config) openapi3.T {
+	return openapi3.T{
+		OpenAPI: "3.0.3",
+		Info: &openapi3.Info{
+			Title:          specConfig.Name,
+			Version:        specConfig.Version,
+			Description:    specConfig.Description,
+			TermsOfService: "https://localhost/TODO", // TODO
+			License: &openapi3.License{
+				Name: "TODO",
+			},
+			Contact: &openapi3.Contact{
+				Name:  specConfig.Author,
+				URL:   specConfig.URL,
+				Email: specConfig.Email,
+			},
+		},
+		Paths: openapi3.Paths{},
+		Components: openapi3.Components{
+			Schemas: make(openapi3.Schemas),
+		},
+	}
 }
