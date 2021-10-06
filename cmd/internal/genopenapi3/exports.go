@@ -10,6 +10,7 @@ import (
 	"go.aporeto.io/regolithe/spec"
 )
 
+// Config is used to guide the generator function
 type Config struct {
 	Public      bool
 	SplitOutput bool
