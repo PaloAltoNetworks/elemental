@@ -36,14 +36,20 @@ func main() {
 
 	// will be initialized later
 	var (
-		genType    string
-		publicMode bool
+		genType     string
+		publicMode  bool
+		splitOutput bool
 	)
 
 	generator := func(sets []spec.SpecificationSet, out string) error {
 		switch genType {
 		case "openapi3":
-			return genopenapi3.GeneratorFunc(sets, out, publicMode)
+			cfg := genopenapi3.Config{
+				Public:      publicMode,
+				SplitOutput: splitOutput,
+				OutputDir:   out,
+			}
+			return genopenapi3.GeneratorFunc(sets, cfg)
 		case "", "elemental":
 			return genElemental(sets, out, publicMode)
 		default:
@@ -67,6 +73,12 @@ func main() {
 		"public",
 		false,
 		"If set to true, only exposed attributes and public objects will be generated",
+	)
+	cmd.PersistentFlags().BoolVar(
+		&splitOutput,
+		"split-output",
+		false,
+		"If set to true, the openapi3 output will be split into multiple files",
 	)
 	cmd.PersistentFlags().StringVarP(
 		&genType,
