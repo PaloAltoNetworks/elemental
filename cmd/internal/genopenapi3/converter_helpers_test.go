@@ -152,7 +152,7 @@ func (r *testCaseRunner) run(name string, tc testCase) {
 					"name": "TODO",
 				},
 				"termsOfService": "https://localhost/TODO",
-				"title":          "gaia",
+				"title":          expectedDocName,
 				"version":        "1.0",
 			}
 

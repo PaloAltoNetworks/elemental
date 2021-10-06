@@ -10,7 +10,10 @@ import (
 	"go.aporeto.io/regolithe/spec"
 )
 
-const paramNameID = "id"
+const (
+	paramNameID    = "id"
+	defaultDocName = "toplevel"
+)
 
 type converter struct {
 	skipPrivateModels bool
@@ -64,7 +67,7 @@ func (c *converter) Do(newWriter func(name string) (io.WriteCloser, error)) erro
 func (c *converter) convertedDocs() map[string]openapi3.T {
 
 	if !c.splitOutput || len(c.outRootDoc.Components.Schemas) == 0 {
-		return map[string]openapi3.T{"toplevel": c.outRootDoc}
+		return map[string]openapi3.T{defaultDocName: c.outRootDoc}
 	}
 
 	docs := make(map[string]openapi3.T)
@@ -72,6 +75,7 @@ func (c *converter) convertedDocs() map[string]openapi3.T {
 	for name, schema := range c.outRootDoc.Components.Schemas {
 		template := newOpenAPI3Template(specConfig)
 		template.Components.Schemas[name] = schema
+		template.Info.Title = name
 		docs[name] = template
 	}
 
@@ -124,7 +128,7 @@ func newOpenAPI3Template(specConfig *spec.Config) openapi3.T {
 	return openapi3.T{
 		OpenAPI: "3.0.3",
 		Info: &openapi3.Info{
-			Title:          specConfig.Name,
+			Title:          defaultDocName,
 			Version:        specConfig.Version,
 			Description:    specConfig.Description,
 			TermsOfService: "https://localhost/TODO", // TODO
