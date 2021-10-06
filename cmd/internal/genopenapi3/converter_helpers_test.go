@@ -18,6 +18,7 @@ import (
 type testCase struct {
 	inSpec              string
 	inSkipPrivateModels bool
+	inSplitOutput       bool
 	outDocs             map[string]string // docname -> rawDoc excluding root keys 'openapi3' and 'info'
 	supportingSpecs     []string          // other dependency specs needed for test case(s)
 }
@@ -95,7 +96,8 @@ func (r *testCaseRunner) run(name string, tc testCase) {
 		}
 
 		cfg := Config{
-			Public: tc.inSkipPrivateModels,
+			Public:      tc.inSkipPrivateModels,
+			SplitOutput: tc.inSplitOutput,
 		}
 		converter := newConverter(spec, cfg)
 
