@@ -29,6 +29,7 @@ type testCaseRunner struct {
 }
 
 func runAllTestCases(t *testing.T, cases map[string]testCase) {
+	t.Helper()
 
 	rootTmpDir, err := ioutil.TempDir("", t.Name()+"_*")
 	if err != nil {
@@ -53,7 +54,10 @@ func runAllTestCases(t *testing.T, cases map[string]testCase) {
 
 // Run will execute the given testcase in parallel with any other test cases
 func (r *testCaseRunner) run(name string, tc testCase) {
+	r.t.Helper()
+
 	r.t.Run(name, func(t *testing.T) {
+		t.Helper()
 		t.Parallel()
 
 		testDataFiles := map[string]string{
