@@ -34,12 +34,46 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "resource",
+								"description": "This tag is for package 'resource'"
+							},
+							{
+								"name": "useful/thing",
+								"description": "This tag is for group 'useful/thing'"
+							},
+							{
+								"name": "usefulPackageName",
+								"description": "This tag is for package 'usefulPackageName'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"minesite": {
+									"description": "Represents a resource mine site.",
 									"type": "object"
 								},
 								"resource": {
+									"description": "useful description.",
 									"type": "object"
 								}
 							}
@@ -137,12 +171,46 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "resource",
+								"description": "This tag is for package 'resource'"
+							},
+							{
+								"name": "useful/thing",
+								"description": "This tag is for group 'useful/thing'"
+							},
+							{
+								"name": "usefulPackageName",
+								"description": "This tag is for package 'usefulPackageName'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"minesite": {
+									"description": "Represents a resource mine site.",
 									"type": "object"
 								},
 								"resource": {
+									"description": "useful description.",
 									"type": "object"
 								}
 							}
@@ -227,12 +295,42 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							},
+							{
+								"name": "resource",
+								"description": "This tag is for package 'resource'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"minesite": {
+									"description": "Represents a resource mine site.",
 									"type": "object"
 								},
 								"resource": {
+									"description": "useful description.",
 									"type": "object"
 								}
 							}
@@ -246,7 +344,7 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 					rest_name: minesite
 					resource_name: minesites
 					entity_name: MineSites
-					package: none
+					package: None
 					group: N/A
 					description: Represents a resource mine site.
 			`},
@@ -272,12 +370,46 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "resource",
+								"description": "This tag is for package 'resource'"
+							},
+							{
+								"name": "useful/thing",
+								"description": "This tag is for group 'useful/thing'"
+							},
+							{
+								"name": "usefulPackageName",
+								"description": "This tag is for package 'usefulPackageName'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"minesite": {
+									"description": "Represents a resource mine site.",
 									"type": "object"
 								},
 								"resource": {
+									"description": "useful description.",
 									"type": "object"
 								}
 							}

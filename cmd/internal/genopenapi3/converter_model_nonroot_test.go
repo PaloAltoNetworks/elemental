@@ -22,9 +22,34 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"void": {
+									"description": "empty model.",
 									"type": "object"
 								}
 							}
@@ -54,9 +79,34 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object"
 								}
 							}
@@ -88,6 +138,30 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {},
 						"paths": {}
 					}
@@ -130,9 +204,34 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"properties": {
 										"stringField": {
@@ -188,9 +287,34 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"properties": {
 										"someField": {
@@ -226,9 +350,34 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"properties": {
 										"someField": {
@@ -285,9 +434,34 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"properties": {
 										"stringListField": {
@@ -357,9 +531,34 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"properties": {
 										"someField": {
@@ -401,9 +600,34 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"properties": {
 										"someField1": {
@@ -456,9 +680,34 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"properties": {
 										"someField1": {
@@ -505,9 +754,34 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"properties": {
 										"someField": {
@@ -549,9 +823,34 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"required": ["stringField"],
 									"properties": {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -20,6 +21,8 @@ type converter struct {
 	splitOutput       bool
 	inSpecSet         spec.SpecificationSet
 	resourceToRest    map[string]string
+	tagsForModel      map[string]openapi3.Tags
+	globalTagSet      map[string]*openapi3.Tag
 	outRootDoc        openapi3.T
 }
 
@@ -29,6 +32,8 @@ func newConverter(inSpecSet spec.SpecificationSet, cfg Config) *converter {
 		splitOutput:       cfg.SplitOutput,
 		inSpecSet:         inSpecSet,
 		resourceToRest:    make(map[string]string),
+		tagsForModel:      make(map[string]openapi3.Tags),
+		globalTagSet:      make(map[string]*openapi3.Tag),
 		outRootDoc:        newOpenAPI3Template(inSpecSet.Configuration()),
 	}
 
@@ -46,6 +51,7 @@ func (c *converter) Do(newWriter func(name string) (io.WriteCloser, error)) erro
 		if err := c.processSpec(s); err != nil {
 			return fmt.Errorf("unable to to process spec: %w", err)
 		}
+		c.cacheTags(s.Model())
 	}
 
 	for name, doc := range c.convertedDocs() {
@@ -103,6 +109,7 @@ func (c *converter) processSpec(s spec.Specification) error {
 func (c *converter) convertedDocs() map[string]openapi3.T {
 
 	if !c.splitOutput || len(c.outRootDoc.Components.Schemas) == 0 {
+		c.outRootDoc.Tags = c.globalTags()
 		return map[string]openapi3.T{defaultDocName: c.outRootDoc}
 	}
 
@@ -112,6 +119,7 @@ func (c *converter) convertedDocs() map[string]openapi3.T {
 		template := newOpenAPI3Template(specConfig)
 		template.Components.Schemas[name] = schema
 		template.Info.Title = name
+		template.Tags = c.tagsForModel[name]
 		docs[name] = template
 	}
 
@@ -122,6 +130,40 @@ func (c *converter) convertedDocs() map[string]openapi3.T {
 	}
 
 	return docs
+}
+
+func (c *converter) cacheTags(model *spec.Model) {
+
+	if model.IsRoot {
+		return
+	}
+
+	tags := openapi3.Tags{
+		{
+			Name:        model.Group,
+			Description: fmt.Sprintf("This tag is for group '%s'", model.Group),
+		},
+		{
+			Name:        model.Package,
+			Description: fmt.Sprintf("This tag is for package '%s'", model.Package),
+		},
+	}
+
+	for _, t := range tags {
+		c.globalTagSet[t.Name] = t
+	}
+	c.tagsForModel[model.RestName] = tags
+}
+
+func (c *converter) globalTags() openapi3.Tags {
+	tags := make(openapi3.Tags, 0, len(c.globalTagSet))
+	for _, t := range c.globalTagSet {
+		tags = append(tags, t)
+	}
+	sort.Slice(tags, func(i, j int) bool {
+		return tags[i].Name < tags[j].Name
+	})
+	return tags
 }
 
 func newOpenAPI3Template(specConfig *spec.Config) openapi3.T {

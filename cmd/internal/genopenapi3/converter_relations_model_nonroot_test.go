@@ -30,9 +30,34 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "useful/thing",
+								"description": "This tag is for group 'useful/thing'"
+							},
+							{
+								"name": "usefulPackageName",
+								"description": "This tag is for package 'usefulPackageName'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"resource": {
+									"description": "useful description.",
 									"type": "object"
 								}
 							}
@@ -104,9 +129,34 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "useful/thing",
+								"description": "This tag is for group 'useful/thing'"
+							},
+							{
+								"name": "usefulPackageName",
+								"description": "This tag is for package 'usefulPackageName'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"resource": {
+									"description": "useful description.",
 									"type": "object"
 								}
 							}
@@ -180,9 +230,34 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "useful/thing",
+								"description": "This tag is for group 'useful/thing'"
+							},
+							{
+								"name": "usefulPackageName",
+								"description": "This tag is for package 'usefulPackageName'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"resource": {
+									"description": "useful description.",
 									"type": "object"
 								}
 							}
@@ -261,9 +336,34 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 			outDocs: map[string]string{
 				"toplevel": `
 					{
+						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "useful/thing",
+								"description": "This tag is for group 'useful/thing'"
+							},
+							{
+								"name": "usefulPackageName",
+								"description": "This tag is for package 'usefulPackageName'"
+							}
+						],
+						"info": {
+							"contact": {
+								"email": "dev@aporeto.com",
+								"name":  "Aporeto Inc.",
+								"url":   "go.aporeto.io/api"
+							},
+							"license": {
+								"name": "TODO"
+							},
+							"termsOfService": "https://localhost/TODO",
+							"version": "1.0",
+							"title": "toplevel"
+						},
 						"components": {
 							"schemas": {
 								"resource": {
+									"description": "useful description.",
 									"type": "object"
 								}
 							}

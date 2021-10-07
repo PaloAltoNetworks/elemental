@@ -17,6 +17,20 @@ func TestConverter_Do__splitOutput_emptyRootModel(t *testing.T) {
 	`
 	outDocs := `
 		{
+			"openapi": "3.0.3",
+			"info": {
+				"contact": {
+					"email": "dev@aporeto.com",
+					"name":  "Aporeto Inc.",
+					"url":   "go.aporeto.io/api"
+				},
+				"license": {
+					"name": "TODO"
+				},
+				"termsOfService": "https://localhost/TODO",
+				"version": "1.0",
+				"title": "toplevel"
+			},
 			"components": {},
 			"paths": {}
 		}
@@ -106,9 +120,34 @@ func TestConverter_Do__split_output_complex(t *testing.T) {
 	outDocs := map[string]string{
 		"minesite": `
 			{
+				"openapi": "3.0.3",
+				"tags":[
+					{
+						"name": "useful/thing",
+						"description": "This tag is for group 'useful/thing'"
+					},
+					{
+						"name": "usefulPackageName",
+						"description": "This tag is for package 'usefulPackageName'"
+					}
+				],
+				"info": {
+					"contact": {
+						"email": "dev@aporeto.com",
+						"name":  "Aporeto Inc.",
+						"url":   "go.aporeto.io/api"
+					},
+					"license": {
+						"name": "TODO"
+					},
+					"termsOfService": "https://localhost/TODO",
+					"version": "1.0",
+					"title": "minesite"
+				},
 				"components": {
 					"schemas": {
 						"minesite": {
+							"description": "Represents a resource mine site.",
 							"type": "object"
 						}
 					}
@@ -319,9 +358,34 @@ func TestConverter_Do__split_output_complex(t *testing.T) {
 
 		"resource": `
 			{
+				"openapi": "3.0.3",
+				"tags":[
+					{
+						"name": "oil/gas",
+						"description": "This tag is for group 'oil/gas'"
+					},
+					{
+						"name": "naturalResources",
+						"description": "This tag is for package 'naturalResources'"
+					}
+				],
+				"info": {
+					"contact": {
+						"email": "dev@aporeto.com",
+						"name":  "Aporeto Inc.",
+						"url":   "go.aporeto.io/api"
+					},
+					"license": {
+						"name": "TODO"
+					},
+					"termsOfService": "https://localhost/TODO",
+					"version": "1.0",
+					"title": "resource"
+				},
 				"components": {
 					"schemas": {
 						"resource": {
+							"description": "Represents a natural resource.",
 							"properties": {
 								"supervisor": {
 									"$ref": "./employee#/components/schemas/employee"
@@ -337,9 +401,34 @@ func TestConverter_Do__split_output_complex(t *testing.T) {
 
 		"employee": `
 			{
+				"openapi": "3.0.3",
+				"tags":[
+					{
+						"name": "employee/affairs",
+						"description": "This tag is for group 'employee/affairs'"
+					},
+					{
+						"name": "people",
+						"description": "This tag is for package 'people'"
+					}
+				],
+				"info": {
+					"contact": {
+						"email": "dev@aporeto.com",
+						"name":  "Aporeto Inc.",
+						"url":   "go.aporeto.io/api"
+					},
+					"license": {
+						"name": "TODO"
+					},
+					"termsOfService": "https://localhost/TODO",
+					"version": "1.0",
+					"title": "employee"
+				},
 				"components": {
 					"schemas": {
 						"employee": {
+							"description": "Represents a full-time employee.",
 							"type": "object"
 						}
 					}
