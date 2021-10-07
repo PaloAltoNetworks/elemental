@@ -33,6 +33,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"resource": {
+									"description": "useful description.",
 									"type": "object"
 								}
 							}
@@ -107,6 +108,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"resource": {
+									"description": "useful description.",
 									"type": "object"
 								}
 							}
@@ -183,6 +185,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"resource": {
+									"description": "useful description.",
 									"type": "object"
 								}
 							}
@@ -264,6 +267,7 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"resource": {
+									"description": "useful description.",
 									"type": "object"
 								}
 							}

@@ -25,6 +25,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"void": {
+									"description": "empty model.",
 									"type": "object"
 								}
 							}
@@ -57,6 +58,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object"
 								}
 							}
@@ -133,6 +135,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"properties": {
 										"stringField": {
@@ -191,6 +194,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"properties": {
 										"someField": {
@@ -229,6 +233,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"properties": {
 										"someField": {
@@ -288,6 +293,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"properties": {
 										"stringListField": {
@@ -360,6 +366,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"properties": {
 										"someField": {
@@ -404,6 +411,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"properties": {
 										"someField1": {
@@ -459,6 +467,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"properties": {
 										"someField1": {
@@ -508,6 +517,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"properties": {
 										"someField": {
@@ -552,6 +562,7 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"test": {
+									"description": "dummy.",
 									"type": "object",
 									"required": ["stringField"],
 									"properties": {

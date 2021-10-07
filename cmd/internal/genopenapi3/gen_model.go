@@ -17,6 +17,7 @@ var (
 func (c *converter) convertModel(s spec.Specification) (*openapi3.SchemaRef, error) {
 
 	schema := openapi3.NewObjectSchema()
+	schema.Description = s.Model().Description
 	schema.Properties = make(map[string]*openapi3.SchemaRef)
 
 	for _, specAttr := range s.Attributes("") { // TODO: figure out versions

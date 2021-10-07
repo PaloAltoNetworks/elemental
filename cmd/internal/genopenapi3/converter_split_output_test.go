@@ -109,6 +109,7 @@ func TestConverter_Do__split_output_complex(t *testing.T) {
 				"components": {
 					"schemas": {
 						"minesite": {
+							"description": "Represents a resource mine site.",
 							"type": "object"
 						}
 					}
@@ -322,6 +323,7 @@ func TestConverter_Do__split_output_complex(t *testing.T) {
 				"components": {
 					"schemas": {
 						"resource": {
+							"description": "Represents a natural resource.",
 							"properties": {
 								"supervisor": {
 									"$ref": "./employee#/components/schemas/employee"
@@ -340,6 +342,7 @@ func TestConverter_Do__split_output_complex(t *testing.T) {
 				"components": {
 					"schemas": {
 						"employee": {
+							"description": "Represents a full-time employee.",
 							"type": "object"
 						}
 					}

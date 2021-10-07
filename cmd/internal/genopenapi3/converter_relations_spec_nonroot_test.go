@@ -37,9 +37,11 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"minesite": {
+									"description": "Represents a resource mine site.",
 									"type": "object"
 								},
 								"resource": {
+									"description": "useful description.",
 									"type": "object"
 								}
 							}
@@ -140,9 +142,11 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"minesite": {
+									"description": "Represents a resource mine site.",
 									"type": "object"
 								},
 								"resource": {
+									"description": "useful description.",
 									"type": "object"
 								}
 							}
@@ -230,9 +234,11 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"minesite": {
+									"description": "Represents a resource mine site.",
 									"type": "object"
 								},
 								"resource": {
+									"description": "useful description.",
 									"type": "object"
 								}
 							}
@@ -275,9 +281,11 @@ func TestConverter_Do__specRelations_nonRoot(t *testing.T) {
 						"components": {
 							"schemas": {
 								"minesite": {
+									"description": "Represents a resource mine site.",
 									"type": "object"
 								},
 								"resource": {
+									"description": "useful description.",
 									"type": "object"
 								}
 							}

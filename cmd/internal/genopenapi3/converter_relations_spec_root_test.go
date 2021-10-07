@@ -36,6 +36,7 @@ func TestConverter_Do__specRelations_root(t *testing.T) {
 						"components": {
 							"schemas": {
 								"resource": {
+									"description": "Represents a resource.",
 									"type": "object"
 								}
 							}
@@ -121,6 +122,7 @@ func TestConverter_Do__specRelations_root(t *testing.T) {
 						"components": {
 							"schemas": {
 								"resource": {
+									"description": "Represents a resource.",
 									"type": "object"
 								}
 							}
@@ -193,6 +195,7 @@ func TestConverter_Do__specRelations_root(t *testing.T) {
 						"components": {
 							"schemas": {
 								"resource": {
+									"description": "Represents a resource.",
 									"type": "object"
 								}
 							}
