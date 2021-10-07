@@ -17,6 +17,20 @@ func TestConverter_Do__splitOutput_emptyRootModel(t *testing.T) {
 	`
 	outDocs := `
 		{
+			"openapi": "3.0.3",
+			"info": {
+				"contact": {
+					"email": "dev@aporeto.com",
+					"name":  "Aporeto Inc.",
+					"url":   "go.aporeto.io/api"
+				},
+				"license": {
+					"name": "TODO"
+				},
+				"termsOfService": "https://localhost/TODO",
+				"version": "1.0",
+				"title": "toplevel"
+			},
 			"components": {},
 			"paths": {}
 		}
@@ -106,6 +120,20 @@ func TestConverter_Do__split_output_complex(t *testing.T) {
 	outDocs := map[string]string{
 		"minesite": `
 			{
+				"openapi": "3.0.3",
+				"info": {
+					"contact": {
+						"email": "dev@aporeto.com",
+						"name":  "Aporeto Inc.",
+						"url":   "go.aporeto.io/api"
+					},
+					"license": {
+						"name": "TODO"
+					},
+					"termsOfService": "https://localhost/TODO",
+					"version": "1.0",
+					"title": "minesite"
+				},
 				"components": {
 					"schemas": {
 						"minesite": {
@@ -320,6 +348,20 @@ func TestConverter_Do__split_output_complex(t *testing.T) {
 
 		"resource": `
 			{
+				"openapi": "3.0.3",
+				"info": {
+					"contact": {
+						"email": "dev@aporeto.com",
+						"name":  "Aporeto Inc.",
+						"url":   "go.aporeto.io/api"
+					},
+					"license": {
+						"name": "TODO"
+					},
+					"termsOfService": "https://localhost/TODO",
+					"version": "1.0",
+					"title": "resource"
+				},
 				"components": {
 					"schemas": {
 						"resource": {
@@ -339,6 +381,20 @@ func TestConverter_Do__split_output_complex(t *testing.T) {
 
 		"employee": `
 			{
+				"openapi": "3.0.3",
+				"info": {
+					"contact": {
+						"email": "dev@aporeto.com",
+						"name":  "Aporeto Inc.",
+						"url":   "go.aporeto.io/api"
+					},
+					"license": {
+						"name": "TODO"
+					},
+					"termsOfService": "https://localhost/TODO",
+					"version": "1.0",
+					"title": "employee"
+				},
 				"components": {
 					"schemas": {
 						"employee": {

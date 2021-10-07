@@ -19,8 +19,8 @@ type testCase struct {
 	inSpec              string
 	inSkipPrivateModels bool
 	inSplitOutput       bool
-	outDocs             map[string]string // docname -> rawDoc excluding root keys 'openapi3' and 'info'
-	supportingSpecs     []string          // other dependency specs needed for test case(s)
+	outDocs             map[string]string
+	supportingSpecs     []string // other dependency specs needed for test case(s)
 }
 
 type testCaseRunner struct {
@@ -134,30 +134,6 @@ func (r *testCaseRunner) run(name string, tc testCase) {
 			expected := make(map[string]interface{})
 			if err := json.Unmarshal([]byte(expectedRawDoc), &expected); err != nil {
 				t.Fatalf("invalid expected output data in test case: malformed json content: %v", err)
-			}
-			// root keys 'openapi3' and 'info' must be identical for all test cases;
-			// therefore, we inject them here or fail the test if they are defined
-			// to make test cases more readable and to prevent repeating them in all
-			// test cases, which is going to be boring
-			if _, ok := expected["openapi"]; ok {
-				t.Fatal("key 'openapi' must not be defined in the expected outDoc as it is set by the test")
-			}
-			if _, ok := expected["info"]; ok {
-				t.Fatal("key 'info' must not be defined in the expected outDoc as it is set by the test")
-			}
-			expected["openapi"] = "3.0.3"
-			expected["info"] = map[string]interface{}{
-				"contact": map[string]interface{}{
-					"email": "dev@aporeto.com",
-					"name":  "Aporeto Inc.",
-					"url":   "go.aporeto.io/api",
-				},
-				"license": map[string]interface{}{
-					"name": "TODO",
-				},
-				"termsOfService": "https://localhost/TODO",
-				"title":          expectedDocName,
-				"version":        "1.0",
 			}
 
 			if diff := deep.Equal(actual, expected); diff != nil {
