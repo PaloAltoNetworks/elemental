@@ -25,7 +25,7 @@ func GeneratorFunc(sets []spec.SpecificationSet, cfg Config) error {
 		return fmt.Errorf("'%s': error creating directory: %w", outFolder, err)
 	}
 
-	fileFactory := func(name string) (io.WriteCloser, error) {
+	newFileFunc := func(name string) (io.WriteCloser, error) {
 		filename := filepath.Join(outFolder, name)
 		file, err := os.Create(filename)
 		if err != nil {
@@ -36,7 +36,7 @@ func GeneratorFunc(sets []spec.SpecificationSet, cfg Config) error {
 
 	set := sets[0]
 	converter := newConverter(set, cfg)
-	if err := converter.Do(fileFactory); err != nil {
+	if err := converter.Do(newFileFunc); err != nil {
 		return fmt.Errorf("error generating openapi3 document from spec set '%s': %w", set.Configuration().Name, err)
 	}
 
