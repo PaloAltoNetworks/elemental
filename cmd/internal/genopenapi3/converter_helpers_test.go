@@ -3,6 +3,7 @@ package genopenapi3
 import (
 	"bytes"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -17,8 +18,9 @@ import (
 type testCase struct {
 	inSpec              string
 	inSkipPrivateModels bool
-	outDoc              string   // excluding root keys 'openapi3' and 'info'
-	supportingSpecs     []string // other dependency specs needed for test case(s)
+	inSplitOutput       bool
+	outDocs             map[string]string // docname -> rawDoc excluding root keys 'openapi3' and 'info'
+	supportingSpecs     []string          // other dependency specs needed for test case(s)
 }
 
 type testCaseRunner struct {
@@ -93,48 +95,70 @@ func (r *testCaseRunner) run(name string, tc testCase) {
 			t.Fatalf("error parsing spec set from test data: %v", err)
 		}
 
-		converter := newConverter(spec, tc.inSkipPrivateModels)
-		output := new(bytes.Buffer)
-		if err := converter.Do(output); err != nil {
+		cfg := Config{
+			Public:      tc.inSkipPrivateModels,
+			SplitOutput: tc.inSplitOutput,
+		}
+		converter := newConverter(spec, cfg)
+
+		output := map[string]*writeCloserMem{}
+		writerFactory := func(docName string) (io.WriteCloser, error) {
+			wr := &writeCloserMem{new(bytes.Buffer)}
+			output[docName] = wr
+			return wr, nil
+		}
+		if err := converter.Do(writerFactory); err != nil {
 			t.Fatalf("error converting spec to openapi3: %v", err)
 		}
 
-		actual := make(map[string]interface{})
-		if err := json.Unmarshal(output.Bytes(), &actual); err != nil {
-			t.Fatalf("invalid actual output data: malformed json content: %v", err)
+		if la, le := len(output), len(tc.outDocs); la != le {
+			t.Fatalf("expected %d output documents, got: %d", le, la)
+		}
+		for docName := range tc.outDocs {
+			if _, ok := output[docName]; !ok {
+				t.Fatalf("document with name '%s' does not exist in the actual output", docName)
+			}
 		}
 
-		expected := make(map[string]interface{})
-		if err := json.Unmarshal([]byte(tc.outDoc), &expected); err != nil {
-			t.Fatalf("invalid expected output data in test case: malformed json content: %v", err)
-		}
-		// root keys 'openapi3' and 'info' must be identical for all test cases;
-		// therefore, we inject them here or fail the test if they are defined
-		// to make test cases more readable and to prevent repeating them in all
-		// test cases, which is going to be boring
-		if _, ok := expected["openapi"]; ok {
-			t.Fatal("key 'openapi' must not be defined in the expected outDoc as it is set by the test")
-		}
-		if _, ok := expected["info"]; ok {
-			t.Fatal("key 'info' must not be defined in the expected outDoc as it is set by the test")
-		}
-		expected["openapi"] = "3.0.3"
-		expected["info"] = map[string]interface{}{
-			"contact": map[string]interface{}{
-				"email": "dev@aporeto.com",
-				"name":  "Aporeto Inc.",
-				"url":   "go.aporeto.io/api",
-			},
-			"license": map[string]interface{}{
-				"name": "TODO",
-			},
-			"termsOfService": "https://localhost/TODO",
-			"title":          "gaia",
-			"version":        "1.0",
-		}
+		for expectedDocName, expectedRawDoc := range tc.outDocs {
+			actualRawDoc := output[expectedDocName]
+			actual := make(map[string]interface{})
+			if err := json.Unmarshal(actualRawDoc.Bytes(), &actual); err != nil {
+				t.Fatalf("invalid actual output data: malformed json content: %v", err)
+			}
 
-		if diff := deep.Equal(actual, expected); diff != nil {
-			t.Fatal("actual != expected output\n", strings.Join(diff, "\n"))
+			expected := make(map[string]interface{})
+			if err := json.Unmarshal([]byte(expectedRawDoc), &expected); err != nil {
+				t.Fatalf("invalid expected output data in test case: malformed json content: %v", err)
+			}
+			// root keys 'openapi3' and 'info' must be identical for all test cases;
+			// therefore, we inject them here or fail the test if they are defined
+			// to make test cases more readable and to prevent repeating them in all
+			// test cases, which is going to be boring
+			if _, ok := expected["openapi"]; ok {
+				t.Fatal("key 'openapi' must not be defined in the expected outDoc as it is set by the test")
+			}
+			if _, ok := expected["info"]; ok {
+				t.Fatal("key 'info' must not be defined in the expected outDoc as it is set by the test")
+			}
+			expected["openapi"] = "3.0.3"
+			expected["info"] = map[string]interface{}{
+				"contact": map[string]interface{}{
+					"email": "dev@aporeto.com",
+					"name":  "Aporeto Inc.",
+					"url":   "go.aporeto.io/api",
+				},
+				"license": map[string]interface{}{
+					"name": "TODO",
+				},
+				"termsOfService": "https://localhost/TODO",
+				"title":          expectedDocName,
+				"version":        "1.0",
+			}
+
+			if diff := deep.Equal(actual, expected); diff != nil {
+				t.Fatal("actual != expected output\n", strings.Join(diff, "\n"))
+			}
 		}
 	})
 }
@@ -165,9 +189,22 @@ func replaceTrailingTabsWithDoubleSpaceForYAML(s string) string {
 }
 
 type fakeWriter struct {
-	err error
+	wrErr error
+	cErr  error
 }
 
 func (fw *fakeWriter) Write([]byte) (int, error) {
-	return 0, fw.err
+	return 0, fw.wrErr
+}
+
+func (fw *fakeWriter) Close() error {
+	return fw.cErr
+}
+
+type writeCloserMem struct {
+	*bytes.Buffer
+}
+
+func (wr *writeCloserMem) Close() error {
+	return nil
 }

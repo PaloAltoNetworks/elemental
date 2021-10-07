@@ -4,47 +4,32 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"go.aporeto.io/regolithe/spec"
 )
 
-const paramNameID = "id"
+const (
+	paramNameID    = "id"
+	defaultDocName = "toplevel"
+)
 
 type converter struct {
 	skipPrivateModels bool
+	splitOutput       bool
 	inSpecSet         spec.SpecificationSet
 	resourceToRest    map[string]string
 	outRootDoc        openapi3.T
 }
 
-func newConverter(inSpecSet spec.SpecificationSet, skipPrivateModels bool) *converter {
-	specConfig := inSpecSet.Configuration()
+func newConverter(inSpecSet spec.SpecificationSet, cfg Config) *converter {
 	c := &converter{
-		skipPrivateModels: skipPrivateModels,
+		skipPrivateModels: cfg.Public,
+		splitOutput:       cfg.SplitOutput,
 		inSpecSet:         inSpecSet,
 		resourceToRest:    make(map[string]string),
-		outRootDoc: openapi3.T{
-			OpenAPI: "3.0.3",
-			Info: &openapi3.Info{
-				Title:          specConfig.Name,
-				Version:        specConfig.Version,
-				Description:    specConfig.Description,
-				TermsOfService: "https://localhost/TODO", // TODO
-				License: &openapi3.License{
-					Name: "TODO",
-				},
-				Contact: &openapi3.Contact{
-					Name:  specConfig.Author,
-					URL:   specConfig.URL,
-					Email: specConfig.Email,
-				},
-			},
-			Paths: openapi3.Paths{},
-			Components: openapi3.Components{
-				Schemas: make(openapi3.Schemas),
-			},
-		},
+		outRootDoc:        newOpenAPI3Template(inSpecSet.Configuration()),
 	}
 
 	for _, spec := range inSpecSet.Specifications() {
@@ -55,7 +40,7 @@ func newConverter(inSpecSet spec.SpecificationSet, skipPrivateModels bool) *conv
 	return c
 }
 
-func (c *converter) Do(dest io.Writer) error {
+func (c *converter) Do(newWriter func(name string) (io.WriteCloser, error)) error {
 
 	for _, s := range c.inSpecSet.Specifications() {
 		if err := c.processSpec(s); err != nil {
@@ -63,10 +48,17 @@ func (c *converter) Do(dest io.Writer) error {
 		}
 	}
 
-	enc := json.NewEncoder(dest)
-	enc.SetIndent("", "  ")
-	if err := enc.Encode(c.outRootDoc); err != nil {
-		return fmt.Errorf("marshaling openapi3 document: %w", err)
+	for name, doc := range c.convertedDocs() {
+		dest, err := newWriter(name)
+		if err != nil {
+			return fmt.Errorf("'%s': unable to create write destination: %w", name, err)
+		}
+
+		enc := json.NewEncoder(dest)
+		enc.SetIndent("", "  ")
+		if err := enc.Encode(doc); err != nil {
+			return fmt.Errorf("'%s': marshaling openapi3 document: %w", name, err)
+		}
 	}
 
 	return nil
@@ -106,4 +98,52 @@ func (c *converter) processSpec(s spec.Specification) error {
 	}
 
 	return nil
+}
+
+func (c *converter) convertedDocs() map[string]openapi3.T {
+
+	if !c.splitOutput || len(c.outRootDoc.Components.Schemas) == 0 {
+		return map[string]openapi3.T{defaultDocName: c.outRootDoc}
+	}
+
+	docs := make(map[string]openapi3.T)
+	specConfig := c.inSpecSet.Configuration()
+	for name, schema := range c.outRootDoc.Components.Schemas {
+		template := newOpenAPI3Template(specConfig)
+		template.Components.Schemas[name] = schema
+		template.Info.Title = name
+		docs[name] = template
+	}
+
+	for path, item := range c.outRootDoc.Paths {
+		pathRoot := strings.SplitN(strings.Trim(path, "/"), "/", 2)[0]
+		docName := c.resourceToRest[pathRoot]
+		docs[docName].Paths[path] = item
+	}
+
+	return docs
+}
+
+func newOpenAPI3Template(specConfig *spec.Config) openapi3.T {
+	return openapi3.T{
+		OpenAPI: "3.0.3",
+		Info: &openapi3.Info{
+			Title:          defaultDocName,
+			Version:        specConfig.Version,
+			Description:    specConfig.Description,
+			TermsOfService: "https://localhost/TODO", // TODO
+			License: &openapi3.License{
+				Name: "TODO",
+			},
+			Contact: &openapi3.Contact{
+				Name:  specConfig.Author,
+				URL:   specConfig.URL,
+				Email: specConfig.Email,
+			},
+		},
+		Paths: openapi3.Paths{},
+		Components: openapi3.Components{
+			Schemas: make(openapi3.Schemas),
+		},
+	}
 }

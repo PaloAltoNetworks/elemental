@@ -20,12 +20,14 @@ func TestConverter_Do__model_root(t *testing.T) {
 					group: core
 					description: root object.
 			`,
-			outDoc: `
-				{
-					"components": {},
-					"paths": {}
-				}
-			`,
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {},
+						"paths": {}
+					}
+				`,
+			},
 		},
 	}
 	runAllTestCases(t, cases)

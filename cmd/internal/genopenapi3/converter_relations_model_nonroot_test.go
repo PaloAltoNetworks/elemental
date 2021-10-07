@@ -27,49 +27,51 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 								description: This is a fancy parameter that should appear only once.
 								type: time
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"resource": {
-								"type": "object"
-							}
-						}
-					},
-					"paths": {
-						"/resources/{id}": {
-							"parameters": [
-								{
-									"in": "path",
-									"name": "id",
-									"required": true,
-									"schema": {
-										"type": "string"
-									}
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"resource": {
+									"type": "object"
 								}
-							],
-							"get": {
-								"operationId": "get-resource-by-ID",
-								"tags": ["useful/thing", "usefulPackageName"],
-								"description": "Retrieves the resource with the given ID.",
+							}
+						},
+						"paths": {
+							"/resources/{id}": {
 								"parameters": [
 									{
-										"description": "This is a fancy parameter that should appear only once.",
-										"in": "query",
-										"name": "duplicateParam",
+										"in": "path",
+										"name": "id",
+										"required": true,
 										"schema": {
-											"type": "string",
-											"format": "date-time"
+											"type": "string"
 										}
 									}
 								],
-								"responses": {
-									"200": {
-										"description": "n/a",
-										"content": {
-											"application/json": {
-												"schema": {
-													"$ref": "#/components/schemas/resource"
+								"get": {
+									"operationId": "get-resource-by-ID",
+									"tags": ["useful/thing", "usefulPackageName"],
+									"description": "Retrieves the resource with the given ID.",
+									"parameters": [
+										{
+											"description": "This is a fancy parameter that should appear only once.",
+											"in": "query",
+											"name": "duplicateParam",
+											"schema": {
+												"type": "string",
+												"format": "date-time"
+											}
+										}
+									],
+									"responses": {
+										"200": {
+											"description": "n/a",
+											"content": {
+												"application/json": {
+													"schema": {
+														"$ref": "#/components/schemas/resource"
+													}
 												}
 											}
 										}
@@ -78,8 +80,8 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 							}
 						}
 					}
-				}
-			`,
+				`,
+			},
 		},
 
 		"delete-by-ID": {
@@ -99,48 +101,50 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 								description: This is a fancy parameter.
 								type: duration
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"resource": {
-								"type": "object"
-							}
-						}
-					},
-					"paths": {
-						"/resources/{id}": {
-							"parameters": [
-								{
-									"in": "path",
-									"name": "id",
-									"required": true,
-									"schema": {
-										"type": "string"
-									}
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"resource": {
+									"type": "object"
 								}
-							],
-							"delete": {
-								"operationId": "delete-resource-by-ID",
-								"tags": ["useful/thing", "usefulPackageName"],
-								"description": "Deletes the resource with the given ID.",
+							}
+						},
+						"paths": {
+							"/resources/{id}": {
 								"parameters": [
 									{
-										"description": "This is a fancy parameter.",
-										"in": "query",
-										"name": "fancyParam",
+										"in": "path",
+										"name": "id",
+										"required": true,
 										"schema": {
 											"type": "string"
 										}
 									}
 								],
-								"responses": {
-									"200": {
-										"description": "n/a",
-										"content": {
-											"application/json": {
-												"schema": {
-													"$ref": "#/components/schemas/resource"
+								"delete": {
+									"operationId": "delete-resource-by-ID",
+									"tags": ["useful/thing", "usefulPackageName"],
+									"description": "Deletes the resource with the given ID.",
+									"parameters": [
+										{
+											"description": "This is a fancy parameter.",
+											"in": "query",
+											"name": "fancyParam",
+											"schema": {
+												"type": "string"
+											}
+										}
+									],
+									"responses": {
+										"200": {
+											"description": "n/a",
+											"content": {
+												"application/json": {
+													"schema": {
+														"$ref": "#/components/schemas/resource"
+													}
 												}
 											}
 										}
@@ -149,8 +153,8 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 							}
 						}
 					}
-				}
-			`,
+				`,
+			},
 		},
 
 		"put-by-ID": {
@@ -173,57 +177,59 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 								- Choice1
 								- Choice2
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"resource": {
-								"type": "object"
-							}
-						}
-					},
-					"paths": {
-						"/resources/{id}": {
-							"parameters": [
-								{
-									"in": "path",
-									"name": "id",
-									"required": true,
-									"schema": {
-										"type": "string"
-									}
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"resource": {
+									"type": "object"
 								}
-							],
-							"put": {
-								"operationId": "update-resource-by-ID",
-								"tags": ["useful/thing", "usefulPackageName"],
-								"description": "Updates the resource with the given ID.",
+							}
+						},
+						"paths": {
+							"/resources/{id}": {
 								"parameters": [
 									{
-										"description": "This is a fancy parameter.",
-										"in": "query",
-										"name": "fancyParam",
+										"in": "path",
+										"name": "id",
+										"required": true,
 										"schema": {
-											"enum": ["Choice1", "Choice2"]
+											"type": "string"
 										}
 									}
 								],
-								"requestBody": {
-									"content": {
-										"application/json": {
+								"put": {
+									"operationId": "update-resource-by-ID",
+									"tags": ["useful/thing", "usefulPackageName"],
+									"description": "Updates the resource with the given ID.",
+									"parameters": [
+										{
+											"description": "This is a fancy parameter.",
+											"in": "query",
+											"name": "fancyParam",
 											"schema": {
-												"$ref": "#/components/schemas/resource"
+												"enum": ["Choice1", "Choice2"]
 											}
 										}
-									}
-								},
-								"responses": {
-									"200": {
-										"description": "n/a",
+									],
+									"requestBody": {
 										"content": {
 											"application/json": {
 												"schema": {
 													"$ref": "#/components/schemas/resource"
+												}
+											}
+										}
+									},
+									"responses": {
+										"200": {
+											"description": "n/a",
+											"content": {
+												"application/json": {
+													"schema": {
+														"$ref": "#/components/schemas/resource"
+													}
 												}
 											}
 										}
@@ -232,8 +238,8 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 							}
 						}
 					}
-				}
-			`,
+				`,
+			},
 		},
 
 		"get-put-delete-by-ID--do-not-duplicate-param-ID": {
@@ -252,81 +258,83 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 					update:
 						description: Updates the resource with the given ID.
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"resource": {
-								"type": "object"
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"resource": {
+									"type": "object"
+								}
 							}
-						}
-					},
-					"paths": {
-						"/resources/{id}": {
-							"parameters": [
-								{
-									"in": "path",
-									"name": "id",
-									"required": true,
-									"schema": {
-										"type": "string"
-									}
-								}
-							],
-							"get": {
-								"operationId": "get-resource-by-ID",
-								"tags": ["useful/thing", "usefulPackageName"],
-								"description": "Retrieves the resource with the given ID.",
-								"responses": {
-									"200": {
-										"description": "n/a",
-										"content": {
-											"application/json": {
-												"schema": {
-													"$ref": "#/components/schemas/resource"
-												}
-											}
+						},
+						"paths": {
+							"/resources/{id}": {
+								"parameters": [
+									{
+										"in": "path",
+										"name": "id",
+										"required": true,
+										"schema": {
+											"type": "string"
 										}
 									}
-								}
-							},
-							"delete": {
-								"operationId": "delete-resource-by-ID",
-								"tags": ["useful/thing", "usefulPackageName"],
-								"description": "Deletes the resource with the given ID.",
-								"responses": {
-									"200": {
-										"description": "n/a",
-										"content": {
-											"application/json": {
-												"schema": {
-													"$ref": "#/components/schemas/resource"
+								],
+								"get": {
+									"operationId": "get-resource-by-ID",
+									"tags": ["useful/thing", "usefulPackageName"],
+									"description": "Retrieves the resource with the given ID.",
+									"responses": {
+										"200": {
+											"description": "n/a",
+											"content": {
+												"application/json": {
+													"schema": {
+														"$ref": "#/components/schemas/resource"
+													}
 												}
-											}
-										}
-									}
-								}
-							},
-							"put": {
-								"operationId": "update-resource-by-ID",
-								"tags": ["useful/thing", "usefulPackageName"],
-								"description": "Updates the resource with the given ID.",
-								"requestBody": {
-									"content": {
-										"application/json": {
-											"schema": {
-												"$ref": "#/components/schemas/resource"
 											}
 										}
 									}
 								},
-								"responses": {
-									"200": {
-										"description": "n/a",
+								"delete": {
+									"operationId": "delete-resource-by-ID",
+									"tags": ["useful/thing", "usefulPackageName"],
+									"description": "Deletes the resource with the given ID.",
+									"responses": {
+										"200": {
+											"description": "n/a",
+											"content": {
+												"application/json": {
+													"schema": {
+														"$ref": "#/components/schemas/resource"
+													}
+												}
+											}
+										}
+									}
+								},
+								"put": {
+									"operationId": "update-resource-by-ID",
+									"tags": ["useful/thing", "usefulPackageName"],
+									"description": "Updates the resource with the given ID.",
+									"requestBody": {
 										"content": {
 											"application/json": {
 												"schema": {
 													"$ref": "#/components/schemas/resource"
+												}
+											}
+										}
+									},
+									"responses": {
+										"200": {
+											"description": "n/a",
+											"content": {
+												"application/json": {
+													"schema": {
+														"$ref": "#/components/schemas/resource"
+													}
 												}
 											}
 										}
@@ -335,8 +343,8 @@ func TestConverter_Do__modelRelations_nonRoot(t *testing.T) {
 							}
 						}
 					}
-				}
-			`,
+				`,
+			},
 		},
 	}
 	runAllTestCases(t, cases)

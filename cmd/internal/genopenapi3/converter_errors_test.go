@@ -2,6 +2,7 @@ package genopenapi3
 
 import (
 	"errors"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -64,13 +65,13 @@ func TestConverter_Do__error_bad_externalType_mapping(t *testing.T) {
 		t.Fatalf("error parsing spec set from test data: %v", err)
 	}
 
-	converter := newConverter(spec, false)
+	converter := newConverter(spec, Config{})
 	if err := converter.Do(nil); !errors.Is(err, errUnmarshalingExternalType) {
 		t.Fatalf("unexpected error\nwant: %v\n got: %v", errUnmarshalingExternalType, err)
 	}
 }
 
-func TestConverter_Do__error_bad_write_destination(t *testing.T) {
+func TestConverter_Do__error_writer(t *testing.T) {
 
 	specDir, err := ioutil.TempDir("", t.Name()+"_*")
 	if err != nil {
@@ -110,11 +111,18 @@ func TestConverter_Do__error_bad_write_destination(t *testing.T) {
 		t.Fatalf("error parsing spec set from test data: %v", err)
 	}
 
-	simulatedErr := errors.New("simulated error")
-	fw := &fakeWriter{err: simulatedErr}
+	simulatedErr1 := errors.New("simulated error 1")
+	fw := &fakeWriter{wrErr: simulatedErr1}
+	writerFactory := func(string) (io.WriteCloser, error) { return fw, nil }
+	converter := newConverter(spec, Config{})
+	if err := converter.Do(writerFactory); !errors.Is(err, simulatedErr1) {
+		t.Fatalf("unexpected error\nwant: %v\n got: %v", simulatedErr1, err)
+	}
 
-	converter := newConverter(spec, false)
-	if err := converter.Do(fw); !errors.Is(err, simulatedErr) {
-		t.Fatalf("unexpected error\nwant: %v\n got: %v", simulatedErr, err)
+	simulatedErr2 := errors.New("simulated error 2")
+	writerFactory = func(string) (io.WriteCloser, error) { return nil, simulatedErr2 }
+	converter = newConverter(spec, Config{})
+	if err := converter.Do(writerFactory); !errors.Is(err, simulatedErr2) {
+		t.Fatalf("unexpected error\nwant: %v\n got: %v", simulatedErr2, err)
 	}
 }

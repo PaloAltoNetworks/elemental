@@ -86,7 +86,11 @@ func (c *converter) extractOperationGetAll(parentRestName string, relation *spec
 	model := relation.Specification().Model()
 
 	respBodySchema := openapi3.NewArraySchema()
-	respBodySchema.Items = openapi3.NewSchemaRef("#/components/schemas/"+model.RestName, nil)
+	if !c.splitOutput || parentRestName == "" {
+		respBodySchema.Items = openapi3.NewSchemaRef("#/components/schemas/"+model.RestName, nil)
+	} else {
+		respBodySchema.Items = openapi3.NewSchemaRef("./"+model.RestName+"#/components/schemas/"+model.RestName, nil)
+	}
 
 	op := &openapi3.Operation{
 		OperationID: "get-all-" + model.ResourceName,
@@ -123,7 +127,13 @@ func (c *converter) extractOperationPost(parentRestName string, relation *spec.R
 
 	model := relation.Specification().Model()
 
-	schemaRef := openapi3.NewSchemaRef("#/components/schemas/"+relation.RestName, nil)
+	var schemaRef *openapi3.SchemaRef
+
+	if !c.splitOutput || parentRestName == "" {
+		schemaRef = openapi3.NewSchemaRef("#/components/schemas/"+relation.RestName, nil)
+	} else {
+		schemaRef = openapi3.NewSchemaRef("./"+relation.RestName+"#/components/schemas/"+relation.RestName, nil)
+	}
 
 	op := &openapi3.Operation{
 		OperationID: "create-a-new-" + relation.RestName,

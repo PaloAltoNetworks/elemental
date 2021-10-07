@@ -19,18 +19,20 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 					group: N/A
 					description: empty model.
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"void": {
-								"type": "object"
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"void": {
+									"type": "object"
+								}
 							}
-						}
-					},
-					"paths": {}
-				}
-			`,
+						},
+						"paths": {}
+					}
+				`,
+			},
 		},
 
 		"attribute-ignored-if-unexposed": {
@@ -49,18 +51,20 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						type: integer
 						exposed: false
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"test": {
-								"type": "object"
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"test": {
+									"type": "object"
+								}
 							}
-						}
-					},
-					"paths": {}
-				}
-			`,
+						},
+						"paths": {}
+					}
+				`,
+			},
 		},
 
 		"model-is-ignored-if-private-and-skip-flag-is-set": {
@@ -81,12 +85,14 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						type: integer
 						exposed: true
 			`,
-			outDoc: `
-				{
-					"components": {},
-					"paths": {}
-				}
-			`,
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {},
+						"paths": {}
+					}
+				`,
+			},
 		},
 
 		"primitive-attributes": {
@@ -121,41 +127,43 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						type: time
 						exposed: true
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"test": {
-								"type": "object",
-								"properties": {
-									"stringField": {
-										"description": "useful description for string.",
-										"type": "string"
-									},
-									"intField": {
-										"description": "useful description for integer.",
-										"type": "integer"
-									},
-									"floatField": {
-										"description": "useful description for float.",
-										"type": "number"
-									},
-									"booleanField": {
-										"description": "useful description for boolean.",
-										"type": "boolean"
-									},
-									"timeField": {
-										"description": "useful description for time.",
-										"type": "string",
-										"format": "date-time"
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"test": {
+									"type": "object",
+									"properties": {
+										"stringField": {
+											"description": "useful description for string.",
+											"type": "string"
+										},
+										"intField": {
+											"description": "useful description for integer.",
+											"type": "integer"
+										},
+										"floatField": {
+											"description": "useful description for float.",
+											"type": "number"
+										},
+										"booleanField": {
+											"description": "useful description for boolean.",
+											"type": "boolean"
+										},
+										"timeField": {
+											"description": "useful description for time.",
+											"type": "string",
+											"format": "date-time"
+										}
 									}
 								}
 							}
-						}
-					},
-					"paths": {}
-				}
-			`,
+						},
+						"paths": {}
+					}
+				`,
+			},
 		},
 
 		"enum-attribute": {
@@ -177,24 +185,26 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 							- Choice2
 						exposed: true
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"test": {
-								"type": "object",
-								"properties": {
-									"someField": {
-										"description": "useful description.",
-										"enum": ["Choice1", "Choice2"]
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"test": {
+									"type": "object",
+									"properties": {
+										"someField": {
+											"description": "useful description.",
+											"enum": ["Choice1", "Choice2"]
+										}
 									}
 								}
 							}
-						}
-					},
-					"paths": {}
-				}
-			`,
+						},
+						"paths": {}
+					}
+				`,
+			},
 		},
 
 		"object-attribute": {
@@ -213,24 +223,26 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						type: object
 						exposed: true
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"test": {
-								"type": "object",
-								"properties": {
-									"someField": {
-										"description": "useful description.",
-										"type": "object"
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"test": {
+									"type": "object",
+									"properties": {
+										"someField": {
+											"description": "useful description.",
+											"type": "object"
+										}
 									}
 								}
 							}
-						}
-					},
-					"paths": {}
-				}
-			`,
+						},
+						"paths": {}
+					}
+				`,
+			},
 		},
 
 		"list-of-primitive-attributes": {
@@ -270,56 +282,58 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						subtype: time
 						exposed: true
 				`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"test": {
-								"type": "object",
-								"properties": {
-									"stringListField": {
-										"description": "useful stringListField description.",
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"integerListField": {
-										"description": "useful integerListField description.",
-										"type": "array",
-										"items": {
-											"type": "integer"
-										}
-									},
-									"floatListField": {
-										"description": "useful floatListField description.",
-										"type": "array",
-										"items": {
-											"type": "number"
-										}
-									},
-									"booleanListField": {
-										"description": "useful booleanListField description.",
-										"type": "array",
-										"items": {
-											"type": "boolean"
-										}
-									},
-									"timeListField": {
-										"description": "useful timeListField description.",
-										"type": "array",
-										"items": {
-											"type": "string",
-											"format": "date-time"
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"test": {
+									"type": "object",
+									"properties": {
+										"stringListField": {
+											"description": "useful stringListField description.",
+											"type": "array",
+											"items": {
+												"type": "string"
+											}
+										},
+										"integerListField": {
+											"description": "useful integerListField description.",
+											"type": "array",
+											"items": {
+												"type": "integer"
+											}
+										},
+										"floatListField": {
+											"description": "useful floatListField description.",
+											"type": "array",
+											"items": {
+												"type": "number"
+											}
+										},
+										"booleanListField": {
+											"description": "useful booleanListField description.",
+											"type": "array",
+											"items": {
+												"type": "boolean"
+											}
+										},
+										"timeListField": {
+											"description": "useful timeListField description.",
+											"type": "array",
+											"items": {
+												"type": "string",
+												"format": "date-time"
+											}
 										}
 									}
 								}
 							}
-						}
-					},
-					"paths": {}
-				}
-			`,
+						},
+						"paths": {}
+					}
+				`,
+			},
 		},
 
 		// we assume any referenced type is already defined in 'components.schemas'
@@ -340,23 +354,25 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						subtype: imaginary
 						exposed: true
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"test": {
-								"type": "object",
-								"properties": {
-									"someField": {
-										"$ref": "#/components/schemas/imaginary"
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"test": {
+									"type": "object",
+									"properties": {
+										"someField": {
+											"$ref": "#/components/schemas/imaginary"
+										}
 									}
 								}
 							}
-						}
-					},
-					"paths": {}
-				}
-			`,
+						},
+						"paths": {}
+					}
+				`,
+			},
 		},
 
 		// we assume any referenced type is already defined in 'components.schemas'
@@ -382,34 +398,36 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						subtype: imaginary2
 						exposed: true
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"test": {
-								"type": "object",
-								"properties": {
-									"someField1": {
-										"description": "useful someField1 description.",
-										"type": "array",
-										"items": {
-											"$ref": "#/components/schemas/imaginary1"
-										}
-									},
-									"someField2": {
-										"description": "useful someField2 description.",
-										"type": "array",
-										"items": {
-											"$ref": "#/components/schemas/imaginary2"
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"test": {
+									"type": "object",
+									"properties": {
+										"someField1": {
+											"description": "useful someField1 description.",
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/imaginary1"
+											}
+										},
+										"someField2": {
+											"description": "useful someField2 description.",
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/imaginary2"
+											}
 										}
 									}
 								}
 							}
-						}
-					},
-					"paths": {}
-				}
-			`,
+						},
+						"paths": {}
+					}
+				`,
+			},
 		},
 
 		// we assume any referenced type is already defined in 'components.schemas'
@@ -435,34 +453,36 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						subtype: imaginary2
 						exposed: true
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"test": {
-								"type": "object",
-								"properties": {
-									"someField1": {
-										"description": "useful someField1 description.",
-										"type": "object",
-										"additionalProperties": {
-											"$ref": "#/components/schemas/imaginary1"
-										}
-									},
-									"someField2": {
-										"description": "useful someField2 description.",
-										"type": "object",
-										"additionalProperties": {
-											"$ref": "#/components/schemas/imaginary2"
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"test": {
+									"type": "object",
+									"properties": {
+										"someField1": {
+											"description": "useful someField1 description.",
+											"type": "object",
+											"additionalProperties": {
+												"$ref": "#/components/schemas/imaginary1"
+											}
+										},
+										"someField2": {
+											"description": "useful someField2 description.",
+											"type": "object",
+											"additionalProperties": {
+												"$ref": "#/components/schemas/imaginary2"
+											}
 										}
 									}
 								}
 							}
-						}
-					},
-					"paths": {}
-				}
-			`,
+						},
+						"paths": {}
+					}
+				`,
+			},
 		},
 
 		"attributes-with-external-type--[]byte-turns-into-string": {
@@ -482,24 +502,26 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						subtype: '[]byte'
 						exposed: true
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"test": {
-								"type": "object",
-								"properties": {
-									"someField": {
-										"description": "useful description.",
-										"type": "string"
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"test": {
+									"type": "object",
+									"properties": {
+										"someField": {
+											"description": "useful description.",
+											"type": "string"
+										}
 									}
 								}
 							}
-						}
-					},
-					"paths": {}
-				}
-			`,
+						},
+						"paths": {}
+					}
+				`,
+			},
 		},
 
 		"required-attributes": {
@@ -524,30 +546,32 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 						type: integer
 						exposed: true
 			`,
-			outDoc: `
-				{
-					"components": {
-						"schemas": {
-							"test": {
-								"type": "object",
-								"required": ["stringField"],
-								"properties": {
-									"stringField": {
-										"description": "useful description for string.",
-										"default": "hello-world",
-										"type": "string"
-									},
-									"intField": {
-										"description": "useful description for integer.",
-										"type": "integer"
+			outDocs: map[string]string{
+				"toplevel": `
+					{
+						"components": {
+							"schemas": {
+								"test": {
+									"type": "object",
+									"required": ["stringField"],
+									"properties": {
+										"stringField": {
+											"description": "useful description for string.",
+											"default": "hello-world",
+											"type": "string"
+										},
+										"intField": {
+											"description": "useful description for integer.",
+											"type": "integer"
+										}
 									}
 								}
 							}
-						}
-					},
-					"paths": {}
-				}
-			`,
+						},
+						"paths": {}
+					}
+				`,
+			},
 		},
 	}
 	runAllTestCases(t, cases)
