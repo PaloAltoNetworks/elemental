@@ -110,7 +110,6 @@ func (c *converter) convertedDocs() map[string]openapi3.T {
 
 	if !c.splitOutput || len(c.outRootDoc.Components.Schemas) == 0 {
 		c.outRootDoc.Tags = c.globalTags()
-
 		return map[string]openapi3.T{defaultDocName: c.outRootDoc}
 	}
 
@@ -120,6 +119,7 @@ func (c *converter) convertedDocs() map[string]openapi3.T {
 		template := newOpenAPI3Template(specConfig)
 		template.Components.Schemas[name] = schema
 		template.Info.Title = name
+		template.Tags = c.tagsForModel[name]
 		docs[name] = template
 	}
 
