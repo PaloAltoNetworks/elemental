@@ -34,6 +34,16 @@ func TestConverter_Do__specRelations_root(t *testing.T) {
 				"toplevel": `
 					{
 						"openapi": "3.0.3",
+						"tags":[
+							{
+								"name": "useful/thing",
+								"description": "This tag is for group 'useful/thing'"
+							},
+							{
+								"name": "usefulPackageName",
+								"description": "This tag is for package 'usefulPackageName'"
+							}
+						],
 						"info": {
 							"contact": {
 								"email": "dev@aporeto.com",
@@ -134,6 +144,16 @@ func TestConverter_Do__specRelations_root(t *testing.T) {
 				"toplevel": `
 					{
 						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "useful/thing",
+								"description": "This tag is for group 'useful/thing'"
+							},
+							{
+								"name": "usefulPackageName",
+								"description": "This tag is for package 'usefulPackageName'"
+							}
+						],
 						"info": {
 							"contact": {
 								"email": "dev@aporeto.com",
@@ -221,6 +241,16 @@ func TestConverter_Do__specRelations_root(t *testing.T) {
 				"toplevel": `
 					{
 						"openapi": "3.0.3",
+						"tags":[
+							{
+								"name": "useful/thing",
+								"description": "This tag is for group 'useful/thing'"
+							},
+							{
+								"name": "usefulPackageName",
+								"description": "This tag is for package 'usefulPackageName'"
+							}
+						],
 						"info": {
 							"contact": {
 								"email": "dev@aporeto.com",

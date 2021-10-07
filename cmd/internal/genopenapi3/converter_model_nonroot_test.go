@@ -23,6 +23,16 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 				"toplevel": `
 					{
 						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
 						"info": {
 							"contact": {
 								"email": "dev@aporeto.com",
@@ -70,6 +80,16 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 				"toplevel": `
 					{
 						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
 						"info": {
 							"contact": {
 								"email": "dev@aporeto.com",
@@ -119,6 +139,16 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 				"toplevel": `
 					{
 						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
 						"info": {
 							"contact": {
 								"email": "dev@aporeto.com",
@@ -175,6 +205,16 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 				"toplevel": `
 					{
 						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
 						"info": {
 							"contact": {
 								"email": "dev@aporeto.com",
@@ -248,6 +288,16 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 				"toplevel": `
 					{
 						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
 						"info": {
 							"contact": {
 								"email": "dev@aporeto.com",
@@ -301,6 +351,16 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 				"toplevel": `
 					{
 						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
 						"info": {
 							"contact": {
 								"email": "dev@aporeto.com",
@@ -375,6 +435,16 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 				"toplevel": `
 					{
 						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
 						"info": {
 							"contact": {
 								"email": "dev@aporeto.com",
@@ -462,6 +532,16 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 				"toplevel": `
 					{
 						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
 						"info": {
 							"contact": {
 								"email": "dev@aporeto.com",
@@ -521,6 +601,16 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 				"toplevel": `
 					{
 						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
 						"info": {
 							"contact": {
 								"email": "dev@aporeto.com",
@@ -591,6 +681,16 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 				"toplevel": `
 					{
 						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
 						"info": {
 							"contact": {
 								"email": "dev@aporeto.com",
@@ -655,6 +755,16 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 				"toplevel": `
 					{
 						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
 						"info": {
 							"contact": {
 								"email": "dev@aporeto.com",
@@ -714,6 +824,16 @@ func TestConverter_Do__modelsAndAttributes_nonRoot(t *testing.T) {
 				"toplevel": `
 					{
 						"openapi": "3.0.3",
+						"tags": [
+							{
+								"name": "N/A",
+								"description": "This tag is for group 'N/A'"
+							},
+							{
+								"name": "None",
+								"description": "This tag is for package 'None'"
+							}
+						],
 						"info": {
 							"contact": {
 								"email": "dev@aporeto.com",
