@@ -46,6 +46,7 @@ var functions = template.FuncMap{
 	"writeInitializer":                writeInitializer,
 	"writeDefaultValue":               writeDefaultValue,
 	"sortAttributes":                  sortAttributes,
+	"modelCommentFlags":               modelCommentFlags,
 }
 
 func writeModel(set spec.SpecificationSet, name string, outFolder string, publicMode bool) error {

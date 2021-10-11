@@ -110,6 +110,9 @@ func (o {{ .Spec.Model.EntityNamePlural }}List) Version() int {
 
 {{- $isEncryptable := false }}
 // {{ .Spec.Model.EntityName }} represents the model of a {{ .Spec.Model.RestName }}
+{{- range modelCommentFlags .Spec.Model.Extensions }}
+// {{ . }}
+{{- end }}
 type {{ .Spec.Model.EntityName }} struct {
 {{- range .Spec.Attributes $latestVersion -}}{{- if .Encrypted }}{{- $isEncryptable = true }}{{- end }}
 {{ attrToField $.Set false . }}
@@ -845,6 +848,9 @@ func (o Sparse{{ .Spec.Model.EntityNamePlural }}List) Version() int {
 }
 
 // Sparse{{ .Spec.Model.EntityName }} represents the sparse version of a {{ .Spec.Model.RestName }}.
+{{- range modelCommentFlags .Spec.Model.Extensions }}
+// {{ . }}
+{{- end }}
 type Sparse{{ .Spec.Model.EntityName }} struct {
     {{ range .Spec.Attributes $latestVersion -}}
     {{ attrToField $.Set true . }}
