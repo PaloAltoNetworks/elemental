@@ -167,3 +167,15 @@ type Patchable interface {
 	// Patch patches the receiver using the given SparseIdentifiable.
 	Patch(SparseIdentifiable)
 }
+
+// A Namespaceable is the interface of an object that is namespaced.
+type Namespaceable interface {
+	GetNamespace() string
+}
+
+// A Propagatable is the interface of an object that can propagate down
+// from a parent namespace.
+type Propagatable interface {
+	GetProgagate() bool
+	Namespaceable
+}
