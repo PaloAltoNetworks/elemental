@@ -54,7 +54,7 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 
 	Convey("Given I have a get http request on /lists with page", t, func() {
 
-		req, err := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&recursive=true&override=true&rlgmp1=A&rlgmp2=true", nil)
+		req, err := http.NewRequest(http.MethodGet, "http://server/v/10/lists?page=1&pagesize=2&recursive=true&override=true&propagated=true&rlgmp1=A&rlgmp2=true", nil)
 		req.Header.Set("X-Namespace", "ns")
 		req.Header.Set("X-Forwarded-for", "1.1.1.1, 5.5.5.5, 10.10.10.10")
 		req.Header.Set("X-Real-IP", "2.2.2.2")
@@ -93,6 +93,7 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 				So(r.After, ShouldEqual, "")
 				So(r.Limit, ShouldEqual, 0)
 				So(r.Recursive, ShouldBeTrue)
+				So(r.Propagated, ShouldBeTrue)
 				So(r.OverrideProtection, ShouldBeTrue)
 				So(r.Accept, ShouldEqual, EncodingTypeMSGPACK)
 				So(r.ContentType, ShouldEqual, EncodingTypeJSON)
@@ -139,25 +140,11 @@ func TestRequest_NewRequestFromHTTPRequest(t *testing.T) {
 				So(r.PageSize, ShouldEqual, 0)
 				So(r.After, ShouldEqual, "42")
 				So(r.Limit, ShouldEqual, 2)
-			})
-
-			Convey("Then the Recursive should be true", func() {
 				So(r.Recursive, ShouldBeTrue)
-			})
-
-			Convey("Then the OverrideProtection should be true", func() {
+				So(r.Propagated, ShouldBeFalse)
 				So(r.OverrideProtection, ShouldBeTrue)
-			})
-
-			Convey("Then the Accept should be EncodingTypeMSGPACK", func() {
 				So(r.Accept, ShouldEqual, EncodingTypeMSGPACK)
-			})
-
-			Convey("Then the ContentType should be EncodingTypeJSON", func() {
 				So(r.ContentType, ShouldEqual, EncodingTypeJSON)
-			})
-
-			Convey("Then I can retrieve the original request", func() {
 				So(r.HTTPRequest(), ShouldEqual, req)
 			})
 		})
@@ -864,6 +851,7 @@ func TestRequest_Duplicate(t *testing.T) {
 		req.ParentIdentity = TaskIdentity
 		req.Password = "pass"
 		req.Recursive = true
+		req.Propagated = true
 		req.Username = "user"
 		req.Version = 12
 		req.Order = []string{"key1", "key2"}
@@ -891,6 +879,7 @@ func TestRequest_Duplicate(t *testing.T) {
 				So(req2.ParentIdentity.IsEqual(req.ParentIdentity), ShouldBeTrue)
 				So(req2.Password, ShouldEqual, req.Password)
 				So(req2.Recursive, ShouldEqual, req.Recursive)
+				So(req2.Propagated, ShouldEqual, req.Propagated)
 				So(req2.Username, ShouldEqual, req.Username)
 				So(req2.RequestID, ShouldNotEqual, req.RequestID)
 				So(req2.Version, ShouldEqual, req.Version)

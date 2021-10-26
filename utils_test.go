@@ -13,7 +13,6 @@ package elemental
 
 import (
 	"encoding/json"
-	"fmt"
 	"testing"
 	"time"
 
@@ -29,8 +28,6 @@ func TestUtils_extractFieldNames(t *testing.T) {
 		Convey("When I extract the fields", func() {
 
 			fields := extractFieldNames(l1)
-
-			fmt.Println(fields)
 
 			Convey("Then all fields should be present", func() {
 				So(len(fields), ShouldEqual, 12)

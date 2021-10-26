@@ -27,6 +27,7 @@ type Request struct {
 	RequestID            string
 	Namespace            string
 	Recursive            bool
+	Propagated           bool
 	Operation            Operation
 	Identity             Identity
 	Order                []string
@@ -177,7 +178,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	}
 
 	var page, pageSize, limit int
-	var recursive, override bool
+	var recursive, override, propagated bool
 	var after string
 	var order []string
 
@@ -201,6 +202,11 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	if v := q.Get("recursive"); v != "" {
 		recursive = true
 		q.Del("recursive")
+	}
+
+	if v := q.Get("propagated"); v != "" {
+		propagated = true
+		q.Del("propagated")
 	}
 
 	if v := q.Get("override"); v != "" {
@@ -295,6 +301,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		RequestID:            uuid.Must(uuid.NewV4()).String(),
 		Namespace:            namespace,
 		Recursive:            recursive,
+		Propagated:           propagated,
 		Page:                 page,
 		PageSize:             pageSize,
 		After:                after,
@@ -330,6 +337,7 @@ func (r *Request) Duplicate() *Request {
 
 	req.Namespace = r.Namespace
 	req.Recursive = r.Recursive
+	req.Propagated = r.Propagated
 	req.Page = r.Page
 	req.PageSize = r.PageSize
 	req.After = r.After
@@ -386,11 +394,12 @@ func (r *Request) HTTPRequest() *http.Request {
 
 func (r *Request) String() string {
 
-	return fmt.Sprintf("<request id:%s operation:%s namespace:%s recursive:%v identity:%s objectid:%s parentidentity:%s parentid:%s version:%d>",
+	return fmt.Sprintf("<request id:%s operation:%s namespace:%s recursive:%t propagated:%t identity:%s objectid:%s parentidentity:%s parentid:%s version:%d>",
 		r.RequestID,
 		r.Operation,
 		r.Namespace,
 		r.Recursive,
+		r.Propagated,
 		r.Identity,
 		r.ObjectID,
 		r.ParentIdentity,
