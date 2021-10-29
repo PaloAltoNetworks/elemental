@@ -171,6 +171,7 @@ type Patchable interface {
 // A Namespaceable is the interface of an object that is namespaced.
 type Namespaceable interface {
 	GetNamespace() string
+	SetNamespace(string)
 }
 
 // A Propagatable is the interface of an object that can propagate down
