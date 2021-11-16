@@ -22,6 +22,12 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+// BackwardCompatPropagation controls weither the 'propagated' flag
+// should be removed or not. Set it to true to keep it and let
+// the application access this flag from the query parameters in addition
+// to Request.Propagated.
+var BackwardCompatPropagation = false
+
 // A Request represents an abstract request on an elemental model.
 type Request struct {
 	RequestID            string
@@ -206,7 +212,9 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 
 	if v := q.Get("propagated"); v != "" {
 		propagated = true
-		q.Del("propagated")
+		if !BackwardCompatPropagation {
+			q.Del("propagated")
+		}
 	}
 
 	if v := q.Get("override"); v != "" {
