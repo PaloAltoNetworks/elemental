@@ -2153,12 +2153,12 @@ func TestExistsComparator(t *testing.T) {
 
 	// nil fixtures
 	var (
-		nilPointer   *interface{}          = nil
-		nilMap       map[struct{}]struct{} = nil
-		nilFunc      func()                = nil
-		nilChan      chan struct{}         = nil
-		nilInterface interface{}           = nil
-		nilSlice     []interface{}         = nil
+		nilPointer   *interface{}
+		nilMap       map[struct{}]struct{}
+		nilFunc      func()
+		nilChan      chan struct{}
+		nilInterface interface{}
+		nilSlice     []interface{}
 	)
 
 	testAttributeName := "someAttribute"
@@ -2396,12 +2396,12 @@ func TestNotExistsComparator(t *testing.T) {
 
 	// nil fixtures
 	var (
-		nilPointer   *interface{}          = nil
-		nilMap       map[struct{}]struct{} = nil
-		nilFunc      func()                = nil
-		nilChan      chan struct{}         = nil
-		nilInterface interface{}           = nil
-		nilSlice     []interface{}         = nil
+		nilPointer   *interface{}
+		nilMap       map[struct{}]struct{}
+		nilFunc      func()
+		nilChan      chan struct{}
+		nilInterface interface{}
+		nilSlice     []interface{}
 	)
 
 	testAttributeName := "someAttribute"
