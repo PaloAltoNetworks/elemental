@@ -542,7 +542,6 @@ func (o *{{ .Spec.Model.EntityName }}) Validate() error {
     return nil
 }
 
-{{- if not .Spec.Model.Detached }}
 // SpecificationForAttribute returns the AttributeSpecification for the given attribute name key.
 func (*{{ .Spec.Model.EntityName }}) SpecificationForAttribute(name string) elemental.AttributeSpecification {
 
@@ -778,7 +777,6 @@ var {{ .Spec.Model.EntityName }}LowerCaseAttributesMap = map[string]elemental.At
     {{- end }}
     {{- end }}
 }
-{{- end }}
 
 {{- if and (not .Spec.Model.Detached) (not .Spec.Model.IsRoot) }}
 
