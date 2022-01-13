@@ -686,6 +686,11 @@ func TestIsZero(t *testing.T) {
 			args{nil},
 			true,
 		},
+		{
+			"nil pointer",
+			args{(*struct{})(nil)},
+			true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

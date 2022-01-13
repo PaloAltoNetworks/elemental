@@ -129,11 +129,13 @@ func IsZero(o interface{}) bool {
 		return true
 	}
 
-	v := reflect.Indirect(reflect.ValueOf(o))
+	v := reflect.ValueOf(o)
 
-	if v.Type() == reflectedTimeType {
-		return time.Time{}.Equal(v.Interface().(time.Time))
+	if v.IsZero() {
+		return true
 	}
+
+	v = reflect.Indirect(v)
 
 	switch v.Kind() {
 	case reflect.Slice, reflect.Map:
