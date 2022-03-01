@@ -18,7 +18,7 @@ require (
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/ugorji/go/codec v1.2.4
+	github.com/ugorji/go/codec v1.2.7
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	go.uber.org/zap v1.19.0
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
