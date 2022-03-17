@@ -448,3 +448,125 @@ func TestConverter_Do__split_output_complex(t *testing.T) {
 	}
 	runAllTestCases(t, testCaseWrapper)
 }
+
+func TestConverter_Do__split_output_withPrivateModel(t *testing.T) {
+	t.Parallel()
+
+	inSpec := `
+		model:
+			root: true
+			rest_name: root
+			resource_name: root
+			entity_name: Root
+			package: root
+			group: core
+			description: root object.
+
+		relations:
+		- rest_name: minesite
+			get:
+				description: Retrieves all minesites.
+		- rest_name: hidden
+			get:
+				description: Retrieves all hidden secrets.
+	`
+
+	supportingSpecs := []string{
+		`
+		model:
+			rest_name: minesite
+			resource_name: minesites
+			entity_name: MineSites
+			package: usefulPackageName
+			group: useful/thing
+			description: Represents a resource mine site.
+		`,
+		`
+		model:
+			rest_name: hidden
+			resource_name: hiddens
+			entity_name: Hiddens
+			package: secret
+			group: secret/affairs
+			description: Represents a private model.
+			private: true
+		`,
+	}
+
+	outDocs := map[string]string{
+		"minesite": `
+			{
+				"openapi": "3.0.3",
+				"tags":[
+					{
+						"name": "useful/thing",
+						"description": "This tag is for group 'useful/thing'"
+					},
+					{
+						"name": "usefulPackageName",
+						"description": "This tag is for package 'usefulPackageName'"
+					}
+				],
+				"info": {
+					"contact": {
+						"email": "dev@aporeto.com",
+						"name":  "Aporeto Inc.",
+						"url":   "go.aporeto.io/api"
+					},
+					"license": {
+						"name": "TODO"
+					},
+					"termsOfService": "https://localhost/TODO",
+					"version": "1.0",
+					"title": "minesite"
+				},
+				"components": {
+					"schemas": {
+						"minesite": {
+							"description": "Represents a resource mine site.",
+							"type": "object"
+						}
+					}
+				},
+				"paths": {
+					"/minesites": {
+						"get": {
+							"description": "Retrieves all minesites.",
+							"operationId": "get-all-minesites",
+							"responses": {
+								"200": {
+									"content": {
+										"application/json": {
+											"schema": {
+												"items": {
+													"$ref": "#/components/schemas/minesite"
+												},
+												"type": "array"
+											}
+										}
+									},
+									"description": "n/a"
+								}
+							},
+							"tags": [
+								"useful/thing",
+								"usefulPackageName"
+							]
+						}
+					}
+				}
+			}
+		`,
+	}
+
+	testCaseWrapper := map[string]testCase{
+		"root-relation-has-private-model": {
+			inSplitOutput:       true,
+			inSkipPrivateModels: true,
+			inSpec:              inSpec,
+			supportingSpecs:     supportingSpecs,
+			outDocs:             outDocs,
+		},
+	}
+	runAllTestCases(t, testCaseWrapper)
+}
