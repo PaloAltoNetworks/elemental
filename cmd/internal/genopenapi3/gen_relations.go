@@ -15,6 +15,12 @@ func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[
 
 	for _, relation := range relations {
 
+		model := relation.Specification().Model()
+
+		if c.skipPrivateModels && model.Private {
+			continue
+		}
+
 		if relation.Get == nil && relation.Create == nil {
 			continue
 		}
@@ -24,7 +30,6 @@ func (c *converter) convertRelationsForRootSpec(relations []*spec.Relation) map[
 			Post: c.extractOperationPost("", relation),
 		}
 
-		model := relation.Specification().Model()
 		uri := "/" + model.ResourceName
 		paths[uri] = pathItem
 	}

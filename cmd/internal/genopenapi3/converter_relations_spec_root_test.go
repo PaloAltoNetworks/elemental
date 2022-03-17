@@ -289,3 +289,127 @@ func TestConverter_Do__specRelations_root(t *testing.T) {
 	}
 	runAllTestCases(t, cases)
 }
+
+func TestConverter_Do__specRelations_root_withPrivateModel(t *testing.T) {
+	t.Parallel()
+
+	inSpec := `
+		model:
+			root: true
+			rest_name: root
+			resource_name: root
+			entity_name: Root
+			package: root
+			group: core
+			description: root object.
+
+		relations:
+		- rest_name: resource
+			create:
+				description: Creates some resource.
+		- rest_name: hidden
+			create:
+				description: Creates some hidden secrets.
+	`
+
+	outDoc := map[string]string{
+		"toplevel": `
+			{
+				"openapi": "3.0.3",
+				"tags":[
+					{
+						"name": "useful/thing",
+						"description": "This tag is for group 'useful/thing'"
+					},
+					{
+						"name": "usefulPackageName",
+						"description": "This tag is for package 'usefulPackageName'"
+					}
+				],
+				"info": {
+					"contact": {
+						"email": "dev@aporeto.com",
+						"name":  "Aporeto Inc.",
+						"url":   "go.aporeto.io/api"
+					},
+					"license": {
+						"name": "TODO"
+					},
+					"termsOfService": "https://localhost/TODO",
+					"version": "1.0",
+					"title": "toplevel"
+				},
+				"components": {
+					"schemas": {
+						"resource": {
+							"description": "Represents a resource.",
+							"type": "object"
+						}
+					}
+				},
+				"paths": {
+					"/resources": {
+						"post": {
+							"operationId": "create-a-new-resource",
+							"tags": ["useful/thing", "usefulPackageName"],
+							"description": "Creates some resource.",
+							"requestBody": {
+								"content": {
+									"application/json": {
+										"schema": {
+											"$ref": "#/components/schemas/resource"
+										}
+									}
+								}
+							},
+							"responses": {
+								"200": {
+									"description": "n/a",
+									"content": {
+										"application/json": {
+											"schema": {
+												"$ref": "#/components/schemas/resource"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		`,
+	}
+
+	supportingSpecs := []string{
+		`
+		model:
+			rest_name: resource
+			resource_name: resources
+			entity_name: Recource
+			package: usefulPackageName
+			group: useful/thing
+			description: Represents a resource.
+		`,
+		`
+			model:
+				rest_name: hidden
+				resource_name: hiddens
+				entity_name: Hidden
+				package: secrets
+				group: gossip/talk
+				description: Represents a hidden secret.
+				private: true
+			`,
+	}
+
+	testCaseWrapper := map[string]testCase{
+		"root-relation-has-private-model": {
+			inSkipPrivateModels: true,
+			inSpec:              inSpec,
+			supportingSpecs:     supportingSpecs,
+			outDocs:             outDoc,
+		},
+	}
+	runAllTestCases(t, testCaseWrapper)
+}

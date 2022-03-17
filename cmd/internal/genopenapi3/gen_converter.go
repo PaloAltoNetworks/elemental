@@ -137,6 +137,9 @@ func (c *converter) cacheTags(model *spec.Model) {
 	if model.IsRoot {
 		return
 	}
+	if c.skipPrivateModels && model.Private {
+		return
+	}
 
 	tags := openapi3.Tags{
 		{
