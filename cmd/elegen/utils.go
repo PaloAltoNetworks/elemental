@@ -22,6 +22,8 @@ import (
 
 	"go.aporeto.io/elemental/cmd/elegen/static"
 	"go.aporeto.io/regolithe/spec"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // An Enum represents an enum.
@@ -101,7 +103,7 @@ func attributeTypeConverter(typ spec.AttributeType, subtype string) (string, str
 
 func attributeNameConverter(attrName string) string {
 
-	return strings.Title(attrName)
+	return cases.Title(language.Und).String(attrName)
 }
 
 func attrToType(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) string {

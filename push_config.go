@@ -40,7 +40,7 @@ type PushConfig struct {
 
 // unsupportedComparators is the list of comparators that are currently not handled by the elemental API 'MatchesFilter'
 // which is utilized for providing fine-grained identity filtering for websocket clients
-var unsupportedComparators []FilterComparator = []FilterComparator{
+var unsupportedComparators = []FilterComparator{
 	GreaterComparator,
 	GreaterOrEqualComparator,
 	LesserComparator,
