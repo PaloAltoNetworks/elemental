@@ -22,7 +22,7 @@ require (
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	go.uber.org/zap v1.19.0
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	golang.org/x/text v0.3.6
+	golang.org/x/text v0.3.7
 	golang.org/x/tools v0.1.1
 	gopkg.in/yaml.v2 v2.3.0
 )
