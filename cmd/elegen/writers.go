@@ -21,13 +21,15 @@ import (
 	"text/template"
 
 	"go.aporeto.io/regolithe/spec"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"golang.org/x/tools/imports"
 )
 
 var functions = template.FuncMap{
 	"upper":                           strings.ToUpper,
 	"lower":                           strings.ToLower,
-	"capitalize":                      strings.Title,
+	"capitalize":                      cases.Title(language.Und).String,
 	"join":                            strings.Join,
 	"hasPrefix":                       strings.HasPrefix,
 	"attrBSONFieldName":               attrBSONFieldName,
