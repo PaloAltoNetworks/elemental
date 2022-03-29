@@ -29,7 +29,7 @@ import (
 var functions = template.FuncMap{
 	"upper":                           strings.ToUpper,
 	"lower":                           strings.ToLower,
-	"capitalize":                      cases.Title(language.Und).String,
+	"capitalize":                      cases.Title(language.Und, cases.NoLower).String,
 	"join":                            strings.Join,
 	"hasPrefix":                       strings.HasPrefix,
 	"attrBSONFieldName":               attrBSONFieldName,

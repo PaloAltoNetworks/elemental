@@ -103,7 +103,7 @@ func attributeTypeConverter(typ spec.AttributeType, subtype string) (string, str
 
 func attributeNameConverter(attrName string) string {
 
-	return cases.Title(language.Und).String(attrName)
+	return cases.Title(language.Und, cases.NoLower).String(attrName)
 }
 
 func attrToType(set spec.SpecificationSet, shadow bool, attr *spec.Attribute) string {
