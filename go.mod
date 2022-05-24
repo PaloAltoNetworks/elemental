@@ -2,7 +2,7 @@ module go.aporeto.io/elemental
 
 go 1.13
 
-require go.aporeto.io/regolithe v1.50.1-0.20210528201106-653300479f97
+require go.aporeto.io/regolithe v1.50.1-0.20220308204532-35cc3143a6b4
 
 require (
 	github.com/araddon/dateparse v0.0.0-20200409225146-d820a6159ab1
@@ -24,5 +24,5 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/text v0.3.7
 	golang.org/x/tools v0.1.1
-	gopkg.in/yaml.v2 v2.3.0
+	gopkg.in/yaml.v2 v2.4.0
 )

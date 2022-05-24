@@ -86,7 +86,7 @@ func templatesReadmeMd() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/README.md", size: 77, mode: os.FileMode(420), modTime: time.Unix(1578618109, 0)}
+	info := bindataFileInfo{name: "templates/README.md", size: 77, mode: os.FileMode(420), modTime: time.Unix(1578956520, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -106,7 +106,7 @@ func templatesIdentities_registryGotpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/identities_registry.gotpl", size: 5512, mode: os.FileMode(420), modTime: time.Unix(1646854077, 0)}
+	info := bindataFileInfo{name: "templates/identities_registry.gotpl", size: 5512, mode: os.FileMode(420), modTime: time.Unix(1647550977, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -126,7 +126,7 @@ func templatesModelGotpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/model.gotpl", size: 33083, mode: os.FileMode(420), modTime: time.Unix(1646854052, 0)}
+	info := bindataFileInfo{name: "templates/model.gotpl", size: 33083, mode: os.FileMode(420), modTime: time.Unix(1647550977, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -146,7 +146,7 @@ func templatesRelationships_registryGotpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/relationships_registry.gotpl", size: 17628, mode: os.FileMode(420), modTime: time.Unix(1646854054, 0)}
+	info := bindataFileInfo{name: "templates/relationships_registry.gotpl", size: 17628, mode: os.FileMode(420), modTime: time.Unix(1647550977, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -299,3 +299,4 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
+
