@@ -98,17 +98,17 @@ func MatchesFilter(identifiable AttributeSpecifiable, filter *Filter, opts ...Ma
 // for example, if the comparator was supplied with the following filter: elemental.NewFilter().WithKey("name").Matches("amir", ".*").Done()
 // matches would replicate the equivalent behaviour of following mongo query:
 //
-//		{
-//			"$or": [{
-//				"name": {
-//					"$regex": "amir"
-//				}
-//			}, {
-//				"name": {
-//					"$regex": ".*"
-//				}
-//			}]
-//		}
+//	{
+//		"$or": [{
+//			"name": {
+//				"$regex": "amir"
+//			}
+//		}, {
+//			"name": {
+//				"$regex": ".*"
+//			}
+//		}]
+//	}
 //
 // see: https://docs.mongodb.com/manual/reference/operator/query/regex/#regex
 //
@@ -159,9 +159,10 @@ func matches(attributeValue interface{}, queries FilterValue) bool {
 // https://docs.mongodb.com/manual/reference/operator/query/exists/ where the value of the boolean is TRUE
 //
 // { field: { $exists: <boolean> (true) } }
-//  Quote from docs:
-//     When <boolean> is true, $exists matches the documents that contain the field, including documents where
-//     the field value is null.
+//
+//	Quote from docs:
+//	   When <boolean> is true, $exists matches the documents that contain the field, including documents where
+//	   the field value is null.
 //
 // exists will return true as long as the identifiable has the attribute irrespective of its value (even if it is nil)
 func exists(attributeName string, attributes map[string]AttributeSpecification) bool {
@@ -175,8 +176,8 @@ func exists(attributeName string, attributes map[string]AttributeSpecification) 
 //
 // { field: { $exists: <boolean> (false) } }
 //
-// Quote from docs:
-//     if <boolean> is false, the query returns only the documents that do not contain the field.
+//	Quote from docs:
+//	   if <boolean> is false, the query returns only the documents that do not contain the field.
 func notExists(attributeName string, attributes map[string]AttributeSpecification) bool {
 	_, exists := attributes[attributeName]
 	return !exists
