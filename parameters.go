@@ -141,9 +141,9 @@ func (p Parameters) Validate(r ParametersRequirement) error {
 // A ParametersRequirement represents a list of ors of ands
 // that must be passed together.
 //
-// For example:
-//  {{{"a"}, {"b", "c"}}} requires a or (b and c)
-//  {{{"a"}, {"b", "c"}, {{"d"}}} requires (a or (b and c)) and (d))
+//	For example:
+//		{{{"a"}, {"b", "c"}}} requires a or (b and c)
+//		{{{"a"}, {"b", "c"}, {{"d"}}} requires (a or (b and c)) and (d))
 type ParametersRequirement struct {
 	match [][][]string
 }
