@@ -480,6 +480,18 @@ func sortAttributes(attrs []*spec.Attribute) []*spec.Attribute {
 	return out
 }
 
+func sortIndexes(indexes [][]string) [][]string {
+
+	out := make([][]string, len(indexes))
+	copy(out, indexes)
+
+	sort.Slice(out, func(i int, j int) bool {
+		return out[i][0] < out[j][0]
+	})
+
+	return out
+}
+
 func modelCommentFlags(exts map[string]interface{}) []string {
 
 	if exts == nil || exts["commentFlags"] == nil {

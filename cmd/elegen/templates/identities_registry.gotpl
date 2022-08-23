@@ -39,7 +39,7 @@ var (
         {{- range .Set.Specifications }}
         {{- if shouldRegisterSpecification . $.PublicMode }}
         "{{ .Model.RestName }}": {{ if len .Indexes }} {
-            {{- range $i, $compound := .Indexes }}
+            {{- range $i, $compound := sortIndexes .Indexes }}
             { {{- range $compound }}"{{ . }}",{{- end }} },
         {{- end }}
         },{{ else }}nil,{{- end }}

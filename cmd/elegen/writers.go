@@ -48,6 +48,7 @@ var functions = template.FuncMap{
 	"writeInitializer":                writeInitializer,
 	"writeDefaultValue":               writeDefaultValue,
 	"sortAttributes":                  sortAttributes,
+	"sortIndexes":                     sortIndexes,
 	"modelCommentFlags":               modelCommentFlags,
 }
 
