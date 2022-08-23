@@ -473,8 +473,8 @@ func sortAttributes(attrs []*spec.Attribute) []*spec.Attribute {
 	out := make([]*spec.Attribute, len(attrs))
 	copy(out, attrs)
 
-	sort.SliceStable(out, func(i int, j int) bool {
-		return out[i].ConvertedName < out[j].ConvertedName
+	sort.Slice(out, func(i int, j int) bool {
+		return out[i].Name < out[j].Name
 	})
 
 	return out
