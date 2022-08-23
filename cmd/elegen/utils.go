@@ -474,7 +474,7 @@ func sortAttributes(attrs []*spec.Attribute) []*spec.Attribute {
 	copy(out, attrs)
 
 	sort.Slice(out, func(i int, j int) bool {
-		return strings.Compare(attrs[i].ConvertedName, attrs[j].ConvertedName) == -1
+		return out[i].Name < out[j].Name
 	})
 
 	return out
