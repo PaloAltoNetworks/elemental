@@ -486,10 +486,27 @@ func sortIndexes(indexes [][]string) [][]string {
 	copy(out, indexes)
 
 	sort.Slice(out, func(i int, j int) bool {
-		return out[i][0] < out[j][0]
+		return sortSlices(out[i], out[j], 0)
 	})
 
 	return out
+}
+
+func sortSlices(a, b []string, ind int) bool {
+
+	if a[ind] == b[ind] {
+		if len(a)-1 < ind+1 {
+			return true
+		}
+
+		if len(b)-1 < ind+1 {
+			return false
+		}
+
+		return sortSlices(a, b, ind+1)
+	}
+
+	return a[ind] < b[ind]
 }
 
 func modelCommentFlags(exts map[string]interface{}) []string {

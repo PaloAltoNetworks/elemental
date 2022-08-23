@@ -315,3 +315,204 @@ func Test_modelCommentFlags(t *testing.T) {
 		})
 	}
 }
+
+func Test_sortAttributes(t *testing.T) {
+	type args struct {
+		attrs []*spec.Attribute
+	}
+	tests := []struct {
+		name string
+		args func(t *testing.T) args
+		want []*spec.Attribute
+	}{
+		{
+			"nil",
+			func(t *testing.T) args {
+				return args{
+					nil,
+				}
+			},
+			[]*spec.Attribute{},
+		},
+		{
+			"one item",
+			func(t *testing.T) args {
+				return args{
+					[]*spec.Attribute{
+						{Name: "stuff"},
+					},
+				}
+			},
+			[]*spec.Attribute{
+				{Name: "stuff"},
+			},
+		},
+		{
+			"two items",
+			func(t *testing.T) args {
+				return args{
+					[]*spec.Attribute{
+						{Name: "stuff"},
+						{Name: "other"},
+					},
+				}
+			},
+			[]*spec.Attribute{
+				{Name: "other"},
+				{Name: "stuff"},
+			},
+		},
+		{
+			"three items",
+			func(t *testing.T) args {
+				return args{
+					[]*spec.Attribute{
+						{Name: "otherthings"},
+						{Name: "stuff"},
+						{Name: "moreitems"},
+					},
+				}
+			},
+			[]*spec.Attribute{
+				{Name: "moreitems"},
+				{Name: "otherthings"},
+				{Name: "stuff"},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := sortAttributes(tt.args(t).attrs)
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("sortAttributes got: %v, want: %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_sortIndexes(t *testing.T) {
+	type args struct {
+		indexes [][]string
+	}
+	tests := []struct {
+		name string
+		args func(t *testing.T) args
+		want [][]string
+	}{
+		{
+			"nil",
+			func(t *testing.T) args {
+				return args{
+					nil,
+				}
+			},
+			[][]string{},
+		},
+		{
+			"one item",
+			func(t *testing.T) args {
+				return args{
+					[][]string{
+						{"stuff"},
+					},
+				}
+			},
+			[][]string{
+				{"stuff"},
+			},
+		},
+		{
+			"two items",
+			func(t *testing.T) args {
+				return args{
+					[][]string{
+						{"stuff"},
+						{"other"},
+					},
+				}
+			},
+			[][]string{
+				{"other"},
+				{"stuff"},
+			},
+		},
+		{
+			"three items",
+			func(t *testing.T) args {
+				return args{
+					[][]string{
+						{"stuff"},
+						{"moreitems"},
+						{"other"},
+					},
+				}
+			},
+			[][]string{
+				{"moreitems"},
+				{"other"},
+				{"stuff"},
+			},
+		},
+		{
+			"four items, two long",
+			func(t *testing.T) args {
+				return args{
+					[][]string{
+						{"stuff", "two"},
+						{"stuff", "one"},
+						{"moreitems"},
+						{"other"},
+					},
+				}
+			},
+			[][]string{
+				{"moreitems"},
+				{"other"},
+				{"stuff", "one"},
+				{"stuff", "two"},
+			},
+		},
+		{
+			"three items, diff item amounts",
+			func(t *testing.T) args {
+				return args{
+					[][]string{
+						{"stuff", "two", "other"},
+						{"stuff", "two"},
+						{"stuff", "three", "things", "items"},
+					},
+				}
+			},
+			[][]string{
+				{"stuff", "three", "things", "items"},
+				{"stuff", "two"},
+				{"stuff", "two", "other"},
+			},
+		},
+		{
+			"two items, properly sorted",
+			func(t *testing.T) args {
+				return args{
+					[][]string{
+						{"stuff", "two"},
+						{"stuff", "two", "other"},
+					},
+				}
+			},
+			[][]string{
+				{"stuff", "two"},
+				{"stuff", "two", "other"},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := sortIndexes(tt.args(t).indexes)
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("sortIndexes got: %v, want: %v", got, tt.want)
+			}
+		})
+	}
+}
