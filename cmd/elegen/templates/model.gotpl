@@ -131,7 +131,7 @@ func New{{ .Spec.Model.EntityName }}() *{{ .Spec.Model.EntityName }} {
         ModelVersion: {{ .Set.APIInfo.Version }},
 
         {{- range $i, $attr := sortAttributes (.Spec.Attributes $latestVersion) -}}
-        {{- if shouldWriteInitializer $.Spec $attr.Name $latestVersion $.PublicMode }}
+        {{- if shouldWriteInitializer $.Spec $attr.ConvertedName $latestVersion $.PublicMode }}
         {{- $init := writeInitializer $.Set $.Spec $attr }}
         {{- if $init }}
         {{ $init }}
