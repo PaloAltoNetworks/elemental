@@ -298,6 +298,10 @@ func shouldGenerateSetter(attr *spec.Attribute, publicMode bool) bool {
 
 func shouldWriteInitializer(s spec.Specification, attrConvertedName string, version string, publicMode bool) bool {
 
+	if !publicMode {
+		return true
+	}
+
 	var attr *spec.Attribute
 	for _, a := range s.Attributes(version) {
 		if a.ConvertedName == attrConvertedName {
@@ -306,11 +310,7 @@ func shouldWriteInitializer(s spec.Specification, attrConvertedName string, vers
 		}
 	}
 
-	if publicMode {
-		return attr.Exposed
-	}
-
-	return true
+	return attr.Exposed
 }
 
 func shouldWriteAttributeMap(attr *spec.Attribute, publicMode bool) bool {
