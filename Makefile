@@ -32,4 +32,4 @@ sec:
 
 .PHONY: test
 test:
-	go test ./... -race -cover -covermode=atomic -coverprofile=unit_coverage.cov
+	go test ./... -race -cover -covermode=atomic -coverprofile=unit_coverage.out
