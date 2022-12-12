@@ -9,7 +9,7 @@ vendor
 cmd/elegen/elegen
 cmd/elegen/build
 *.lock
-*.cov
+unit_coverage.out
 artifacts
 profile.out
 dist
