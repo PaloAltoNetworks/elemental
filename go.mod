@@ -2,7 +2,7 @@ module go.aporeto.io/elemental
 
 go 1.13
 
-require go.aporeto.io/regolithe v1.50.1-0.20220308204532-35cc3143a6b4
+require go.aporeto.io/regolithe v1.50.1-0.20230120233001-d168bc52c0c1
 
 require (
 	github.com/araddon/dateparse v0.0.0-20200409225146-d820a6159ab1
@@ -21,8 +21,9 @@ require (
 	github.com/ugorji/go/codec v1.2.7
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	go.uber.org/zap v1.19.0
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	golang.org/x/text v0.3.7
-	golang.org/x/tools v0.1.1
+	golang.org/x/crypto v0.5.0 // indirect
+	golang.org/x/sync v0.1.0
+	golang.org/x/text v0.6.0
+	golang.org/x/tools v0.1.12
 	gopkg.in/yaml.v2 v2.4.0
 )
