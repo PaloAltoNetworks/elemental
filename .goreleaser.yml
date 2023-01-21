@@ -1,10 +1,31 @@
-build:
-  skip: true
 snapshot:
-  name_template: "{{ .Tag }}-next"
+  name_template: "v{{ .Tag }}-next"
 changelog:
   sort: asc
   filters:
     exclude:
     - '^docs:'
     - '^test:'
+    - '^examples:'
+builds:
+  - id: elegen
+    main: cmd/elegen/main.go
+    binary: elegen
+    goos:
+    - linux
+    - freebsd
+    - darwin
+    goarch:
+    - amd64
+    env:
+    - CGO_ENABLED=0
+
+archives:
+  - id: elegen
+    format: binary
+    builds:
+    - elegen
+
+signs:
+  - artifacts: checksum
+    args: ["-u", "0C3214A61024881F5CA1F5F056EDB08A11DCE325", "--output", "${signature}", "--detach-sign", "${artifact}"]
