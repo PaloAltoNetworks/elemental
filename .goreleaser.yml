@@ -1,5 +1,5 @@
 snapshot:
-  name_template: "v{{ .Tag }}-next"
+  name_template: "{{ .Tag }}-next"
 changelog:
   sort: asc
   filters:
@@ -9,7 +9,7 @@ changelog:
     - '^examples:'
 builds:
   - id: elegen
-    main: cmd/elegen/main.go
+    main: ./cmd/elegen
     binary: elegen
     goos:
     - linux
