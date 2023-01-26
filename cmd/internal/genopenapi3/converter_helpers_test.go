@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -31,7 +30,7 @@ type testCaseRunner struct {
 func runAllTestCases(t *testing.T, cases map[string]testCase) {
 	t.Helper()
 
-	rootTmpDir, err := ioutil.TempDir("", t.Name()+"_*")
+	rootTmpDir, err := os.MkdirTemp("", t.Name()+"_*")
 	if err != nil {
 		t.Fatalf("error creating temporary directory for test function: %v", err)
 	}
@@ -82,14 +81,14 @@ func (r *testCaseRunner) run(name string, tc testCase) {
 		}
 
 		// this is to ensure that each test case executed within this runner is isolated
-		specDir, err := ioutil.TempDir(r.rootTmpDir, name)
+		specDir, err := os.MkdirTemp(r.rootTmpDir, name)
 		if err != nil {
 			t.Fatalf("error creating temporary directory for test case: %v", err)
 		}
 
 		for filename, content := range testDataFiles {
 			filename = filepath.Join(specDir, filename)
-			if err := ioutil.WriteFile(filename, []byte(content), os.ModePerm); err != nil {
+			if err := os.WriteFile(filename, []byte(content), os.ModePerm); err != nil {
 				t.Fatalf("error writing temporary file '%s': %v", filename, err)
 			}
 		}

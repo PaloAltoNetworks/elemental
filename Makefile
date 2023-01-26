@@ -16,10 +16,8 @@ lint:
 		--enable=ineffassign \
 		--enable=revive \
 		--enable=unused \
-		--enable=structcheck \
 		--enable=staticcheck \
-		--enable=varcheck \
-		--enable=deadcode \
+		--enable=unused \
 		--enable=unconvert \
 		--enable=misspell \
 		--enable=prealloc \
