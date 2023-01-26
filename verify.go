@@ -110,7 +110,7 @@ func BackportUnexposedFields(src, dest AttributeSpecifiable) {
 // ResetDefaultForZeroValues reset the default value from the specification when a field is Zero.
 // If the given object is not an elemental.AttributeSpecifiable this function
 // does nothing.
-func ResetDefaultForZeroValues(obj interface{}) {
+func ResetDefaultForZeroValues(obj any) {
 
 	o, ok := obj.(AttributeSpecifiable)
 	if !ok {

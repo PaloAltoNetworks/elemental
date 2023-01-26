@@ -89,7 +89,7 @@ const (
 	runeCOMMA              = ','
 )
 
-var specialLetters = map[rune]interface{}{
+var specialLetters = map[rune]any{
 	'-':  nil,
 	'_':  nil,
 	'@':  nil,
@@ -102,7 +102,7 @@ var specialLetters = map[rune]interface{}{
 	'*':  nil,
 }
 
-var operatorStart = map[rune]interface{}{
+var operatorStart = map[rune]any{
 	'<': nil,
 	'>': nil,
 	'=': nil,
@@ -334,7 +334,7 @@ func (p *FilterParser) scanIgnoreWhitespace() (tok parserToken, lit string) {
 	return
 }
 
-func (p *FilterParser) parseOperatorAndValue() (parserToken, interface{}, error) {
+func (p *FilterParser) parseOperatorAndValue() (parserToken, any, error) {
 
 	operator, err := p.parseOperator()
 	if err != nil {
@@ -368,7 +368,7 @@ func tokenToOperator(t parserToken) string {
 	return ""
 }
 
-func (p *FilterParser) makeFilter(key string, operator parserToken, value interface{}) (*Filter, error) {
+func (p *FilterParser) makeFilter(key string, operator parserToken, value any) (*Filter, error) {
 
 	if strings.HasPrefix(key, "$") {
 		return nil, fmt.Errorf("could not start a parameter with $. Found %s", key)
@@ -391,31 +391,31 @@ func (p *FilterParser) makeFilter(key string, operator parserToken, value interf
 	case parserTokenGTE:
 		filter.WithKey(key).GreaterOrEqualThan(value)
 	case parserTokenCONTAINS:
-		if values, ok := value.([]interface{}); ok {
+		if values, ok := value.([]any); ok {
 			filter.WithKey(key).Contains(values...)
 		} else {
 			filter.WithKey(key).Contains(value)
 		}
 	case parserTokenNOTCONTAINS:
-		if values, ok := value.([]interface{}); ok {
+		if values, ok := value.([]any); ok {
 			filter.WithKey(key).NotContains(values...)
 		} else {
 			filter.WithKey(key).NotContains(value)
 		}
 	case parserTokenIN:
-		if values, ok := value.([]interface{}); ok {
+		if values, ok := value.([]any); ok {
 			filter.WithKey(key).In(values...)
 		} else {
 			filter.WithKey(key).In(value)
 		}
 	case parserTokenNOTIN:
-		if values, ok := value.([]interface{}); ok {
+		if values, ok := value.([]any); ok {
 			filter.WithKey(key).NotIn(values...)
 		} else {
 			filter.WithKey(key).NotIn(value)
 		}
 	case parserTokenMATCHES:
-		if values, ok := value.([]interface{}); ok {
+		if values, ok := value.([]any); ok {
 			filter.WithKey(key).Matches(values...)
 		} else {
 			filter.WithKey(key).Matches(value)
@@ -477,7 +477,7 @@ func (p *FilterParser) parseOperator() (parserToken, error) {
 	return token, nil
 }
 
-func (p *FilterParser) parseValue() (interface{}, error) {
+func (p *FilterParser) parseValue() (any, error) {
 
 	token, literal := p.scanIgnoreWhitespace()
 
@@ -662,7 +662,7 @@ func (p *FilterParser) parseStringValue() (string, error) {
 	return literal, nil
 }
 
-func (p *FilterParser) parseArrayValue() ([]interface{}, error) {
+func (p *FilterParser) parseArrayValue() ([]any, error) {
 
 	p.unscan()
 
@@ -671,7 +671,7 @@ func (p *FilterParser) parseArrayValue() ([]interface{}, error) {
 		return nil, fmt.Errorf("invalid start of list. found %s", literal)
 	}
 
-	values := []interface{}{}
+	values := []any{}
 
 	for {
 

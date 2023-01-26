@@ -36,9 +36,9 @@ func Fields() []zapcore.Field {
 }
 
 // Map returns the version information as a map.
-func Map() map[string]interface{} {
+func Map() map[string]any {
 
-	return map[string]interface{}{
+	return map[string]any{
 		"version": ProjectVersion,
 		"sha":     ProjectSha[0:7],
 		"libs":    map[string]string{},

@@ -144,7 +144,7 @@ func (o *Task) SetIdentifier(id string) {
 
 // GetBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *Task) GetBSON() (interface{}, error) {
+func (o *Task) GetBSON() (any, error) {
 
 	if o == nil {
 		return nil, nil
@@ -361,7 +361,7 @@ func (*Task) AttributeSpecifications() map[string]elemental.AttributeSpecificati
 // ValueForAttribute returns the value for the given attribute.
 // This is a very advanced function that you should not need but in some
 // very specific use cases.
-func (o *Task) ValueForAttribute(name string) interface{} {
+func (o *Task) ValueForAttribute(name string) any {
 
 	switch name {
 	case "ID":
@@ -675,7 +675,7 @@ func (o *SparseTask) SetIdentifier(id string) {
 
 // GetBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *SparseTask) GetBSON() (interface{}, error) {
+func (o *SparseTask) GetBSON() (any, error) {
 
 	if o == nil {
 		return nil, nil

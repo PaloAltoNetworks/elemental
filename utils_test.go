@@ -54,7 +54,7 @@ func TestUtils_areFieldValuesEqual(t *testing.T) {
 		String  string
 		Strings []string
 		Time    time.Time
-		Map     map[string]interface{}
+		Map     map[string]any
 		Int     int
 		Float   float64
 	}
@@ -166,8 +166,8 @@ func TestUtils_areFieldValuesEqual(t *testing.T) {
 
 		Convey("When I set a same map", func() {
 
-			s1.Map = map[string]interface{}{"a": 1}
-			s2.Map = map[string]interface{}{"a": 1}
+			s1.Map = map[string]any{"a": 1}
+			s2.Map = map[string]any{"a": 1}
 
 			Convey("Then the values should not be equal", func() {
 				So(areFieldValuesEqual("Map", s1, s2), ShouldBeTrue)
@@ -176,8 +176,8 @@ func TestUtils_areFieldValuesEqual(t *testing.T) {
 
 		Convey("When I set a different map with same len", func() {
 
-			s1.Map = map[string]interface{}{"a": 1}
-			s2.Map = map[string]interface{}{"a": 2}
+			s1.Map = map[string]any{"a": 1}
+			s2.Map = map[string]any{"a": 2}
 
 			Convey("Then the values should not be equal", func() {
 				So(areFieldValuesEqual("Map", s1, s2), ShouldBeFalse)
@@ -186,8 +186,8 @@ func TestUtils_areFieldValuesEqual(t *testing.T) {
 
 		Convey("When I set a different map with different len", func() {
 
-			s1.Map = map[string]interface{}{"a": 1}
-			s2.Map = map[string]interface{}{"a": 2, "b": 1}
+			s1.Map = map[string]any{"a": 1}
+			s2.Map = map[string]any{"a": 2, "b": 1}
 
 			Convey("Then the values should not be equal", func() {
 				So(areFieldValuesEqual("Map", s1, s2), ShouldBeFalse)
@@ -594,7 +594,7 @@ func TestVerify_areFieldValuesEqualWithEncoding(t *testing.T) {
 
 func TestIsZero(t *testing.T) {
 	type args struct {
-		o interface{}
+		o any
 	}
 	tests := []struct {
 		name string

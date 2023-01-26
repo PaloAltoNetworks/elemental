@@ -59,7 +59,7 @@ func (p *ParameterDefinition) Parse(values []string) (*Parameter, error) {
 		)
 	}
 
-	var vs []interface{} // nolint: prealloc
+	var vs []any // nolint: prealloc
 	for _, v := range values {
 		out, err := parse(p.Type, p.Name, v, p.AllowedChoices)
 		if err != nil {
@@ -68,7 +68,7 @@ func (p *ParameterDefinition) Parse(values []string) (*Parameter, error) {
 		vs = append(vs, out)
 	}
 
-	var dv interface{}
+	var dv any
 	if p.DefaultValue != "" && len(vs) == 0 {
 		out, err := parse(p.Type, p.Name, p.DefaultValue, p.AllowedChoices)
 		if err != nil {
@@ -188,12 +188,12 @@ func (r ParametersRequirement) String() string {
 // A Parameter represent one parameter that can be sent with a query.
 type Parameter struct {
 	ptype        ParameterType
-	values       []interface{}
-	defaultValue interface{}
+	values       []any
+	defaultValue any
 }
 
 // NewParameter returns a new Parameter.
-func NewParameter(ptype ParameterType, values ...interface{}) Parameter {
+func NewParameter(ptype ParameterType, values ...any) Parameter {
 
 	return Parameter{
 		ptype:  ptype,
@@ -376,12 +376,12 @@ func (p Parameter) TimeValues() []time.Time {
 }
 
 // Values returns all the parsed values
-func (p Parameter) Values() []interface{} {
+func (p Parameter) Values() []any {
 
 	return p.values
 }
 
-func parse(ptype ParameterType, pname string, v string, allowedChoices []string) (out interface{}, err error) {
+func parse(ptype ParameterType, pname string, v string, allowedChoices []string) (out any, err error) {
 
 	switch ptype {
 

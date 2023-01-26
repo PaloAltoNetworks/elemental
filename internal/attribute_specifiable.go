@@ -56,21 +56,21 @@ func (m *MockAttributeSpecifiable) SpecificationForAttribute(arg0 string) elemen
 }
 
 // SpecificationForAttribute indicates an expected call of SpecificationForAttribute
-func (mr *MockAttributeSpecifiableMockRecorder) SpecificationForAttribute(arg0 interface{}) *gomock.Call {
+func (mr *MockAttributeSpecifiableMockRecorder) SpecificationForAttribute(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SpecificationForAttribute", reflect.TypeOf((*MockAttributeSpecifiable)(nil).SpecificationForAttribute), arg0)
 }
 
 // ValueForAttribute mocks base method
-func (m *MockAttributeSpecifiable) ValueForAttribute(arg0 string) interface{} {
+func (m *MockAttributeSpecifiable) ValueForAttribute(arg0 string) any {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ValueForAttribute", arg0)
-	ret0, _ := ret[0].(interface{})
+	ret0, _ := ret[0].(any)
 	return ret0
 }
 
 // ValueForAttribute indicates an expected call of ValueForAttribute
-func (mr *MockAttributeSpecifiableMockRecorder) ValueForAttribute(arg0 interface{}) *gomock.Call {
+func (mr *MockAttributeSpecifiableMockRecorder) ValueForAttribute(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValueForAttribute", reflect.TypeOf((*MockAttributeSpecifiable)(nil).ValueForAttribute), arg0)
 }

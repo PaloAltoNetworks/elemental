@@ -74,7 +74,7 @@ func (c *converter) convertAttribute(attr *spec.Attribute) (schemaRef *openapi3.
 		return openapi3.NewDateTimeSchema().NewRef(), nil
 
 	case spec.AttributeTypeEnum:
-		enumVals := make([]interface{}, len(attr.AllowedChoices))
+		enumVals := make([]any, len(attr.AllowedChoices))
 		for i, val := range attr.AllowedChoices {
 			enumVals[i] = val
 		}
@@ -104,7 +104,7 @@ func (c *converter) convertAttribute(attr *spec.Attribute) (schemaRef *openapi3.
 	case spec.AttributeTypeRefMap:
 		attrSchema := openapi3.NewObjectSchema()
 		attr, err := c.convertAttribute(&spec.Attribute{Type: spec.AttributeTypeRef, SubType: attr.SubType})
-		attrSchema.AdditionalProperties = attr
+		attrSchema.AdditionalProperties = openapi3.AdditionalProperties{Schema: attr}
 		return attrSchema.NewRef(), err // do not wrap error to avoid recursive wrapping
 
 	case spec.AttributeTypeExt:

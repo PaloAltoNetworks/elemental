@@ -45,7 +45,7 @@ func TestEqualComparator(t *testing.T) {
 
 					// in this case - the Go type of the attribute is 'aliasToString'
 
-					Return(interface{}(aliasToString("Done")))
+					Return(any(aliasToString("Done")))
 				return mockAS
 			},
 			expectedMatch: true,
@@ -68,7 +68,7 @@ func TestEqualComparator(t *testing.T) {
 
 					// in this case - the Go type of the attribute is 'aliasToBool'
 
-					Return(interface{}(aliasToBool(true)))
+					Return(any(aliasToBool(true)))
 				return mockAS
 			},
 			expectedMatch: true,
@@ -91,7 +91,7 @@ func TestEqualComparator(t *testing.T) {
 
 					// in this case - the Go type of the attribute is 'aliasToInt'
 
-					Return(interface{}(aliasToInt(111)))
+					Return(any(aliasToInt(111)))
 				return mockAS
 			},
 			expectedMatch: true,
@@ -112,7 +112,7 @@ func TestEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(true))
+					Return(any(true))
 				return mockAS
 			},
 			expectedMatch: false,
@@ -138,7 +138,7 @@ func TestEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([4]string{
+					Return(any([4]string{
 						"a",
 						"b",
 						"c",
@@ -174,7 +174,7 @@ func TestEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([4]string{
+					Return(any([4]string{
 						"a",
 						"b",
 						"c",
@@ -208,7 +208,7 @@ func TestEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([]string{
+					Return(any([]string{
 
 						// attention: notice how the order of elements here is different!
 						// the filter wanted a match on "d,b,c,a", however the actual value of the attribute was "a,b,c,d"
@@ -243,7 +243,7 @@ func TestEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([][]string{
+					Return(any([][]string{
 						{"eric"},
 						{"antoine"},
 						{"chris"},
@@ -278,7 +278,7 @@ func TestEqualComparator(t *testing.T) {
 
 					// notice how this is an array that contains the filter key as an element
 
-					Return(interface{}([3][2]string{
+					Return(any([3][2]string{
 						{"yoda", "bear"},
 						{"alpha", "master"},
 						{"henry", "jessica"},
@@ -314,7 +314,7 @@ func TestEqualComparator(t *testing.T) {
 
 					// notice how this is an array of slices of length 4 that contains the filter key value as an element
 
-					Return(interface{}([4][]string{
+					Return(any([4][]string{
 						{"bill"},
 						{"bob"},
 						{"john"},
@@ -341,7 +341,7 @@ func TestEqualComparator(t *testing.T) {
 
 					// the attribute contains "amir", so we expect a match to occur
 
-					Return(interface{}([]string{
+					Return(any([]string{
 						"billy",
 						"bob",
 						"aaron",
@@ -370,7 +370,7 @@ func TestEqualComparator(t *testing.T) {
 
 					// the attribute does NOT contain "amir", so we do NOT expect a match to occur
 
-					Return(interface{}([]string{
+					Return(any([]string{
 						"billy",
 						"bob",
 						"aaron",
@@ -399,7 +399,7 @@ func TestEqualComparator(t *testing.T) {
 
 					// the attribute contains "amir", so we expect a match to occur
 
-					Return(interface{}([...]string{
+					Return(any([...]string{
 						"billy",
 						"bob",
 						"aaron",
@@ -428,7 +428,7 @@ func TestEqualComparator(t *testing.T) {
 
 					// the attribute does NOT contain "amir", so we do NOT expect a match to occur
 
-					Return(interface{}([...]string{
+					Return(any([...]string{
 						"billy",
 						"bob",
 						"aaron",
@@ -460,7 +460,7 @@ func TestEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(struct {
+					Return(any(struct {
 						name string
 						age  int
 					}{
@@ -489,7 +489,7 @@ func TestEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(nil))
+					Return(any(nil))
 
 				return mockAS
 			},
@@ -511,7 +511,7 @@ func TestEqualComparator(t *testing.T) {
 					// fyi: if 'ValueForAttribute' returns the `nil` interface, this means that the attribute did not exist
 					// on the identifiable that was being queried with the equality comparator
 
-					Return(interface{}(nil))
+					Return(any(nil))
 
 				return mockAS
 			},
@@ -530,7 +530,7 @@ func TestEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([]string{"amir"}))
+					Return(any([]string{"amir"}))
 
 				return mockAS
 			},
@@ -594,7 +594,7 @@ func TestUnexportedTypeEmbedded_EqualComparator(t *testing.T) {
 	mockIdentity := internal.NewMockAttributeSpecifiable(ctrl)
 	mockIdentity.EXPECT().
 		ValueForAttribute(testAttributeName).
-		Return(interface{}(t1))
+		Return(any(t1))
 
 	filter := elemental.NewFilterComposer().
 		WithKey(testAttributeName).
@@ -677,13 +677,13 @@ func TestMatchesFilter(t *testing.T) {
 				// this will match the first sub-filter
 				mockAS.EXPECT().
 					ValueForAttribute("attr1").
-					Return(interface{}(true)).
+					Return(any(true)).
 					Times(1)
 
 				// this will NOT match the second sub-filter as we are now returning false when true is expected
 				mockAS.EXPECT().
 					ValueForAttribute("attr2").
-					Return(interface{}(false)).
+					Return(any(false)).
 					Times(1)
 
 				return mockAS
@@ -717,17 +717,17 @@ func TestMatchesFilter(t *testing.T) {
 
 				mockAS.EXPECT().
 					ValueForAttribute("attr1").
-					Return(interface{}(true)).
+					Return(any(true)).
 					Times(1)
 
 				mockAS.EXPECT().
 					ValueForAttribute("attr2").
-					Return(interface{}(true)).
+					Return(any(true)).
 					Times(1)
 
 				mockAS.EXPECT().
 					ValueForAttribute("attr3").
-					Return(interface{}(true)).
+					Return(any(true)).
 					Times(1)
 
 				return mockAS
@@ -762,12 +762,12 @@ func TestMatchesFilter(t *testing.T) {
 
 				mockAS.EXPECT().
 					ValueForAttribute("attr1").
-					Return(interface{}(false)).
+					Return(any(false)).
 					Times(1)
 
 				mockAS.EXPECT().
 					ValueForAttribute("attr2").
-					Return(interface{}(false)).
+					Return(any(false)).
 					Times(1)
 
 				return mockAS
@@ -809,19 +809,19 @@ func TestMatchesFilter(t *testing.T) {
 				// make sub-filter one fail
 				mockAS.EXPECT().
 					ValueForAttribute("attr1").
-					Return(interface{}(false)).
+					Return(any(false)).
 					Times(1)
 
 				// make sub-filter two fail
 				mockAS.EXPECT().
 					ValueForAttribute("attr2").
-					Return(interface{}(false)).
+					Return(any(false)).
 					Times(1)
 
 				// make sub-filter three PASS
 				mockAS.EXPECT().
 					ValueForAttribute("attr3").
-					Return(interface{}(true)).
+					Return(any(true)).
 					Times(1)
 
 				return mockAS
@@ -845,17 +845,17 @@ func TestMatchesFilter(t *testing.T) {
 
 				mockAS.EXPECT().
 					ValueForAttribute("attr1").
-					Return(interface{}(true)).
+					Return(any(true)).
 					Times(1)
 
 				mockAS.EXPECT().
 					ValueForAttribute("attr2").
-					Return(interface{}(true)).
+					Return(any(true)).
 					Times(1)
 
 				mockAS.EXPECT().
 					ValueForAttribute("attr3").
-					Return(interface{}(true)).
+					Return(any(true)).
 					Times(1)
 
 				return mockAS
@@ -879,16 +879,16 @@ func TestMatchesFilter(t *testing.T) {
 
 				mockAS.EXPECT().
 					ValueForAttribute("attr1").
-					Return(interface{}(true))
+					Return(any(true))
 
 				mockAS.EXPECT().
 					ValueForAttribute("attr2").
-					Return(interface{}(true))
+					Return(any(true))
 
 				// make the third operator fail
 				mockAS.EXPECT().
 					ValueForAttribute("attr3").
-					Return(interface{}(false))
+					Return(any(false))
 
 				return mockAS
 			},
@@ -911,15 +911,15 @@ func TestMatchesFilter(t *testing.T) {
 
 				mockAS.EXPECT().
 					ValueForAttribute("attr1").
-					Return(interface{}(true))
+					Return(any(true))
 
 				mockAS.EXPECT().
 					ValueForAttribute("attr2").
-					Return(interface{}(true))
+					Return(any(true))
 
 				mockAS.EXPECT().
 					ValueForAttribute("attr3").
-					Return(interface{}(true))
+					Return(any(true))
 
 				return mockAS
 			},
@@ -962,7 +962,7 @@ func TestMatchesFilter(t *testing.T) {
 
 				mockAS.EXPECT().
 					ValueForAttribute("attr1").
-					Return(interface{}(true)).
+					Return(any(true)).
 					Times(1)
 
 				return mockAS
@@ -1006,7 +1006,7 @@ func TestMatchesFilter(t *testing.T) {
 
 				mockAS.EXPECT().
 					ValueForAttribute("attr1").
-					Return(interface{}(true)).
+					Return(any(true)).
 					Times(1)
 
 				return mockAS
@@ -1169,7 +1169,7 @@ func TestMatchesFilter(t *testing.T) {
 				And(
 					elemental.NewFilterComposer().
 						Or(
-							elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+							elemental.NewFilterComposer().WithKey("attr1").Equals([]any{
 								"hello",
 								[]bool{
 									true,
@@ -1178,7 +1178,7 @@ func TestMatchesFilter(t *testing.T) {
 								"amir",
 								"cristiano",
 							}).Done(),
-							elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+							elemental.NewFilterComposer().WithKey("attr1").Equals([]any{
 								"hello",
 								[]bool{
 									true,
@@ -1187,7 +1187,7 @@ func TestMatchesFilter(t *testing.T) {
 								"amir",
 								"cristiano",
 							}).Done(),
-							elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+							elemental.NewFilterComposer().WithKey("attr1").Equals([]any{
 								"hello",
 								[]bool{
 									true,
@@ -1196,7 +1196,7 @@ func TestMatchesFilter(t *testing.T) {
 								"amir",
 								"cristiano",
 							}).Done(),
-							elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+							elemental.NewFilterComposer().WithKey("attr1").Equals([]any{
 								"hello",
 								[]bool{
 									true,
@@ -1207,7 +1207,7 @@ func TestMatchesFilter(t *testing.T) {
 							}).Done(),
 							elemental.NewFilterComposer().WithKey("attr1").Equals(true).Done(),
 							elemental.NewFilterComposer().WithKey("attr1").Equals(true).Done(),
-							elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+							elemental.NewFilterComposer().WithKey("attr1").Equals([]any{
 								false,
 								false,
 								false,
@@ -1221,7 +1221,7 @@ func TestMatchesFilter(t *testing.T) {
 					WithKey("attr1").Equals("cristiano").
 					WithKey("attr1").Equals("cristiano").
 					WithKey("attr1").Equals("cristiano").
-					WithKey("attr1").Equals([]interface{}{false, false, false, "cristiano"}).
+					WithKey("attr1").Equals([]any{false, false, false, "cristiano"}).
 					WithKey("attr1").Equals("cristiano").
 					WithKey("attr1").Equals("cristiano").
 					WithKey("attr1").Equals("cristiano").
@@ -1243,7 +1243,7 @@ func TestMatchesFilter(t *testing.T) {
 
 				mockAS.EXPECT().
 					ValueForAttribute("attr1").
-					Return([]interface{}{
+					Return([]any{
 						false,
 						false,
 						false,
@@ -1415,7 +1415,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}("amir"))
+					Return(any("amir"))
 
 				return mockAS
 			},
@@ -1433,7 +1433,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}("amir"))
+					Return(any("amir"))
 
 				return mockAS
 			},
@@ -1451,7 +1451,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(nil))
+					Return(any(nil))
 
 				return mockAS
 			},
@@ -1473,7 +1473,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(nil))
+					Return(any(nil))
 
 				return mockAS
 			},
@@ -1491,7 +1491,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([]string{
+					Return(any([]string{
 						"Zinedine Zidane",
 						"Dennis Bergkamp",
 						"Patrick Vieira",
@@ -1513,7 +1513,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([...]string{
+					Return(any([...]string{
 						"Zinedine Zidane",
 						"Dennis Bergkamp",
 						"Patrick Vieira",
@@ -1535,7 +1535,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([]string{
+					Return(any([]string{
 						"Zinedine Zidane",
 						"Dennis Bergkamp",
 						"Patrick Vieira",
@@ -1558,7 +1558,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([...]string{
+					Return(any([...]string{
 						"Zinedine Zidane",
 						"Dennis Bergkamp",
 						"Patrick Vieira",
@@ -1589,7 +1589,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([...]string{
+					Return(any([...]string{
 						"Zinedine Zidane",
 						"Dennis Bergkamp",
 						"Patrick Vieira",
@@ -1620,7 +1620,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([]string{
+					Return(any([]string{
 						"Zinedine Zidane",
 						"Dennis Bergkamp",
 						"Patrick Vieira",
@@ -1651,7 +1651,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([]string{
+					Return(any([]string{
 						"Zinedine Zidane",
 						"Dennis Bergkamp",
 						"Patrick Vieira",
@@ -1682,7 +1682,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([...]string{
+					Return(any([...]string{
 						"Zinedine Zidane",
 						"Dennis Bergkamp",
 						"Patrick Vieira",
@@ -1710,7 +1710,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([...]string{
+					Return(any([...]string{
 						"Dennis Bergkamp",
 						"Patrick Vieira",
 						"Zinedine Zidane", // notice how Zinedine is now at a different index
@@ -1738,7 +1738,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([]string{
+					Return(any([]string{
 						"Dennis Bergkamp",
 						"Patrick Vieira",
 						"Zinedine Zidane", // notice how Zinedine is now at a different index
@@ -1766,7 +1766,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([...]string{
+					Return(any([...]string{
 						"Dennis Bergkamp",
 						"Patrick Vieira",
 						"Zinedine Zidane", // notice how Zinedine is now at a different index
@@ -1794,7 +1794,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([]string{
+					Return(any([]string{
 						"Dennis Bergkamp",
 						"Patrick Vieira",
 						"Zinedine Zidane", // notice how Zinedine is now at a different index
@@ -1822,7 +1822,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([][]string{
+					Return(any([][]string{
 						{
 							"a",
 						},
@@ -1861,7 +1861,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([][]string{
+					Return(any([][]string{
 						{
 							"a",
 						},
@@ -1900,7 +1900,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([...][]string{
+					Return(any([...][]string{
 						{
 							"a",
 						},
@@ -1939,7 +1939,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([...][]string{
+					Return(any([...][]string{
 						{
 							"a",
 						},
@@ -1978,7 +1978,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([][]string{
+					Return(any([][]string{
 						{
 							"a",
 						},
@@ -2017,7 +2017,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([][]string{
+					Return(any([][]string{
 						{
 							"a",
 						},
@@ -2056,7 +2056,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([...][]string{
+					Return(any([...][]string{
 						{
 							"a",
 						},
@@ -2095,7 +2095,7 @@ func TestNotEqualComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([...][]string{
+					Return(any([...][]string{
 						{
 							"a",
 						},
@@ -2153,12 +2153,12 @@ func TestExistsComparator(t *testing.T) {
 
 	// nil fixtures
 	var (
-		nilPointer   *interface{}
+		nilPointer   *any
 		nilMap       map[struct{}]struct{}
 		nilFunc      func()
 		nilChan      chan struct{}
-		nilInterface interface{}
-		nilSlice     []interface{}
+		nilInterface any
+		nilSlice     []any
 	)
 
 	testAttributeName := "someAttribute"
@@ -2179,7 +2179,7 @@ func TestExistsComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(nil)).
+					Return(any(nil)).
 					Times(1)
 
 				mockAS.
@@ -2209,7 +2209,7 @@ func TestExistsComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(nilPointer)).
+					Return(any(nilPointer)).
 					Times(1)
 
 				mockAS.
@@ -2236,7 +2236,7 @@ func TestExistsComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(nilMap)).
+					Return(any(nilMap)).
 					Times(1)
 
 				mockAS.
@@ -2263,7 +2263,7 @@ func TestExistsComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(nilFunc)).
+					Return(any(nilFunc)).
 					Times(1)
 
 				mockAS.
@@ -2290,7 +2290,7 @@ func TestExistsComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(nilChan)).
+					Return(any(nilChan)).
 					Times(1)
 
 				mockAS.
@@ -2317,8 +2317,8 @@ func TestExistsComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					// nolint - i want to be explicit about the fact that ValueForAttribute is returning an interface{}
-					Return(interface{}(nilInterface)).
+					// nolint - i want to be explicit about the fact that ValueForAttribute is returning an any
+					Return(any(nilInterface)).
 					Times(1)
 
 				mockAS.
@@ -2345,7 +2345,7 @@ func TestExistsComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(nilSlice)).
+					Return(any(nilSlice)).
 					Times(1)
 
 				mockAS.
@@ -2396,12 +2396,12 @@ func TestNotExistsComparator(t *testing.T) {
 
 	// nil fixtures
 	var (
-		nilPointer   *interface{}
+		nilPointer   *any
 		nilMap       map[struct{}]struct{}
 		nilFunc      func()
 		nilChan      chan struct{}
-		nilInterface interface{}
-		nilSlice     []interface{}
+		nilInterface any
+		nilSlice     []any
 	)
 
 	testAttributeName := "someAttribute"
@@ -2422,7 +2422,7 @@ func TestNotExistsComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(nil)).
+					Return(any(nil)).
 					Times(1)
 
 				mockAS.
@@ -2452,7 +2452,7 @@ func TestNotExistsComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(nilPointer)).
+					Return(any(nilPointer)).
 					Times(1)
 
 				mockAS.
@@ -2479,7 +2479,7 @@ func TestNotExistsComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(nilMap)).
+					Return(any(nilMap)).
 					Times(1)
 
 				mockAS.
@@ -2506,7 +2506,7 @@ func TestNotExistsComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(nilFunc)).
+					Return(any(nilFunc)).
 					Times(1)
 
 				mockAS.
@@ -2533,7 +2533,7 @@ func TestNotExistsComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(nilChan)).
+					Return(any(nilChan)).
 					Times(1)
 
 				mockAS.
@@ -2560,8 +2560,8 @@ func TestNotExistsComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					// nolint - i want to be explicit about the fact that ValueForAttribute is returning an interface{}
-					Return(interface{}(nilInterface)).
+					// nolint - i want to be explicit about the fact that ValueForAttribute is returning an any
+					Return(any(nilInterface)).
 					Times(1)
 
 				mockAS.
@@ -2588,7 +2588,7 @@ func TestNotExistsComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(nilSlice)).
+					Return(any(nilSlice)).
 					Times(1)
 
 				mockAS.
@@ -2657,7 +2657,7 @@ func TestMatchComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}("It rains a lot in Vancouver")).
+					Return(any("It rains a lot in Vancouver")).
 					Times(1)
 				return mockAS
 			},
@@ -2675,7 +2675,7 @@ func TestMatchComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}("It's sunny in Phuket")).
+					Return(any("It's sunny in Phuket")).
 					Times(1)
 				return mockAS
 			},
@@ -2693,7 +2693,7 @@ func TestMatchComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([]string{
+					Return(any([]string{
 						"$identity=automation",
 						"$name=Test Automation",
 						"$namespace=/account-9bb41b0a-8703-40ca-b3e6-975d727fcba7",
@@ -2719,7 +2719,7 @@ func TestMatchComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([]string{
+					Return(any([]string{
 						"$identity=automation",
 						"$name=Test Automation",
 						"$namespace=/account-9bb41b0a-8703-40ca-b3e6-975d727fcba7",
@@ -2742,7 +2742,7 @@ func TestMatchComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([4]string{
+					Return(any([4]string{
 						"$identity=automation",
 						"$name=Test Automation",
 						"$namespace=/account-9bb41b0a-8703-40ca-b3e6-975d727fcba7",
@@ -2768,7 +2768,7 @@ func TestMatchComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([4]string{
+					Return(any([4]string{
 						"$identity=automation",
 						"$name=Test Automation",
 						"$namespace=/account-9bb41b0a-8703-40ca-b3e6-975d727fcba7",
@@ -2791,7 +2791,7 @@ func TestMatchComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([]interface{}{
+					Return(any([]any{
 						123,
 						[]string{"yolo"},
 					})).
@@ -2812,7 +2812,7 @@ func TestMatchComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(123456789)).
+					Return(any(123456789)).
 					Times(1)
 				return mockAS
 			},
@@ -2833,7 +2833,7 @@ func TestMatchComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([]string{
+					Return(any([]string{
 						"$identity=automation",
 						"$name=Test Automation",
 						"$namespace=/account-9bb41b0a-8703-40ca-b3e6-975d727fcba7",
@@ -2856,7 +2856,7 @@ func TestMatchComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}(nil)).
+					Return(any(nil)).
 					Times(1)
 				return mockAS
 			},
@@ -2881,7 +2881,7 @@ func TestMatchComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}("$identity=policy")).
+					Return(any("$identity=policy")).
 					Times(1)
 				return mockAS
 			},
@@ -2897,7 +2897,7 @@ func TestMatchComparator(t *testing.T) {
 					// nope, not a string, should be skipped
 					[]string{"yolo"},
 					// nope, not a string, should be skipped
-					interface{}(123),
+					any(123),
 				).
 				Done(),
 			mockSetupFunc: func(t *testing.T, ctrl *gomock.Controller) elemental.AttributeSpecifiable {
@@ -2906,7 +2906,7 @@ func TestMatchComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}("yolo")).
+					Return(any("yolo")).
 					Times(1)
 				return mockAS
 			},
@@ -2927,7 +2927,7 @@ func TestMatchComparator(t *testing.T) {
 
 					// notice the type of the attribute - someCustomStringType - which has a string as its underlying type!
 
-					Return(interface{}(
+					Return(any(
 						someCustomStringType("###############amir"),
 					)).
 					Times(1)
@@ -2956,7 +2956,7 @@ func TestMatchComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([]string{
+					Return(any([]string{
 						"$identity=automation",
 						"$name=Test Automation",
 						"$namespace=/account-9bb41b0a-8703-40ca-b3e6-975d727fcba7",
@@ -2988,7 +2988,7 @@ func TestMatchComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([]string{
+					Return(any([]string{
 						"$identity=automation",
 						"$name=Test Automation",
 						"$namespace=/account-9bb41b0a-8703-40ca-b3e6-975d727fcba7",
@@ -3018,7 +3018,7 @@ func TestMatchComparator(t *testing.T) {
 				mockAS.
 					EXPECT().
 					ValueForAttribute(testAttributeName).
-					Return(interface{}([]string{
+					Return(any([]string{
 						"$identity=automation",
 						"$name=Test Automation",
 						"$namespace=/account-9bb41b0a-8703-40ca-b3e6-975d727fcba7",
@@ -3070,10 +3070,10 @@ func (f *benchFixture) AttributeSpecifications() map[string]elemental.AttributeS
 	return nil
 }
 
-func (f *benchFixture) ValueForAttribute(name string) interface{} {
+func (f *benchFixture) ValueForAttribute(name string) any {
 	switch name {
 	case "attr1":
-		return []interface{}{
+		return []any{
 			false,
 			false,
 			false,
@@ -3095,7 +3095,7 @@ func BenchmarkMatchesFilterStress(b *testing.B) {
 		And(
 			elemental.NewFilterComposer().
 				Or(
-					elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+					elemental.NewFilterComposer().WithKey("attr1").Equals([]any{
 						"hello",
 						[]bool{
 							true,
@@ -3104,7 +3104,7 @@ func BenchmarkMatchesFilterStress(b *testing.B) {
 						"amir",
 						"cristiano",
 					}).Done(),
-					elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+					elemental.NewFilterComposer().WithKey("attr1").Equals([]any{
 						"hello",
 						[]bool{
 							true,
@@ -3113,7 +3113,7 @@ func BenchmarkMatchesFilterStress(b *testing.B) {
 						"amir",
 						"cristiano",
 					}).Done(),
-					elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+					elemental.NewFilterComposer().WithKey("attr1").Equals([]any{
 						"hello",
 						[]bool{
 							true,
@@ -3122,7 +3122,7 @@ func BenchmarkMatchesFilterStress(b *testing.B) {
 						"amir",
 						"cristiano",
 					}).Done(),
-					elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+					elemental.NewFilterComposer().WithKey("attr1").Equals([]any{
 						"hello",
 						[]bool{
 							true,
@@ -3133,7 +3133,7 @@ func BenchmarkMatchesFilterStress(b *testing.B) {
 					}).Done(),
 					elemental.NewFilterComposer().WithKey("attr1").Equals(true).Done(),
 					elemental.NewFilterComposer().WithKey("attr1").Equals(true).Done(),
-					elemental.NewFilterComposer().WithKey("attr1").Equals([]interface{}{
+					elemental.NewFilterComposer().WithKey("attr1").Equals([]any{
 						false,
 						false,
 						false,
@@ -3147,7 +3147,7 @@ func BenchmarkMatchesFilterStress(b *testing.B) {
 			WithKey("attr1").Equals("cristiano").
 			WithKey("attr1").Equals("cristiano").
 			WithKey("attr1").Equals("cristiano").
-			WithKey("attr1").Equals([]interface{}{false, false, false, "cristiano"}).
+			WithKey("attr1").Equals([]any{false, false, false, "cristiano"}).
 			WithKey("attr1").Equals("cristiano").
 			WithKey("attr1").Equals("cristiano").
 			WithKey("attr1").Equals("cristiano").

@@ -132,7 +132,7 @@ func (o *User) SetIdentifier(id string) {
 
 // GetBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *User) GetBSON() (interface{}, error) {
+func (o *User) GetBSON() (any, error) {
 
 	if o == nil {
 		return nil, nil
@@ -363,7 +363,7 @@ func (*User) AttributeSpecifications() map[string]elemental.AttributeSpecificati
 // ValueForAttribute returns the value for the given attribute.
 // This is a very advanced function that you should not need but in some
 // very specific use cases.
-func (o *User) ValueForAttribute(name string) interface{} {
+func (o *User) ValueForAttribute(name string) any {
 
 	switch name {
 	case "ID":
@@ -704,7 +704,7 @@ func (o *SparseUser) SetIdentifier(id string) {
 
 // GetBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *SparseUser) GetBSON() (interface{}, error) {
+func (o *SparseUser) GetBSON() (any, error) {
 
 	if o == nil {
 		return nil, nil

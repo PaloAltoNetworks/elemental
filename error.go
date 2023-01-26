@@ -37,12 +37,12 @@ func IsErrorWithCode(err error, code int) bool {
 //
 // They can be encoded and sent back to the clients.
 type Error struct {
-	Code        int         `msgpack:"code" json:"code,omitempty"`
-	Description string      `msgpack:"description" json:"description"`
-	Subject     string      `msgpack:"subject" json:"subject"`
-	Title       string      `msgpack:"title" json:"title"`
-	Data        interface{} `msgpack:"data" json:"data,omitempty"`
-	Trace       string      `msgpack:"trace" json:"trace,omitempty"`
+	Code        int    `msgpack:"code" json:"code,omitempty"`
+	Description string `msgpack:"description" json:"description"`
+	Subject     string `msgpack:"subject" json:"subject"`
+	Title       string `msgpack:"title" json:"title"`
+	Data        any    `msgpack:"data" json:"data,omitempty"`
+	Trace       string `msgpack:"trace" json:"trace,omitempty"`
 }
 
 // NewError returns a new Error.
@@ -52,7 +52,7 @@ func NewError(title, description, subject string, code int) Error {
 }
 
 // NewErrorWithData returns a new Error with the given opaque data.
-func NewErrorWithData(title, description, subject string, code int, data interface{}) Error {
+func NewErrorWithData(title, description, subject string, code int, data any) Error {
 
 	return Error{
 		Code:        code,
@@ -191,7 +191,7 @@ func IsValidationError(err error, title string, attribute string) bool {
 		return false
 	}
 
-	m, ok := elementalError.Data.(map[string]interface{})
+	m, ok := elementalError.Data.(map[string]any)
 	if !ok {
 		return false
 	}

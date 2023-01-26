@@ -67,7 +67,7 @@ func TestNewErrorEvent(t *testing.T) {
 		Description: "some description",
 		Subject:     "some subject",
 		Title:       "some title",
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"someKey": "someValue",
 		},
 	}
