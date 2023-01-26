@@ -14,7 +14,7 @@ import (
 func TestConverter_Do__error_bad_externalType_mapping(t *testing.T) {
 	t.Parallel()
 
-	specDir, err := ioutil.TempDir("", t.Name()+"_*")
+	specDir, err := os.MkdirTemp("", t.Name()+"_*")
 	if err != nil {
 		t.Fatalf("error creating temporary directory for test function: %v", err)
 	}
