@@ -12,6 +12,7 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"os"
 	"path"
@@ -20,11 +21,13 @@ import (
 	"strings"
 	"text/template"
 
-	"go.aporeto.io/elemental/cmd/elegen/static"
 	"go.aporeto.io/regolithe/spec"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
+
+//go:embed templates
+var f embed.FS
 
 // An Enum represents an enum.
 type Enum struct {
@@ -35,7 +38,7 @@ type Enum struct {
 
 func makeTemplate(p string) (*template.Template, error) {
 
-	data, err := static.Asset(p)
+	data, err := f.ReadFile(p)
 	if err != nil {
 		return nil, err
 	}
