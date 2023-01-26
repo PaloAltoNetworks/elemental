@@ -187,7 +187,7 @@ func newOpenAPI3Template(specConfig *spec.Config) openapi3.T {
 			},
 		},
 		Paths: openapi3.Paths{},
-		Components: openapi3.Components{
+		Components: &openapi3.Components{
 			Schemas: make(openapi3.Schemas),
 		},
 	}

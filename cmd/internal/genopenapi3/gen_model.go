@@ -104,7 +104,7 @@ func (c *converter) convertAttribute(attr *spec.Attribute) (schemaRef *openapi3.
 	case spec.AttributeTypeRefMap:
 		attrSchema := openapi3.NewObjectSchema()
 		attr, err := c.convertAttribute(&spec.Attribute{Type: spec.AttributeTypeRef, SubType: attr.SubType})
-		attrSchema.AdditionalProperties = attr
+		attrSchema.AdditionalProperties = openapi3.AdditionalProperties{Schema: attr}
 		return attrSchema.NewRef(), err // do not wrap error to avoid recursive wrapping
 
 	case spec.AttributeTypeExt:
