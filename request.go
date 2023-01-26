@@ -14,7 +14,7 @@ package elemental
 import (
 	"crypto/tls"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -155,7 +155,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	case http.MethodPatch:
 		operation = OperationPatch
 		if _, ok := externalSupportedContentType[string(contentType)]; !ok {
-			data, err = ioutil.ReadAll(req.Body)
+			data, err = io.ReadAll(req.Body)
 			if err != nil {
 				return nil, NewError("Bad Request", fmt.Sprintf("Unable to read body of request: %s", err), "elemental", http.StatusBadRequest)
 			}
@@ -165,7 +165,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	case http.MethodPost:
 		operation = OperationCreate
 		if _, ok := externalSupportedContentType[string(contentType)]; !ok {
-			data, err = ioutil.ReadAll(req.Body)
+			data, err = io.ReadAll(req.Body)
 			if err != nil {
 				return nil, NewError("Bad Request", fmt.Sprintf("Unable to read body of request: %s", err), "elemental", http.StatusBadRequest)
 			}
@@ -175,7 +175,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 	case http.MethodPut:
 		operation = OperationUpdate
 		if _, ok := externalSupportedContentType[string(contentType)]; !ok {
-			data, err = ioutil.ReadAll(req.Body)
+			data, err = io.ReadAll(req.Body)
 			if err != nil {
 				return nil, NewError("Bad Request", fmt.Sprintf("Unable to read body of request: %s", err), "elemental", http.StatusBadRequest)
 			}

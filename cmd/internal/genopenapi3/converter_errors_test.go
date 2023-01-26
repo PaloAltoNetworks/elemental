@@ -3,7 +3,6 @@ package genopenapi3
 import (
 	"errors"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -55,7 +54,7 @@ func TestConverter_Do__error_bad_externalType_mapping(t *testing.T) {
 		"test.spec":     rawSpec,
 	} {
 		filename = filepath.Join(specDir, filename)
-		if err := ioutil.WriteFile(filename, []byte(content), os.ModePerm); err != nil {
+		if err := os.WriteFile(filename, []byte(content), os.ModePerm); err != nil {
 			t.Fatalf("error writing temporary file '%s': %v", filename, err)
 		}
 	}
@@ -73,7 +72,7 @@ func TestConverter_Do__error_bad_externalType_mapping(t *testing.T) {
 
 func TestConverter_Do__error_writer(t *testing.T) {
 
-	specDir, err := ioutil.TempDir("", t.Name()+"_*")
+	specDir, err := os.MkdirTemp("", t.Name()+"_*")
 	if err != nil {
 		t.Fatalf("error creating temporary directory for test function: %v", err)
 	}
@@ -101,7 +100,7 @@ func TestConverter_Do__error_writer(t *testing.T) {
 		"test.spec":     rawSpec,
 	} {
 		filename = filepath.Join(specDir, filename)
-		if err := ioutil.WriteFile(filename, []byte(content), os.ModePerm); err != nil {
+		if err := os.WriteFile(filename, []byte(content), os.ModePerm); err != nil {
 			t.Fatalf("error writing temporary file '%s': %v", filename, err)
 		}
 	}
