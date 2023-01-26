@@ -80,7 +80,7 @@ func Test_attributeTypeConverter(t *testing.T) {
 				typ:     spec.AttributeTypeList,
 				subtype: "",
 			},
-			expectedType:   "[]interface{}",
+			expectedType:   "[]any",
 			expectedImport: "",
 		},
 		{
@@ -89,7 +89,7 @@ func Test_attributeTypeConverter(t *testing.T) {
 				typ:     spec.AttributeTypeList,
 				subtype: "object",
 			},
-			expectedType:   "[]interface{}",
+			expectedType:   "[]any",
 			expectedImport: "",
 		},
 		{
@@ -143,7 +143,7 @@ func Test_attributeTypeConverter(t *testing.T) {
 				typ:     "SomeThing",
 				subtype: "",
 			},
-			expectedType:   "interface{}",
+			expectedType:   "any",
 			expectedImport: "",
 		},
 	}
@@ -182,7 +182,7 @@ func Test_attrBSONFieldName(t *testing.T) {
 				Name:       "SomeAttribute",
 				Stored:     true,
 				Identifier: false,
-				Extensions: map[string]interface{}{
+				Extensions: map[string]any{
 					"bson_name": "sa",
 				},
 			},
@@ -230,7 +230,7 @@ func Test_attrBSONFieldName(t *testing.T) {
 
 func Test_modelCommentFlags(t *testing.T) {
 	type args struct {
-		exts map[string]interface{}
+		exts map[string]any
 	}
 	tests := []struct {
 		name string
@@ -251,7 +251,7 @@ func Test_modelCommentFlags(t *testing.T) {
 			"no key",
 			func(t *testing.T) args {
 				return args{
-					map[string]interface{}{"nope": nil},
+					map[string]any{"nope": nil},
 				}
 			},
 			nil,
@@ -260,7 +260,7 @@ func Test_modelCommentFlags(t *testing.T) {
 			"nil key",
 			func(t *testing.T) args {
 				return args{
-					map[string]interface{}{"commentFlags": nil},
+					map[string]any{"commentFlags": nil},
 				}
 			},
 			nil,
@@ -269,7 +269,7 @@ func Test_modelCommentFlags(t *testing.T) {
 			"empty key",
 			func(t *testing.T) args {
 				return args{
-					map[string]interface{}{"commentFlags": []interface{}{}},
+					map[string]any{"commentFlags": []any{}},
 				}
 			},
 			nil,
@@ -278,7 +278,7 @@ func Test_modelCommentFlags(t *testing.T) {
 			"key with //",
 			func(t *testing.T) args {
 				return args{
-					map[string]interface{}{"commentFlags": []interface{}{"// hello world"}},
+					map[string]any{"commentFlags": []any{"// hello world"}},
 				}
 			},
 			[]string{"hello world"},
@@ -287,7 +287,7 @@ func Test_modelCommentFlags(t *testing.T) {
 			"key without //",
 			func(t *testing.T) args {
 				return args{
-					map[string]interface{}{"commentFlags": []interface{}{" hello world"}},
+					map[string]any{"commentFlags": []any{" hello world"}},
 				}
 			},
 			[]string{"hello world"},
@@ -296,7 +296,7 @@ func Test_modelCommentFlags(t *testing.T) {
 			"key with weird spacing",
 			func(t *testing.T) args {
 				return args{
-					map[string]interface{}{"commentFlags": []interface{}{" //	 hello world"}},
+					map[string]any{"commentFlags": []any{" //	 hello world"}},
 				}
 			},
 			[]string{"hello world"},

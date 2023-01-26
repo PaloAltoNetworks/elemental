@@ -74,7 +74,7 @@ func (c *converter) convertAttribute(attr *spec.Attribute) (schemaRef *openapi3.
 		return openapi3.NewDateTimeSchema().NewRef(), nil
 
 	case spec.AttributeTypeEnum:
-		enumVals := make([]interface{}, len(attr.AllowedChoices))
+		enumVals := make([]any, len(attr.AllowedChoices))
 		for i, val := range attr.AllowedChoices {
 			enumVals[i] = val
 		}

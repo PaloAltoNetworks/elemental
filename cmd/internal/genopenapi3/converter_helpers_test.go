@@ -125,12 +125,12 @@ func (r *testCaseRunner) run(name string, tc testCase) {
 
 		for expectedDocName, expectedRawDoc := range tc.outDocs {
 			actualRawDoc := output[expectedDocName]
-			actual := make(map[string]interface{})
+			actual := make(map[string]any)
 			if err := json.Unmarshal(actualRawDoc.Bytes(), &actual); err != nil {
 				t.Fatalf("invalid actual output data: malformed json content: %v", err)
 			}
 
-			expected := make(map[string]interface{})
+			expected := make(map[string]any)
 			if err := json.Unmarshal([]byte(expectedRawDoc), &expected); err != nil {
 				t.Fatalf("invalid expected output data in test case: malformed json content: %v", err)
 			}

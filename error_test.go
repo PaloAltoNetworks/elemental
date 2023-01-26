@@ -150,7 +150,7 @@ func TestError_IsValidationError(t *testing.T) {
 	Convey("Given I have a list of one validation error", t, func() {
 
 		err := NewError("the title", "the description", "http.test", http.StatusUnprocessableEntity)
-		err.Data = map[string]interface{}{"attribute": "theattr"}
+		err.Data = map[string]any{"attribute": "theattr"}
 
 		errs := NewErrors(err)
 
@@ -185,7 +185,7 @@ func TestError_IsValidationError(t *testing.T) {
 	Convey("Given I have a list of multiple validation errors", t, func() {
 
 		err := NewError("the title", "the description", "http.test", http.StatusUnprocessableEntity)
-		err.Data = map[string]interface{}{"attribute": "theattr"}
+		err.Data = map[string]any{"attribute": "theattr"}
 
 		errs := NewErrors(err, err)
 
@@ -202,7 +202,7 @@ func TestError_IsValidationError(t *testing.T) {
 	Convey("Given I have a single validation error", t, func() {
 
 		err := NewError("the title", "the description", "http.test", http.StatusUnprocessableEntity)
-		err.Data = map[string]interface{}{"attribute": "theattr"}
+		err.Data = map[string]any{"attribute": "theattr"}
 
 		Convey("When I call IsValidationError with expected title and attribute", func() {
 
@@ -231,7 +231,7 @@ func TestError_IsValidationError(t *testing.T) {
 	Convey("Given I have a list of non validation elemental error", t, func() {
 
 		err := NewError("the title", "the description", "http.test", http.StatusNotFound)
-		err.Data = map[string]interface{}{"attribute": "theattr"}
+		err.Data = map[string]any{"attribute": "theattr"}
 
 		errs := NewErrors(err)
 
@@ -248,7 +248,7 @@ func TestError_IsValidationError(t *testing.T) {
 	Convey("Given I have a non validation elemental error", t, func() {
 
 		err := NewError("the title", "the description", "http.test", http.StatusNotFound)
-		err.Data = map[string]interface{}{"attribute": "theattr"}
+		err.Data = map[string]any{"attribute": "theattr"}
 
 		Convey("When I call IsValidationError with expected title and attribute", func() {
 

@@ -51,13 +51,13 @@ type Encodable interface {
 
 // A Encoder is an Encodable that can be encoded.
 type Encoder interface {
-	Encode(obj interface{}) (err error)
+	Encode(obj any) (err error)
 	Encodable
 }
 
 // A Decoder is an Encodable that can be decoded.
 type Decoder interface {
-	Decode(dst interface{}) error
+	Decode(dst any) error
 	Encodable
 }
 
@@ -73,24 +73,24 @@ const (
 var (
 	jsonHandle       = &codec.JsonHandle{}
 	jsonEncodersPool = sync.Pool{
-		New: func() interface{} {
+		New: func() any {
 			return codec.NewEncoder(nil, jsonHandle)
 		},
 	}
 	jsonDecodersPool = sync.Pool{
-		New: func() interface{} {
+		New: func() any {
 			return codec.NewDecoder(nil, jsonHandle)
 		},
 	}
 
 	msgpackHandle       = &codec.MsgpackHandle{}
 	msgpackEncodersPool = sync.Pool{
-		New: func() interface{} {
+		New: func() any {
 			return codec.NewEncoder(nil, msgpackHandle)
 		},
 	}
 	msgpackDecodersPool = sync.Pool{
-		New: func() interface{} {
+		New: func() any {
 			return codec.NewDecoder(nil, msgpackHandle)
 		},
 	}
@@ -100,17 +100,17 @@ func init() {
 	// If you need to understand all of this, go there http://ugorji.net/blog/go-codec-primer
 	// But you should not need to touch that.
 	jsonHandle.Canonical = true
-	jsonHandle.MapType = reflect.TypeOf(map[string]interface{}(nil))
+	jsonHandle.MapType = reflect.TypeOf(map[string]any(nil))
 
 	msgpackHandle.Canonical = true
 	msgpackHandle.WriteExt = true
-	msgpackHandle.MapType = reflect.TypeOf(map[string]interface{}(nil))
+	msgpackHandle.MapType = reflect.TypeOf(map[string]any(nil))
 	msgpackHandle.TypeInfos = codec.NewTypeInfos([]string{"msgpack"})
 }
 
 // Decode decodes the given data using an appropriate decoder chosen
 // from the given encoding.
-func Decode(encoding EncodingType, data []byte, dest interface{}) error {
+func Decode(encoding EncodingType, data []byte, dest any) error {
 
 	var pool *sync.Pool
 
@@ -136,7 +136,7 @@ func Decode(encoding EncodingType, data []byte, dest interface{}) error {
 
 // Encode encodes the given object using an appropriate encoder chosen
 // from the given acceptType.
-func Encode(encoding EncodingType, obj interface{}) ([]byte, error) {
+func Encode(encoding EncodingType, obj any) ([]byte, error) {
 
 	if obj == nil {
 		return nil, fmt.Errorf("encode received a nil object")
@@ -174,7 +174,7 @@ func Encode(encoding EncodingType, obj interface{}) ([]byte, error) {
 // The dispose function will be called automatically when the decoding is over,
 // but not on a single decoding error.
 // In any case, the dispose function should be always called, in a defer for example.
-func MakeStreamDecoder(encoding EncodingType, reader io.Reader) (func(dest interface{}) error, func()) {
+func MakeStreamDecoder(encoding EncodingType, reader io.Reader) (func(dest any) error, func()) {
 
 	var pool *sync.Pool
 
@@ -195,7 +195,7 @@ func MakeStreamDecoder(encoding EncodingType, reader io.Reader) (func(dest inter
 		}
 	}
 
-	return func(dest interface{}) error {
+	return func(dest any) error {
 
 			if err := dec.Decode(dest); err != nil {
 
@@ -219,7 +219,7 @@ func MakeStreamDecoder(encoding EncodingType, reader io.Reader) (func(dest inter
 // It also returns a function must be called once the encoding procedure
 // is complete, so the internal encoders can be put back into the shared
 // memory pools.
-func MakeStreamEncoder(encoding EncodingType, writer io.Writer) (func(obj interface{}) error, func()) {
+func MakeStreamEncoder(encoding EncodingType, writer io.Writer) (func(obj any) error, func()) {
 
 	var pool *sync.Pool
 
@@ -240,7 +240,7 @@ func MakeStreamEncoder(encoding EncodingType, writer io.Writer) (func(obj interf
 		}
 	}
 
-	return func(dest interface{}) error {
+	return func(dest any) error {
 
 			if err := enc.Encode(dest); err != nil {
 				return fmt.Errorf("unable to encode %s: %s", encoding, err.Error())
@@ -259,7 +259,7 @@ func Convert(from EncodingType, to EncodingType, data []byte) ([]byte, error) {
 		return data, nil
 	}
 
-	m := map[string]interface{}{}
+	m := map[string]any{}
 	if err := Decode(from, data, &m); err != nil {
 		return nil, err
 	}

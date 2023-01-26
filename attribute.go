@@ -33,7 +33,7 @@ type AttributeSpecifiable interface {
 	AttributeSpecifications() map[string]AttributeSpecification
 
 	// ValueForAttribute returns the value for the given attribute
-	ValueForAttribute(name string) interface{}
+	ValueForAttribute(name string) any
 }
 
 // AttributeEncrypter is the interface that must be
@@ -87,7 +87,7 @@ type AttributeSpecification struct {
 	CreationOnly bool
 
 	// DefaultValue holds the default value declared in specification.
-	DefaultValue interface{}
+	DefaultValue any
 
 	// Deprecated defines if the attribute is deprecated.
 	Deprecated bool
@@ -206,7 +206,7 @@ type AttributeSpecification struct {
 // interface or this function will have no effect.
 //
 // If you pass anything else, this function does nothing.
-func ResetSecretAttributesValues(obj interface{}) {
+func ResetSecretAttributesValues(obj any) {
 
 	if obj == nil {
 		return

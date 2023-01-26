@@ -64,7 +64,7 @@ func (*converter) convertParam(entry *spec.Parameter, in string) *openapi3.Param
 		param.Schema = openapi3.NewStringSchema().NewRef() // TODO: this needs to be verified
 
 	case spec.ParameterTypeEnum:
-		enumVals := make([]interface{}, len(entry.AllowedChoices))
+		enumVals := make([]any, len(entry.AllowedChoices))
 		for i, val := range entry.AllowedChoices {
 			enumVals[i] = val
 		}

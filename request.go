@@ -56,7 +56,7 @@ type Request struct {
 	ContentType          EncodingType
 	Accept               EncodingType
 
-	Metadata           map[string]interface{}
+	Metadata           map[string]any
 	ClientIP           string
 	TLSConnectionState *tls.ConnectionState
 
@@ -70,7 +70,7 @@ func NewRequest() *Request {
 		RequestID:   uuid.Must(uuid.NewV4()).String(),
 		Parameters:  Parameters{},
 		Headers:     http.Header{},
-		Metadata:    map[string]interface{}{},
+		Metadata:    map[string]any{},
 		ContentType: EncodingTypeJSON,
 		Accept:      EncodingTypeJSON,
 	}
@@ -326,7 +326,7 @@ func NewRequestFromHTTPRequest(req *http.Request, manager ModelManager) (*Reques
 		TLSConnectionState:   req.TLS,
 		Headers:              req.Header,
 		OverrideProtection:   override,
-		Metadata:             map[string]interface{}{},
+		Metadata:             map[string]any{},
 		Version:              version,
 		ExternalTrackingID:   req.Header.Get("X-External-Tracking-ID"),
 		ExternalTrackingType: req.Header.Get("X-External-Tracking-Type"),
@@ -390,7 +390,7 @@ func (r *Request) GetEncoding() EncodingType {
 }
 
 // Decode decodes the data into the given destination.
-func (r *Request) Decode(dst interface{}) error {
+func (r *Request) Decode(dst any) error {
 
 	return Decode(r.GetEncoding(), r.Data, dst)
 }

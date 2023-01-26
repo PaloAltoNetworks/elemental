@@ -115,7 +115,7 @@ func MatchesFilter(identifiable AttributeSpecifiable, filter *Filter, opts ...Ma
 // restrictions:
 //   - the attribute MUST exist and must be a string or a slice/array of strings
 //   - the comparator query values must be strings that can be compiled to valid Go regular expressions
-func matches(attributeValue interface{}, queries FilterValue) bool {
+func matches(attributeValue any, queries FilterValue) bool {
 
 	// if the attribute doesn't exist, no match is possible
 	if attributeValue == nil {
@@ -187,7 +187,7 @@ func notExists(attributeName string, attributes map[string]AttributeSpecificatio
 // https://docs.mongodb.com/manual/reference/operator/query/eq
 //
 // { <field>: { $eq: <value> } }
-func equals(field, value interface{}) bool {
+func equals(field, value any) bool {
 
 	// deal with the `nil` case before anything else
 	// this is for queries that are checking whether an attribute does not exist, for example:
@@ -205,7 +205,7 @@ func equals(field, value interface{}) bool {
 // https://docs.mongodb.com/manual/reference/operator/query/ne
 //
 // {field: {$ne: value} }
-func notEquals(field, value interface{}) bool {
+func notEquals(field, value any) bool {
 
 	// deals with the 'nil' case where an attribute that does not exist with a null value has been specified
 	// Example query:
@@ -219,7 +219,7 @@ func notEquals(field, value interface{}) bool {
 	return !equalsCommon(field, value)
 }
 
-func equalsCommon(field, value interface{}) bool {
+func equalsCommon(field, value any) bool {
 
 	// check to see if we are dealing with an attribute that does not exist on the provided identifiable.
 	// recall `field` will be nil in the event that `ValueForAttribute` returns an empty nil interface
@@ -326,7 +326,7 @@ func isArrayLike(v reflect.Value) bool {
 	}
 }
 
-func toStringSlice(v interface{}) []string {
+func toStringSlice(v any) []string {
 	switch v := reflect.ValueOf(v); v.Kind() {
 	case reflect.String:
 		return []string{v.String()}

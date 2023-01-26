@@ -840,11 +840,11 @@ func TestRequest_Duplicate(t *testing.T) {
 		req.Parameters = Parameters{
 			"p1": Parameter{
 				ptype:  ParameterTypeString,
-				values: []interface{}{"A"},
+				values: []any{"A"},
 			},
 			"p2": Parameter{
 				ptype:  ParameterTypeBool,
-				values: []interface{}{true},
+				values: []any{true},
 			},
 		}
 		req.ParentID = "zzz"
@@ -856,7 +856,7 @@ func TestRequest_Duplicate(t *testing.T) {
 		req.Version = 12
 		req.Order = []string{"key1", "key2"}
 		req.ClientIP = "1.2.3.4"
-		req.Metadata = map[string]interface{}{"a": 1}
+		req.Metadata = map[string]any{"a": 1}
 		req.ContentType = EncodingTypeMSGPACK
 		req.Accept = EncodingTypeMSGPACK
 
@@ -915,11 +915,11 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 				So(r.Parameters, ShouldResemble, Parameters{
 					"rlgmp1": Parameter{
 						ptype:  ParameterTypeString,
-						values: []interface{}{"A"},
+						values: []any{"A"},
 					},
 					"rlgmp2": Parameter{
 						ptype:  ParameterTypeBool,
-						values: []interface{}{true},
+						values: []any{true},
 					},
 				})
 			})
@@ -964,11 +964,11 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 				So(r.Parameters, ShouldResemble, Parameters{
 					"rlgmp1": Parameter{
 						ptype:  ParameterTypeString,
-						values: []interface{}{"A"},
+						values: []any{"A"},
 					},
 					"rlgmp2": Parameter{
 						ptype:  ParameterTypeBool,
-						values: []interface{}{true},
+						values: []any{true},
 					},
 				})
 			})
@@ -1015,11 +1015,11 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 				So(r.Parameters, ShouldResemble, Parameters{
 					"lup1": Parameter{
 						ptype:  ParameterTypeString,
-						values: []interface{}{"A"},
+						values: []any{"A"},
 					},
 					"lup2": Parameter{
 						ptype:  ParameterTypeBool,
-						values: []interface{}{true},
+						values: []any{true},
 					},
 				})
 			})
@@ -1067,11 +1067,11 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 				So(r.Parameters, ShouldResemble, Parameters{
 					"rlcp1": Parameter{
 						ptype:  ParameterTypeString,
-						values: []interface{}{"A"},
+						values: []any{"A"},
 					},
 					"rlcp2": Parameter{
 						ptype:  ParameterTypeBool,
-						values: []interface{}{true},
+						values: []any{true},
 					},
 				})
 			})
@@ -1118,27 +1118,27 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 				So(r.Parameters, ShouldResemble, Parameters{
 					"lgp1": Parameter{
 						ptype:  ParameterTypeString,
-						values: []interface{}{"A"},
+						values: []any{"A"},
 					},
 					"lgp2": Parameter{
 						ptype:  ParameterTypeBool,
-						values: []interface{}{true},
+						values: []any{true},
 					},
 					"sAp1": Parameter{
 						ptype:  ParameterTypeString,
-						values: []interface{}{"ok"},
+						values: []any{"ok"},
 					},
 					"sAp2": Parameter{
 						ptype:  ParameterTypeBool,
-						values: []interface{}{true},
+						values: []any{true},
 					},
 					"sBp1": Parameter{
 						ptype:  ParameterTypeString,
-						values: []interface{}{"ok"},
+						values: []any{"ok"},
 					},
 					"sBp2": Parameter{
 						ptype:  ParameterTypeBool,
-						values: []interface{}{true},
+						values: []any{true},
 					},
 				})
 			})
@@ -1185,11 +1185,11 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 				So(r.Parameters, ShouldResemble, Parameters{
 					"lup1": Parameter{
 						ptype:  ParameterTypeString,
-						values: []interface{}{"A"},
+						values: []any{"A"},
 					},
 					"lup2": Parameter{
 						ptype:  ParameterTypeBool,
-						values: []interface{}{true},
+						values: []any{true},
 					},
 				})
 			})
@@ -1236,11 +1236,11 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 				So(r.Parameters, ShouldResemble, Parameters{
 					"ldp1": Parameter{
 						ptype:  ParameterTypeString,
-						values: []interface{}{"A"},
+						values: []any{"A"},
 					},
 					"ldp2": Parameter{
 						ptype:  ParameterTypeBool,
-						values: []interface{}{true},
+						values: []any{true},
 					},
 				})
 			})
@@ -1286,11 +1286,11 @@ func TestRequest_NewRequestFromHTTPRequestParameters(t *testing.T) {
 				So(r.Parameters, ShouldResemble, Parameters{
 					"ltgp1": Parameter{
 						ptype:  ParameterTypeString,
-						values: []interface{}{"A"},
+						values: []any{"A"},
 					},
 					"ltgp2": Parameter{
 						ptype:  ParameterTypeBool,
-						values: []interface{}{true},
+						values: []any{true},
 					},
 				})
 			})

@@ -61,7 +61,7 @@ func TestParameter_Validate(t *testing.T) {
 			},
 			&Parameter{
 				ptype:  ParameterTypeString,
-				values: []interface{}{"string"},
+				values: []any{"string"},
 			},
 			false,
 		},
@@ -76,7 +76,7 @@ func TestParameter_Validate(t *testing.T) {
 			},
 			&Parameter{
 				ptype:  ParameterTypeInt,
-				values: []interface{}{1},
+				values: []any{1},
 			},
 			false,
 		},
@@ -104,7 +104,7 @@ func TestParameter_Validate(t *testing.T) {
 			},
 			&Parameter{
 				ptype:  ParameterTypeBool,
-				values: []interface{}{true, false, true, false, true, false},
+				values: []any{true, false, true, false, true, false},
 			},
 			false,
 		},
@@ -131,7 +131,7 @@ func TestParameter_Validate(t *testing.T) {
 			},
 			&Parameter{
 				ptype:  ParameterTypeFloat,
-				values: []interface{}{1.004},
+				values: []any{1.004},
 			},
 			false,
 		},
@@ -146,7 +146,7 @@ func TestParameter_Validate(t *testing.T) {
 			},
 			&Parameter{
 				ptype:  ParameterTypeFloat,
-				values: []interface{}{1.0},
+				values: []any{1.0},
 			},
 			false,
 		},
@@ -174,7 +174,7 @@ func TestParameter_Validate(t *testing.T) {
 			},
 			&Parameter{
 				ptype:  ParameterTypeEnum,
-				values: []interface{}{"A"},
+				values: []any{"A"},
 			},
 			false,
 		},
@@ -202,7 +202,7 @@ func TestParameter_Validate(t *testing.T) {
 			},
 			&Parameter{
 				ptype:  ParameterTypeDuration,
-				values: []interface{}{3 * time.Second},
+				values: []any{3 * time.Second},
 			},
 			false,
 		},
@@ -230,7 +230,7 @@ func TestParameter_Validate(t *testing.T) {
 			},
 			&Parameter{
 				ptype: ParameterTypeTime,
-				values: []interface{}{
+				values: []any{
 					dateparse.MustParse("oct 7, 1970"),
 					dateparse.MustParse("04/08/2014 22:05"),
 					dateparse.MustParse("1384216367189"),
@@ -308,7 +308,7 @@ func TestParameters_Value(t *testing.T) {
 			})
 
 			Convey("Then the all values should be accessible", func() {
-				So(pp.Values(), ShouldResemble, []interface{}{"a", "b"})
+				So(pp.Values(), ShouldResemble, []any{"a", "b"})
 			})
 		})
 	})
@@ -338,7 +338,7 @@ func TestParameters_Value(t *testing.T) {
 			})
 
 			Convey("Then the all values should be accessible", func() {
-				So(pp.Values(), ShouldResemble, []interface{}{"A", "B"})
+				So(pp.Values(), ShouldResemble, []any{"A", "B"})
 			})
 		})
 	})
@@ -367,7 +367,7 @@ func TestParameters_Value(t *testing.T) {
 			})
 
 			Convey("Then the all values should be accessible", func() {
-				So(pp.Values(), ShouldResemble, []interface{}{1, 2})
+				So(pp.Values(), ShouldResemble, []any{1, 2})
 			})
 		})
 	})
@@ -396,7 +396,7 @@ func TestParameters_Value(t *testing.T) {
 			})
 
 			Convey("Then the all values should be accessible", func() {
-				So(pp.Values(), ShouldResemble, []interface{}{1.1, 2.2})
+				So(pp.Values(), ShouldResemble, []any{1.1, 2.2})
 			})
 		})
 	})
@@ -425,7 +425,7 @@ func TestParameters_Value(t *testing.T) {
 			})
 
 			Convey("Then the all values should be accessible", func() {
-				So(pp.Values(), ShouldResemble, []interface{}{true, false, true})
+				So(pp.Values(), ShouldResemble, []any{true, false, true})
 			})
 		})
 	})
@@ -454,7 +454,7 @@ func TestParameters_Value(t *testing.T) {
 			})
 
 			Convey("Then the all values should be accessible", func() {
-				So(pp.Values(), ShouldResemble, []interface{}{-2 * time.Second, 2 * time.Hour})
+				So(pp.Values(), ShouldResemble, []any{-2 * time.Second, 2 * time.Hour})
 			})
 		})
 	})
@@ -504,7 +504,7 @@ func TestParameters_NewParameter(t *testing.T) {
 
 		Convey("Then the parameter should be correct", func() {
 			So(p.StringValue(), ShouldEqual, "a")
-			So(p.Values(), ShouldResemble, []interface{}{"a", "b"})
+			So(p.Values(), ShouldResemble, []any{"a", "b"})
 		})
 	})
 }
@@ -1138,7 +1138,7 @@ func Test_parse(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		wantOut interface{}
+		wantOut any
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -1202,7 +1202,7 @@ func TestParameterDefinition_Parse(t *testing.T) {
 			},
 			&Parameter{
 				defaultValue: nil,
-				values:       []interface{}{"a"},
+				values:       []any{"a"},
 				ptype:        ParameterTypeString,
 			},
 			false,
@@ -1238,7 +1238,7 @@ func TestParameterDefinition_Parse(t *testing.T) {
 			},
 			&Parameter{
 				defaultValue: nil,
-				values:       []interface{}{43},
+				values:       []any{43},
 				ptype:        ParameterTypeInt,
 			},
 			false,
@@ -1298,7 +1298,7 @@ func TestParameterDefinition_Parse(t *testing.T) {
 			},
 			&Parameter{
 				defaultValue: nil,
-				values:       []interface{}{43.43},
+				values:       []any{43.43},
 				ptype:        ParameterTypeFloat,
 			},
 			false,
@@ -1358,7 +1358,7 @@ func TestParameterDefinition_Parse(t *testing.T) {
 			},
 			&Parameter{
 				defaultValue: nil,
-				values:       []interface{}{true},
+				values:       []any{true},
 				ptype:        ParameterTypeBool,
 			},
 			false,
@@ -1375,7 +1375,7 @@ func TestParameterDefinition_Parse(t *testing.T) {
 			},
 			&Parameter{
 				defaultValue: nil,
-				values:       []interface{}{false},
+				values:       []any{false},
 				ptype:        ParameterTypeBool,
 			},
 			false,
@@ -1436,7 +1436,7 @@ func TestParameterDefinition_Parse(t *testing.T) {
 			},
 			&Parameter{
 				defaultValue: nil,
-				values:       []interface{}{"bye"},
+				values:       []any{"bye"},
 				ptype:        ParameterTypeEnum,
 			},
 			false,
@@ -1499,7 +1499,7 @@ func TestParameterDefinition_Parse(t *testing.T) {
 			},
 			&Parameter{
 				defaultValue: nil,
-				values:       []interface{}{43 * time.Second},
+				values:       []any{43 * time.Second},
 				ptype:        ParameterTypeDuration,
 			},
 			false,
@@ -1559,7 +1559,7 @@ func TestParameterDefinition_Parse(t *testing.T) {
 			},
 			&Parameter{
 				defaultValue: nil,
-				values:       []interface{}{dateparse.MustParse("May 8, 2009 5:57:51 PM")},
+				values:       []any{dateparse.MustParse("May 8, 2009 5:57:51 PM")},
 				ptype:        ParameterTypeTime,
 			},
 			false,

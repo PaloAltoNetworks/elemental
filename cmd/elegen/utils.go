@@ -83,7 +83,7 @@ func attributeTypeConverter(typ spec.AttributeType, subtype string) (string, str
 	case spec.AttributeTypeList:
 		// @TODO: pass subtype as a spec.AttributeType so we can make a recursive call here.
 		if subtype == "" || subtype == "object" {
-			return "[]interface{}", ""
+			return "[]any", ""
 		}
 		if subtype == string(spec.AttributeTypeInt) {
 			return "[]int", ""
@@ -100,7 +100,7 @@ func attributeTypeConverter(typ spec.AttributeType, subtype string) (string, str
 		return "[]" + subtype, ""
 
 	default:
-		return "interface{}", ""
+		return "any", ""
 	}
 }
 
@@ -512,15 +512,15 @@ func sortSlices(a, b []string, ind int) bool {
 	return a[ind] < b[ind]
 }
 
-func modelCommentFlags(exts map[string]interface{}) []string {
+func modelCommentFlags(exts map[string]any) []string {
 
 	if exts == nil || exts["commentFlags"] == nil {
 		return nil
 	}
 
-	flags, ok := exts["commentFlags"].([]interface{})
+	flags, ok := exts["commentFlags"].([]any)
 	if !ok {
-		panic(fmt.Sprintf("commentFlags must be a []interface{}, but got %T", exts["commentFlags"]))
+		panic(fmt.Sprintf("commentFlags must be a []any, but got %T", exts["commentFlags"]))
 	}
 
 	if len(flags) == 0 {

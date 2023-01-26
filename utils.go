@@ -17,7 +17,7 @@ import (
 )
 
 // RemoveZeroValues reset all pointer fields that are pointing to a zero value to nil
-func RemoveZeroValues(obj interface{}) {
+func RemoveZeroValues(obj any) {
 
 	vo := reflect.ValueOf(obj)
 	vv := reflect.Indirect(vo)
@@ -54,7 +54,7 @@ func RemoveZeroValues(obj interface{}) {
 
 // extractFieldNames returns all the field Name of the given
 // object using reflection.
-func extractFieldNames(obj interface{}) []string {
+func extractFieldNames(obj any) []string {
 
 	val := reflect.Indirect(reflect.ValueOf(obj))
 	c := val.NumField()
@@ -71,7 +71,7 @@ var reflectedTimeType = reflect.ValueOf(time.Time{}).Type()
 
 // areFieldValuesEqual checks if the value of the given field name are
 // equal in both given objects using reflection.
-func areFieldValuesEqual(field string, o1, o2 interface{}) bool {
+func areFieldValuesEqual(field string, o1, o2 any) bool {
 
 	field1 := reflect.Indirect(reflect.ValueOf(o1)).FieldByName(field)
 	field2 := reflect.Indirect(reflect.ValueOf(o2)).FieldByName(field)
@@ -117,13 +117,13 @@ func areFieldValuesEqual(field string, o1, o2 interface{}) bool {
 }
 
 // isFieldValueZero check if the value of the given field is set to its zero value.
-func isFieldValueZero(field string, o interface{}) bool {
+func isFieldValueZero(field string, o any) bool {
 
 	return IsZero(reflect.Indirect(reflect.ValueOf(o)).FieldByName(field).Interface())
 }
 
 // IsZero returns true if the given value is set to its Zero value.
-func IsZero(o interface{}) bool {
+func IsZero(o any) bool {
 
 	if o == nil {
 		return true
@@ -145,7 +145,7 @@ func IsZero(o interface{}) bool {
 	}
 }
 
-func areFieldsValueEqualValue(f string, obj interface{}, value interface{}) bool {
+func areFieldsValueEqualValue(f string, obj any, value any) bool {
 
 	field := reflect.Indirect(reflect.ValueOf(obj)).FieldByName(f)
 

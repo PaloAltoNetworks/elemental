@@ -101,7 +101,7 @@ func (e *Event) GetEncoding() EncodingType {
 }
 
 // Decode decodes the data into the given destination.
-func (e *Event) Decode(dst interface{}) error {
+func (e *Event) Decode(dst any) error {
 	return Decode(e.GetEncoding(), e.Entity(), dst)
 }
 

@@ -70,13 +70,13 @@ const (
 type FilterKeys []string
 
 // FilterValue represents a filter value.
-type FilterValue []interface{}
+type FilterValue []any
 
 // FilterValues represents a list of FilterValue.
-type FilterValues [][]interface{}
+type FilterValues [][]any
 
 // Then adds a new value to the receiver and returns it.
-func (f FilterValues) add(values ...interface{}) FilterValues {
+func (f FilterValues) add(values ...any) FilterValues {
 
 	fv := FilterValue{}
 	for _, v := range values {
@@ -94,17 +94,17 @@ type SubFilters []SubFilter
 
 // FilterValueComposer adds values and operators.
 type FilterValueComposer interface {
-	Equals(interface{}) FilterKeyComposer
-	NotEquals(interface{}) FilterKeyComposer
-	GreaterOrEqualThan(interface{}) FilterKeyComposer
-	GreaterThan(interface{}) FilterKeyComposer
-	LesserOrEqualThan(interface{}) FilterKeyComposer
-	LesserThan(interface{}) FilterKeyComposer
-	In(...interface{}) FilterKeyComposer
-	NotIn(...interface{}) FilterKeyComposer
-	Contains(...interface{}) FilterKeyComposer
-	NotContains(...interface{}) FilterKeyComposer
-	Matches(...interface{}) FilterKeyComposer
+	Equals(any) FilterKeyComposer
+	NotEquals(any) FilterKeyComposer
+	GreaterOrEqualThan(any) FilterKeyComposer
+	GreaterThan(any) FilterKeyComposer
+	LesserOrEqualThan(any) FilterKeyComposer
+	LesserThan(any) FilterKeyComposer
+	In(...any) FilterKeyComposer
+	NotIn(...any) FilterKeyComposer
+	Contains(...any) FilterKeyComposer
+	NotContains(...any) FilterKeyComposer
+	Matches(...any) FilterKeyComposer
 	Exists() FilterKeyComposer
 	NotExists() FilterKeyComposer
 }
@@ -190,77 +190,77 @@ func (f *Filter) AndFilters() SubFilters {
 }
 
 // Equals adds a an equality comparator to the FilterComposer.
-func (f *Filter) Equals(value interface{}) FilterKeyComposer {
+func (f *Filter) Equals(value any) FilterKeyComposer {
 	f.values = f.values.add(value)
 	f.comparators = f.comparators.add(EqualComparator)
 	return f
 }
 
 // NotEquals adds a an non equality comparator to the FilterComposer.
-func (f *Filter) NotEquals(value interface{}) FilterKeyComposer {
+func (f *Filter) NotEquals(value any) FilterKeyComposer {
 	f.values = f.values.add(value)
 	f.comparators = f.comparators.add(NotEqualComparator)
 	return f
 }
 
 // GreaterThan adds a greater than (exclusive) comparator to the FilterComposer.
-func (f *Filter) GreaterThan(value interface{}) FilterKeyComposer {
+func (f *Filter) GreaterThan(value any) FilterKeyComposer {
 	f.values = f.values.add(value)
 	f.comparators = f.comparators.add(GreaterComparator)
 	return f
 }
 
 // GreaterOrEqualThan adds a greater than (inclusive) comparator to the FilterComposer.
-func (f *Filter) GreaterOrEqualThan(value interface{}) FilterKeyComposer {
+func (f *Filter) GreaterOrEqualThan(value any) FilterKeyComposer {
 	f.values = f.values.add(value)
 	f.comparators = f.comparators.add(GreaterOrEqualComparator)
 	return f
 }
 
 // LesserThan adds a lesser than (exclusive) comparator to the FilterComposer.
-func (f *Filter) LesserThan(value interface{}) FilterKeyComposer {
+func (f *Filter) LesserThan(value any) FilterKeyComposer {
 	f.values = f.values.add(value)
 	f.comparators = f.comparators.add(LesserComparator)
 	return f
 }
 
 // LesserOrEqualThan adds a lesser than (inclusive) comparator to the FilterComposer.
-func (f *Filter) LesserOrEqualThan(value interface{}) FilterKeyComposer {
+func (f *Filter) LesserOrEqualThan(value any) FilterKeyComposer {
 	f.values = f.values.add(value)
 	f.comparators = f.comparators.add(LesserOrEqualComparator)
 	return f
 }
 
 // In adds a in comparator to the FilterComposer.
-func (f *Filter) In(values ...interface{}) FilterKeyComposer {
+func (f *Filter) In(values ...any) FilterKeyComposer {
 	f.values = f.values.add(values...)
 	f.comparators = f.comparators.add(InComparator)
 	return f
 }
 
 // NotIn adds a not in comparator to the FilterComposer.
-func (f *Filter) NotIn(values ...interface{}) FilterKeyComposer {
+func (f *Filter) NotIn(values ...any) FilterKeyComposer {
 	f.values = f.values.add(values...)
 	f.comparators = f.comparators.add(NotInComparator)
 	return f
 }
 
 // Contains adds a contains comparator to the FilterComposer.
-func (f *Filter) Contains(values ...interface{}) FilterKeyComposer {
+func (f *Filter) Contains(values ...any) FilterKeyComposer {
 	f.values = f.values.add(values...)
 	f.comparators = f.comparators.add(ContainComparator)
 	return f
 }
 
 // NotContains adds a contains comparator to the FilterComposer.
-func (f *Filter) NotContains(values ...interface{}) FilterKeyComposer {
+func (f *Filter) NotContains(values ...any) FilterKeyComposer {
 	f.values = f.values.add(values...)
 	f.comparators = f.comparators.add(NotContainComparator)
 	return f
 }
 
 // Matches adds a match comparator to the FilterComposer.
-func (f *Filter) Matches(values ...interface{}) FilterKeyComposer {
+func (f *Filter) Matches(values ...any) FilterKeyComposer {
 	f.values = f.values.add(values...)
 	f.comparators = f.comparators.add(MatchComparator)
 	return f
@@ -406,7 +406,7 @@ func translateOperator(operator FilterOperator) string {
 	}
 }
 
-func translateValue(comparator FilterComparator, value interface{}) string {
+func translateValue(comparator FilterComparator, value any) string {
 
 	v := reflect.ValueOf(value)
 	if comparator != ContainComparator && comparator != InComparator && comparator != MatchComparator {

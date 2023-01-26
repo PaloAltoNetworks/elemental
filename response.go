@@ -42,7 +42,7 @@ func (r *Response) GetEncoding() EncodingType {
 }
 
 // Encode encodes the given oject into the response.
-func (r *Response) Encode(obj interface{}) (err error) {
+func (r *Response) Encode(obj any) (err error) {
 
 	r.Data, err = Encode(r.GetEncoding(), obj)
 	return err
