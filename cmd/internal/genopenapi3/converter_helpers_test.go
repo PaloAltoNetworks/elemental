@@ -30,17 +30,7 @@ type testCaseRunner struct {
 func runAllTestCases(t *testing.T, cases map[string]testCase) {
 	t.Helper()
 
-	rootTmpDir, err := os.MkdirTemp("", t.Name()+"_*")
-	if err != nil {
-		t.Fatalf("error creating temporary directory for test function: %v", err)
-	}
-	t.Cleanup(func() {
-		if err := os.RemoveAll(rootTmpDir); err != nil {
-			// no need to fail the test; it is just a temporary dir that
-			// the OS will eventually destroy, but let's log the error
-			t.Logf("error removing temporary test directory: %v", err)
-		}
-	})
+	rootTmpDir := t.TempDir()
 
 	tcRunner := &testCaseRunner{
 		t:          t,

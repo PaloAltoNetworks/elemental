@@ -13,17 +13,7 @@ import (
 func TestConverter_Do__error_bad_externalType_mapping(t *testing.T) {
 	t.Parallel()
 
-	specDir, err := os.MkdirTemp("", t.Name()+"_*")
-	if err != nil {
-		t.Fatalf("error creating temporary directory for test function: %v", err)
-	}
-	t.Cleanup(func() {
-		if err := os.RemoveAll(specDir); err != nil {
-			// no need to fail the test; it is just a temporary dir that
-			// the OS will eventually destroy, but let's log the error
-			t.Logf("error removing temporary test directory: %v", err)
-		}
-	})
+	specDir := t.TempDir()
 
 	badTypeMapping := replaceTrailingTabsWithDoubleSpaceForYAML(`
 		'[]byte':
@@ -72,17 +62,7 @@ func TestConverter_Do__error_bad_externalType_mapping(t *testing.T) {
 
 func TestConverter_Do__error_writer(t *testing.T) {
 
-	specDir, err := os.MkdirTemp("", t.Name()+"_*")
-	if err != nil {
-		t.Fatalf("error creating temporary directory for test function: %v", err)
-	}
-	t.Cleanup(func() {
-		if err := os.RemoveAll(specDir); err != nil {
-			// no need to fail the test; it is just a temporary dir that
-			// the OS will eventually destroy, but let's log the error
-			t.Logf("error removing temporary test directory: %v", err)
-		}
-	})
+	specDir := t.TempDir()
 
 	rawSpec := replaceTrailingTabsWithDoubleSpaceForYAML(`
 		model:
