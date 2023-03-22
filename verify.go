@@ -135,6 +135,7 @@ func ResetMaps(v reflect.Value) {
 
 	indirect := func(vv reflect.Value) reflect.Value {
 		for ; vv.Kind() == reflect.Ptr; vv = vv.Elem() {
+			_ = vv // this makes the linter happy as the loop is not empty
 		}
 		return vv
 	}

@@ -11,6 +11,7 @@ lint:
 		--skip-files data_test.go \
 		--exclude-use-default=false \
 		--exclude=package-comments \
+		--exclude=unused-parameter \
 		--enable=errcheck \
 		--enable=goimports \
 		--enable=ineffassign \

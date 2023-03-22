@@ -9,6 +9,7 @@ import (
 )
 
 //lint:file-ignore U1000 auto generated code.
+
 // ListIdentity represents the Identity of the object.
 var ListIdentity = Identity{
 	Name:     "list",
@@ -29,8 +30,8 @@ func (o ListsList) Identity() Identity {
 // Copy returns a pointer to a copy the ListsList.
 func (o ListsList) Copy() Identifiables {
 
-	copy := append(ListsList{}, o...)
-	return &copy
+	out := append(ListsList{}, o...)
+	return &out
 }
 
 // Append appends the objects to the a new copy of the ListsList.
@@ -1069,6 +1070,7 @@ type mongoAttributesSparseList struct {
 	Slice        *[]string     `bson:"slice,omitempty"`
 	Unexposed    *string       `bson:"unexposed,omitempty"`
 }
+
 // TaskStatusValue represents the possible values for attribute "status".
 type TaskStatusValue string
 
@@ -1103,8 +1105,8 @@ func (o TasksList) Identity() Identity {
 // Copy returns a pointer to a copy the TasksList.
 func (o TasksList) Copy() Identifiables {
 
-	copy := append(TasksList{}, o...)
-	return &copy
+	out := append(TasksList{}, o...)
+	return &out
 }
 
 // Append appends the objects to the a new copy of the TasksList.
@@ -1888,8 +1890,6 @@ type mongoAttributesSparseTask struct {
 	ParentType  *string          `bson:"parenttype,omitempty"`
 	Status      *TaskStatusValue `bson:"status,omitempty"`
 }
-
-// UnmarshalableListIdentity represents the Identity of the object.
 var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
 
 // UnmarshalableListsList represents a list of UnmarshalableLists
@@ -1904,8 +1904,8 @@ func (o UnmarshalableListsList) Identity() Identity {
 // Copy returns a pointer to a copy the UnmarshalableListsList.
 func (o UnmarshalableListsList) Copy() Identifiables {
 
-	copy := append(UnmarshalableListsList{}, o...)
-	return &copy
+	out := append(UnmarshalableListsList{}, o...)
+	return &out
 }
 
 // Append appends the objects to the a new copy of the UnmarshalableListsList.
@@ -2004,6 +2004,7 @@ func (o *UnmarshalableError) UnmarshalMsgpack([]byte) error {
 func (o *UnmarshalableError) MarshalMsgpack() ([]byte, error) {
 	return nil, fmt.Errorf("error marshalling")
 }
+
 // UserIdentity represents the Identity of the object.
 var UserIdentity = Identity{
 	Name:     "user",
@@ -2024,8 +2025,8 @@ func (o UsersList) Identity() Identity {
 // Copy returns a pointer to a copy the UsersList.
 func (o UsersList) Copy() Identifiables {
 
-	copy := append(UsersList{}, o...)
-	return &copy
+	out := append(UsersList{}, o...)
+	return &out
 }
 
 // Append appends the objects to the a new copy of the UsersList.
@@ -2863,6 +2864,7 @@ type mongoAttributesSparseUser struct {
 	ParentType *string       `bson:"parenttype,omitempty"`
 	UserName   *string       `bson:"username,omitempty"`
 }
+
 // Root represents the model of a root
 type Root struct {
 	ModelVersion int `json:"-" msgpack:"-" bson:"_modelversion"`
@@ -3028,6 +3030,7 @@ var RootLowerCaseAttributesMap = map[string]AttributeSpecification{}
 
 type mongoAttributesRoot struct {
 }
+
 var (
 	identityNamesMap = map[string]Identity{
 		"list": ListIdentity,

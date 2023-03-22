@@ -32,8 +32,8 @@ func (o UnmarshalableListsList) Identity() elemental.Identity {
 // Copy returns a pointer to a copy the UnmarshalableListsList.
 func (o UnmarshalableListsList) Copy() elemental.Identifiables {
 
-	copy := append(UnmarshalableListsList{}, o...)
-	return &copy
+	out := append(UnmarshalableListsList{}, o...)
+	return &out
 }
 
 // Append appends the objects to the a new copy of the UnmarshalableListsList.

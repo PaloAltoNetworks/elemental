@@ -152,8 +152,8 @@ func TestMakeStreamEncoderDecoder(t *testing.T) {
 	Convey("Given I have a bunch of json lines and a stream decoder", t, func() {
 
 		data := bytes.NewBuffer(nil)
-		encoder, eclose := MakeStreamEncoder(EncodingTypeJSON, data)
-		defer eclose()
+		encoder, closeFunc1 := MakeStreamEncoder(EncodingTypeJSON, data)
+		defer closeFunc1()
 
 		if err := encoder(&List{Name: "1"}); err != nil {
 			panic(err)
@@ -162,8 +162,8 @@ func TestMakeStreamEncoderDecoder(t *testing.T) {
 			panic(err)
 		}
 
-		decoder, close := MakeStreamDecoder(EncodingTypeJSON, data)
-		defer close()
+		decoder, closeFunc2 := MakeStreamDecoder(EncodingTypeJSON, data)
+		defer closeFunc2()
 
 		Convey("Decoding once should work", func() {
 
@@ -202,8 +202,8 @@ func TestMakeStreamEncoderDecoder(t *testing.T) {
 	Convey("Given I have a bunch of msgpack lines and a stream decoder", t, func() {
 
 		data := bytes.NewBuffer(nil)
-		encoder, eclose := MakeStreamEncoder(EncodingTypeMSGPACK, data)
-		defer eclose()
+		encoder, closeFunc1 := MakeStreamEncoder(EncodingTypeMSGPACK, data)
+		defer closeFunc1()
 
 		if err := encoder(&List{Name: "1"}); err != nil {
 			panic(err)
@@ -212,8 +212,8 @@ func TestMakeStreamEncoderDecoder(t *testing.T) {
 			panic(err)
 		}
 
-		decoder, close := MakeStreamDecoder(EncodingTypeMSGPACK, data)
-		defer close()
+		decoder, closeFunc2 := MakeStreamDecoder(EncodingTypeMSGPACK, data)
+		defer closeFunc2()
 
 		Convey("Decoding once should work", func() {
 
