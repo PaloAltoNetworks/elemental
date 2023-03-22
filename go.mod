@@ -2,7 +2,7 @@ module go.aporeto.io/elemental
 
 go 1.18
 
-require go.aporeto.io/regolithe v1.71.0
+require go.aporeto.io/regolithe v1.72.0
 
 require (
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
