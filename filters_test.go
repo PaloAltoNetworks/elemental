@@ -210,6 +210,62 @@ func TestFilter_NewComposer(t *testing.T) {
 				})
 			})
 
+			Convey("When I add a new NotIn statement", func() {
+
+				f.WithKey("notin").NotIn("a", "b", "c")
+
+				Convey("Then the filter should be correctly populated", func() {
+					So(f.keys, ShouldResemble, FilterKeys{
+						"hello",
+						"notin",
+					})
+					So(f.Values(), ShouldResemble, FilterValues{
+						FilterValue{1},
+						FilterValue{"a", "b", "c"},
+					})
+					So(f.Operators(), ShouldResemble, FilterOperators{
+						AndOperator,
+						AndOperator,
+					})
+					So(f.Comparators(), ShouldResemble, FilterComparators{
+						EqualComparator,
+						NotInComparator,
+					})
+
+					Convey("When I add a new NotContains statement", func() {
+
+						f.WithKey("notctn").NotContains(false)
+
+						Convey("Then the filter should be correctly populated", func() {
+							So(f.Keys(), ShouldResemble, FilterKeys{
+								"hello",
+								"notin",
+								"notctn",
+							})
+							So(f.Values(), ShouldResemble, FilterValues{
+								FilterValue{1},
+								FilterValue{"a", "b", "c"},
+								FilterValue{false},
+							})
+							So(f.Operators(), ShouldResemble, FilterOperators{
+								AndOperator,
+								AndOperator,
+								AndOperator,
+							})
+							So(f.Comparators(), ShouldResemble, FilterComparators{
+								EqualComparator,
+								NotInComparator,
+								NotContainComparator,
+							})
+
+							Convey("Then the string representation should be correct", func() {
+								So(f.String(), ShouldEqual, `hello == 1 and notin not in ["a", "b", "c"] and notctn not contains false`)
+							})
+						})
+					})
+				})
+			})
+
 			Convey("When I add a new difference comparator", func() {
 				f.WithKey("x").NotEquals(true)
 
@@ -442,7 +498,7 @@ func TestFilter_SubFilters(t *testing.T) {
 							Done(),
 						NewFilterComposer().
 							WithKey("size").In(true, false).
-							WithKey("size").NotIn(1).
+							WithKey("size").NotIn(1, 2).
 							Done(),
 					).
 					Done(),
@@ -450,7 +506,7 @@ func TestFilter_SubFilters(t *testing.T) {
 			Done()
 
 		Convey("When I call string it should be correct ", func() {
-			So(f.String(), ShouldEqual, `namespace == "coucou" and number == 32.900000 and ((name == "toto" and value == 1) and (color contains ["red", "green", "blue", 43] and something not contains "stuff" or ((size matches [".*"]) or (size == "medium" and fat == false) or (size in [true, false] and size not in 1))))`)
+			So(f.String(), ShouldEqual, `namespace == "coucou" and number == 32.900000 and ((name == "toto" and value == 1) and (color contains ["red", "green", "blue", 43] and something not contains "stuff" or ((size matches [".*"]) or (size == "medium" and fat == false) or (size in [true, false] and size not in [1, 2]))))`)
 		})
 	})
 }

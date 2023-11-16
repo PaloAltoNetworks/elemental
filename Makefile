@@ -10,8 +10,10 @@ lint:
 		--disable-all \
 		--skip-files data_test.go \
 		--exclude-use-default=false \
+		--exclude=dot-imports \
 		--exclude=package-comments \
 		--exclude=unused-parameter \
+		--exclude=superfluous-else \
 		--enable=errcheck \
 		--enable=goimports \
 		--enable=ineffassign \
