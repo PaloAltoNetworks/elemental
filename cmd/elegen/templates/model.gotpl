@@ -209,7 +209,7 @@ func (o *{{ .Spec.Model.EntityName }}) SetBSON(raw bson.Raw) error {
     }
 
     s := &mongoAttributes{{ .Spec.Model.EntityName }}{}
-    if err := raw.Unmarshal(s); err != nil {
+    if err := bson.Unmarshal(raw, s); err != nil {
         return err
     }
     {{ range .Spec.Attributes $latestVersion -}}
@@ -940,7 +940,7 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) SetBSON(raw bson.Raw) error {
     }
 
     s := &mongoAttributesSparse{{ .Spec.Model.EntityName }}{}
-    if err := raw.Unmarshal(s); err != nil {
+    if err := bson.Unmarshal(raw, s); err != nil {
         return err
     }
     {{ range .Spec.Attributes $latestVersion -}}
