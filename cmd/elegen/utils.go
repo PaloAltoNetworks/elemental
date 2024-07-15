@@ -218,7 +218,7 @@ func attrToMongoField(set spec.SpecificationSet, shadow bool, attr *spec.Attribu
 	var convertedType string
 
 	if attr.Identifier {
-		convertedType = "bson.ObjectId"
+		convertedType = "primitive.ObjectID"
 	} else {
 		convertedType = attrToType(set, shadow, attr)
 	}

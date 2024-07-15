@@ -6,7 +6,8 @@ package {{ .Set.Configuration.Name }}
 import (
     "fmt"
     "go.aporeto.io/elemental"
-    "github.com/globalsign/mgo/bson"
+    "go.mongodb.org/mongo-driver/bson"
+    "go.mongodb.org/mongo-driver/bson/primitive"
     "github.com/mitchellh/copystructure"
     {{- range .Spec.TypeProviders }}
     "{{ . }}"
@@ -184,7 +185,11 @@ func (o *{{ .Spec.Model.EntityName }}) GetBSON() (any, error) {
     {{- if .Stored }}
     {{- if .Identifier }}
     if o.{{ .ConvertedName }} != "" {
-        s.{{ .ConvertedName }} = bson.ObjectIdHex(o.{{ .ConvertedName }})
+        objectID, err := primitive.ObjectIDFromHex(o.{{ .ConvertedName }})
+        if err != nil {
+            return nil, err
+        }
+        s.{{ .ConvertedName }} = objectID
     }
     {{- else }}
     s.{{ .ConvertedName }} = o.{{ .ConvertedName }}
@@ -909,7 +914,11 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) GetBSON() (any, error) {
     {{- if .Stored }}
     {{- if .Identifier }}
     if o.{{ .ConvertedName }} != nil {
-        s.{{ .ConvertedName }} = bson.ObjectIdHex(*o.{{ .ConvertedName }})
+        objectID, err := primitive.ObjectIDFromHex(*o.{{ .ConvertedName }})
+        if err != nil {
+            return nil, err
+        }
+        s.{{ .ConvertedName }} = objectID
     }
     {{- else }}
     if o.{{ .ConvertedName}} != nil {
