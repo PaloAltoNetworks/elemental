@@ -172,15 +172,15 @@ func (o *{{ .Spec.Model.EntityName }}) SetIdentifier(id string) {
 }
 {{- end }}
 
-// GetBSON implements the bson marshaling interface.
+// MarshalBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *{{ .Spec.Model.EntityName }}) GetBSON() (any, error) {
+func (o *{{ .Spec.Model.EntityName }}) MarshalBSON() ([]byte, error) {
 
     if o == nil {
         return nil, nil
     }
 
-    s := &mongoAttributes{{ .Spec.Model.EntityName }}{}
+    s := mongoAttributes{{ .Spec.Model.EntityName }}{}
     {{ range .Spec.Attributes $latestVersion -}}
     {{- if .Stored }}
     {{- if .Identifier }}
@@ -197,12 +197,12 @@ func (o *{{ .Spec.Model.EntityName }}) GetBSON() (any, error) {
     {{- end }}
     {{- end }}
 
-    return s, nil
+    return bson.Marshal(s)
 }
 
-// SetBSON implements the bson marshaling interface.
-// This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *{{ .Spec.Model.EntityName }}) SetBSON(raw bson.Raw) error {
+// UnmarshalBSON implements the bson unmarshaling interface.
+// This is used to transparently convert MongoDBID to ID.
+func (o *{{ .Spec.Model.EntityName }}) UnmarshalBSON(raw []byte) error {
 
     if o == nil {
         return nil
@@ -901,15 +901,15 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) SetIdentifier(id string) {
     {{- end }}
 }
 
-// GetBSON implements the bson marshaling interface.
+// MarshalBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *Sparse{{ .Spec.Model.EntityName }}) GetBSON() (any, error) {
+func (o *Sparse{{ .Spec.Model.EntityName }}) MarshalBSON() ([]byte, error) {
 
     if o == nil {
         return nil, nil
     }
 
-    s := &mongoAttributesSparse{{ .Spec.Model.EntityName }}{}
+    s := mongoAttributesSparse{{ .Spec.Model.EntityName }}{}
     {{ range .Spec.Attributes $latestVersion -}}
     {{- if .Stored }}
     {{- if .Identifier }}
@@ -928,12 +928,12 @@ func (o *Sparse{{ .Spec.Model.EntityName }}) GetBSON() (any, error) {
     {{- end }}
     {{- end }}
 
-    return s, nil
+    return bson.Marshal(s)
 }
 
-// SetBSON implements the bson marshaling interface.
-// This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *Sparse{{ .Spec.Model.EntityName }}) SetBSON(raw bson.Raw) error {
+// UnmarshalBSON implements the bson unmarshaling interface.
+// This is used to transparently convert MongoDBID to ID.
+func (o *Sparse{{ .Spec.Model.EntityName }}) UnmarshalBSON(raw []byte) error {
 
     if o == nil {
         return nil
