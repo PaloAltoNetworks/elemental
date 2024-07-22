@@ -2,7 +2,7 @@
 
 cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" || exit 1
 
-elegen folder -d ../../regolithe/spec/tests || exit 1
+/Users/knainwal/apomux/workspace/code/go/src/go.aporeto.io/elemental/cmd/elegen/elegen folder -d ../../regolithe/spec/tests || exit 1
 
 mkdir -p model
 mv codegen/elemental/* ./model
@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"time"
 
-    "github.com/globalsign/mgo/bson"
+    "go.mongodb.org/mongo-driver/bson"
     "github.com/mitchellh/copystructure"
 )
 

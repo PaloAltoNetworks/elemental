@@ -6,9 +6,10 @@ package testmodel
 import (
 	"fmt"
 
-	"github.com/globalsign/mgo/bson"
 	"github.com/mitchellh/copystructure"
 	"go.aporeto.io/elemental"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // UserIdentity represents the Identity of the object.
@@ -133,18 +134,22 @@ func (o *User) SetIdentifier(id string) {
 	o.ID = id
 }
 
-// GetBSON implements the bson marshaling interface.
+// MarshalBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *User) GetBSON() (any, error) {
+func (o *User) MarshalBSON() ([]byte, error) {
 
 	if o == nil {
 		return nil, nil
 	}
 
-	s := &mongoAttributesUser{}
+	s := mongoAttributesUser{}
 
 	if o.ID != "" {
-		s.ID = bson.ObjectIdHex(o.ID)
+		objectID, err := primitive.ObjectIDFromHex(o.ID)
+		if err != nil {
+			return nil, err
+		}
+		s.ID = objectID
 	}
 	s.Archived = o.Archived
 	s.FirstName = o.FirstName
@@ -153,19 +158,19 @@ func (o *User) GetBSON() (any, error) {
 	s.ParentType = o.ParentType
 	s.UserName = o.UserName
 
-	return s, nil
+	return bson.Marshal(s)
 }
 
-// SetBSON implements the bson marshaling interface.
-// This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *User) SetBSON(raw bson.Raw) error {
+// UnmarshalBSON implements the bson unmarshaling interface.
+// This is used to transparently convert MongoDBID to ID.
+func (o *User) UnmarshalBSON(raw []byte) error {
 
 	if o == nil {
 		return nil
 	}
 
 	s := &mongoAttributesUser{}
-	if err := raw.Unmarshal(s); err != nil {
+	if err := bson.Unmarshal(raw, s); err != nil {
 		return err
 	}
 
@@ -705,18 +710,22 @@ func (o *SparseUser) SetIdentifier(id string) {
 	}
 }
 
-// GetBSON implements the bson marshaling interface.
+// MarshalBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *SparseUser) GetBSON() (any, error) {
+func (o *SparseUser) MarshalBSON() ([]byte, error) {
 
 	if o == nil {
 		return nil, nil
 	}
 
-	s := &mongoAttributesSparseUser{}
+	s := mongoAttributesSparseUser{}
 
 	if o.ID != nil {
-		s.ID = bson.ObjectIdHex(*o.ID)
+		objectID, err := primitive.ObjectIDFromHex(*o.ID)
+		if err != nil {
+			return nil, err
+		}
+		s.ID = objectID
 	}
 	if o.Archived != nil {
 		s.Archived = o.Archived
@@ -737,19 +746,19 @@ func (o *SparseUser) GetBSON() (any, error) {
 		s.UserName = o.UserName
 	}
 
-	return s, nil
+	return bson.Marshal(s)
 }
 
-// SetBSON implements the bson marshaling interface.
-// This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *SparseUser) SetBSON(raw bson.Raw) error {
+// UnmarshalBSON implements the bson unmarshaling interface.
+// This is used to transparently convert MongoDBID to ID.
+func (o *SparseUser) UnmarshalBSON(raw []byte) error {
 
 	if o == nil {
 		return nil
 	}
 
 	s := &mongoAttributesSparseUser{}
-	if err := raw.Unmarshal(s); err != nil {
+	if err := bson.Unmarshal(raw, s); err != nil {
 		return err
 	}
 
@@ -853,20 +862,20 @@ func (o *SparseUser) DeepCopyInto(out *SparseUser) {
 }
 
 type mongoAttributesUser struct {
-	ID         bson.ObjectId `bson:"_id,omitempty"`
-	Archived   bool          `bson:"archived"`
-	FirstName  string        `bson:"firstname"`
-	LastName   string        `bson:"lastname"`
-	ParentID   string        `bson:"parentid"`
-	ParentType string        `bson:"parenttype"`
-	UserName   string        `bson:"username"`
+	ID         primitive.ObjectID `bson:"_id,omitempty"`
+	Archived   bool               `bson:"archived"`
+	FirstName  string             `bson:"firstname"`
+	LastName   string             `bson:"lastname"`
+	ParentID   string             `bson:"parentid"`
+	ParentType string             `bson:"parenttype"`
+	UserName   string             `bson:"username"`
 }
 type mongoAttributesSparseUser struct {
-	ID         bson.ObjectId `bson:"_id,omitempty"`
-	Archived   *bool         `bson:"archived,omitempty"`
-	FirstName  *string       `bson:"firstname,omitempty"`
-	LastName   *string       `bson:"lastname,omitempty"`
-	ParentID   *string       `bson:"parentid,omitempty"`
-	ParentType *string       `bson:"parenttype,omitempty"`
-	UserName   *string       `bson:"username,omitempty"`
+	ID         primitive.ObjectID `bson:"_id,omitempty"`
+	Archived   *bool              `bson:"archived,omitempty"`
+	FirstName  *string            `bson:"firstname,omitempty"`
+	LastName   *string            `bson:"lastname,omitempty"`
+	ParentID   *string            `bson:"parentid,omitempty"`
+	ParentType *string            `bson:"parenttype,omitempty"`
+	UserName   *string            `bson:"username,omitempty"`
 }

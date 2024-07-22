@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"time"
 
-    "github.com/globalsign/mgo/bson"
+    "go.mongodb.org/mongo-driver/bson"
     "github.com/mitchellh/copystructure"
 )
 
 //lint:file-ignore U1000 auto generated code.
+)
 
 // ListIdentity represents the Identity of the object.
 var ListIdentity = Identity{
@@ -145,18 +146,22 @@ func (o *List) SetIdentifier(id string) {
 	o.ID = id
 }
 
-// GetBSON implements the bson marshaling interface.
+// MarshalBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *List) GetBSON() (any, error) {
+func (o *List) MarshalBSON() ([]byte, error) {
 
 	if o == nil {
 		return nil, nil
 	}
 
-	s := &mongoAttributesList{}
+	s := mongoAttributesList{}
 
 	if o.ID != "" {
-		s.ID = bson.ObjectIdHex(o.ID)
+		objectID, err := primitive.ObjectIDFromHex(o.ID)
+		if err != nil {
+			return nil, err
+		}
+		s.ID = objectID
 	}
 	s.CreationOnly = o.CreationOnly
 	s.Date = o.Date
@@ -169,19 +174,19 @@ func (o *List) GetBSON() (any, error) {
 	s.Slice = o.Slice
 	s.Unexposed = o.Unexposed
 
-	return s, nil
+	return bson.Marshal(s)
 }
 
-// SetBSON implements the bson marshaling interface.
-// This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *List) SetBSON(raw bson.Raw) error {
+// UnmarshalBSON implements the bson unmarshaling interface.
+// This is used to transparently convert MongoDBID to ID.
+func (o *List) UnmarshalBSON(raw []byte) error {
 
 	if o == nil {
 		return nil
 	}
 
 	s := &mongoAttributesList{}
-	if err := raw.Unmarshal(s); err != nil {
+	if err := bson.Unmarshal(raw, s); err != nil {
 		return err
 	}
 
@@ -861,18 +866,22 @@ func (o *SparseList) SetIdentifier(id string) {
 	}
 }
 
-// GetBSON implements the bson marshaling interface.
+// MarshalBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *SparseList) GetBSON() (any, error) {
+func (o *SparseList) MarshalBSON() ([]byte, error) {
 
 	if o == nil {
 		return nil, nil
 	}
 
-	s := &mongoAttributesSparseList{}
+	s := mongoAttributesSparseList{}
 
 	if o.ID != nil {
-		s.ID = bson.ObjectIdHex(*o.ID)
+		objectID, err := primitive.ObjectIDFromHex(*o.ID)
+		if err != nil {
+			return nil, err
+		}
+		s.ID = objectID
 	}
 	if o.CreationOnly != nil {
 		s.CreationOnly = o.CreationOnly
@@ -905,19 +914,19 @@ func (o *SparseList) GetBSON() (any, error) {
 		s.Unexposed = o.Unexposed
 	}
 
-	return s, nil
+	return bson.Marshal(s)
 }
 
-// SetBSON implements the bson marshaling interface.
-// This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *SparseList) SetBSON(raw bson.Raw) error {
+// UnmarshalBSON implements the bson unmarshaling interface.
+// This is used to transparently convert MongoDBID to ID.
+func (o *SparseList) UnmarshalBSON(raw []byte) error {
 
 	if o == nil {
 		return nil
 	}
 
 	s := &mongoAttributesSparseList{}
-	if err := raw.Unmarshal(s); err != nil {
+	if err := bson.Unmarshal(raw, s); err != nil {
 		return err
 	}
 
@@ -1045,31 +1054,32 @@ func (o *SparseList) DeepCopyInto(out *SparseList) {
 }
 
 type mongoAttributesList struct {
-	ID           bson.ObjectId `bson:"_id,omitempty"`
-	CreationOnly string        `bson:"creationonly"`
-	Date         time.Time     `bson:"date"`
-	Description  string        `bson:"description"`
-	Name         string        `bson:"name"`
-	ParentID     string        `bson:"parentid"`
-	ParentType   string        `bson:"parenttype"`
-	ReadOnly     string        `bson:"readonly"`
-	Secret       string        `bson:"secret"`
-	Slice        []string      `bson:"slice"`
-	Unexposed    string        `bson:"unexposed"`
+	ID           primitive.ObjectID `bson:"_id,omitempty"`
+	CreationOnly string             `bson:"creationonly"`
+	Date         time.Time          `bson:"date"`
+	Description  string             `bson:"description"`
+	Name         string             `bson:"name"`
+	ParentID     string             `bson:"parentid"`
+	ParentType   string             `bson:"parenttype"`
+	ReadOnly     string             `bson:"readonly"`
+	Secret       string             `bson:"secret"`
+	Slice        []string           `bson:"slice"`
+	Unexposed    string             `bson:"unexposed"`
 }
 type mongoAttributesSparseList struct {
-	ID           bson.ObjectId `bson:"_id,omitempty"`
-	CreationOnly *string       `bson:"creationonly,omitempty"`
-	Date         *time.Time    `bson:"date,omitempty"`
-	Description  *string       `bson:"description,omitempty"`
-	Name         *string       `bson:"name,omitempty"`
-	ParentID     *string       `bson:"parentid,omitempty"`
-	ParentType   *string       `bson:"parenttype,omitempty"`
-	ReadOnly     *string       `bson:"readonly,omitempty"`
-	Secret       *string       `bson:"secret,omitempty"`
-	Slice        *[]string     `bson:"slice,omitempty"`
-	Unexposed    *string       `bson:"unexposed,omitempty"`
+	ID           primitive.ObjectID `bson:"_id,omitempty"`
+	CreationOnly *string            `bson:"creationonly,omitempty"`
+	Date         *time.Time         `bson:"date,omitempty"`
+	Description  *string            `bson:"description,omitempty"`
+	Name         *string            `bson:"name,omitempty"`
+	ParentID     *string            `bson:"parentid,omitempty"`
+	ParentType   *string            `bson:"parenttype,omitempty"`
+	ReadOnly     *string            `bson:"readonly,omitempty"`
+	Secret       *string            `bson:"secret,omitempty"`
+	Slice        *[]string          `bson:"slice,omitempty"`
+	Unexposed    *string            `bson:"unexposed,omitempty"`
 }
+)
 
 // TaskStatusValue represents the possible values for attribute "status".
 type TaskStatusValue string
@@ -1205,18 +1215,22 @@ func (o *Task) SetIdentifier(id string) {
 	o.ID = id
 }
 
-// GetBSON implements the bson marshaling interface.
+// MarshalBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *Task) GetBSON() (any, error) {
+func (o *Task) MarshalBSON() ([]byte, error) {
 
 	if o == nil {
 		return nil, nil
 	}
 
-	s := &mongoAttributesTask{}
+	s := mongoAttributesTask{}
 
 	if o.ID != "" {
-		s.ID = bson.ObjectIdHex(o.ID)
+		objectID, err := primitive.ObjectIDFromHex(o.ID)
+		if err != nil {
+			return nil, err
+		}
+		s.ID = objectID
 	}
 	s.Description = o.Description
 	s.Name = o.Name
@@ -1224,19 +1238,19 @@ func (o *Task) GetBSON() (any, error) {
 	s.ParentType = o.ParentType
 	s.Status = o.Status
 
-	return s, nil
+	return bson.Marshal(s)
 }
 
-// SetBSON implements the bson marshaling interface.
-// This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *Task) SetBSON(raw bson.Raw) error {
+// UnmarshalBSON implements the bson unmarshaling interface.
+// This is used to transparently convert MongoDBID to ID.
+func (o *Task) UnmarshalBSON(raw []byte) error {
 
 	if o == nil {
 		return nil
 	}
 
 	s := &mongoAttributesTask{}
-	if err := raw.Unmarshal(s); err != nil {
+	if err := bson.Unmarshal(raw, s); err != nil {
 		return err
 	}
 
@@ -1736,18 +1750,22 @@ func (o *SparseTask) SetIdentifier(id string) {
 	}
 }
 
-// GetBSON implements the bson marshaling interface.
+// MarshalBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *SparseTask) GetBSON() (any, error) {
+func (o *SparseTask) MarshalBSON() ([]byte, error) {
 
 	if o == nil {
 		return nil, nil
 	}
 
-	s := &mongoAttributesSparseTask{}
+	s := mongoAttributesSparseTask{}
 
 	if o.ID != nil {
-		s.ID = bson.ObjectIdHex(*o.ID)
+		objectID, err := primitive.ObjectIDFromHex(*o.ID)
+		if err != nil {
+			return nil, err
+		}
+		s.ID = objectID
 	}
 	if o.Description != nil {
 		s.Description = o.Description
@@ -1765,19 +1783,19 @@ func (o *SparseTask) GetBSON() (any, error) {
 		s.Status = o.Status
 	}
 
-	return s, nil
+	return bson.Marshal(s)
 }
 
-// SetBSON implements the bson marshaling interface.
-// This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *SparseTask) SetBSON(raw bson.Raw) error {
+// UnmarshalBSON implements the bson unmarshaling interface.
+// This is used to transparently convert MongoDBID to ID.
+func (o *SparseTask) UnmarshalBSON(raw []byte) error {
 
 	if o == nil {
 		return nil
 	}
 
 	s := &mongoAttributesSparseTask{}
-	if err := raw.Unmarshal(s); err != nil {
+	if err := bson.Unmarshal(raw, s); err != nil {
 		return err
 	}
 
@@ -1875,20 +1893,20 @@ func (o *SparseTask) DeepCopyInto(out *SparseTask) {
 }
 
 type mongoAttributesTask struct {
-	ID          bson.ObjectId   `bson:"_id,omitempty"`
-	Description string          `bson:"description"`
-	Name        string          `bson:"name"`
-	ParentID    string          `bson:"parentid"`
-	ParentType  string          `bson:"parenttype"`
-	Status      TaskStatusValue `bson:"status"`
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
+	Description string             `bson:"description"`
+	Name        string             `bson:"name"`
+	ParentID    string             `bson:"parentid"`
+	ParentType  string             `bson:"parenttype"`
+	Status      TaskStatusValue    `bson:"status"`
 }
 type mongoAttributesSparseTask struct {
-	ID          bson.ObjectId    `bson:"_id,omitempty"`
-	Description *string          `bson:"description,omitempty"`
-	Name        *string          `bson:"name,omitempty"`
-	ParentID    *string          `bson:"parentid,omitempty"`
-	ParentType  *string          `bson:"parenttype,omitempty"`
-	Status      *TaskStatusValue `bson:"status,omitempty"`
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
+	Description *string            `bson:"description,omitempty"`
+	Name        *string            `bson:"name,omitempty"`
+	ParentID    *string            `bson:"parentid,omitempty"`
+	ParentType  *string            `bson:"parenttype,omitempty"`
+	Status      *TaskStatusValue   `bson:"status,omitempty"`
 }
 var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
 
@@ -2004,6 +2022,7 @@ func (o *UnmarshalableError) UnmarshalMsgpack([]byte) error {
 func (o *UnmarshalableError) MarshalMsgpack() ([]byte, error) {
 	return nil, fmt.Errorf("error marshalling")
 }
+)
 
 // UserIdentity represents the Identity of the object.
 var UserIdentity = Identity{
@@ -2127,18 +2146,22 @@ func (o *User) SetIdentifier(id string) {
 	o.ID = id
 }
 
-// GetBSON implements the bson marshaling interface.
+// MarshalBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *User) GetBSON() (any, error) {
+func (o *User) MarshalBSON() ([]byte, error) {
 
 	if o == nil {
 		return nil, nil
 	}
 
-	s := &mongoAttributesUser{}
+	s := mongoAttributesUser{}
 
 	if o.ID != "" {
-		s.ID = bson.ObjectIdHex(o.ID)
+		objectID, err := primitive.ObjectIDFromHex(o.ID)
+		if err != nil {
+			return nil, err
+		}
+		s.ID = objectID
 	}
 	s.Archived = o.Archived
 	s.FirstName = o.FirstName
@@ -2147,19 +2170,19 @@ func (o *User) GetBSON() (any, error) {
 	s.ParentType = o.ParentType
 	s.UserName = o.UserName
 
-	return s, nil
+	return bson.Marshal(s)
 }
 
-// SetBSON implements the bson marshaling interface.
-// This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *User) SetBSON(raw bson.Raw) error {
+// UnmarshalBSON implements the bson unmarshaling interface.
+// This is used to transparently convert MongoDBID to ID.
+func (o *User) UnmarshalBSON(raw []byte) error {
 
 	if o == nil {
 		return nil
 	}
 
 	s := &mongoAttributesUser{}
-	if err := raw.Unmarshal(s); err != nil {
+	if err := bson.Unmarshal(raw, s); err != nil {
 		return err
 	}
 
@@ -2699,18 +2722,22 @@ func (o *SparseUser) SetIdentifier(id string) {
 	}
 }
 
-// GetBSON implements the bson marshaling interface.
+// MarshalBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *SparseUser) GetBSON() (any, error) {
+func (o *SparseUser) MarshalBSON() ([]byte, error) {
 
 	if o == nil {
 		return nil, nil
 	}
 
-	s := &mongoAttributesSparseUser{}
+	s := mongoAttributesSparseUser{}
 
 	if o.ID != nil {
-		s.ID = bson.ObjectIdHex(*o.ID)
+		objectID, err := primitive.ObjectIDFromHex(*o.ID)
+		if err != nil {
+			return nil, err
+		}
+		s.ID = objectID
 	}
 	if o.Archived != nil {
 		s.Archived = o.Archived
@@ -2731,19 +2758,19 @@ func (o *SparseUser) GetBSON() (any, error) {
 		s.UserName = o.UserName
 	}
 
-	return s, nil
+	return bson.Marshal(s)
 }
 
-// SetBSON implements the bson marshaling interface.
-// This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *SparseUser) SetBSON(raw bson.Raw) error {
+// UnmarshalBSON implements the bson unmarshaling interface.
+// This is used to transparently convert MongoDBID to ID.
+func (o *SparseUser) UnmarshalBSON(raw []byte) error {
 
 	if o == nil {
 		return nil
 	}
 
 	s := &mongoAttributesSparseUser{}
-	if err := raw.Unmarshal(s); err != nil {
+	if err := bson.Unmarshal(raw, s); err != nil {
 		return err
 	}
 
@@ -2847,22 +2874,22 @@ func (o *SparseUser) DeepCopyInto(out *SparseUser) {
 }
 
 type mongoAttributesUser struct {
-	ID         bson.ObjectId `bson:"_id,omitempty"`
-	Archived   bool          `bson:"archived"`
-	FirstName  string        `bson:"firstname"`
-	LastName   string        `bson:"lastname"`
-	ParentID   string        `bson:"parentid"`
-	ParentType string        `bson:"parenttype"`
-	UserName   string        `bson:"username"`
+	ID         primitive.ObjectID `bson:"_id,omitempty"`
+	Archived   bool               `bson:"archived"`
+	FirstName  string             `bson:"firstname"`
+	LastName   string             `bson:"lastname"`
+	ParentID   string             `bson:"parentid"`
+	ParentType string             `bson:"parenttype"`
+	UserName   string             `bson:"username"`
 }
 type mongoAttributesSparseUser struct {
-	ID         bson.ObjectId `bson:"_id,omitempty"`
-	Archived   *bool         `bson:"archived,omitempty"`
-	FirstName  *string       `bson:"firstname,omitempty"`
-	LastName   *string       `bson:"lastname,omitempty"`
-	ParentID   *string       `bson:"parentid,omitempty"`
-	ParentType *string       `bson:"parenttype,omitempty"`
-	UserName   *string       `bson:"username,omitempty"`
+	ID         primitive.ObjectID `bson:"_id,omitempty"`
+	Archived   *bool              `bson:"archived,omitempty"`
+	FirstName  *string            `bson:"firstname,omitempty"`
+	LastName   *string            `bson:"lastname,omitempty"`
+	ParentID   *string            `bson:"parentid,omitempty"`
+	ParentType *string            `bson:"parenttype,omitempty"`
+	UserName   *string            `bson:"username,omitempty"`
 }
 
 // Root represents the model of a root
@@ -2895,29 +2922,29 @@ func (o *Root) SetIdentifier(id string) {
 
 }
 
-// GetBSON implements the bson marshaling interface.
+// MarshalBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *Root) GetBSON() (any, error) {
+func (o *Root) MarshalBSON() ([]byte, error) {
 
 	if o == nil {
 		return nil, nil
 	}
 
-	s := &mongoAttributesRoot{}
+	s := mongoAttributesRoot{}
 
-	return s, nil
+	return bson.Marshal(s)
 }
 
-// SetBSON implements the bson marshaling interface.
-// This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *Root) SetBSON(raw bson.Raw) error {
+// UnmarshalBSON implements the bson unmarshaling interface.
+// This is used to transparently convert MongoDBID to ID.
+func (o *Root) UnmarshalBSON(raw []byte) error {
 
 	if o == nil {
 		return nil
 	}
 
 	s := &mongoAttributesRoot{}
-	if err := raw.Unmarshal(s); err != nil {
+	if err := bson.Unmarshal(raw, s); err != nil {
 		return err
 	}
 
