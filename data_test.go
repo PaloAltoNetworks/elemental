@@ -2890,13 +2890,6 @@ type mongoAttributesSparseUser struct {
 	ParentType *string            `bson:"parenttype,omitempty"`
 	UserName   *string            `bson:"username,omitempty"`
 }
-// RootIdentity represents the Identity of the object.
-var RootIdentity = Identity{
-	Name:     "root",
-	Category: "root",
-	Package:  "todo-list",
-	Private:  false,
-}
 
 // Root represents the model of a root
 type Root struct {

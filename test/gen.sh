@@ -27,7 +27,7 @@ EOF
 	tail -n +14 model/task.go
 	tail -n +20 model/unmarshalable.go
 	tail -n +14 model/user.go
-	tail -n +14 model/root.go
+	tail -n +21 model/root.go
 	tail -n +7 model/identities_registry.go
 	tail -n +7 model/relationships_registry.go
 } >>../data_test.go
