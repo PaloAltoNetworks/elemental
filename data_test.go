@@ -5,11 +5,11 @@ import (
 	"time"
 
     "go.mongodb.org/mongo-driver/bson"
+    "go.mongodb.org/mongo-driver/bson/primitive"
     "github.com/mitchellh/copystructure"
 )
 
 //lint:file-ignore U1000 auto generated code.
-)
 
 // ListIdentity represents the Identity of the object.
 var ListIdentity = Identity{
@@ -1079,7 +1079,6 @@ type mongoAttributesSparseList struct {
 	Slice        *[]string          `bson:"slice,omitempty"`
 	Unexposed    *string            `bson:"unexposed,omitempty"`
 }
-)
 
 // TaskStatusValue represents the possible values for attribute "status".
 type TaskStatusValue string
@@ -1908,6 +1907,7 @@ type mongoAttributesSparseTask struct {
 	ParentType  *string            `bson:"parenttype,omitempty"`
 	Status      *TaskStatusValue   `bson:"status,omitempty"`
 }
+// UnmarshalableListIdentity represents the Identity of the object.
 var UnmarshalableListIdentity = Identity{Name: "list", Category: "lists"}
 
 // UnmarshalableListsList represents a list of UnmarshalableLists
@@ -2022,7 +2022,6 @@ func (o *UnmarshalableError) UnmarshalMsgpack([]byte) error {
 func (o *UnmarshalableError) MarshalMsgpack() ([]byte, error) {
 	return nil, fmt.Errorf("error marshalling")
 }
-)
 
 // UserIdentity represents the Identity of the object.
 var UserIdentity = Identity{
@@ -2890,6 +2889,13 @@ type mongoAttributesSparseUser struct {
 	ParentID   *string            `bson:"parentid,omitempty"`
 	ParentType *string            `bson:"parenttype,omitempty"`
 	UserName   *string            `bson:"username,omitempty"`
+}
+// RootIdentity represents the Identity of the object.
+var RootIdentity = Identity{
+	Name:     "root",
+	Category: "root",
+	Package:  "todo-list",
+	Private:  false,
 }
 
 // Root represents the model of a root
