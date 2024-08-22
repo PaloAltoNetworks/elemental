@@ -1,13 +1,12 @@
 module go.aporeto.io/elemental
 
-go 1.18
+go 1.22
 
 require go.aporeto.io/regolithe v1.72.0
 
 require (
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/getkin/kin-openapi v0.113.0
-	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 	github.com/go-test/deep v1.0.8
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/golang/mock v1.6.0
@@ -15,8 +14,8 @@ require (
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/ugorji/go/codec v1.2.8
 	go.uber.org/zap v1.24.0
-	golang.org/x/sync v0.1.0
-	golang.org/x/text v0.8.0
+	golang.org/x/sync v0.7.0
+	golang.org/x/text v0.14.0
 	golang.org/x/tools v0.6.0
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -59,12 +58,13 @@ require (
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
+	go.mongodb.org/mongo-driver v1.16.0
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
-	golang.org/x/crypto v0.5.0 // indirect
+	golang.org/x/crypto v0.22.0 // indirect
 	golang.org/x/mod v0.8.0 // indirect
-	golang.org/x/net v0.8.0 // indirect
-	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/sys v0.19.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/src-d/go-billy.v4 v4.3.2 // indirect
 	gopkg.in/src-d/go-git.v4 v4.13.1 // indirect

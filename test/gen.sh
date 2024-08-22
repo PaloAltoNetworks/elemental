@@ -2,7 +2,7 @@
 
 cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" || exit 1
 
-elegen folder -d ../../regolithe/spec/tests || exit 1
+/Users/knainwal/apomux/workspace/code/go/src/go.aporeto.io/elemental/cmd/elegen/elegen folder -d ../../regolithe/spec/tests || exit 1
 
 mkdir -p model
 mv codegen/elemental/* ./model
@@ -15,17 +15,18 @@ import (
 	"fmt"
 	"time"
 
-    "github.com/globalsign/mgo/bson"
+    "go.mongodb.org/mongo-driver/bson"
+    "go.mongodb.org/mongo-driver/bson/primitive"
     "github.com/mitchellh/copystructure"
 )
 
 //lint:file-ignore U1000 auto generated code.
 EOF
 {
-	tail -n +14 model/list.go
-	tail -n +13 model/task.go
-	tail -n +21 model/unmarshalable.go
-	tail -n +13 model/user.go
+	tail -n +15 model/list.go
+	tail -n +14 model/task.go
+	tail -n +20 model/unmarshalable.go
+	tail -n +14 model/user.go
 	tail -n +21 model/root.go
 	tail -n +7 model/identities_registry.go
 	tail -n +7 model/relationships_registry.go

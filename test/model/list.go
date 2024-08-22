@@ -7,9 +7,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/globalsign/mgo/bson"
 	"github.com/mitchellh/copystructure"
 	"go.aporeto.io/elemental"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // ListIdentity represents the Identity of the object.
@@ -147,18 +148,22 @@ func (o *List) SetIdentifier(id string) {
 	o.ID = id
 }
 
-// GetBSON implements the bson marshaling interface.
+// MarshalBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *List) GetBSON() (any, error) {
+func (o *List) MarshalBSON() ([]byte, error) {
 
 	if o == nil {
 		return nil, nil
 	}
 
-	s := &mongoAttributesList{}
+	s := mongoAttributesList{}
 
 	if o.ID != "" {
-		s.ID = bson.ObjectIdHex(o.ID)
+		objectID, err := primitive.ObjectIDFromHex(o.ID)
+		if err != nil {
+			return nil, err
+		}
+		s.ID = objectID
 	}
 	s.CreationOnly = o.CreationOnly
 	s.Date = o.Date
@@ -171,19 +176,19 @@ func (o *List) GetBSON() (any, error) {
 	s.Slice = o.Slice
 	s.Unexposed = o.Unexposed
 
-	return s, nil
+	return bson.Marshal(s)
 }
 
-// SetBSON implements the bson marshaling interface.
-// This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *List) SetBSON(raw bson.Raw) error {
+// UnmarshalBSON implements the bson unmarshaling interface.
+// This is used to transparently convert MongoDBID to ID.
+func (o *List) UnmarshalBSON(raw []byte) error {
 
 	if o == nil {
 		return nil
 	}
 
 	s := &mongoAttributesList{}
-	if err := raw.Unmarshal(s); err != nil {
+	if err := bson.Unmarshal(raw, s); err != nil {
 		return err
 	}
 
@@ -863,18 +868,22 @@ func (o *SparseList) SetIdentifier(id string) {
 	}
 }
 
-// GetBSON implements the bson marshaling interface.
+// MarshalBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *SparseList) GetBSON() (any, error) {
+func (o *SparseList) MarshalBSON() ([]byte, error) {
 
 	if o == nil {
 		return nil, nil
 	}
 
-	s := &mongoAttributesSparseList{}
+	s := mongoAttributesSparseList{}
 
 	if o.ID != nil {
-		s.ID = bson.ObjectIdHex(*o.ID)
+		objectID, err := primitive.ObjectIDFromHex(*o.ID)
+		if err != nil {
+			return nil, err
+		}
+		s.ID = objectID
 	}
 	if o.CreationOnly != nil {
 		s.CreationOnly = o.CreationOnly
@@ -907,19 +916,19 @@ func (o *SparseList) GetBSON() (any, error) {
 		s.Unexposed = o.Unexposed
 	}
 
-	return s, nil
+	return bson.Marshal(s)
 }
 
-// SetBSON implements the bson marshaling interface.
-// This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *SparseList) SetBSON(raw bson.Raw) error {
+// UnmarshalBSON implements the bson unmarshaling interface.
+// This is used to transparently convert MongoDBID to ID.
+func (o *SparseList) UnmarshalBSON(raw []byte) error {
 
 	if o == nil {
 		return nil
 	}
 
 	s := &mongoAttributesSparseList{}
-	if err := raw.Unmarshal(s); err != nil {
+	if err := bson.Unmarshal(raw, s); err != nil {
 		return err
 	}
 
@@ -1047,28 +1056,28 @@ func (o *SparseList) DeepCopyInto(out *SparseList) {
 }
 
 type mongoAttributesList struct {
-	ID           bson.ObjectId `bson:"_id,omitempty"`
-	CreationOnly string        `bson:"creationonly"`
-	Date         time.Time     `bson:"date"`
-	Description  string        `bson:"description"`
-	Name         string        `bson:"name"`
-	ParentID     string        `bson:"parentid"`
-	ParentType   string        `bson:"parenttype"`
-	ReadOnly     string        `bson:"readonly"`
-	Secret       string        `bson:"secret"`
-	Slice        []string      `bson:"slice"`
-	Unexposed    string        `bson:"unexposed"`
+	ID           primitive.ObjectID `bson:"_id,omitempty"`
+	CreationOnly string             `bson:"creationonly"`
+	Date         time.Time          `bson:"date"`
+	Description  string             `bson:"description"`
+	Name         string             `bson:"name"`
+	ParentID     string             `bson:"parentid"`
+	ParentType   string             `bson:"parenttype"`
+	ReadOnly     string             `bson:"readonly"`
+	Secret       string             `bson:"secret"`
+	Slice        []string           `bson:"slice"`
+	Unexposed    string             `bson:"unexposed"`
 }
 type mongoAttributesSparseList struct {
-	ID           bson.ObjectId `bson:"_id,omitempty"`
-	CreationOnly *string       `bson:"creationonly,omitempty"`
-	Date         *time.Time    `bson:"date,omitempty"`
-	Description  *string       `bson:"description,omitempty"`
-	Name         *string       `bson:"name,omitempty"`
-	ParentID     *string       `bson:"parentid,omitempty"`
-	ParentType   *string       `bson:"parenttype,omitempty"`
-	ReadOnly     *string       `bson:"readonly,omitempty"`
-	Secret       *string       `bson:"secret,omitempty"`
-	Slice        *[]string     `bson:"slice,omitempty"`
-	Unexposed    *string       `bson:"unexposed,omitempty"`
+	ID           primitive.ObjectID `bson:"_id,omitempty"`
+	CreationOnly *string            `bson:"creationonly,omitempty"`
+	Date         *time.Time         `bson:"date,omitempty"`
+	Description  *string            `bson:"description,omitempty"`
+	Name         *string            `bson:"name,omitempty"`
+	ParentID     *string            `bson:"parentid,omitempty"`
+	ParentType   *string            `bson:"parenttype,omitempty"`
+	ReadOnly     *string            `bson:"readonly,omitempty"`
+	Secret       *string            `bson:"secret,omitempty"`
+	Slice        *[]string          `bson:"slice,omitempty"`
+	Unexposed    *string            `bson:"unexposed,omitempty"`
 }

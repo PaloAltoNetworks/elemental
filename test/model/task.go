@@ -6,9 +6,10 @@ package testmodel
 import (
 	"fmt"
 
-	"github.com/globalsign/mgo/bson"
 	"github.com/mitchellh/copystructure"
 	"go.aporeto.io/elemental"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // TaskStatusValue represents the possible values for attribute "status".
@@ -145,18 +146,22 @@ func (o *Task) SetIdentifier(id string) {
 	o.ID = id
 }
 
-// GetBSON implements the bson marshaling interface.
+// MarshalBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *Task) GetBSON() (any, error) {
+func (o *Task) MarshalBSON() ([]byte, error) {
 
 	if o == nil {
 		return nil, nil
 	}
 
-	s := &mongoAttributesTask{}
+	s := mongoAttributesTask{}
 
 	if o.ID != "" {
-		s.ID = bson.ObjectIdHex(o.ID)
+		objectID, err := primitive.ObjectIDFromHex(o.ID)
+		if err != nil {
+			return nil, err
+		}
+		s.ID = objectID
 	}
 	s.Description = o.Description
 	s.Name = o.Name
@@ -164,19 +169,19 @@ func (o *Task) GetBSON() (any, error) {
 	s.ParentType = o.ParentType
 	s.Status = o.Status
 
-	return s, nil
+	return bson.Marshal(s)
 }
 
-// SetBSON implements the bson marshaling interface.
-// This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *Task) SetBSON(raw bson.Raw) error {
+// UnmarshalBSON implements the bson unmarshaling interface.
+// This is used to transparently convert MongoDBID to ID.
+func (o *Task) UnmarshalBSON(raw []byte) error {
 
 	if o == nil {
 		return nil
 	}
 
 	s := &mongoAttributesTask{}
-	if err := raw.Unmarshal(s); err != nil {
+	if err := bson.Unmarshal(raw, s); err != nil {
 		return err
 	}
 
@@ -676,18 +681,22 @@ func (o *SparseTask) SetIdentifier(id string) {
 	}
 }
 
-// GetBSON implements the bson marshaling interface.
+// MarshalBSON implements the bson marshaling interface.
 // This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *SparseTask) GetBSON() (any, error) {
+func (o *SparseTask) MarshalBSON() ([]byte, error) {
 
 	if o == nil {
 		return nil, nil
 	}
 
-	s := &mongoAttributesSparseTask{}
+	s := mongoAttributesSparseTask{}
 
 	if o.ID != nil {
-		s.ID = bson.ObjectIdHex(*o.ID)
+		objectID, err := primitive.ObjectIDFromHex(*o.ID)
+		if err != nil {
+			return nil, err
+		}
+		s.ID = objectID
 	}
 	if o.Description != nil {
 		s.Description = o.Description
@@ -705,19 +714,19 @@ func (o *SparseTask) GetBSON() (any, error) {
 		s.Status = o.Status
 	}
 
-	return s, nil
+	return bson.Marshal(s)
 }
 
-// SetBSON implements the bson marshaling interface.
-// This is used to transparently convert ID to MongoDBID as ObectID.
-func (o *SparseTask) SetBSON(raw bson.Raw) error {
+// UnmarshalBSON implements the bson unmarshaling interface.
+// This is used to transparently convert MongoDBID to ID.
+func (o *SparseTask) UnmarshalBSON(raw []byte) error {
 
 	if o == nil {
 		return nil
 	}
 
 	s := &mongoAttributesSparseTask{}
-	if err := raw.Unmarshal(s); err != nil {
+	if err := bson.Unmarshal(raw, s); err != nil {
 		return err
 	}
 
@@ -815,18 +824,18 @@ func (o *SparseTask) DeepCopyInto(out *SparseTask) {
 }
 
 type mongoAttributesTask struct {
-	ID          bson.ObjectId   `bson:"_id,omitempty"`
-	Description string          `bson:"description"`
-	Name        string          `bson:"name"`
-	ParentID    string          `bson:"parentid"`
-	ParentType  string          `bson:"parenttype"`
-	Status      TaskStatusValue `bson:"status"`
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
+	Description string             `bson:"description"`
+	Name        string             `bson:"name"`
+	ParentID    string             `bson:"parentid"`
+	ParentType  string             `bson:"parenttype"`
+	Status      TaskStatusValue    `bson:"status"`
 }
 type mongoAttributesSparseTask struct {
-	ID          bson.ObjectId    `bson:"_id,omitempty"`
-	Description *string          `bson:"description,omitempty"`
-	Name        *string          `bson:"name,omitempty"`
-	ParentID    *string          `bson:"parentid,omitempty"`
-	ParentType  *string          `bson:"parenttype,omitempty"`
-	Status      *TaskStatusValue `bson:"status,omitempty"`
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
+	Description *string            `bson:"description,omitempty"`
+	Name        *string            `bson:"name,omitempty"`
+	ParentID    *string            `bson:"parentid,omitempty"`
+	ParentType  *string            `bson:"parenttype,omitempty"`
+	Status      *TaskStatusValue   `bson:"status,omitempty"`
 }
