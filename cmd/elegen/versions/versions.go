@@ -23,7 +23,7 @@ import (
 // Versions of the current project.
 var (
 	ProjectVersion = "master"
-	ProjectSha     = "edcc353e7c61c4c3775380b37e04ca8ba747d13f"
+	ProjectSha     = "6f8c7be6698cfa85da84aa8dcc1e4c2815a9c8c1"
 )
 
 // Versions of the various libraries used by the project.
