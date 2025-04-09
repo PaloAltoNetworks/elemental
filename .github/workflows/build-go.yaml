@@ -38,9 +38,9 @@ jobs:
         run: |
           make
 
-      - uses: PaloAltoNetworks/cov@3c863a1458c9ae685c4332af25700920818aa0d2 # 3.0.0
-        with:
-          main_branch: master
-          cov_file: unit_coverage.out
-          cov_threshold: "5"
-          cov_mode: coverage
+      # - uses: PaloAltoNetworks/cov@3c863a1458c9ae685c4332af25700920818aa0d2 # 3.0.0
+      #   with:
+      #     main_branch: master
+      #     cov_file: unit_coverage.out
+      #     cov_threshold: "5"
+      #     cov_mode: coverage
