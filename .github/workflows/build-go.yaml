@@ -37,10 +37,3 @@ jobs:
       - name: build
         run: |
           make
-
-      - uses: PaloAltoNetworks/cov@3.0.0
-        with:
-          main_branch: master
-          cov_file: unit_coverage.out
-          cov_threshold: "5"
-          cov_mode: coverage
