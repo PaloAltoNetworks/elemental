@@ -1,5 +1,3 @@
-// nolint:revive:unhandled-error
-
 package genopenapi3
 
 import (
@@ -142,16 +140,19 @@ func replaceTrailingTabsWithDoubleSpaceForYAML(s string) string {
 	for _, r := range s {
 
 		if r == '\n' {
+			// nolint: revive
 			sb.WriteRune(r)
 			replaceNextTab = true
 			continue
 		}
 
 		if replaceNextTab && r == '\t' {
+			// nolint: revive
 			sb.WriteString("  ")
 			continue
 		}
 
+		// nolint: revive
 		sb.WriteRune(r)
 		replaceNextTab = false
 	}
