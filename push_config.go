@@ -56,6 +56,7 @@ var unsupportedComparators = []FilterComparator{
 //
 // Deprecated: use the constructor with the new name, NewPushConfig, instead
 func NewPushFilter() *PushFilter {
+	// nolint: revive
 	fmt.Println("DEPRECATED: elemental.NewPushFilter is deprecated, use elemental.NewPushConfig instead")
 
 	return &PushFilter{
