@@ -37,8 +37,8 @@ func newConverter(inSpecSet spec.SpecificationSet, cfg Config) *converter {
 		outRootDoc:        newOpenAPI3Template(inSpecSet.Configuration()),
 	}
 
-	for _, spec := range inSpecSet.Specifications() {
-		model := spec.Model()
+	for _, specif := range inSpecSet.Specifications() {
+		model := specif.Model()
 		c.resourceToRest[model.ResourceName] = model.RestName
 	}
 

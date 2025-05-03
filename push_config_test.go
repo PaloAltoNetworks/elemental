@@ -82,7 +82,7 @@ func TestPushConfig_FilterForIdentity(t *testing.T) {
 
 	for scenario, testCase := range tests {
 		t.Run(scenario, func(t *testing.T) {
-			if testCase.pushConfig.IdentityFilters != nil && len(testCase.pushConfig.IdentityFilters) > 0 {
+			if len(testCase.pushConfig.IdentityFilters) > 0 {
 				if err := testCase.pushConfig.ParseIdentityFilters(); err != nil {
 					t.Fatalf("test setup invalid - failed to parse identity filters for the configured push config: %+v", err)
 				}
