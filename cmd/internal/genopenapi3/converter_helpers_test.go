@@ -1,3 +1,5 @@
+// nolint:revive:unhandled-error
+
 package genopenapi3
 
 import (
