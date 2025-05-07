@@ -42,7 +42,8 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 
 			l1.ReadOnly = "value"
 
-			errs := ValidateAdvancedSpecification(l1, nil, OperationCreate).(Errors)
+			errs, ok := ValidateAdvancedSpecification(l1, nil, OperationCreate).(Errors)
+			SoMsg("failed type assertion to Errors type", ok, ShouldBeTrue)
 
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)
@@ -68,7 +69,8 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 			l1.ReadOnly = "value"
 			l2.ReadOnly = "not value"
 
-			errs := ValidateAdvancedSpecification(l1, l2, OperationUpdate).(Errors)
+			errs, ok := ValidateAdvancedSpecification(l1, l2, OperationUpdate).(Errors)
+			SoMsg("failed type assertion to Errors type", ok, ShouldBeTrue)
 
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)
@@ -94,7 +96,8 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 			l1.CreationOnly = "value"
 			l2.CreationOnly = "not value"
 
-			errs := ValidateAdvancedSpecification(l1, l2, OperationUpdate).(Errors)
+			errs, ok := ValidateAdvancedSpecification(l1, l2, OperationUpdate).(Errors)
+			SoMsg("failed type assertion to Errors type", ok, ShouldBeTrue)
 
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)
@@ -111,7 +114,8 @@ func TestVerify_ValidateAdvancedSpecification(t *testing.T) {
 			l1.CreationOnly = "value"
 			l2.CreationOnly = "not value"
 
-			errs := ValidateAdvancedSpecification(l1, l2, OperationUpdate).(Errors)
+			errs, ok := ValidateAdvancedSpecification(l1, l2, OperationUpdate).(Errors)
+			SoMsg("failed type assertion to Errors type", ok, ShouldBeTrue)
 
 			Convey("Then errs should not be nil", func() {
 				So(errs, ShouldNotBeNil)
@@ -210,7 +214,7 @@ func TestVerify_ResetDefaultForZeroValues(t *testing.T) {
 			ResetDefaultForZeroValues(task)
 
 			Convey("Then the stats should be reset", func() {
-				So(task.Status, ShouldEqual, "TODO")
+				So(task.Status, ShouldEqual, TaskStatusValue("TODO"))
 			})
 		})
 

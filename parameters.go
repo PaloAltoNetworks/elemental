@@ -9,6 +9,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Individuals parameter are created with specific ParameterType values
+// and are type-checked at creation time, so it's safe to ignore all the unchecked
+// type casts in this file while simply getting a parameter as a type. Otherwise
+// every point of usage to get a value as a type would have to change its signature
+// to check for any error returned, and this quickly becomes very tedious and verbose.
+
+// nolint:revive,unchecked-type-assertion
 package elemental
 
 import (

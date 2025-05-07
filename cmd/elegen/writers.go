@@ -67,7 +67,10 @@ func writeModel(set spec.SpecificationSet, name string, outFolder string, public
 		if !ok {
 			continue
 		}
-		bname := item.(string)
+		bname, ok := item.(string)
+		if !ok {
+			return fmt.Errorf("expected string for extension attribute 'bson_name', got %T instead", item)
+		}
 		if _, ok = bnames[bname]; ok {
 			return fmt.Errorf("invalid bson name. '%s' reused", bname)
 		}

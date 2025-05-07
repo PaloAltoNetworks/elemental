@@ -62,10 +62,6 @@ linters:
         - name: confusing-results
           disabled: true
 
-        # kevin recommends not disabling these
-        - name: unchecked-type-assertion
-          disabled: true
-
   exclusions:
     paths: data_test.go
 
