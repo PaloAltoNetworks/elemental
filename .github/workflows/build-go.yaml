@@ -19,12 +19,11 @@ jobs:
       fail-fast: false
       matrix:
         go:
-          - "1.21"
-          - "1.22"
+          - "1.24"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
 
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4
         with:
           go-version: ${{ matrix.go }}
           cache: true
@@ -32,15 +31,9 @@ jobs:
       - name: setup
         run: |
           go install github.com/securego/gosec/cmd/gosec@latest
-          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+          go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
+          golangci-lint version
 
       - name: build
         run: |
           make
-
-      - uses: PaloAltoNetworks/cov@3.0.0
-        with:
-          main_branch: master
-          cov_file: unit_coverage.out
-          cov_threshold: "5"
-          cov_mode: coverage

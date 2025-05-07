@@ -46,9 +46,9 @@ func makeTemplate(p string) (*template.Template, error) {
 	return template.New(path.Base(p)).Funcs(functions).Parse(string(data))
 }
 
-func writeFile(path string, data []byte) error {
+func writeFile(filepath string, data []byte) error {
 
-	f, err := os.Create(path)
+	f, err := os.Create(filepath)
 	if err != nil {
 		return fmt.Errorf("unable to write file: %s", f.Name())
 	}
@@ -249,7 +249,7 @@ func attrBSONFieldName(attr *spec.Attribute) string {
 }
 
 func escapeBackticks(str string) string {
-	return strings.Replace(str, "`", "`+\"`\"+`", -1)
+	return strings.ReplaceAll(str, "`", "`+\"`\"+`")
 }
 
 func buildEnums(s spec.Specification, version string) []Enum {

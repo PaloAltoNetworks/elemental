@@ -194,14 +194,14 @@ func ValidateRequiredExternal(attribute string, value any) error {
 }
 
 // ValidateMaximumFloat validates a float against a maximum value.
-func ValidateMaximumFloat(attribute string, value float64, max float64, exclusive bool) error {
+func ValidateMaximumFloat(attribute string, value float64, maximum float64, exclusive bool) error {
 
-	if !exclusive && value > max {
-		err := NewError("Validation Error", fmt.Sprintf(maximumFloatFailFormat, value, attribute, max), "elemental", http.StatusUnprocessableEntity)
+	if !exclusive && value > maximum {
+		err := NewError("Validation Error", fmt.Sprintf(maximumFloatFailFormat, value, attribute, maximum), "elemental", http.StatusUnprocessableEntity)
 		err.Data = map[string]string{"attribute": attribute}
 		return err
-	} else if exclusive && value >= max {
-		err := NewError("Validation Error", fmt.Sprintf(maximumFloatExclusiveFailFormat, value, attribute, max), "elemental", http.StatusUnprocessableEntity)
+	} else if exclusive && value >= maximum {
+		err := NewError("Validation Error", fmt.Sprintf(maximumFloatExclusiveFailFormat, value, attribute, maximum), "elemental", http.StatusUnprocessableEntity)
 		err.Data = map[string]string{"attribute": attribute}
 		return err
 	}
@@ -210,15 +210,15 @@ func ValidateMaximumFloat(attribute string, value float64, max float64, exclusiv
 }
 
 // ValidateMinimumFloat validates a float against a maximum value.
-func ValidateMinimumFloat(attribute string, value float64, min float64, exclusive bool) error {
+func ValidateMinimumFloat(attribute string, value float64, minimum float64, exclusive bool) error {
 
-	if !exclusive && value < min {
-		err := NewError("Validation Error", fmt.Sprintf(minimumFloatFailFormat, value, attribute, min), "elemental", http.StatusUnprocessableEntity)
+	if !exclusive && value < minimum {
+		err := NewError("Validation Error", fmt.Sprintf(minimumFloatFailFormat, value, attribute, minimum), "elemental", http.StatusUnprocessableEntity)
 		err.Data = map[string]string{"attribute": attribute}
 		return err
 
-	} else if exclusive && value <= min {
-		err := NewError("Validation Error", fmt.Sprintf(minimumFloatExclusiveFailFormat, value, attribute, min), "elemental", http.StatusUnprocessableEntity)
+	} else if exclusive && value <= minimum {
+		err := NewError("Validation Error", fmt.Sprintf(minimumFloatExclusiveFailFormat, value, attribute, minimum), "elemental", http.StatusUnprocessableEntity)
 		err.Data = map[string]string{"attribute": attribute}
 		return err
 	}
@@ -227,14 +227,14 @@ func ValidateMinimumFloat(attribute string, value float64, min float64, exclusiv
 }
 
 // ValidateMaximumInt validates a integer against a maximum value.
-func ValidateMaximumInt(attribute string, value int, max int, exclusive bool) error {
+func ValidateMaximumInt(attribute string, value int, maximum int, exclusive bool) error {
 
-	if !exclusive && value > max {
-		err := NewError("Validation Error", fmt.Sprintf(maximumIntFailFormat, value, attribute, max), "elemental", http.StatusUnprocessableEntity)
+	if !exclusive && value > maximum {
+		err := NewError("Validation Error", fmt.Sprintf(maximumIntFailFormat, value, attribute, maximum), "elemental", http.StatusUnprocessableEntity)
 		err.Data = map[string]string{"attribute": attribute}
 		return err
-	} else if exclusive && value >= max {
-		err := NewError("Validation Error", fmt.Sprintf(maximumIntExclusiveFailFormat, value, attribute, max), "elemental", http.StatusUnprocessableEntity)
+	} else if exclusive && value >= maximum {
+		err := NewError("Validation Error", fmt.Sprintf(maximumIntExclusiveFailFormat, value, attribute, maximum), "elemental", http.StatusUnprocessableEntity)
 		err.Data = map[string]string{"attribute": attribute}
 		return err
 	}
@@ -243,14 +243,14 @@ func ValidateMaximumInt(attribute string, value int, max int, exclusive bool) er
 }
 
 // ValidateMinimumInt validates a integer against a maximum value.
-func ValidateMinimumInt(attribute string, value int, min int, exclusive bool) error {
+func ValidateMinimumInt(attribute string, value int, minimum int, exclusive bool) error {
 
-	if !exclusive && value < min {
-		err := NewError("Validation Error", fmt.Sprintf(minimumIntFailFormat, value, attribute, min), "elemental", http.StatusUnprocessableEntity)
+	if !exclusive && value < minimum {
+		err := NewError("Validation Error", fmt.Sprintf(minimumIntFailFormat, value, attribute, minimum), "elemental", http.StatusUnprocessableEntity)
 		err.Data = map[string]string{"attribute": attribute}
 		return err
-	} else if exclusive && value <= min {
-		err := NewError("Validation Error", fmt.Sprintf(minimumIntExclusiveFailFormat, value, attribute, min), "elemental", http.StatusUnprocessableEntity)
+	} else if exclusive && value <= minimum {
+		err := NewError("Validation Error", fmt.Sprintf(minimumIntExclusiveFailFormat, value, attribute, minimum), "elemental", http.StatusUnprocessableEntity)
 		err.Data = map[string]string{"attribute": attribute}
 		return err
 	}
@@ -302,16 +302,16 @@ func ValidatePattern(attribute string, value string, pattern string, message str
 }
 
 // ValidateMinimumLength validates the minimum length of a string.
-func ValidateMinimumLength(attribute string, value string, min int, exclusive bool) error {
+func ValidateMinimumLength(attribute string, value string, minimum int, exclusive bool) error {
 
 	length := len([]rune(value))
 
-	if !exclusive && length < min {
-		err := NewError("Validation Error", fmt.Sprintf(minimumLengthFailFormat, value, attribute, min), "elemental", http.StatusUnprocessableEntity)
+	if !exclusive && length < minimum {
+		err := NewError("Validation Error", fmt.Sprintf(minimumLengthFailFormat, value, attribute, minimum), "elemental", http.StatusUnprocessableEntity)
 		err.Data = map[string]string{"attribute": attribute}
 		return err
-	} else if exclusive && length <= min {
-		err := NewError("Validation Error", fmt.Sprintf(minimumLengthExclusiveFailFormat, value, attribute, min), "elemental", http.StatusUnprocessableEntity)
+	} else if exclusive && length <= minimum {
+		err := NewError("Validation Error", fmt.Sprintf(minimumLengthExclusiveFailFormat, value, attribute, minimum), "elemental", http.StatusUnprocessableEntity)
 		err.Data = map[string]string{"attribute": attribute}
 		return err
 	}
@@ -320,16 +320,16 @@ func ValidateMinimumLength(attribute string, value string, min int, exclusive bo
 }
 
 // ValidateMaximumLength validates the maximum length of a string.
-func ValidateMaximumLength(attribute string, value string, max int, exclusive bool) error {
+func ValidateMaximumLength(attribute string, value string, maximum int, exclusive bool) error {
 
 	length := len([]rune(value))
 
-	if !exclusive && length > max {
-		err := NewError("Validation Error", fmt.Sprintf(maximumLengthFailFormat, value, attribute, max), "elemental", http.StatusUnprocessableEntity)
+	if !exclusive && length > maximum {
+		err := NewError("Validation Error", fmt.Sprintf(maximumLengthFailFormat, value, attribute, maximum), "elemental", http.StatusUnprocessableEntity)
 		err.Data = map[string]string{"attribute": attribute}
 		return err
-	} else if exclusive && length >= max {
-		err := NewError("Validation Error", fmt.Sprintf(maximumLengthExclusiveFailFormat, value, attribute, max), "elemental", http.StatusUnprocessableEntity)
+	} else if exclusive && length >= maximum {
+		err := NewError("Validation Error", fmt.Sprintf(maximumLengthExclusiveFailFormat, value, attribute, maximum), "elemental", http.StatusUnprocessableEntity)
 		err.Data = map[string]string{"attribute": attribute}
 		return err
 	}

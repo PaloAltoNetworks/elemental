@@ -67,7 +67,10 @@ func writeModel(set spec.SpecificationSet, name string, outFolder string, public
 		if !ok {
 			continue
 		}
-		bname := item.(string)
+		bname, ok := item.(string)
+		if !ok {
+			return fmt.Errorf("expected string for extension attribute 'bson_name', got %T instead", item)
+		}
 		if _, ok = bnames[bname]; ok {
 			return fmt.Errorf("invalid bson name. '%s' reused", bname)
 		}
@@ -99,7 +102,10 @@ func writeModel(set spec.SpecificationSet, name string, outFolder string, public
 		if errs, ok := err.(scanner.ErrorList); ok {
 			lines := strings.Split(buf.String(), "\n")
 			for i := 0; i < errs.Len(); i++ {
-				fmt.Printf("Error in '%s' near:\n\n\t%s\n\n", name, lines[errs[i].Pos.Line-1])
+				_, err2 := fmt.Printf("Error in '%s' near:\n\n\t%s\n\n", name, lines[errs[i].Pos.Line-1])
+				if err2 != nil {
+					return fmt.Errorf("unable to print error in formatting model (name: %s): %s", name, err2)
+				}
 			}
 		}
 		return fmt.Errorf("unable to format model '%s': %s", name, err)
@@ -145,7 +151,10 @@ func writeIdentitiesRegistry(set spec.SpecificationSet, outFolder string, public
 
 	p, err = imports.Process("", p, nil)
 	if err != nil {
-		fmt.Println(buf.String())
+		_, err2 := fmt.Println(buf.String())
+		if err2 != nil {
+			return fmt.Errorf("unable to print error in goimport relationships_registry logic: %s", err2)
+		}
 		return fmt.Errorf("unable to goimport relationships_registry code:%s", err)
 	}
 
@@ -179,13 +188,19 @@ func writeRelationshipsRegistry(set spec.SpecificationSet, outFolder string, pub
 
 	p, err := format.Source(buf.Bytes())
 	if err != nil {
-		fmt.Println(buf.String())
+		_, err2 := fmt.Println(buf.String())
+		if err2 != nil {
+			return fmt.Errorf("unable to print error in formatting relationships_registry logic: %s", err2)
+		}
 		return fmt.Errorf("unable to format relationships_registry code:%s", err)
 	}
 
 	p, err = imports.Process("", p, nil)
 	if err != nil {
-		fmt.Println(buf.String())
+		_, err2 := fmt.Println(buf.String())
+		if err2 != nil {
+			return fmt.Errorf("unable to print error in relationships_registry logic: %s", err2)
+		}
 		return fmt.Errorf("unable to goimport relationships_registry code:%s", err)
 	}
 

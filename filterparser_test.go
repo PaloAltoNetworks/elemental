@@ -473,7 +473,7 @@ func TestParser_Keys(t *testing.T) {
 			Convey("Then there should have an error", func() {
 				So(err, ShouldNotEqual, nil)
 				So(err.Error(), ShouldContainSubstring, "could not start a parameter with $")
-				So(filter, ShouldEqual, nil)
+				So(filter, ShouldEqual, (*Filter)(nil))
 			})
 		})
 	})

@@ -139,7 +139,7 @@ func TestAtomicJob(t *testing.T) {
 		time.Sleep(300 * time.Millisecond)
 
 		Convey("Then err1 and err2 should not be nil", func() {
-			e := err1.Load().(error)
+			e := err1.Load().(error) // nolint:revive,unchecked-type-assertion
 			So(e, ShouldNotBeNil)
 			So(e.Error(), ShouldEqual, "boom")
 

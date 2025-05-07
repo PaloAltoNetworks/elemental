@@ -122,7 +122,11 @@ func Decode(encoding EncodingType, data []byte, dest any) error {
 		encoding = EncodingTypeJSON
 	}
 
-	dec := pool.Get().(*codec.Decoder)
+	res := pool.Get()
+	dec, ok := res.(*codec.Decoder)
+	if !ok {
+		return fmt.Errorf("expected codec.Decoder from pool, got unexpected type: %T", res)
+	}
 	defer pool.Put(dec)
 
 	dec.Reset(bytes.NewBuffer(data))
@@ -152,7 +156,11 @@ func Encode(encoding EncodingType, obj any) ([]byte, error) {
 		encoding = EncodingTypeJSON
 	}
 
-	enc := pool.Get().(*codec.Encoder)
+	res := pool.Get()
+	enc, ok := res.(*codec.Encoder)
+	if !ok {
+		return nil, fmt.Errorf("expected codec.Encoder from pool, got unexpected type: %T", res)
+	}
 	defer pool.Put(enc)
 
 	buf := bytes.NewBuffer(nil)
@@ -185,7 +193,13 @@ func MakeStreamDecoder(encoding EncodingType, reader io.Reader) (func(dest any) 
 		pool = &jsonDecodersPool
 	}
 
-	dec := pool.Get().(*codec.Decoder)
+	res := pool.Get()
+	dec, ok := res.(*codec.Decoder)
+	if !ok {
+		return func(dest any) error {
+			return fmt.Errorf("expected codec.Decoder from pool, got unexpected type: %T", res)
+		}, func() {}
+	}
 	dec.Reset(reader)
 
 	clean := func() {
@@ -230,7 +244,13 @@ func MakeStreamEncoder(encoding EncodingType, writer io.Writer) (func(obj any) e
 		pool = &jsonEncodersPool
 	}
 
-	enc := pool.Get().(*codec.Encoder)
+	res := pool.Get()
+	enc, ok := res.(*codec.Encoder)
+	if !ok {
+		return func(dest any) error {
+			return fmt.Errorf("expected codec.Encoder from pool, got unexpected type: %T", res)
+		}, func() {}
+	}
 	enc.Reset(writer)
 
 	clean := func() {
