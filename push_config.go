@@ -14,6 +14,7 @@ package elemental
 import (
 	"fmt"
 	"net/url"
+	"slices"
 )
 
 // A PushFilter represents an abstract filter for filtering out push notifications. This is now aliased to PushConfig as a
@@ -95,7 +96,7 @@ func (pc *PushConfig) Parameters() url.Values {
 
 	out := make(url.Values, len(pc.Params))
 	for k, v := range pc.Params {
-		out[k] = v
+		out[k] = slices.Clone(v)
 	}
 
 	return out

@@ -505,16 +505,16 @@ func TestPushConfig_Duplicate(t *testing.T) {
 
 			Convey("Then it should be correctly duplicated", func() {
 				So(dup.Identities, ShouldResemble, f.Identities)
-				So(dup.Identities, ShouldNotEqual, f.Identities)
+				So(reflect.ValueOf(dup.Identities), ShouldNotEqual, reflect.ValueOf(f.Identities))
 
 				So(dup.IdentityFilters, ShouldResemble, f.IdentityFilters)
-				So(dup.IdentityFilters, ShouldNotEqual, f.IdentityFilters)
+				So(reflect.ValueOf(dup.IdentityFilters), ShouldNotEqual, reflect.ValueOf(f.IdentityFilters))
 
 				So(dup.parsedIdentityFilters, ShouldResemble, f.parsedIdentityFilters)
-				So(dup.parsedIdentityFilters, ShouldNotEqual, f.parsedIdentityFilters)
+				So(reflect.ValueOf(dup.parsedIdentityFilters), ShouldNotEqual, reflect.ValueOf(f.parsedIdentityFilters))
 
 				So(dup.Params, ShouldResemble, f.Params)
-				So(dup.Params, ShouldNotEqual, f.Params)
+				So(reflect.ValueOf(dup.Params), ShouldNotEqual, reflect.ValueOf(f.Params))
 			})
 		})
 	})
@@ -538,7 +538,7 @@ func TestPushConfig_Parameters(t *testing.T) {
 					"key2": []string{"v3"},
 				})
 
-				So(f.Parameters(), ShouldNotEqual, f.Params)
+				So(reflect.ValueOf(f.Parameters()).Pointer(), ShouldNotEqual, reflect.ValueOf(f.Params).Pointer())
 			})
 		})
 	})
